@@ -1,0 +1,90 @@
+.envision-component-container {
+    width: 500px;
+    height : 80px;  
+}
+
+.envision-component-container.envision-first {
+    width: 500px;
+    height : 80px;         
+}
+
+.basic-metric-html {
+	width: 150px;
+}
+
+.m0-box-div {
+    height: 130px;
+    float: left;
+    margin-bottom: 20px;   
+}
+
+.scm-flotr2-metrics,
+.its-flotr2-metrics,
+.mls-flotr2-metrics
+{
+	height: 130px;
+}
+
+.scm-flotr2-countries-static,
+.scm-flotr2-companies-static,
+.scm-flotr2-repos-static,
+.its-flotr2-countries-static,
+.its-flotr2-companies-static,
+.its-flotr2-repos-static,
+.mls-flotr2-countries-static,
+.mls-flotr2-companies-static,
+.mls-flotr2-repos-static,
+.its-time-to-fix,
+.mls-time-to-attention
+ {
+    height: 200px;
+}
+
+.scm-flotr2-metrics-country,
+.its-flotr2-metrics-country,
+.mls-flotr2-metrics-country,
+.scm-flotr2-metrics-repo,
+.its-flotr2-metrics-repo,
+.mls-flotr2-metrics-repo,
+.scm-flotr2-metrics-company,
+.its-flotr2-metrics-company,
+.mls-flotr2-metrics-company,
+.scm-flotr2-metrics-people,
+.its-flotr2-metrics-people,
+.mls-flotr2-metrics-people
+{
+	height: 200px;
+}
+
+#its-envision {
+	height: 450px;
+}
+
+#mls-envision {
+    height: 250px;
+}
+
+.scm-flotr2-companies
+ {
+    height: 300px;
+}
+
+.demographic-bars {
+    width:400px;height:200px;
+}
+
+.subreport-list-item {
+    margin: 5px;
+}
+
+/* Bootstrap */ 
+
+.hero-unit {
+	padding: 30px;
+}
+
+.center {
+     float: none;
+     margin-left: auto;
+     margin-right: auto;
+}
