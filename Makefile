@@ -54,6 +54,9 @@ vizgrimoire%js: Makefile
 	echo $@
 	@rm -f $@
 	@cat $(filter %.js,$^) > $@
+	@echo "\\n" >> $@
+	@echo "Report.git_revision='"`git rev-parse HEAD`"';" >> $@
+	@echo "Report.git_tag='"`git describe --tags`"';" >> $@
 	# @cat $(filter %.js,$^) > $@.tmp
 	# $(JS_UGLIFY) -o $@  $@.tmp
 	# @rm $@.tmp
