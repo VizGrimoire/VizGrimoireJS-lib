@@ -5,6 +5,7 @@ JSHINT = jshint
 # CSSHINT = csslint
 
 all: \
+	version \
 	vizgrimoire.js \
 	jshint \
 	vizgrimoire.min.js \
@@ -54,13 +55,15 @@ vizgrimoire%js: Makefile
 	echo $@
 	@rm -f $@
 	@cat $(filter %.js,$^) > $@
-	@echo "\\n" >> $@
-	@echo "Report.git_revision='"`git rev-parse HEAD`"';" >> $@
-	@echo "Report.git_tag='"`git describe --tags`"';" >> $@
 	# @cat $(filter %.js,$^) > $@.tmp
 	# $(JS_UGLIFY) -o $@  $@.tmp
 	# @rm $@.tmp
-	@chmod a-w $@
+	# @chmod a-w $@
+
+version: vizgrimoire.core.js
+	@echo "\\n" >> $<
+	@echo "vizjslib_git_revision='"`git rev-parse HEAD`"';" >> $<
+	@echo "vizjslib_git_tag='"`git describe --tags`"';" >> $<
 
 jshint: vizgrimoire.core.js
 	@echo "JSHINT Checking ..."
