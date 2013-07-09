@@ -422,6 +422,7 @@ var Report = {};
             convert: function() {
                 $.get(html_dir+"footer.html", function(footer) {
                     $("#footer").html(footer);
+                    $("#vizjs-lib-version").append(vizjslib_git_tag);
                 });
             }
         },
