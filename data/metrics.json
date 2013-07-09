@@ -254,6 +254,12 @@
     }
 },
 "scr": {
+    "scr_merged" : {
+        "divid" : "scr_merged",
+        "column" : "merged",
+        "name" : "merged",
+        "desc" : ""
+    },
     "scr_opened" : {
         "divid" : "scr_opened",
         "column" : "opened",
@@ -264,12 +270,6 @@
         "divid" : "scr_closed",
         "column" : "closed",
         "name" : "closed",
-        "desc" : ""
-    },
-    "scr_merged" : {
-        "divid" : "scr_merged",
-        "column" : "merged",
-        "name" : "merged",
         "desc" : ""
     },
     "scr_new" : {
