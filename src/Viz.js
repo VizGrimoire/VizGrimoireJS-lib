@@ -134,7 +134,7 @@ var Viz = {};
             return;
         }
 
-        var top_metric_id = metric.divid;
+        var top_metric_id = metric.name;
         var div_graph = '';
         var new_div = '';
         // new_div += "<div class='info-pill'>";
@@ -1027,7 +1027,7 @@ var Viz = {};
                 if (options.data[metric] === undefined) continue;
                 if ($.inArray(metric,options.data.envision_hide) > -1) 
                     continue;
-                value += "<td>"+metric+"</td>";
+                value += "<td>"+basic_metrics[metric].name+"</td>";
             }
             value += "</tr>";
             $.each(project_metrics, function(project, metrics) {
