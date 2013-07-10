@@ -64,6 +64,8 @@ version: vizgrimoire.core.js
 	@echo "\\n" >> $<
 	@echo "vizjslib_git_revision='"`git rev-parse HEAD`"';" >> $<
 	@echo "vizjslib_git_tag='"`git describe --tags`"';" >> $<
+	@echo "vizjslib_git_revision='"`git rev-parse HEAD`"';" > "test/jasmine/version.js"
+	@echo "vizjslib_git_tag='"`git describe --tags`"';" >> "test/jasmine/version.js"
 
 jshint: vizgrimoire.core.js
 	@echo "JSHINT Checking ..."
