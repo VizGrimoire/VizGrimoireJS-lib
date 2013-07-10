@@ -94,7 +94,7 @@ var Viz = {};
         });
     }
 
-    function displayTopMetricTable(history, metric_id, doer) {
+    function displayTopMetricTable(history, metric_id, doer, limit) {
         var table = "<table><tbody>";
         table += "<tr><th></th><th>" + metric_id + "</th></tr>";
         if (history[metric_id] === undefined) return;
@@ -102,7 +102,7 @@ var Viz = {};
             history[metric_id] = [history[metric_id]];
             history[doer] = [history[doer]];
         }
-        for ( var i = 0; i < history[metric_id].length; i++) {
+        for (var i = 0; i < history[metric_id].length; i++) {
             var metric_value = history[metric_id][i];
             var doer_value = history[doer][i];
             var doer_id = history.id[i];
@@ -110,6 +110,7 @@ var Viz = {};
             table += "<a href='people.html?id="+doer_id+"&name="+doer_value+"'>";
             table += DataProcess.hideEmail(doer_value) + "</a></td><td>";
             table += metric_value + "</td></tr>";
+            if (limit && limit <= i) break;
         }
         table += "</tbody></table>";
 
@@ -117,13 +118,13 @@ var Viz = {};
     }
 
     function displayTopMetric
-        (div_id, project, metric, metric_period, history, graph, titles) {
+        (div_id, project, metric, metric_period, history, graph, titles, limit) {
 
         if (!history) return;
         var metric_id = metric.action;
         var doer = metric.column;
         if (doer === undefined) doer = findMetricDoer(history, metric_id);
-        var table = displayTopMetricTable(history, metric_id, doer);
+        var table = displayTopMetricTable(history, metric_id, doer, limit);
         // var doer = findMetricDoer(history, metric_id);
         var div = null;
 
@@ -730,7 +731,7 @@ var Viz = {};
     // For example: "committers.all":{"commits":[5310, ...],"name":["Brion
     // Vibber",..]}
     // TODO: Data load should be done in Loader
-    function displayTop(div, ds, all, show_metric, graph, titles) {
+    function displayTop(div, ds, all, show_metric, graph, titles, limit) {
         var top_file = ds.getTopDataFile();
         var basic_metrics = ds.getMetrics();
         var project = ds.getProject();
@@ -748,7 +749,7 @@ var Viz = {};
                     var metric = basic_metrics[id];
                     if (metric.column == top_metric) {
                         displayTopMetric(div, project, metric, 
-                                top_period, history[key], graph);
+                                top_period, history[key], graph, titles, limit);
                         if (!all) return false;
                         break;
                     }

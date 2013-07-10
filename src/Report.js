@@ -967,7 +967,9 @@ var Report = {};
             if ($("#"+div_id_top).length > 0) {
                 if ($("#"+div_id_top).data('show_all')) show_all = true;
                 var top_metric = $("#"+div_id_top).data('metric');
-                DS.displayTop(div_id_top, show_all, top_metric);
+                var limit = $("#"+div_id_top).data('limit');
+                var graph = null;
+                DS.displayTop(div_id_top, show_all, top_metric, graph, limit);
             }           
             $.each(['pie','bars'], function (index, chart) {
                 var div_id_top = DS.getName()+"-top-"+chart;

@@ -785,9 +785,10 @@ function DataSource(name, basic_metrics) {
         Viz.displayTimeToFix(div_id, this.getTimeToFixData(), column, labels, title);
     };
     
-    this.displayTop = function(div, all, show_metric, graph) {
+    this.displayTop = function(div, all, show_metric, graph, limit) {
         if (all === undefined) all = true;
-        Viz.displayTop(div, this, all, show_metric, graph);
+        var titles = null;
+        Viz.displayTop(div, this, all, show_metric, graph, titles, limit);
     };
     
     this.displayTopBasic = function(div, action, doer, graph) {
