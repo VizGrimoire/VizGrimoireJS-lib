@@ -1022,8 +1022,9 @@ var Viz = {};
                 }                                    
             }
             
-            value  = "<table><tr><td align='right'>"+dates[1][index];
-            value += "</td></tr><tr><td></td>";
+            value  = "<table><tr><td align='right'>"+dates[1][index]+"</td></tr>";
+            value += "<tr>";
+            if (projects.length>1) value +="<td></td>";
             for (metric in basic_metrics) {
                 if (options.data[metric] === undefined) continue;
                 if ($.inArray(metric,options.data.envision_hide) > -1) 
@@ -1032,16 +1033,18 @@ var Viz = {};
             }
             value += "</tr>";
             $.each(project_metrics, function(project, metrics) {
-                value += "<tr><td>"+project+"</td>";
+                var row = "<tr>";
                 for (var metric in basic_metrics) {
                     if (options.data[metric] === undefined) continue;
                     if ($.inArray(metric,options.data.envision_hide) > -1) 
                         continue;
                     mvalue = project_metrics[project][metric];
                     if (mvalue === undefined) mvalue = "n/a";
-                    value += "<td>" + mvalue + "</td>";
+                    row += "<td>" + mvalue + "</td>";
                 }
-                value += "</tr>";   
+                if (projects.length>1) row = "<td>"+project+"</td>"+row;
+                row += "</tr>";
+                value += row;
             });
             value += "</table>";
 
