@@ -827,9 +827,9 @@ function DataSource(name, basic_metrics) {
         new envision.templates.Envision_Report(options, [ this ]);
     };
     
-    this.displayEvo = function(divid, relative, legend_show) {
+    this.displayEvo = function(divid, relative, legend_show, summary_graph) {
         var projects_full_data = Report.getProjectsDataSources();
         
-        this.envisionEvo(divid, projects_full_data, relative, legend_show);
+        this.envisionEvo(divid, projects_full_data, relative, legend_show, summary_graph);
     };    
 }

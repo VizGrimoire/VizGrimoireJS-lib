@@ -899,7 +899,7 @@ var Viz = {};
         return options;
     };
     
-    function getEnvisionOptions(div_id, projects_data, ds_name, hide) {
+    function getEnvisionOptions(div_id, projects_data, ds_name, hide, summary_graph) {
 
         var basic_metrics, main_metric="", summary_data = [[],[]];
 
@@ -918,6 +918,8 @@ var Viz = {};
             if ((ds_name === null && DS.getName() === "scm") ||
                 (ds_name && DS.getName() == ds_name)) {
                 summary_data = [DS.getData().id, DS.getData()[main_metric]];
+                if (summary_graph === false) 
+                    summary_data = [DS.getData().id, []];
                 return false;
             }
         });
@@ -1280,11 +1282,11 @@ var Viz = {};
         $("#" + div_id).html(html);
     }
 
-    function displayEvoSummary(div_id, relative, legend_show) {
+    function displayEvoSummary(div_id, relative, legend_show, summary_graph) {
         var projects_full_data = Report.getProjectsDataSources();
         var config = Report.getConfig();
         var options = Viz.getEnvisionOptions(div_id, projects_full_data, null,
-                config.summary_hide);
+                config.summary_hide, summary_graph);
         options.legend_show = legend_show;
         if (relative) {
             // TODO: Improve main metric selection. Report.getMainMetric()

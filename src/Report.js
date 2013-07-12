@@ -920,7 +920,8 @@ var Report = {};
         if ($("#all-envision").length > 0) {
             var relative = $('#all-envision').data('relative');
             var legend = $('#all-envision').data('legend-show');
-            Viz.displayEvoSummary('all-envision', relative, legend);
+            var summary_graph = $('#all-envision').data('summary-graph');
+            Viz.displayEvoSummary('all-envision', relative, legend, summary_graph);
         }
         var already_shown = [];
         $.each(Report.getDataSources(), function(index, DS) {
@@ -931,15 +932,16 @@ var Report = {};
                     return;
                 var legend = $('#'+div_envision).data('legend-show');
                 var relative = $('#'+div_envision).data('relative');
+                var summary_graph = $('#'+div_envision).data('summary-graph');
                 if (DS instanceof MLS) {
-                    DS.displayEvo(div_envision, relative, legend);
+                    DS.displayEvo(div_envision, relative, legend, summary_graph);
                     // DS.displayEvoAggregated(div_envision);
                     if (Report.getProjectsList().length === 1)
                         if ($("#" + DS.getName() + "-envision"+"-lists").length > 0)
                             DS.displayEvoListsMain
                                 (DS.getName() + "-envision"+"-lists");
                 } else if ($.inArray(DS.getName(), already_shown) === -1) { 
-                    DS.displayEvo(div_envision, relative, legend); 
+                    DS.displayEvo(div_envision, relative, legend, summary_graph); 
                 }
                 already_shown.push(DS.getName());
             }
