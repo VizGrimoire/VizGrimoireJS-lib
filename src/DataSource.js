@@ -557,7 +557,8 @@ function DataSource(name, basic_metrics) {
         var links = "";
         var i = 0;
         $.each(sorted_companies, function(id, company) {
-            links += '<a href="company.html?company='+company+'">'+company+'</a> | ';
+            links += '<a href="company.html?company='+company;
+            links += '&'+Report.addDataDir()+'">'+company+'</a>| ';
             if (i++>=limit-1) return false;
         });
         $("#"+div_links).append(links);
@@ -642,8 +643,11 @@ function DataSource(name, basic_metrics) {
             if (scm_and_its && (!(Report.getReposMap()[item]))) return;
             list += "<div class='subreport-list' id='"+item+"-nav'>";
             list += "<div style='float:left;'>";
-            if (report === "companies") 
-                list += "<a href='company.html?company="+item+"'>";
+            if (report === "companies") { 
+                list += "<a href='company.html?company="+item;
+                list += "&data_dir=" + Report.getDataDir();
+                list += "'>";
+            }
             else if (report === "repos") {
                 list += "<a href='";
                 // Show together SCM and ITS

@@ -237,7 +237,8 @@ var Report = {};
             $(".summary-menu")[0].className = 
                 $(".summary-menu")[0].className + " active";
         } else {
-            $(".experimental-menu")[0].className = 
+            if ($(".experimental-menu")[0])
+                $(".experimental-menu")[0].className = 
                 $(".experimental-menu")[0].className + " active";
         }
     }
@@ -360,17 +361,27 @@ var Report = {};
             }
         }
     };
+    
+    Report.addDataDir = function () {
+        var addURL;
+        var querystr = window.location.search.substr(1);
+        if (querystr && querystr.indexOf("data_dir")!==-1) {
+            addURL = window.location.search.substr(1);
+        }
+        return addURL;
+    };
         
     var basic_divs = {
         "navigation": {
             convert: function() {
                 $.get(html_dir+"navigation.html", function(navigation) {
                     $("#navigation").html(navigation);
-                    var querystr = window.location.search.substr(1);
-                    if (querystr && querystr.indexOf("data_dir")!==-1) {
+                    var addURL = Report.addDataDir(); 
+                    if (addURL) {
                         var $links = $("#navigation a");
                         $.each($links, function(index, value){
-                            value.href += "?"+window.location.search.substr(1);
+                            if (value.href.indexOf("data_dir")!==-1) return;
+                            value.href += "?"+addURL;
                         });
                     }
                 });                
@@ -382,11 +393,12 @@ var Report = {};
                     $("#navbar").html(navigation);
                     displayReportData();
                     displayActiveMenu();
-                    var querystr = window.location.search.substr(1);
-                    if (querystr && querystr.indexOf("data_dir")!==-1) {
+                    var addURL = Report.addDataDir(); 
+                    if (addURL) {                    
                         var $links = $("#navbar a");
                         $.each($links, function(index, value){
-                            value.href += "?"+window.location.search.substr(1);
+                            if (value.href.indexOf("data_dir")!==-1) return;
+                            value.href += "?"+addURL;
                         });
                     }
                 });                
@@ -397,11 +409,12 @@ var Report = {};
                 $.get(html_dir+"header.html", function(header) {
                     $("#header").html(header);
                     displayReportData();
-                    var querystr = window.location.search.substr(1);
-                    if (querystr && querystr.indexOf("data_dir")!==-1) {
+                    var addURL = Report.addDataDir();
+                    if (addURL) {                    
                         var $links = $("#header a");
                         $.each($links, function(index, value){
-                            value.href += "?"+window.location.search.substr(1);
+                            if (value.href.indexOf("data_dir")!==-1) return;
+                            value.href += "?"+addURL;
                         });
                     }
                 });
