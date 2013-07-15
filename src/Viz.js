@@ -111,7 +111,7 @@ var Viz = {};
             if (doer_id)
                 table += "<a href='people.html?id="+doer_id+"&name="+doer_value+"'>";
             table += DataProcess.hideEmail(doer_value);
-            if (doer_id) table +=+ "</a>";
+            if (doer_id) table += "</a>";
             table += "</td><td>";
             table += metric_value + "</td></tr>";
             if (limit && limit <= i) break;
@@ -777,6 +777,8 @@ var Viz = {};
         var project = ds.getProject();
         var metric = ds.getMetrics()[metric_id];
         var graph = null;
+        var data = ds.getCompaniesTopData()[company];
+        if (data === undefined) return;
         data = ds.getCompaniesTopData()[company][period];
         displayTopMetric(div, project, metric, period, data, graph, titles);
     }

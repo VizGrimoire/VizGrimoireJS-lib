@@ -477,13 +477,15 @@ function DataSource(name, basic_metrics) {
 
     this.displayBasicMetricsCompany = function (
             company, metrics, div_id, config) {
-        Viz.displayBasicMetricsCompany(company, metrics,
-                this.getCompaniesMetricsData()[company], div_id, config);
+        var data = this.getCompaniesMetricsData()[company];
+        if (data === undefined) return;
+        Viz.displayBasicMetricsCompany(company, metrics, data, div_id, config);
     };
     
     this.displayBasicMetricsRepo = function (repo, metrics, div_id, config) {
-        Viz.displayBasicMetricsRepo(repo, metrics,
-                this.getReposMetricsData()[repo], div_id, config);
+        var data = this.getReposMetricsData()[repo];
+        if (data === undefined) return;
+        Viz.displayBasicMetricsRepo(repo, metrics, data, div_id, config);
     };
     
     this.displayBasicMetricsPeople = function (upeople_id, upeople_identifier, metrics, div_id, config) {
