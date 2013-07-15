@@ -397,17 +397,6 @@ var Report = {};
                 $.get(html_dir+"header.html", function(header) {
                     $("#header").html(header);
                     displayReportData();
-                    var div_companies_links = "companies_links";
-                    if ($("#"+div_companies_links).length > 0) {
-                        var limit = $("#"+div_companies_links).data('limit');
-                        var order_by = $("#"+div_companies_links).data('order-by');
-                        var DS = null;
-                        // scm support only
-                        $.each(data_sources, function(i, ds) {
-                            if (ds.getName() === "scm") {DS = ds; return false;}
-                        });
-                        DS.displayCompaniesLinks(div_companies_links, limit, order_by);
-                    }
                     var querystr = window.location.search.substr(1);
                     if (querystr && querystr.indexOf("data_dir")!==-1) {
                         var $links = $("#header a");
@@ -512,7 +501,18 @@ var Report = {};
                 config_metric[key] = value;
             });
         }
-
+        
+        var div_companies_links = "companies_links";
+        if ($("#"+div_companies_links).length > 0) {
+            var limit = $("#"+div_companies_links).data('limit');
+            var order_by = $("#"+div_companies_links).data('order-by');
+            var DS = null;
+            // scm support only
+            $.each(data_sources, function(i, ds) {
+                if (ds.getName() === "scm") {DS = ds; return false;}
+            });
+            DS.displayCompaniesLinks(div_companies_links, limit, order_by);
+        }
         
         var company = null;
         var querystr = window.location.search.substr(1);

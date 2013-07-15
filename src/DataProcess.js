@@ -39,7 +39,7 @@ var DataProcess = {};
     };
     
     sortGlobal = function (ds, metric_id, kind) {
-        if (metric_id === undefined) metric_id = "commits";
+        if (metric_id === undefined) metric_id = "scm_commits";
         var metric = [];
         var sorted = [];
         var global = null;
@@ -47,19 +47,19 @@ var DataProcess = {};
             global = ds.getCompaniesGlobalData();
             if (ds.getCompaniesData().length === 0) return sorted;
             if (global[ds.getCompaniesData()[0]][metric_id] === undefined)
-                metric_id = "commits";
+                metric_id = "scm_commits";
         } 
         else if (kind === "repos") {
             global = ds.getReposGlobalData();
             if (ds.getReposData().length === 0) return sorted;
             if (global[ds.getReposData()[0]][metric_id] === undefined)
-                metric_id = "commits";
+                metric_id = "scm_commits";
         }
         else if (kind === "countries") {
             global = ds.getCountriesGlobalData();
             if (ds.getCountriesData().length === 0) return sorted;
             if (global[ds.getCountriesData()[0]][metric_id] === undefined)
-                metric_id = "commits";
+                metric_id = "scm_commits";
         }
         $.each(global, function(item, data) {
            metric.push([item, data[metric_id]]);
