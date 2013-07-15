@@ -558,7 +558,7 @@ function DataSource(name, basic_metrics) {
         var i = 0;
         $.each(sorted_companies, function(id, company) {
             links += '<a href="company.html?company='+company+'">'+company+'</a> | ';
-            if (i++>limit) return false;
+            if (i++>=limit-1) return false;
         });
         $("#"+div_links).append(links);
     };
