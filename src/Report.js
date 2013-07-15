@@ -570,7 +570,10 @@ var Report = {};
             divs = $("."+div_company);
             if (divs.length > 0 && company) {
                 $.each(divs, function(id, div) {
-                    config_metric.show_legend = false;
+                    config_metric.help = true;
+                    var help = $(this).data('help');
+                    if (help !== undefined) config_metric.help = help;
+                    config_metric.show_legend = false;                    
                     var metrics = $(this).data('metrics');
                     if ($(this).data('legend')) config_metric.show_legend = true;
                     div.id = metrics.replace(/,/g,"-")+"-flotr2-metrics-company-"+$(this).id;
@@ -866,6 +869,9 @@ var Report = {};
             if (divs.length > 0) {
                 $.each(divs, function(id, div) {
                     var metrics = $(this).data('metrics');
+                    config_metric.help = true;
+                    var help = $(this).data('help');
+                    if (help !== undefined) config_metric.help = help;
                     config_metric.show_legend = false;
                     if ($(this).data('legend'))
                         config_metric.show_legend = true;
