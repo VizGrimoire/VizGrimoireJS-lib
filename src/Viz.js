@@ -105,10 +105,14 @@ var Viz = {};
         for (var i = 0; i < history[metric_id].length; i++) {
             var metric_value = history[metric_id][i];
             var doer_value = history[doer][i];
-            var doer_id = history.id[i];
+            var doer_id = null;
+            if (history.id) doer_id = history.id[i];
             table += "<tr><td>";
-            table += "<a href='people.html?id="+doer_id+"&name="+doer_value+"'>";
-            table += DataProcess.hideEmail(doer_value) + "</a></td><td>";
+            if (doer_id)
+                table += "<a href='people.html?id="+doer_id+"&name="+doer_value+"'>";
+            table += DataProcess.hideEmail(doer_value);
+            if (doer_id) table +=+ "</a>";
+            table += "</td><td>";
             table += metric_value + "</td></tr>";
             if (limit && limit <= i) break;
         }
