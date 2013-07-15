@@ -815,10 +815,10 @@ function DataSource(name, basic_metrics) {
         }
     };
     
-    this.envisionEvo = function(div_id, history, relative, legend_show) {
+    this.envisionEvo = function(div_id, history, relative, legend_show, summary_graph) {
         config = Report.getConfig();
         var options = Viz.getEnvisionOptions(div_id, history, this.getName(),
-                Report.getConfig()[this.getName()+"_hide"]);
+                Report.getConfig()[this.getName()+"_hide"], summary_graph);
         options.legend_show = legend_show;
         
         if (relative)
