@@ -557,6 +557,7 @@ function DataSource(name, basic_metrics) {
         var links = "";
         var i = 0;
         $.each(sorted_companies, function(id, company) {
+            links += '<a href="company.html?company='+company;
             if (Report.addDataDir())
                 links += '&'+Report.addDataDir();
             links += '">'+company+'</a>| ';
