@@ -339,15 +339,16 @@ var Report = {};
                         $.each({7:'week',30:'month',365:'year'}, function(period, name) {
                             var value = ds.getGlobalData()[metric+"_"+period];
                             var value2 = ds.getGlobalData()[metric+"_"+(period*2)];
+                            var old_value = value2-value;
                             html += "<em>"+name+"</em>:"+value+"&nbsp;";
-                            var inc = parseInt((value/(value2-value))*100,null);
-                            if (value === (value2-value)) {
+                            var inc = parseInt(((value-old_value)/old_value)*100,null);
+                            if (value === old_value) {
                                 html += '';
                             }
-                            else if (value > (value2-value)) { 
+                            else if (value > old_value) {
                                 html += '<i class="icon-circle-arrow-up"></i>';
                                 html += '<small>('+inc+'%)</small>';
-                            } else {
+                            } else if (value < old_value) {
                                 html += '<i class="icon-circle-arrow-down"></i>';
                                 html += '<small>('+inc+'%)</small>';
                             }
