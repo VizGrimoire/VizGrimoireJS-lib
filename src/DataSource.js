@@ -712,7 +712,9 @@ function DataSource(name, basic_metrics) {
                 var div_id = item+"-"+metric;
                 var items = {};
                 items[item] = item_data;
-                var title = ds.getMetrics()[metric].name;
+                var title = metric;
+                if (ds.getMetrics()[metric])
+                    title = ds.getMetrics()[metric].name;
                 Viz.displayMetricSubReportLines(div_id, metric, items, title);
             });
         });
