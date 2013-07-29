@@ -1112,6 +1112,19 @@ var Report = {};
         });
     }
     
+    function convertGlobalNumbers(){
+        $.each(Report.getDataSources(), function(index, DS) {
+           var data = DS.getGlobalData();
+           var divs = $(".global-data");
+           if (divs.length > 0) {
+               $.each(divs, function(id, div) {
+                   var key = $(this).data('field');
+                   $(this).text(data[key]);
+                });
+             }
+       });
+    }
+    
     function configDataSources() {
         var prjs_dss = Report.getProjectsDataSources();
         $.each(Report.getDataSources(), function (index, ds) {
@@ -1158,6 +1171,7 @@ var Report = {};
         convertSummary();
         convertActivity();
         convertPeople(); // using on demand file loading
+        convertGlobalNumbers(); // from Liferay
     }
     
     function convertStudies() {
