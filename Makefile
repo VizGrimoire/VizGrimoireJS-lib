@@ -32,6 +32,7 @@ vizgrimoire.core.js: \
     src/Report.js \
     src/DataSource.js \
     src/Viz.js \
+    src/IRC.js \
     src/ITS.js \
     src/MLS.js \
     src/SCM.js \

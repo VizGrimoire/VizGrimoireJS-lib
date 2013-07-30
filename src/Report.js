@@ -307,11 +307,14 @@ var Report = {};
             Report.registerDataSource(scm);
             var scr = new SCR();
             Report.registerDataSource(scr);
+            var irc = new IRC();
+            Report.registerDataSource(irc);
         
             its.setDataDir(project);
             mls.setDataDir(project);
             scm.setDataDir(project);
             scr.setDataDir(project);
+            irc.setDataDir(project);
             scm.setITS(its);
         });
         
