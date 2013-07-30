@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2012 Bitergia
+ * Copyright (C) 2012-2013 Bitergia
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -581,8 +581,7 @@ var Viz = {};
 
     function displayDemographicsChart(divid, ds, data, period_year) {
         if (!data) return;
-        
-        if (!period_year) period = 365/4;
+        if (!period_year) period_year = 0.25;
         else period = 365*period_year;
 
         // var data = ds.getDemographicsData();
@@ -599,7 +598,8 @@ var Viz = {};
         }
 
         for (i = 0; i < period_data.length; i++) {
-            labels[i] = "" + parseInt(i, 10);
+            var label_months = "" + parseInt(i * (period/30), 10) +" months";
+            labels[i] = label_months;
         }
 
         if (data)
