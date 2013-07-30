@@ -6,6 +6,7 @@ src_files:
   - "src/envision.js"
   - "src/DataSource.js"
   - "src/DataProcess.js"
+  - "src/IRC.js"
   - "src/ITS.js"
   - "src/MLS.js"
   - "src/SCM.js"
