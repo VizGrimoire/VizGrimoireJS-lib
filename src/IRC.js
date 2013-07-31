@@ -36,7 +36,8 @@ function IRC() {
             'divid' : "irc_senders",
             'column' : "senders",
             'name' : "Senders",
-            'desc' : "Messages senders"
+            'desc' : "Messages senders",
+            'action' : 'sent'
         }
     };
         
@@ -118,6 +119,11 @@ function IRC() {
         $(div_id + ' #ircFirst').text(data.first_date);
         $(div_id + ' #ircLast').text(data.last_date);
         $(div_id + ' #ircSent').text(data.irc_sent);
+    };
+    
+    this.displayBubbles = function(divid, radius) {
+        if (false)    
+            Viz.displayBubbles(divid, "irc_sent", "irc_senders", radius);
     };
 
     this.getTitle = function() {return "IRC Messages";};    
