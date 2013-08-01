@@ -259,7 +259,7 @@ var Viz = {};
         var content = "";
         var addContent = function (id, value) {
             if (metrics[i] === id) {
-                content += id +":"+ value.desc + "<br>";
+                content += "<strong>"+value.name +"</strong>: "+ value.desc + "<br>";
                 return false;
             }            
         };
