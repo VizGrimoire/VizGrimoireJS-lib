@@ -33,6 +33,7 @@ var Viz = {};
     Viz.displayTopCompany = displayTopCompany;
     Viz.displayTopGlobal = displayTopGlobal;
     Viz.displayBasicHTML = displayBasicHTML;
+    Viz.displayBasicChart = displayBasicChart;
     Viz.displayBasicMetricHTML = displayBasicMetricHTML;
     Viz.displayBasicMetricCompaniesHTML = displayBasicMetricCompaniesHTML;
     Viz.displayBasicMetricSubReportStatic = displayBasicMetricSubReportStatic;
@@ -276,6 +277,7 @@ var Viz = {};
         var lines_data = [];
         $.each(metrics, function(id, metric) {
             if (!history[metric]) return;
+            if (config.frame_time) history = DataProcess.frameTime(history, metrics);
             var mdata = [[],[]];
             $.each(history[metric], function (i, value) {
                 mdata[i] = [history.id[i], history[metric][i]];
@@ -394,18 +396,21 @@ var Viz = {};
             legend_div = $('#'+config_metric.legend.container);
         var chart_data = [], i;
 
+        var label = '';
         if (!horizontal) {
-            for (i = 0; i < labels.length; i++) {
+            for (i = 0; i < data.length; i++) {
+                if (labels) label = DataProcess.hideEmail(labels[i]);
                 chart_data.push({
                     data : [ [ i, data[i] ] ],
-                    label : DataProcess.hideEmail(labels[i])
+                    label : label
                 });
             }
         } else {
-            for (i = 0; i < labels.length; i++) {
+            for (i = 0; i < data.length; i++) {
+                if (labels) label = DataProcess.hideEmail(labels[i]);
                 chart_data.push({
                     data : [ [ data[i], i ] ],
-                    label : DataProcess.hideEmail(labels[i])
+                    label : label
                 });
             }
         }
@@ -431,10 +436,12 @@ var Viz = {};
                 track : true,
                 trackFormatter : function(o) {
                     var i = 'x';
+                    var label = '';
+                    if (labels)
+                        label = DataProcess.hideEmail(labels[parseInt(o[i], 10)]) + ": ";
                     if (horizontal)
                         i = 'y';
-                    return DataProcess.hideEmail(labels[parseInt(o[i], 10)]) + ": "
-                            + data[parseInt(o[i], 10)];
+                    return label + data[parseInt(o[i], 10)];
                 }
             },
             legend : {

@@ -770,9 +770,13 @@ var Report = {};
                 divs = $("."+div_repo);
                 if (divs.length) {
                     $.each(divs, function(id, div) {
-                        var metrics = $(this).data('metrics');
+                        var metrics = $(this).data('metrics');                        
                         config.show_legend = false;
-                        if ($(this).data('legend')) config_metric.show_legend = true;
+                        config.frame_time = false;
+                        if ($(this).data('legend')) 
+                            config_metric.show_legend = true;
+                        if ($(this).data('frame-time')) 
+                            config_metric.frame_time = true;
                         div.id = metrics.replace(/,/g,"-")+"-flotr2-metrics-repo";
                         DS.displayBasicMetricsRepo(repo_valid, metrics.split(","),
                                 div.id, config_metric);
