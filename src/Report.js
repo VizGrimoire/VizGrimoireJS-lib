@@ -1199,11 +1199,21 @@ var Report = {};
 Loader.data_ready_global(function() {
     Report.convertGlobal();    
 });
-    
+
 Loader.data_ready(function() {
     Report.convertStudies();
     $("body").css("cursor", "auto");
-    $('.help').popover();
+    // Popover helps systema
+    $('.help').popover({
+        html: true,
+        trigger: 'manual'
+    }).click(function(e) {
+        $(this).popover('toggle');
+        e.stopPropagation();
+    });
+    $('html').click(function(e) {
+        $('.help').popover('hide');
+    });
 });
 
 $(document).ready(function() {
