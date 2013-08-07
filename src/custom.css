@@ -20,7 +20,8 @@
 
 .scm-flotr2-metrics,
 .its-flotr2-metrics,
-.mls-flotr2-metrics
+.mls-flotr2-metrics,
+.irc-flotr2-metrics,
 {
 	height: 130px;
 }
@@ -34,6 +35,7 @@
 .mls-flotr2-countries-static,
 .mls-flotr2-companies-static,
 .mls-flotr2-repos-static,
+.irc-flotr2-repos-static,
 .its-time-to-fix,
 .mls-time-to-attention
  {
@@ -46,6 +48,7 @@
 .scm-flotr2-metrics-repo,
 .its-flotr2-metrics-repo,
 .mls-flotr2-metrics-repo,
+.irc-flotr2-metrics-repo,
 .scm-flotr2-metrics-company,
 .its-flotr2-metrics-company,
 .mls-flotr2-metrics-company,
