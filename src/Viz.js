@@ -436,11 +436,10 @@ var Viz = {};
                 track : true,
                 trackFormatter : function(o) {
                     var i = 'x';
+                    if (horizontal) i = 'y';
                     var label = '';
                     if (labels)
                         label = DataProcess.hideEmail(labels[parseInt(o[i], 10)]) + ": ";
-                    if (horizontal)
-                        i = 'y';
                     return label + data[parseInt(o[i], 10)];
                 }
             },
