@@ -98,7 +98,7 @@ var Viz = {};
     function displayTopMetricTable(history, metric_id, doer, limit, people_links) {
         var table = "<table><tbody>";
         table += "<tr><th></th><th>" + metric_id + "</th></tr>";
-        if (people_links === undefined) people_links = True;
+        if (people_links === undefined) people_links = true;
         if (history[metric_id] === undefined) return;
         if (!(history[metric_id] instanceof Array)) {
             history[metric_id] = [history[metric_id]];
