@@ -604,28 +604,29 @@ function DataSource(name, basic_metrics) {
 
 
     this.displayCompaniesList = function (metrics,div_id, 
-            config_metric, sort_metric) {
+            config_metric, sort_metric, show_links) {
         this.displaySubReportList("companies",metrics,div_id, 
-                config_metric, sort_metric);
+                config_metric, sort_metric, undefined, show_links);
     };
     
     this.displayReposList = function (metrics,div_id, 
-            config_metric, sort_metric, scm_and_its) {
+            config_metric, sort_metric, scm_and_its, show_links) {
         this.displaySubReportList("repos",metrics,div_id, 
-                config_metric, sort_metric, scm_and_its);
+                config_metric, sort_metric, scm_and_its, show_links);
     };
     
     this.displayCountriesList = function (metrics,div_id, 
-            config_metric, sort_metric) {
+            config_metric, sort_metric, show_links) {
         this.displaySubReportList("countries",metrics,div_id, 
-                config_metric, sort_metric);
+                config_metric, sort_metric, undefined, show_links);
     };
     
     this.displaySubReportList = function (report, metrics,div_id, 
-            config_metric, sort_metric, scm_and_its) {
+            config_metric, sort_metric, scm_and_its, show_links) {
         var list = "";
         var ds = this;
         var data = null, sorted = null;
+        if (show_links === undefined) show_links = true;
         if (report === "companies") {
             data = this.getCompaniesMetricsData();
             sorted = DataProcess.sortCompanies(this, sort_metric);
@@ -648,28 +649,30 @@ function DataSource(name, basic_metrics) {
             list += "<div class='subreport-list' id='"+item+"-nav'>";
             list += "<div style='float:left;'>";
             var addURL = Report.addDataDir();
-            if (report === "companies") { 
-                list += "<a href='company.html?company="+item;
-                if (addURL) list += "&"+addURL;
-                list += "'>";
-            }
-            else if (report === "repos") {
-                list += "<a href='";
-                // Show together SCM and ITS
-                if ((ds.getName() === "scm" || ds.getName() === "its")
-                        && (Report.getReposMap().length === undefined));
-                else
-                    list += ds.getName() + "-";
-                list += "repository.html";
-                list += "?repository=" + encodeURIComponent(item);
-                if (addURL) list += "&"+addURL;
-                list += "'>";
-            }
-            else if (report === "countries") {
-                list += "<a href='"+ds.getName();
-                list += "-country.html?country="+item;
-                if (addURL) list += "&"+addURL;
-                list += "'>";
+            if (show_links) {
+                if (report === "companies") { 
+                    list += "<a href='company.html?company="+item;
+                    if (addURL) list += "&"+addURL;
+                    list += "'>";
+                }
+                else if (report === "repos") {
+                    list += "<a href='";
+                    // Show together SCM and ITS
+                    if ((ds.getName() === "scm" || ds.getName() === "its")
+                            && (Report.getReposMap().length === undefined));
+                    else
+                        list += ds.getName() + "-";
+                    list += "repository.html";
+                    list += "?repository=" + encodeURIComponent(item);
+                    if (addURL) list += "&"+addURL;
+                    list += "'>";
+                }
+                else if (report === "countries") {
+                    list += "<a href='"+ds.getName();
+                    list += "-country.html?country="+item;
+                    if (addURL) list += "&"+addURL;
+                    list += "'>";
+                }
             }
             list += "<strong>";
             var label = item;
@@ -685,7 +688,8 @@ function DataSource(name, basic_metrics) {
             else if (item.lastIndexOf("<") === 0)
                 label = MLS.displayMLSListName(item);
             list += label;
-            list += "</strong> +info</a>";
+            list += "</strong>";
+            if (show_links) list += "+info</a>";
             list += "<br><a href='#nav'>^</a>";
             list += "</div>";
             $.each(metrics, function(id, metric) {
@@ -797,10 +801,10 @@ function DataSource(name, basic_metrics) {
         Viz.displayTimeToFix(div_id, this.getTimeToFixData(), column, labels, title);
     };
     
-    this.displayTop = function(div, all, show_metric, graph, limit) {
+    this.displayTop = function(div, all, show_metric, graph, limit, people_links) {
         if (all === undefined) all = true;
         var titles = null;
-        Viz.displayTop(div, this, all, show_metric, graph, titles, limit);
+        Viz.displayTop(div, this, all, show_metric, graph, titles, limit, people_links);
     };
     
     this.displayTopBasic = function(div, action, doer, graph) {

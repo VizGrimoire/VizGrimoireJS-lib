@@ -610,9 +610,12 @@ var Report = {};
                 $.each(divs, function(id, div) {
                     var metrics = $(this).data('metrics');
                     var sort_metric = $(this).data('order-by');
+                    var show_links = true; 
+                    if ($(this).data('show_links') !== undefined) 
+                        show_links = $(this).data('show_links');
                     div.id = metrics.replace(/,/g,"-")+"-flotr2-companies-list";
                     DS.displayCompaniesList(metrics.split(","),div.id,
-                            config_metric, sort_metric);
+                            config_metric, sort_metric, show_links);
                 });
             }
 
@@ -676,9 +679,12 @@ var Report = {};
                 $.each(divs, function(id, div) {
                     var metrics = $(this).data('metrics');
                     var order_by = $(this).data('order-by');
+                    var show_links = true; 
+                    if ($(this).data('show_links') !== undefined) 
+                        show_links = $(this).data('show_links');
                     div.id = metrics.replace(/,/g,"-")+"-flotr2-countries-list";
                     DS.displayCountriesList(metrics.split(","),div.id, 
-                            config_metric, order_by);
+                            config_metric, order_by, show_links);
                 });
             }
             
@@ -751,9 +757,12 @@ var Report = {};
                     var metrics = $(this).data('metrics');
                     var order_by = $(this).data('order-by');
                     var scm_and_its = $(this).data('scm-and-its');
+                    var show_links = true; 
+                    if ($(this).data('show_links') !== undefined) 
+                        show_links = $(this).data('show_links');
                     div.id = metrics.replace(/,/g,"-")+"-flotr2-repos-list";
                     DS.displayReposList(metrics.split(","),div.id, 
-                            config_metric, order_by, scm_and_its);
+                            config_metric, order_by, scm_and_its, show_links);
                 });
             }
             
@@ -1004,8 +1013,10 @@ var Report = {};
                 var div_id_top = DS.getName()+"-top-"+chart;
                 if ($("#"+div_id_top).length > 0) {
                     if ($("#"+div_id_top).data('show_all')) show_all = true;
+                    var people_links = $("#"+div_id_top).data('people_links');
                     var show_metric = $("#"+div_id_top).data('metric');
-                    DS.displayTop(div_id_top, show_all, show_metric, chart);
+                    DS.displayTop(div_id_top, show_all, show_metric, 
+                            chart, limit, people_links);
                 }
                 div_id_top = DS.getName()+"-top-basic-"+chart;
                 if ($("#"+div_id_top).length > 0) {
