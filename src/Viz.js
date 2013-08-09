@@ -479,9 +479,10 @@ var Viz = {};
             config.yaxis = {
                 showLabels : true, min:0
             };
-//            config.xaxis = {
-//                    showLabels : true, min:0
-//            };
+            if (config_metric && config_metric.xaxis)
+                config.xaxis = {
+                        showLabels : config_metric.xaxis, min:0
+                };
         }
         if (graph === "pie") {
             config.pie = {show : true};
