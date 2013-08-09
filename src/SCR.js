@@ -123,18 +123,18 @@ function SCR() {
             'desc' : "Number of active people"
         },
         'scr_closers' : {
-        'divid' : "scr_closers",
-        'column' : "closers",
-        'name' : "Closers",
-        'desc' : "Reviews closers",
-        'action' : 'closed'
+            'divid' : "scr_closers",
+            'column' : "closers",
+            'name' : "Closers",
+            'desc' : "Reviews closers",
+            'action' : 'closed'
         },
         'scr_openers' : {
-        'divid' : "scr_openers",
-        'column' : "openers",
-        'name' : "Openers",
-        'desc' : "Reviews openers",
-        'action' : 'opened'
+            'divid' : "scr_openers",
+            'column' : "openers",
+            'name' : "Openers",
+            'desc' : "Reviews openers",
+            'action' : 'opened'
         }
     };
         
