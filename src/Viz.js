@@ -1161,7 +1161,7 @@ var Viz = {};
         $.each(data, function(item, data) {
             // TODO: find a generic way to filter labels
             var label = item;
-            if (item.lastIndexOf("http") === 0) {
+            if (item.lastIndexOf("http") === 0 || item.split("_").length > 3) {
                 var aux = item.split("_");
                 label = aux.pop();
                 if (label === '') label = aux.pop();

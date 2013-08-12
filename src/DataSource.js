@@ -585,7 +585,7 @@ function DataSource(name, basic_metrics) {
             if (scm_and_its && (!(Report.getReposMap()[repo]))) return;
             nav += "<a href='#" + repo + "-nav'>";
             var label = repo;
-            if (repo.lastIndexOf("http") === 0) {
+            if (repo.lastIndexOf("http") === 0 || repo.split("_").length > 3) {
                 var aux = repo.split("_");
                 label = aux.pop();
                 if (label === '') label = aux.pop();
@@ -676,7 +676,7 @@ function DataSource(name, basic_metrics) {
             }
             list += "<strong>";
             var label = item;
-            if (item.lastIndexOf("http") === 0) {
+            if (item.lastIndexOf("http") === 0 || item.split("_").length > 3) {
                 var aux = item.split("_");
                 label = aux.pop();
                 if (label === '') label = aux.pop();
