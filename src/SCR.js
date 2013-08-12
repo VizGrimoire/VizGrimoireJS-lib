@@ -131,7 +131,7 @@ function SCR() {
     this.displaySummary = function(report, divid, item, ds) {
         if (!item) item = "";
         var label = item;
-        if (item.lastIndexOf("http") === 0) {
+        if (item.lastIndexOf("http") === 0 || item.split("_").length > 3) {
             var aux = item.split("_");
             label = aux.pop();
             if (label === '') label = aux.pop();
