@@ -747,9 +747,12 @@ function DataSource(name, basic_metrics) {
         $.getJSON(this.getDataDir()+"/"+json_file, null, function(history) {
             html = "<h4>"+upeople_identifier+"</h4>";
             html += "Start: "+history.first_date+" End: "+ history.last_date;
+            html += "<br>";
             if (ds.getName() == "scm") html += " Commits:" + history.commits;
             else if (ds.getName() == "its") html += " Closed:" + history.closed;
             else if (ds.getName() == "mls") html += " Sent:" + history.sent;
+            else if (ds.getName() == "irc") html += " Sent:" + history.sent;
+            else if (ds.getName() == "scr") html += " Closed:" + history.closed;
             $("#"+divid).append(html);
         });
     };

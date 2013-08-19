@@ -160,9 +160,19 @@ var Viz = {};
 
         div = $("#" + div_id);
         div.append(new_div);
-        if (graph)
-            displayBasicChart(div_graph, history[doer], history[metric_id],
-                    graph);
+        if (graph) {
+            var labels = history[doer];
+            var data = history[metric_id];
+            if (limit) {
+                labels = [];
+                data = [];
+                for (var i=0; i<limit;i++) {
+                    labels.push(history[doer][i]);
+                    data.push(history[metric_id][i]);
+                }
+            }
+            displayBasicChart(div_graph, labels, data, graph);
+        }
     }
 
     function displayBasicLinesFile(div_id, json_file, column, labels, title, projects) {
