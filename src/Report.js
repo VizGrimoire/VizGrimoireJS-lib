@@ -350,10 +350,10 @@ var Report = {};
                             }
                             else if (value > old_value) {
                                 html += '<i class="icon-circle-arrow-up"></i>';
-                                html += '<small>('+inc+'%)</small>';
+                                html += '<small>('+inc+'%)</small>&nbsp;';
                             } else if (value < old_value) {
                                 html += '<i class="icon-circle-arrow-down"></i>';
-                                html += '<small>('+inc+'%)</small>';
+                                html += '<small>('+inc+'%)</small>&nbsp;';
                             }
                             
                         });
@@ -920,7 +920,7 @@ var Report = {};
                     config_metric.show_legend = false;
                     config_metric.show_labels = false;
                     config_metric.show_grid = false;
-                    config_metric.show_mouse = false;
+                    // config_metric.show_mouse = false;
                     config_metric.help = false;
                     div.id = metrics.replace(/,/g,"-")+"-flotr2-metrics-"+this.id;
                     DS.displayBasicMetrics(metrics.split(","),div.id,
