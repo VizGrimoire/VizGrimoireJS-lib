@@ -1015,6 +1015,7 @@ var Report = {};
                     if ($("#"+div_id_top).data('show_all')) show_all = true;
                     var people_links = $("#"+div_id_top).data('people_links');
                     var show_metric = $("#"+div_id_top).data('metric');
+                    var limit = $("#"+div_id_top).data('limit');
                     DS.displayTop(div_id_top, show_all, show_metric, 
                             chart, limit, people_links);
                 }
