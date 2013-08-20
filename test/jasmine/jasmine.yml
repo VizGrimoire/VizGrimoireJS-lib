@@ -16,10 +16,12 @@ src_files:
   - "src/Envision_Report.js"
   - "src/Viz.js"
   - "test/jasmine/version.js"
+  - "test/jasmine/helpers/simple_statistics.min.js"
 helpers:
   - "helpers/jquery-1.7.1.min.js"
 spec_files:
   - "vizgrimoireSpec.js"
+  - "DataValiditySpecOFF.js"
 src_dir: "../../"
 spec_dir: "spec/"
 stylesheets: 
