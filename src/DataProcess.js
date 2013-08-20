@@ -302,4 +302,19 @@ var DataProcess = {};
         new_data.substract = substract;
         return new_data;
     };
+
+    DataProcess.divide = function(data, metric1, metric2) {
+        var new_data = {};
+        var divide = [];
+        for (var i=0; i<data[metric1].length; i++) {
+            if (data[metric1][i] === 0 || data[metric2][i] === 0)
+                divide[i] = 0;
+            else divide[i] = parseInt(data[metric1][i]/data[metric2][i],null);
+        }
+        $.each(data, function(metric, mdata) {
+            new_data[metric] = data[metric];
+        });
+        new_data.divide = divide;
+        return new_data;
+    };
 })();

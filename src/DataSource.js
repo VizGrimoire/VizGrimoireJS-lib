@@ -520,7 +520,10 @@ function DataSource(name, basic_metrics) {
                 metric_ids = ['substract'];
                 data = DataProcess.aggregate(data, metric_ids);
             }
-
+            if (convert === "divide") {
+                data = DataProcess.divide(data, metric_ids[0], metric_ids[1]);
+                metric_ids = ['divide'];
+            }
         }
         Viz.displayBasicMetricsHTML(metric_ids, data, div_target, config);
     };
