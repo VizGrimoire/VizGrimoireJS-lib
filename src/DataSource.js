@@ -393,14 +393,22 @@ function DataSource(name, basic_metrics) {
                 div_target, config, limit);
     };
     
+    // Includes repos mapping for actionable dashboard comparison
     this.displayBasicMetricMyRepos = function(repos, metric_id,
             div_target, config, start, end) {
         var repos_data = {};
+        var reposMap = Report.getReposMap();
         var self = this;
         $.each(repos, function(i,name) {
             var metrics = self.getReposMetricsData()[name];
             if (!metrics) {
-                name = Report.getReposMap()[name];
+                if (reposMap[name] instanceof Object) {
+                    // New format: name: {scm:name, its:name ...}
+                    name = reposMap[name][self.getName()];
+                } else {
+                    //  Old format: scm:its
+                    name = reposMap[name];
+                }
                 metrics = self.getReposMetricsData()[name];
             }
             repos_data[name] = metrics;
