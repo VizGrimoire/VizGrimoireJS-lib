@@ -74,6 +74,20 @@ var Viz = {};
         return doer;
     }
 
+    function filterLabel(item) {
+        var label = item;
+        if (item.lastIndexOf("http") === 0 || item.split("_").length > 3) {
+            var aux = item.split("_");
+            label = aux.pop();
+            if (label === '') label = aux.pop();
+            // item = item.substr(item.lastIndexOf("_") + 1);
+            label = label.replace('buglist.cgi?product=','');
+        }
+        else if (item.lastIndexOf("<") === 0)
+            label = MLS.displayMLSListName(item);
+        return label;
+    }
+
     function drawMetric(metric_id, divid) {
         var config_metric = {};
         config_metric.show_desc = false;
@@ -317,6 +331,8 @@ var Viz = {};
             for (var i=0; i<data.id.length; i++ ) {
                 cdata[i] = [data.id[i], data[metric][i]];
             }
+
+            item = filterLabel(item);
             lines_data.push({label:item, data:cdata});
             history = data;
         });
@@ -1169,17 +1185,7 @@ var Viz = {};
         if (config.graph) graph = config.graph;
 
         $.each(data, function(item, data) {
-            // TODO: find a generic way to filter labels
-            var label = item;
-            if (item.lastIndexOf("http") === 0 || item.split("_").length > 3) {
-                var aux = item.split("_");
-                label = aux.pop();
-                if (label === '') label = aux.pop();
-                // item = item.substr(item.lastIndexOf("_") + 1);
-                label = label.replace('buglist.cgi?product=','');
-            }
-            else if (item.lastIndexOf("<") === 0)
-                label = MLS.displayMLSListName(item);
+            var label = filterLabel(item);
             labels.push(label);
             metric_data.push(data[metric]);
         });
