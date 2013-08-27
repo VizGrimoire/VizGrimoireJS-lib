@@ -61,6 +61,7 @@ var Report = {};
     Report.getGridster = getGridster;
     Report.setGridster = setGridster;
     Report.getPageSize = function() {return page_size;};
+    Report.setPageSize = function(size) {page_size = size;};
     Report.getProjectData = getProjectData;
     Report.getProjectsData = getProjectsData;
     Report.getBasicDivs = function() {
@@ -207,7 +208,7 @@ var Report = {};
         name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
         var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
             results = regex.exec(location.search);
-        return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+        return results === null ? undefined : decodeURIComponent(results[1].replace(/\+/g, " "));
     }
 
     function getMetricDS(metric_id) {
@@ -718,8 +719,9 @@ var Report = {};
         config_metric.show_title = false;
         config_metric.show_labels = true;
         
-        var repo = null, repo_valid = null;
-        repo = getParameterByName("repository");
+        var repo_valid = null;
+        var repo = getParameterByName("repository");
+        var page = getParameterByName("page");
         
         $.each(Report.getDataSources(), function(index, DS) {            
             var divid = DS.getName()+"-repos-summary";
@@ -745,7 +747,6 @@ var Report = {};
             if ($("#"+div_nav).length > 0) {
                 var order_by = $("#"+div_nav).data('order-by');
                 var scm_and_its = $("#"+div_nav).data('scm-and-its');
-                var page = getParameterByName("page");
                 DS.displayReposNav(div_nav, order_by, page, scm_and_its);
             }            
             
@@ -761,7 +762,7 @@ var Report = {};
                         show_links = $(this).data('show_links');
                     div.id = metrics.replace(/,/g,"-")+"-flotr2-repos-list";
                     DS.displayReposList(metrics.split(","),div.id, 
-                            config_metric, order_by, scm_and_its, show_links);
+                            config_metric, order_by, page, scm_and_its, show_links);
                 });
             }
             
