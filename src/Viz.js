@@ -140,8 +140,12 @@ var Viz = {};
     function displayTopMetric
         (div_id, project, metric, metric_period, history, graph, titles, limit, people_links) {
 
-        if (!history) return;
+        if (!history) return;  
         var metric_id = metric.action;
+        if (limit && history[metric_id].length<limit) { 
+            limit = history[metric_id].length;
+            graph = false; // Not enough height next to the item list
+        }
         var doer = metric.column;
         if (doer === undefined) doer = findMetricDoer(history, metric_id);
         var table = displayTopMetricTable(history, metric_id, doer, limit, people_links);
