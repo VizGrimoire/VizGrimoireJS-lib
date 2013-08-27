@@ -1244,7 +1244,7 @@ $(document).ready(function() {
 function resizedw(){
     /* Report.convertGlobal();
     Report.convertStudies(); */
-    location.reload();
+    // location.reload();
 }
 var resized;
 $(window).resize(function () {
