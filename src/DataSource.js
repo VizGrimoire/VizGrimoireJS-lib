@@ -588,9 +588,10 @@ function DataSource(name, basic_metrics) {
         $("#"+div_nav).append(nav);
     };
     
-    this.displayReposNav = function (div_nav, sort_metric, scm_and_its) {
+    this.displayReposNav = function (div_nav, sort_metric, page, scm_and_its) {
         var nav = "<span id='nav'></span>";
         var sorted_repos = DataProcess.sortRepos(this, sort_metric);
+        sorted_repos = DataProcess.paginate(sorted_repos, page);
         var self = this;
         $.each(sorted_repos, function(id, repo) {
             if (scm_and_its && (!(Report.getReposMap()[repo]))) return;
@@ -617,23 +618,23 @@ function DataSource(name, basic_metrics) {
     this.displayCompaniesList = function (metrics,div_id, 
             config_metric, sort_metric, show_links) {
         this.displaySubReportList("companies",metrics,div_id, 
-                config_metric, sort_metric, undefined, show_links);
+                config_metric, sort_metric, undefined, undefined, show_links);
     };
     
     this.displayReposList = function (metrics,div_id, 
-            config_metric, sort_metric, scm_and_its, show_links) {
+            config_metric, sort_metric, page, scm_and_its, show_links) {
         this.displaySubReportList("repos",metrics,div_id, 
-                config_metric, sort_metric, scm_and_its, show_links);
+                config_metric, sort_metric, page, scm_and_its, show_links);
     };
     
     this.displayCountriesList = function (metrics,div_id, 
             config_metric, sort_metric, show_links) {
         this.displaySubReportList("countries",metrics,div_id, 
-                config_metric, sort_metric, undefined, show_links);
+                config_metric, sort_metric, undefined, undefined, show_links);
     };
     
     this.displaySubReportList = function (report, metrics,div_id, 
-            config_metric, sort_metric, scm_and_its, show_links) {
+            config_metric, sort_metric, page, scm_and_its, show_links) {
         var list = "";
         var ds = this;
         var data = null, sorted = null;
@@ -645,6 +646,7 @@ function DataSource(name, basic_metrics) {
         else if (report === "repos") {
             data = this.getReposMetricsData();
             sorted = DataProcess.sortRepos(this, sort_metric);
+            sorted = DataProcess.paginate(sorted, page);
         }
         else if (report === "countries") {
             data = this.getCountriesMetricsData();

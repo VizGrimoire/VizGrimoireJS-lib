@@ -26,6 +26,17 @@ var DataProcess = {};
 (function() {
     DataProcess.info = function() {};
     
+    DataProcess.paginate = function(data, page) {
+        if (page === undefined || page === 0) return data;
+        var page_items = [];
+        var psize = Report.getPageSize();
+        var start = (page-1)*psize;
+        for (var i=start; i<psize*page; i++ ) {
+            if (data[i]) page_items.push(data[i]);
+        }
+        return page_items;
+    };
+
     DataProcess.sortCompanies = function(ds, metric_id) {
         return sortGlobal(ds, metric_id, "companies");
     };
