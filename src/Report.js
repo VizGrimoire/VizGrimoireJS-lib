@@ -39,8 +39,8 @@ var Report = {};
         config_file = data_dir + "/viz_cfg.json",
         markers_file = data_dir + "/markers.json",
         repos_map_file = data_dir + "/repos-map.json";
+    var page_size = 10;
 
-    // TODO: Why is it public? Markup API! useful for testing!
     // Public API
     Report.convertBasicDivs = convertBasicDivs;
     Report.convertCompanies = convertCompanies;
@@ -60,6 +60,7 @@ var Report = {};
     Report.getMetricDS = getMetricDS;
     Report.getGridster = getGridster;
     Report.setGridster = setGridster;
+    Report.getPageSize = function() {return page_size;};
     Report.getProjectData = getProjectData;
     Report.getProjectsData = getProjectsData;
     Report.getBasicDivs = function() {
@@ -199,6 +200,16 @@ var Report = {};
         });
     };
     
+    // http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values
+    function getParameterByName(name) {
+        // _jshint_ does not like it
+        // name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]"); 
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+            results = regex.exec(location.search);
+        return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+    }
+
     function getMetricDS(metric_id) {
         var ds = [];
         $.each(Report.getDataSources(), function(i, DS) {
@@ -531,12 +542,7 @@ var Report = {};
             DS.displayCompaniesLinks(div_companies_links, limit, order_by);
         }
         
-        var company = null;
-        var querystr = window.location.search.substr(1);
-        if (querystr  &&
-                querystr.split("&")[0].split("=")[0] === "company")
-            company = querystr.split("&")[0].split("=")[1];
-        company = decodeURIComponent(company);
+        var company = getParameterByName("company");
 
         $.each(Report.getDataSources(), function(index, DS) {            
             var divid = DS.getName()+"-companies-summary";
@@ -640,11 +646,7 @@ var Report = {};
         config_metric.show_title = false;
         config_metric.show_labels = true;
         
-        var country = null;
-        var querystr = window.location.search.substr(1);
-        if (querystr  &&
-                querystr.split("&")[0].split("=")[0] === "country")
-            country = decodeURIComponent(querystr.split("&")[0].split("=")[1]);
+        var country = getParameterByName("country");
 
         $.each(Report.getDataSources(), function(index, DS) {
             var divid = DS.getName()+"-countries-summary";
@@ -709,7 +711,7 @@ var Report = {};
             }            
         });        
     }
-    
+        
     function convertRepos() {
         var config_metric = {};                
         config_metric.show_desc = false;
@@ -717,11 +719,7 @@ var Report = {};
         config_metric.show_labels = true;
         
         var repo = null, repo_valid = null;
-        var querystr = window.location.search.substr(1);
-        if (querystr  &&
-                querystr.split("&")[0].split("=")[0] === "repository") {
-            repo = decodeURIComponent(querystr.split("&")[0].split("=")[1]);
-        }
+        repo = getParameterByName("repository");
         
         $.each(Report.getDataSources(), function(index, DS) {            
             var divid = DS.getName()+"-repos-summary";
@@ -747,7 +745,8 @@ var Report = {};
             if ($("#"+div_nav).length > 0) {
                 var order_by = $("#"+div_nav).data('order-by');
                 var scm_and_its = $("#"+div_nav).data('scm-and-its');
-                DS.displayReposNav(div_nav, order_by, scm_and_its);
+                var page = getParameterByName("page");
+                DS.displayReposNav(div_nav, order_by, page, scm_and_its);
             }            
             
             var divs_repos_list = DS.getName()+"-flotr2-repos-list";
