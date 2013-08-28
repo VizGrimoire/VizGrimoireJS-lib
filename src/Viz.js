@@ -756,12 +756,13 @@ var Viz = {};
             if ($.inArray(name, metrics) === -1) return;
             new_history[name] = [];
             for (var i=0; i<data.length; i++) {
-                new_history[name].push((parseInt(data[i],null)/24).toFixed(2));
+                var hours = parseInt((parseInt(data[i],null)/24).toFixed(2),null);
+                new_history[name].push(hours);
             }            
         });
         //  We need and id column
         new_history.id=[];
-        for (var i=0; i<history[metrics[0]].length;i++) {
+        for (var i=0; i<new_history[column].length;i++) {
             new_history.id.push(i);
         }
         // Viz.displayBasicLines(div_id, new_history, metrics[0], labels, title);
