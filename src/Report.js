@@ -384,12 +384,12 @@ var Report = {};
                         var metric = $(this).data('metric');
                         var ds = getMetricDS(metric)[0];
                         var total = ds.getGlobalData()[metric];
-                        var change7 = ds.getGlobalData()[metric+"_7"]
+                        var change7 = ds.getGlobalData()[metric+"_7"];
                         //initial square: last 7 days and total
-                        var html += '<div style="span6">';
+                        var html = '<div style="span6">';
                         html += '<h4>'+change7+' 7-days change</h4>';
                         html += '<i>'+total+' in total</i>';
-                        html += '</div><!--span6-->'
+                        html += '</div><!--span6-->';
                         //second square: arrow + % for last 7 days
                         html += '<div style="span6">';
                         var value = ds.getGlobalData()[metric+"_"+period];
