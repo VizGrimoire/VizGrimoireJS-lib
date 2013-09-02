@@ -386,14 +386,14 @@ var Report = {};
                         var total = ds.getGlobalData()[metric];
                         var change7 = ds.getGlobalData()[metric+"_7"];
                         //initial square: last 7 days and total
-                        var html = '<div style="span6">';
-                        html += '<h4>'+change7+' 7-days change</h4>';
-                        html += '<i>'+total+' in total</i>';
+                        var html = '<div class="row-fluid"><div class="span6">';
+                        html += '<h4>'+total+'</h4> '+ds.getMetrics()[metric].name;
                         html += '</div><!--span6-->';
                         //second square: arrow + % for last 7 days
-                        html += '<div style="span6">';
-                        var value = ds.getGlobalData()[metric+"_"+period];
-                        var value2 = ds.getGlobalData()[metric+"_"+(period*2)];
+                        html += '<div class="span6">';
+                        var value = ds.getGlobalData()[metric+"_7"];
+                        var value2 = ds.getGlobalData()[metric+"_14"];
+                        var old_value = value2 - value;
                         var inc = parseInt(((value-old_value)/old_value)*100,null);
                         if (value === old_value) {
                             html += '';
@@ -406,7 +406,7 @@ var Report = {};
                             html += '<small>('+inc+'%)</small>&nbsp;';
                         }
 
-                        html += '</div><!--span6-->';
+                        html += '</div></div><!--row-fluid,span6-->';
                         $(div).append(html);
                     });
                 }
