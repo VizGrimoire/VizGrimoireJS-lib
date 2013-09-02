@@ -375,6 +375,42 @@ var Report = {};
                     });
                 }
             }
+        },
+        "microdash2": {
+            convert: function() {
+                var divs = $(".microdash2");
+                if (divs.length > 0) {
+                    $.each(divs, function(id, div) {
+                        var metric = $(this).data('metric');
+                        var ds = getMetricDS(metric)[0];
+                        var total = ds.getGlobalData()[metric];
+                        var change7 = ds.getGlobalData()[metric+"_7"]
+                        //initial square: last 7 days and total
+                        var html += '<div style="span6">';
+                        html += '<h4>'+change7+' 7-days change</h4>';
+                        html += '<i>'+total+' in total</i>';
+                        html += '</div><!--span6-->'
+                        //second square: arrow + % for last 7 days
+                        html += '<div style="span6">';
+                        var value = ds.getGlobalData()[metric+"_"+period];
+                        var value2 = ds.getGlobalData()[metric+"_"+(period*2)];
+                        var inc = parseInt(((value-old_value)/old_value)*100,null);
+                        if (value === old_value) {
+                            html += '';
+                        }
+                        else if (value > old_value) {
+                            html += '<i class="icon-circle-arrow-up-2x"></i>';
+                            html += '<small>('+inc+'%)</small>&nbsp;';
+                        } else if (value < old_value) {
+                            html += '<i class="icon-circle-arrow-down-2x"></i>';
+                            html += '<small>('+inc+'%)</small>&nbsp;';
+                        }
+
+                        html += '</div><!--span6-->';
+                        $(div).append(html);
+                    });
+                }
+            }
         }
     };
     
