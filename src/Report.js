@@ -390,26 +390,6 @@ var Report = {};
                         var html = '<div class="row-fluid"><div class="span3">';
                         html += '<h4>'+total+'</h4> '+ds.getMetrics()[metric].name;
                         html += '</div><!--span3-->';
-/*                        $.each({7:'week',30:'month',365:'year'}, function(period, name) {
-                            html += '<div class="span3">';
-                            var value = ds.getGlobalData()[metric+"_"+period];
-                            var value2 = ds.getGlobalData()[metric+"_"+(period*2)];
-                            var old_value = value2-value;
-                            html += "<em>"+name+"</em>:"+value+"&nbsp;";
-                            var inc = parseInt(((value-old_value)/old_value)*100,null);
-                            if (value === old_value) {
-                                html += '';
-                            }   
-                            else if (value > old_value) {
-                                html += '<i class="icon-circle-arrow-up"></i>';
-                                html += '<small>('+inc+'%)</small>&nbsp;';
-                            } else if (value < old_value) {
-                                html += '<i class="icon-circle-arrow-down"></i>';
-                                html += '<small>('+inc+'%)</small>&nbsp;';
-                            }   
-                            html += '</div><!--span3-->';
-                        }); */
-
                          
                         //second square: arrow + % for last 7 days
                         html += '<div class="span3">';
