@@ -20,6 +20,8 @@
  * Authors:
  *   Alvaro del Castillo San Felix <acs@bitergia.com>
  *   Daniel Izquierdo Cortazar <dizquierdo@bitergia.com>
+ *   Luis Cañas <lcanas@bitergia.com>
+ *
  */
 
 var Report = {};
