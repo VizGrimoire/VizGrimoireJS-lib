@@ -379,6 +379,7 @@ var Report = {};
                 }
             }
         },
+        // TODO: share logic between three periods duration
         "microdash2": {
             convert: function() {
                 var divs = $(".microdash2");
@@ -399,9 +400,7 @@ var Report = {};
                         var value2 = ds.getGlobalData()[metric+"_14"];
                         var old_value = value2 - value;
                         var inc = parseInt(((value-old_value)/old_value)*100,null);
-			if (inc > 0){
-			    inc = '+' + inc;
-			}
+                        if (inc > 0) inc = '+' + inc;
                         if (value === old_value) {
                             html += '';
                         }
@@ -421,9 +420,7 @@ var Report = {};
                         value2 = ds.getGlobalData()[metric+"_60"];
                         old_value = value2 - value;
                         inc = parseInt(((value-old_value)/old_value)*100,null);
-			if (inc > 0){
-			    inc = '+' + inc;
-			}
+                        if (inc > 0) inc = '+' + inc;
                         if (value === old_value) {
                             html += '';
                         }
@@ -443,9 +440,7 @@ var Report = {};
                         value2 = ds.getGlobalData()[metric+"_730"];
                         old_value = value2 - value;
                         inc = parseInt(((value-old_value)/old_value)*100,null);
-			if (inc > 0){
-			    inc = '+' + inc;
-			}
+                        if (inc > 0) inc = '+' + inc;
                         if (value === old_value) {
                             html += '';
                         }
