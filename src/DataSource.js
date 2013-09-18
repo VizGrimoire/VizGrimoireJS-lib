@@ -588,12 +588,15 @@ function DataSource(name, basic_metrics) {
         $("#"+div_nav).append(nav);
     };
     
-    this.displayReposNav = function (div_nav, sort_metric, page, scm_and_its) {
+    this.displayReposNav = function (div_nav, sort_metric, page_str, scm_and_its) {
+        var page = parseInt(page_str, null);
         var nav = "<span id='nav'></span>";
         var sorted_repos = DataProcess.sortRepos(this, sort_metric);
-        sorted_repos = DataProcess.paginate(sorted_repos, page);
+        sorted_repos_pag = DataProcess.paginate(sorted_repos, page);
         var self = this;
-        $.each(sorted_repos, function(id, repo) {
+        if (page && page>1)
+            nav += "<a href='?page="+(page-1)+"'>&lt;</a> ";
+        $.each(sorted_repos_pag, function(id, repo) {
             if (scm_and_its && (!(Report.getReposMap()[repo]))) return;
             nav += "<a href='#" + repo + "-nav'>";
             var label = repo;
@@ -611,6 +614,8 @@ function DataSource(name, basic_metrics) {
             nav += label;
             nav += "</a> ";
         });
+        if (page && page*Report.getPageSize()<sorted_repos.length)
+            nav += " <a href='?page="+(parseInt(page,null)+1)+"'>&gt;</a>";
         $("#" + div_nav).append(nav);
     };
 
