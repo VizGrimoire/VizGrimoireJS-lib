@@ -645,7 +645,11 @@ function DataSource(name, basic_metrics) {
     };
     
     this.displaySubReportList = function (report, metrics,div_id, 
-            config_metric, sort_metric, page, scm_and_its, show_links) {
+            config_metric, sort_metric, page_str, scm_and_its, show_links) {
+
+        var page = parseInt(page_str, null);
+        if (isNaN(page)) page = 1;
+
         var list = "";
         var ds = this;
         var data = null, sorted = null;
