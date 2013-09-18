@@ -27,7 +27,7 @@ var DataProcess = {};
     DataProcess.info = function() {};
     
     DataProcess.paginate = function(data, page) {
-        if (page === undefined || page === 0) return data;
+        if (page === undefined || page === 0 || isNaN(page)) return data;
         var page_items = [];
         var psize = Report.getPageSize();
         var start = (page-1)*psize;
