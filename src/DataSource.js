@@ -590,7 +590,13 @@ function DataSource(name, basic_metrics) {
     
     this.displayReposNav = function (div_nav, sort_metric, page_str, scm_and_its) {
         var page = parseInt(page_str, null);
-        var nav = "<span id='nav'></span>";
+        if (isNaN(page)) page = 1;
+        var nav = '<h4 style="font-weight: bold;display:inline;">List of repositories</h4> (';
+        if (page) {
+            nav += (page-1)*Report.getPageSize()+1 + "<>";
+            nav += (page*Report.getPageSize()) + ")<br>";
+        }
+        nav += "<span id='nav'></span>";
         var sorted_repos = DataProcess.sortRepos(this, sort_metric);
         sorted_repos_pag = DataProcess.paginate(sorted_repos, page);
         var self = this;
