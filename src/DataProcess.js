@@ -49,6 +49,7 @@ var DataProcess = {};
         return sortGlobal(ds, metric_id, "repos");
     };
     
+    // Sort disabled. Use sort order from R data.
     sortGlobal = function (ds, metric_id, kind) {
         if (metric_id === undefined) metric_id = "scm_commits";
         var metric = [];
@@ -57,20 +58,14 @@ var DataProcess = {};
         if (kind === "companies") {
             global = ds.getCompaniesGlobalData();
             if (ds.getCompaniesData().length === 0) return sorted;
-            if (global[ds.getCompaniesData()[0]][metric_id] === undefined)
-                metric_id = "scm_commits";
         } 
         else if (kind === "repos") {
             global = ds.getReposGlobalData();
             if (ds.getReposData().length === 0) return sorted;
-            if (global[ds.getReposData()[0]][metric_id] === undefined)
-                metric_id = "scm_commits";
         }
         else if (kind === "countries") {
             global = ds.getCountriesGlobalData();
             if (ds.getCountriesData().length === 0) return sorted;
-            if (global[ds.getCountriesData()[0]][metric_id] === undefined)
-                metric_id = "scm_commits";
         }
         $.each(global, function(item, data) {
            metric.push([item, data[metric_id]]);
@@ -79,7 +74,8 @@ var DataProcess = {};
         $.each(metric, function(id, value) {
             sorted.push(value[0]);
         });
-        return sorted;
+        return global;
+        // return sorted;
     };
     
     DataProcess.mergeConfig = function (config1, config2) {

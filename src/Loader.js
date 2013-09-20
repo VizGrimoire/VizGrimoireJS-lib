@@ -27,6 +27,7 @@ var Loader = {};
     
     var data_callbacks = [];
     var data_global_callbacks = [];
+    var data_repos_callbacks = [];
     var check_companies = false, check_repos = false, check_countries = false;
     
     Loader.data_ready = function(callback) {
@@ -186,6 +187,53 @@ var Loader = {};
         });
     }
     
+    Loader.check_repos_page = function(DS, page) {
+        if (page === undefined) page = 1;
+        var start = Report.getPageSize()*(page-1);
+        var end = start + Report.getPageSize();
+        var total_repos = DS.getReposData().length;
+        if (end>total_repos) end = total_repos;
+        for (var i=start;i<end;i++) {
+            var repo = DS.getReposData()[i];
+            if (DS.getReposGlobalData()[repo] === undefined ||
+                DS.getReposMetricsData()[repo] === undefined) {
+                return false;    
+            }
+        }
+        return true;
+    };
+    
+    
+    Loader.data_load_repos_page = function (DS, page, cb) {  
+        if (page === undefined) page = 1;
+        if (DS.getReposData() === null) return false;
+        // No data
+        var total_repos = DS.getReposData().length;
+        if (total_repos === 0) return true;
+        // Check if we have the data for the page and if not load
+        var start = Report.getPageSize()*(page-1);
+        var end = start + Report.getPageSize();
+        if (end>total_repos) end = total_repos;
+        for (var i=start;i<end;i++) {
+            var repo = DS.getReposData()[i];
+            data_load_repo_page(repo, DS, page, cb);
+        }
+    };
+    
+    function data_load_repo_page(repo, DS, page, cb) {
+        repo_uri = encodeURIComponent(repo);
+        var file = DS.getDataDir()+"/"+repo_uri+"-";
+        file_evo = file + DS.getName()+"-evolutionary.json";
+        file_static = file + DS.getName()+"-static.json";
+        $.when($.getJSON(file_evo),$.getJSON(file_static)
+                ).done(function(evo, global) {
+            DS.addRepoMetricsData(repo, evo[0], DS);
+            DS.addRepoGlobalData(repo, global[0], DS);
+            if (Loader.check_repos_page(DS, page)) 
+                cb();
+        });
+    }
+    
     function data_load_repos_metrics() {
         var data_sources = Report.getDataSources();
         $.each(data_sources, function(i, DS) {
@@ -282,15 +330,17 @@ var Loader = {};
         }
         return true;
     }
-    
+        
     function check_repos_loaded(DS) {
         if (DS.getReposData() === null) return false;
         else {
-            if (DS.getReposData().length>0 && !check_repos) {
-                check_repos = true;
-                data_load_repos_metrics();
-                return false;
-            }
+            // Repos metrics will be loaded when needed
+            return true;
+//            if (DS.getReposData().length>0 && !check_repos) {
+//                check_repos = true;
+//                data_load_repos_metrics();
+//                return false;
+//            }
         }
         if (check_repos && DS.getReposData().length>0) {
             var repos_loaded = 0;

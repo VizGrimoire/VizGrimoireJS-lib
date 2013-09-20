@@ -803,9 +803,24 @@ var Report = {};
         config_metric.show_title = false;
         config_metric.show_labels = true;
         
+        var data_ready = true;
         var repo_valid = null;
         var repo = getParameterByName("repository");
         var page = getParameterByName("page");
+                
+        $.each(Report.getDataSources(), function(index, DS) {
+            if (Loader.check_repos_page(DS, page) === false) {
+                data_ready = false;
+                return false;
+            }
+        });
+        
+        if (data_ready === false) {
+            $.each(Report.getDataSources(), function(index, DS) {
+                Loader.data_load_repos_page(DS, page, convertRepos);
+            });
+            return;
+        }
         
         $.each(Report.getDataSources(), function(index, DS) {            
             var divid = DS.getName()+"-repos-summary";
