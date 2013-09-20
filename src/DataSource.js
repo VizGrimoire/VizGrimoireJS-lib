@@ -598,11 +598,11 @@ function DataSource(name, basic_metrics) {
         }
         nav += "<span id='nav'></span>";
         var sorted_repos = DataProcess.sortRepos(this, sort_metric);
-        sorted_repos_pag = DataProcess.paginate(sorted_repos, page);
+        // sorted_repos_pag = DataProcess.paginate(sorted_repos, page);        
         var self = this;
         if (page && page>1)
             nav += "<a href='?page="+(page-1)+"'>&lt;</a> ";
-        $.each(sorted_repos_pag, function(id, repo) {
+        $.each(sorted_repos, function(id, repo) {
             if (scm_and_its && (!(Report.getReposMap()[repo]))) return;
             nav += "<a href='#" + repo + "-nav'>";
             var label = repo;
@@ -620,7 +620,7 @@ function DataSource(name, basic_metrics) {
             nav += label;
             nav += "</a> ";
         });
-        if (page && page*Report.getPageSize()<sorted_repos.length)
+        if (page && page*Report.getPageSize()<this.getReposData().length)
             nav += " <a href='?page="+(parseInt(page,null)+1)+"'>&gt;</a>";
         $("#" + div_nav).append(nav);
     };
@@ -661,7 +661,7 @@ function DataSource(name, basic_metrics) {
         else if (report === "repos") {
             data = this.getReposMetricsData();
             sorted = DataProcess.sortRepos(this, sort_metric);
-            sorted = DataProcess.paginate(sorted, page);
+            // sorted = DataProcess.paginate(sorted, page);
         }
         else if (report === "countries") {
             data = this.getCountriesMetricsData();

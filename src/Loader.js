@@ -187,20 +187,25 @@ var Loader = {};
         });
     }
     
-    Loader.check_repos_page = function(DS, page) {
+    Loader.check_repos_page = function(page) {
+        var check = true;
         if (page === undefined) page = 1;
         var start = Report.getPageSize()*(page-1);
         var end = start + Report.getPageSize();
-        var total_repos = DS.getReposData().length;
-        if (end>total_repos) end = total_repos;
-        for (var i=start;i<end;i++) {
-            var repo = DS.getReposData()[i];
-            if (DS.getReposGlobalData()[repo] === undefined ||
-                DS.getReposMetricsData()[repo] === undefined) {
-                return false;    
+        $.each(Report.getDataSources(), function(index, DS) {            
+            var total_repos = DS.getReposData().length;
+            if (end>total_repos) end = total_repos;
+            for (var i=start;i<end;i++) {
+                var repo = DS.getReposData()[i];
+                if (DS.getReposGlobalData()[repo] === undefined ||
+                    DS.getReposMetricsData()[repo] === undefined) {
+                    check = false;                 
+                    return false;    
+                }
             }
-        }
-        return true;
+            end = start + Report.getPageSize();
+        });
+        return check;
     };
     
     
@@ -229,8 +234,12 @@ var Loader = {};
                 ).done(function(evo, global) {
             DS.addRepoMetricsData(repo, evo[0], DS);
             DS.addRepoGlobalData(repo, global[0], DS);
-            if (Loader.check_repos_page(DS, page)) 
-                cb();
+            if (Loader.check_repos_page(page)) {
+                if (cb.called !== true) {
+                    cb();
+                }
+                cb.called = true;
+            }
         });
     }
     

@@ -25,7 +25,7 @@ var DataProcess = {};
 
 (function() {
     DataProcess.info = function() {};
-    
+
     DataProcess.paginate = function(data, page) {
         if (page === undefined || page === 0 || isNaN(page)) return data;
         var page_items = [];
@@ -51,6 +51,7 @@ var DataProcess = {};
     
     // Sort disabled. Use sort order from R data.
     sortGlobal = function (ds, metric_id, kind) {
+        var sort_disabled = true;
         if (metric_id === undefined) metric_id = "scm_commits";
         var metric = [];
         var sorted = [];
@@ -70,12 +71,13 @@ var DataProcess = {};
         $.each(global, function(item, data) {
            metric.push([item, data[metric_id]]);
         });
-        metric.sort(function(a, b) {return b[1] - a[1];});
+        // Sort disabled but we should return a matrix
+        if (sort_disabled === false) 
+            metric.sort(function(a, b) {return b[1] - a[1];});
         $.each(metric, function(id, value) {
             sorted.push(value[0]);
-        });
-        return global;
-        // return sorted;
+        });        
+        return sorted;
     };
     
     DataProcess.mergeConfig = function (config1, config2) {
