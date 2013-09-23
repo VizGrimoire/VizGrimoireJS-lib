@@ -192,24 +192,23 @@ var Loader = {};
         if (page === undefined) page = 1;
         var start = Report.getPageSize()*(page-1);
         var end = start + Report.getPageSize();
-        $.each(Report.getDataSources(), function(index, DS) {            
+        $.each(Report.getDataSources(), function(index, DS) {
             var total_repos = DS.getReposData().length;
             if (end>total_repos) end = total_repos;
             for (var i=start;i<end;i++) {
                 var repo = DS.getReposData()[i];
                 if (DS.getReposGlobalData()[repo] === undefined ||
                     DS.getReposMetricsData()[repo] === undefined) {
-                    check = false;                 
-                    return false;    
+                    check = false;
+                    return false;
                 }
             }
             end = start + Report.getPageSize();
         });
         return check;
     };
-    
-    
-    Loader.data_load_repos_page = function (DS, page, cb) {  
+
+    Loader.data_load_repos_page = function (DS, page, cb) {
         if (page === undefined) page = 1;
         if (DS.getReposData() === null) return false;
         // No data
@@ -224,7 +223,7 @@ var Loader = {};
             data_load_repo_page(repo, DS, page, cb);
         }
     };
-    
+
     function data_load_repo_page(repo, DS, page, cb) {
         repo_uri = encodeURIComponent(repo);
         var file = DS.getDataDir()+"/"+repo_uri+"-";
@@ -242,7 +241,8 @@ var Loader = {};
             }
         });
     }
-    
+
+    // Repos preloading disabled. This functions is not used
     function data_load_repos_metrics() {
         var data_sources = Report.getDataSources();
         $.each(data_sources, function(i, DS) {
@@ -264,7 +264,7 @@ var Loader = {};
             });
         });
     }
-    
+
     function data_load_countries_metrics() {
         var data_sources = Report.getDataSources();
         $.each(data_sources, function(i, DS) {

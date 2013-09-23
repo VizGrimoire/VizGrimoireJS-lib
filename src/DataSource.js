@@ -598,7 +598,7 @@ function DataSource(name, basic_metrics) {
         }
         nav += "<span id='nav'></span>";
         var sorted_repos = DataProcess.sortRepos(this, sort_metric);
-        // sorted_repos_pag = DataProcess.paginate(sorted_repos, page);        
+        // sorted_repos_pag = DataProcess.paginate(sorted_repos, page);
         var self = this;
         if (page && page>1)
             nav += "<a href='?page="+(page-1)+"'>&lt;</a> ";
