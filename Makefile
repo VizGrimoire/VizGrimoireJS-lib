@@ -44,6 +44,7 @@ vizgrimoire.deps.css: \
     src/jquery.gridster.css
         
 vizgrimoire.core.css: \
+    src/newreport.css \
     src/report.css \
     src/report-envision.css
 

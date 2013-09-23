@@ -24,7 +24,7 @@
  *
  */
 
-var Report = {};
+if (Report === undefined) var Report = {};
 
 (function() {
 
@@ -46,12 +46,11 @@ var Report = {};
 
     // Public API
     Report.convertBasicDivs = convertBasicDivs;
+    Report.convertBasicDivsMisc = convertBasicDivsMisc;
     Report.convertCompanies = convertCompanies;
     Report.convertCountries = convertCountries;
     Report.convertEnvision = convertEnvision;
-    Report.convertFlotr2 = convertFlotr2;
     Report.convertTop = convertTop;
-    Report.convertBubbles = convertBubbles;
     Report.convertDemographics = convertDemographics;
     Report.convertPeople = convertPeople;
     Report.convertRepos = convertRepos;
@@ -69,6 +68,9 @@ var Report = {};
     Report.getProjectsData = getProjectsData;
     Report.getBasicDivs = function() {
         return basic_divs;
+    };
+    Report.getBasicDivsMisc = function() {
+        return basic_divs_misc;
     }; 
     Report.displayReportData = displayReportData;
     Report.convertGlobal = convertGlobal;
@@ -531,7 +533,10 @@ var Report = {};
         // Reference card with info from all data sources
         "refcard": {
             convert: convertRefcard
-        },
+        }
+    };
+    
+    var basic_divs_misc = {
         "radar-activity": {
             convert: function() {
                 Viz.displayRadarActivity('radar-activity');
@@ -542,6 +547,29 @@ var Report = {};
                 Viz.displayRadarCommunity('radar-community');
             }
         },
+        "treemap": {
+            convert: function() {
+                var file = $('#treemap').data('file');
+                Viz.displayTreeMap('treemap', file);
+            }
+        },
+        "bubbles": {
+            convert: function() {
+                $.each(Report.getDataSources(), function(index, DS) {
+                    if (DS.getData().length === 0) return;
+            
+                    var div_time = DS.getName() + "-time-bubbles";
+                    if ($("#" + div_time).length > 0) {
+                        var radius = $("#" + div_time).data('radius');
+                        DS.displayBubbles(div_time, radius);
+                    }
+                });        
+            }
+        }
+    };
+    
+    // Legacy widgets to be removed in the future
+    var basic_divs_legacy = {
         "gridster": {
             convert: function() {
                 var gridster = $("#gridster").gridster({
@@ -553,12 +581,6 @@ var Report = {};
                 gridster.add_widget("<div id='metric_selector'></div>", 1, 3);
                 Viz.displayGridMetricSelector('metric_selector');
                 Viz.displayGridMetricAll(true);
-            }
-        },
-        "treemap": {
-            convert: function() {
-                var file = $('#treemap').data('file');
-                Viz.displayTreeMap('treemap', file);
             }
         }
     };
@@ -930,126 +952,87 @@ var Report = {};
 
     }
 
+    function getDataSourceByName(ds) {
+        var DS = null;
+        $.each(Report.getDataSources(), function(index, DSaux) {
+            if (DSaux.getName() === ds) {DS = DSaux; return false;}
+        });
+        return DS;
+    }
     
-    function convertFlotr2(config) {        
+    Report.convertBasicDataSources = function(config) {
         // General config for metrics viz
         var config_metric = {};
                 
         config_metric.show_desc = false;
         config_metric.show_title = false;
         config_metric.show_labels = true;
-
+    
         if (config) {
             $.each(config, function(key, value) {
                 config_metric[key] = value;
             });
         }
-        
-        var already_shown = [];
-        var metric_already_shown = [];
-        $.each(Report.getDataSources(), function(index, DS) {
-            if (DS.getData().length === 0) return;
-            $.each(DS.getMetrics(), function(name, metric) {
-                var div_flotr2 = metric.divid+"-flotr2";
-                if ($("#"+div_flotr2).length > 0 &&
-                        $.inArray(metric.divid, metric_already_shown) === -1) {
-                    DS.displayBasicMetricHTML(name,div_flotr2, config_metric);
-                    // TODO: clean this hack
-                    metric_already_shown.push(metric.divid);
-                }
-                // Getting data real time
-                var div_flotr2_rt = metric.divid+"-flotr2-rt";
-                var divs = $("."+div_flotr2_rt);
-                if (divs.length > 0) {
-                    $.each(divs, function(id, div) {
-                        config_metric.realtime = true;
-                        // config_metric.json_ds = "http://localhost:1337/?callback=?";
-                        var db = "acs_cvsanaly_allura_1049";
-                        db = $(this).data('db');
-                        div.id = db + "_" + div.className;
-                        config_metric.json_ds ="http://localhost:3000/scm/"+db+"/";
-                        config_metric.json_ds += metric.divid+"_evol/?callback=?";
-                        DS.displayBasicMetricHTML(i,div.id, config_metric);
-                    });
-                }
-            });
-                        
-            if ($("#"+DS.getName()+"-flotr2").length > 0) {
-                if ($.inArray(DS.getName(), already_shown) === -1) {
-                    DS.displayBasicHTML(DS.getName()+'-flotr2', config_metric);
-                    already_shown.push(DS.getName());
-                }
-            }
-            
-            if (DS instanceof MLS) {
-                if ($("#"+DS.getName()+"-flotr2"+"-lists").length > 0) {
-                    if (Report.getProjectsList().length === 1)
-                        DS.displayBasic
-                            (DS.getName() + "-flotr2"+"-lists", config_metric);
-                }
-            }
 
-            // Multiparam
-            var div_param = DS.getName()+"-flotr2-metrics";
-            var divs = $("."+div_param);
-            if (divs.length > 0) {
-                $.each(divs, function(id, div) {
-                    var metrics = $(this).data('metrics');
-                    config_metric.help = true;
-                    var help = $(this).data('help');
-                    if (help !== undefined) config_metric.help = help;
-                    config_metric.show_legend = false;
-                    if ($(this).data('legend'))
-                        config_metric.show_legend = true;
-                    if ($(this).data('frame-time'))
-                        config_metric.frame_time = true;
-                    div.id = metrics.replace(/,/g,"-")+"-flotr2-metrics-"+this.id;
-                    DS.displayBasicMetrics(metrics.split(","),div.id,
-                            config_metric, $(this).data('convert'));
-                });
-            }
-
-            // Multiparam min
-            div_param = DS.getName()+"-flotr2-metrics-min";
-            divs = $("."+div_param);
-            if (divs.length > 0) {
-                $.each(divs, function(id, div) {
-                    var metrics = $(this).data('metrics');
+        // Metrics evolution
+        var div_param = "MetricsEvol";
+        var divs = $("." + div_param);
+        if (divs.length > 0) {
+            $.each(divs, function(id, div) {
+                var metrics = $(this).data('metrics');
+                var ds = $(this).data('data-source');
+                var DS = getDataSourceByName(ds);
+                if (DS === null) return;
+                config_metric.help = true;
+                var help = $(this).data('help');
+                if (help !== undefined) config_metric.help = help;
+                config_metric.show_legend = false;
+                if ($(this).data('legend'))
+                    config_metric.show_legend = true;
+                if ($(this).data('frame-time'))
+                    config_metric.frame_time = true;
+                if ($(this).data('min')) {
                     config_metric.show_legend = false;
                     config_metric.show_labels = false;
                     config_metric.show_grid = false;
                     // config_metric.show_mouse = false;
-                    config_metric.help = false;
-                    div.id = metrics.replace(/,/g,"-")+"-flotr2-metrics-"+this.id;
-                    DS.displayBasicMetrics(metrics.split(","),div.id,
-                            config_metric, $(this).data('convert'));
-                });
-            }
+                    config_metric.help = false;                
+                }
+                div.id = metrics.replace(/,/g,"-")+"-"+ds+"-metrics-evol-"+this.id;
+                DS.displayBasicMetrics(metrics.split(","),div.id,
+                        config_metric, $(this).data('convert'));
+            });
+        }
 
-            
-           // Time to fix
-            var div_ttfix = DS.getName()+"-time-to-fix";
-            divs = $("."+div_ttfix); 
-            if (divs.length > 0) {
-                $.each(divs, function(id, div) {
-                    var quantil = $(this).data('quantil');
-                    div.id = DS.getName()+"-time-to-fix-"+quantil;
-                    DS.displayTimeToFix(div.id, quantil);
-                });
-            }
-            // Time to attention
-            var div_ttatt = DS.getName()+"-time-to-attention";
-            divs = $("."+div_ttatt); 
-            if (divs.length > 0) {
-                $.each(divs, function(id, div) {
-                    var quantil = $(this).data('quantil');
-                    div.id = DS.getName()+"-time-to-attention-"+quantil;
-                    DS.displayTimeToAttention(div.id, quantil);
-                });
-            }
-        });
-    }
+       // Time to fix
+        var div_ttfix = "TimeToFix";
+        divs = $("."+div_ttfix); 
+        if (divs.length > 0) {
+            $.each(divs, function(id, div) {
+                var ds = $(this).data('data-source');
+                var DS = getDataSourceByName(ds);
+                if (DS === null) return;
+                var quantil = $(this).data('quantil');
+                div.id = ds+"-time-to-fix-"+quantil;
+                DS.displayTimeToFix(div.id, quantil);
+            });
+        }
+        // Time to attention
+        var div_ttatt = "TimeToAttention";
+        divs = $("."+div_ttatt); 
+        if (divs.length > 0) {
+            $.each(divs, function(id, div) {
+                var ds = $(this).data('data-source');
+                var DS = getDataSourceByName(ds);
+                if (DS === null) return;
+                var quantil = $(this).data('quantil');
+                div.id = ds+"-time-to-attention-"+quantil;
+                DS.displayTimeToAttention(div.id, quantil);
+            });
+        }
+    };
 
+    
     function convertEnvision() {
         if ($("#all-envision").length > 0) {
             var relative = $('#all-envision').data('relative');
@@ -1139,18 +1122,6 @@ var Report = {};
         });
     }
     
-    function convertBubbles() {
-        $.each(Report.getDataSources(), function(index, DS) {
-            if (DS.getData().length === 0) return;
-
-            var div_time = DS.getName() + "-time-bubbles";
-            if ($("#" + div_time).length > 0) {
-                var radius = $("#" + div_time).data('radius');
-                DS.displayBubbles(div_time, radius);
-            }
-        });        
-    }
-    
     function convertDemographics() {
         $.each(Report.getDataSources(), function(index, DS) {
             var div_demog = DS.getName() + "-demographics";
@@ -1215,6 +1186,7 @@ var Report = {};
         });
     }
     
+    // HTML code that will be converted later
     function convertTemplateDivs() {
         $.each (template_divs, function(divid, value) {
             if ($("#"+divid).length > 0) value.convert();
@@ -1229,6 +1201,20 @@ var Report = {};
         });
     }
     
+    function convertBasicDivsMisc() {
+        $.each (basic_divs_misc, function(divid, value) {
+            if ($("#"+divid).length > 0) value.convert();
+            if ($("."+divid).length > 0) value.convert();
+        });
+    }
+
+    function convertBasicDivsLegacy() {
+        $.each (basic_divs_legacy, function(divid, value) {
+            if ($("#"+divid).length > 0) value.convert();
+            if ($("."+divid).length > 0) value.convert();
+        });
+    }
+
     function convertGlobalNumbers(){
         $.each(Report.getDataSources(), function(index, DS) {
            var data = DS.getGlobalData();
@@ -1242,7 +1228,8 @@ var Report = {};
        });
     }
     
-    function configDataSources() {
+    // Build mapping between Data Sources and Projects
+    Report.configDataSources = function() {
         var prjs_dss = Report.getProjectsDataSources();
         $.each(Report.getDataSources(), function (index, ds) {
             if (ds.getData() instanceof Array) return;
@@ -1259,9 +1246,8 @@ var Report = {};
                     return false;
                 }
             });            
-        });
-        
-    }
+        });        
+    };
     
     Report.setReportConfig = function (data) {
         if (data) {
@@ -1274,22 +1260,38 @@ var Report = {};
             if (data['projects-data-dirs'])
                 Report.setProjectsDirs(data['projects-data-dirs']);
         }
-    };
-           
+    };       
 
     function convertGlobal() {
-        configDataSources();
         convertTemplateDivs();
         convertBasicDivs();
-        convertBubbles();        
+        convertBasicDivsMisc();
+        convertBasicDivsLegacy();
         convertEnvision();
-        convertFlotr2(config);
+        Report.convertFlotr2(config);
         convertTop();
         convertSummary();
         convertActivity();
         convertPeople(); // using on demand file loading
         convertGlobalNumbers(); // from Liferay
     }
+    
+    Report.convertGlobalNew = function() {
+        convertTemplateDivs();
+        convertBasicDivs();
+        // To be included in Basic?
+        convertBasicDivsMisc();
+        convertBasicDivsLegacy();
+        Report.convertBasicDataSources(config);
+        convertEnvision(); // Move to DataSources
+        convertGlobalNumbers(); // from Liferay
+        convertTop();
+        // Specific studies
+        convertSummary();
+        convertActivity();
+        convertPeople(); // using on demand file loading        
+    };
+    
     
     function convertStudies() {
         convertRepos();
@@ -1307,13 +1309,15 @@ var Report = {};
 })();
 
 Loader.data_ready_global(function() {
-    Report.convertGlobal();    
+    Report.configDataSources();
+    // Report.convertGlobalNew();
+    Report.convertGlobal();
 });
 
 Loader.data_ready(function() {
     Report.convertStudies();
     $("body").css("cursor", "auto");
-    // Popover helps systema
+    // Popover helps system
     $('.help').popover({
         html: true,
         trigger: 'manual'

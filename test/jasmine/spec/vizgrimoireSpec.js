@@ -49,15 +49,23 @@ describe( "VizGrimoireJS library", function () {
                 runs(function() {
                     $.each(Report.getDataSources(), function(index, DS) {
                         $.each(DS.getMetrics(), function(i, metric) {
-                            buildNode(metric.divid+"-flotr2");
+                            // buildNode(metric.divid+"-flotr2");
+                            buildNode(DS.getName()+"-MetricsEvol-"+metric.column, 'MetricsEvol',
+                              {
+                                  'data-data-source': DS.getName(),
+                                  'data-metrics': DS.getName()+"_"+metric.column
+                              });
                         });
                     });
-                    Report.convertFlotr2();
+                    // Report.convertFlotr2();
+                    Report.convertBasicDataSources();
                     $.each(Report.getDataSources(), function(index, DS) {
                         var ds_metrics = DS.getData(); 
                         $.each(DS.getMetrics(), function(name, metric) {
                             if (ds_metrics[name] === undefined) return true;
-                            expect(document.getElementById("flotr2_"+name)
+                            var div_id = DS.getName()+"-MetricsEvol-"+metric.column;
+                            div_id = name+"-"+DS.getName()+"-metrics-evol-"+div_id;
+                            expect(document.getElementById(div_id)
                                     .childNodes.length).toBeGreaterThan(0);
                         });
                     });
@@ -98,7 +106,7 @@ describe( "VizGrimoireJS library", function () {
                     });
                     var ncanvas = document.getElementsByClassName
                         ('flotr-canvas').length;
-                    Report.convertBubbles();
+                    Report.convertBasicDivsMisc();
                     var new_ncanvas = document.getElementsByClassName
                         ('flotr-canvas').length;
                     // SCR and IRC does not support bubbles yet
@@ -170,7 +178,7 @@ describe( "VizGrimoireJS library", function () {
                     buildNode("radar-community","radar");
                     var ncanvas = document.getElementsByClassName
                         ('flotr-canvas').length;
-                    Report.convertBasicDivs();
+                    Report.convertBasicDivsMisc();
                     var new_ncanvas = document.getElementsByClassName
                         ('flotr-canvas').length;
                     expect(new_ncanvas-ncanvas).toEqual(2);
@@ -189,7 +197,7 @@ describe( "VizGrimoireJS library", function () {
                 runs(function() {
                     buildNode("treemap","treemap",
                             {'data-file':'data/json/treemap.json'});
-                    Report.getBasicDivs()["treemap"].convert();
+                    Report.getBasicDivsMisc()["treemap"].convert();
                 });
                 waitsFor(function() {
                     return (document.getElementsByClassName("treemap-node").length>0);
