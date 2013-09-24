@@ -1004,7 +1004,7 @@ if (Report === undefined) var Report = {};
                     config_viz.help = false;
                 }
                 div.id = metrics.replace(/,/g,"-")+"-"+ds+"-metrics-evol-"+this.id;
-                DS.displayBasicMetrics(metrics.split(","),div.id,
+                DS.displayMetricsEvol(metrics.split(","),div.id,
                         config_viz, $(this).data('convert'));
             });
         }

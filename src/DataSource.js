@@ -325,23 +325,6 @@ function DataSource(name, basic_metrics) {
         return company;
     };
 
-    // TODO: data and projects should be in the same dictionary
-    this.displayBasicHTML = function(div_target, config, title) {
-        var full_data = [];
-        var projects = [];
-        var ds_name = this.getName();
-
-        $.each(Report.getDataSources(), function (index, ds) {
-           if (ds.getName() === ds_name) {
-               if (ds.getData() instanceof Array) return;
-               full_data.push(ds.getData());
-               projects.push(ds.getProject());
-           } 
-        });
-        Viz.displayBasicHTML(full_data, div_target, this.getTitle(), 
-                this.basic_metrics, this.name+'_hide', config, projects);
-    };
-
     this.displayBasicMetricCompanies = function(metric_id,
             div_target, config, limit, order_by) {
         if (order_by === undefined) order_by = metric_id;
@@ -514,7 +497,8 @@ function DataSource(name, basic_metrics) {
                 this.getCountriesMetricsData()[country], div_id, config);
     };
 
-    this.displayBasicMetrics = function(metric_ids, div_target, config, convert) {
+    // TODO: suppport multiproject
+    this.displayMetricsEvol = function(metric_ids, div_target, config, convert) {
         var data = this.getData();
         if (convert) {
             if (convert === "aggregate")
@@ -533,28 +517,8 @@ function DataSource(name, basic_metrics) {
                 metric_ids = ['divide'];
             }
         }
-        Viz.displayBasicMetricsHTML(metric_ids, data, div_target, config);
+        Viz.displayMetricsEvol(metric_ids, data, div_target, config);
     };
-
-    this.displayBasicMetricHTML = function(metric_id, div_target, config) {
-        var projects = [];
-        var full_data = [];
-        var ds_name = this.getName();
-        $.each(Report.getDataSources(), function (index, ds) {
-           if (ds.getName() === ds_name) {
-               if (ds.getData() instanceof Array) return;
-               full_data.push(ds.getData());
-               projects.push(ds.getProject());
-           } 
-        });
-
-        Viz.displayBasicMetricHTML(this.basic_metrics[metric_id], full_data,
-                div_target, config, projects);
-    };
-    
-    this.displayBasic = function() {
-        this.basicEvo(this.getData());
-    };    
 
     this.displayCompaniesNav = function (div_nav, sort_metric) {
         var nav = "<span id='nav'></span>";
@@ -850,17 +814,6 @@ function DataSource(name, basic_metrics) {
         Viz.displayTopGlobal(div, this, metric, period, titles);
     };
 
-    this.basicEvo = function(history) {
-        for (var id in this.basic_metrics) {
-            var metric = this.basic_metrics[id];
-            if ($.inArray(metric.column, Report.getConfig()[this.getName()+"_hide"]) > -1)
-                continue;
-            if ($('#' + metric.divid).length)
-                Viz.displayBasicLines(metric.divid, history, metric.column,
-                        true, metric.name);
-        }
-    };
-    
     this.envisionEvo = function(div_id, history, relative, legend_show, summary_graph) {
         config = Report.getConfig();
         var options = Viz.getEnvisionOptions(div_id, history, this.getName(),
@@ -877,5 +830,60 @@ function DataSource(name, basic_metrics) {
         var projects_full_data = Report.getProjectsDataSources();
         
         this.envisionEvo(divid, projects_full_data, relative, legend_show, summary_graph);
-    };    
+    };
+
+    //
+    // Legacy code
+    //
+    this.displayBasicMetrics = function(metric_ids, div_target, config, convert) {
+        this.displayMetricsEvol(metric_ids, div_target, config, convert);
+    };
+    
+    this.displayBasicMetricHTML = function(metric_id, div_target, config) {
+        var projects = [];
+        var full_data = [];
+        var ds_name = this.getName();
+        $.each(Report.getDataSources(), function (index, ds) {
+           if (ds.getName() === ds_name) {
+               if (ds.getData() instanceof Array) return;
+               full_data.push(ds.getData());
+               projects.push(ds.getProject());
+           } 
+        });
+    
+        Viz.displayBasicMetricHTML(this.basic_metrics[metric_id], full_data,
+                div_target, config, projects);
+    };
+    
+    // TODO: data and projects should be in the same dictionary
+    this.displayBasicHTML = function(div_target, config, title) {
+        var full_data = [];
+        var projects = [];
+        var ds_name = this.getName();
+
+        $.each(Report.getDataSources(), function (index, ds) {
+           if (ds.getName() === ds_name) {
+               if (ds.getData() instanceof Array) return;
+               full_data.push(ds.getData());
+               projects.push(ds.getProject());
+           } 
+        });
+        Viz.displayBasicHTML(full_data, div_target, this.getTitle(), 
+                this.basic_metrics, this.name+'_hide', config, projects);
+    };
+    
+    this.displayBasic = function() {
+        this.basicEvo(this.getData());
+    };
+    
+    this.basicEvo = function(history) {
+        for (var id in this.basic_metrics) {
+            var metric = this.basic_metrics[id];
+            if ($.inArray(metric.column, Report.getConfig()[this.getName()+"_hide"]) > -1)
+                continue;
+            if ($('#' + metric.divid).length)
+                Viz.displayBasicLines(metric.divid, history, metric.column,
+                        true, metric.name);
+        }
+    };
 }

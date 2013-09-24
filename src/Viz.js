@@ -42,7 +42,7 @@ var Viz = {};
     Viz.displayBasicMetricsRepo = displayBasicMetricsRepo;
     Viz.displayBasicMetricRepos = displayBasicMetricRepos;
     Viz.displayBasicMetricsCountry = displayBasicMetricsCountry;
-    Viz.displayBasicMetricsHTML = displayBasicMetricsHTML;
+    Viz.displayMetricsEvol = displayMetricsEvol;
     Viz.displayBasicLinesFile = displayBasicLinesFile;
     Viz.displayBasicLines = displayBasicLines;
     Viz.displayBubbles = displayBubbles;
@@ -1129,7 +1129,7 @@ var Viz = {};
         }
     }
 
-    function displayBasicMetricsHTML(metrics, data, div_target, config) {
+    function displayMetricsEvol(metrics, data, div_target, config) {
         config = checkBasicConfig(config);
         var title = metrics.join(",");
         if (!config.show_title) title = '';
