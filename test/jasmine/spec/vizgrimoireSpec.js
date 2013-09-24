@@ -401,10 +401,11 @@ describe( "VizGrimoireJS library", function () {
                     else if (DS.getName() === 'mls') {
                         metrics = 'mls_sent';
                     }
-                    buildNode(DS.getName()+"-flotr2-metrics-people",
-                            DS.getName()+"-flotr2-metrics-people",
+                    buildNode(DS.getName()+"-people-metrics",
+                            "PeopleMetrics",
                           {
                               'data-metrics': metrics,
+                              'data-data-source': DS.getName(),
                     });      
                 });
                 ncanvas = document.getElementsByClassName

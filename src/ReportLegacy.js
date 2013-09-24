@@ -244,4 +244,43 @@ Report.convertTopLegacy = function () {
     });
 };
 
+Report.convertPeopleLegacy = function(upeople_id, upeople_identifier) {
+    var config_metric = {};
+    config_metric.show_desc = false;
+    config_metric.show_title = false;
+    config_metric.show_labels = true;
+    
+    var querystr = window.location.search.substr(1);
+    if (querystr  &&
+            querystr.split("&")[0].split("=")[0] === "id") {
+        upeople_id =
+            decodeURIComponent(querystr.split("&")[0].split("=")[1]);
+        upeople_identifier =
+            decodeURIComponent(querystr.split("&")[1].split("=")[1]);
+    }
+    
+    if (upeople_id === undefined) return;
+    
+    $.each(Report.getDataSources(), function(index, DS) {
+        var divid = DS.getName()+"-refcard-people";
+        if ($("#"+divid).length > 0) {
+            DS.displayPeopleSummary(divid, upeople_id, upeople_identifier, this);
+        }
+    
+        var div_repo = DS.getName()+"-flotr2-metrics-people";
+        var divs = $("."+div_repo);
+        if (divs.length) {
+            $.each(divs, function(id, div) {
+                var metrics = $(this).data('metrics');
+                config_metric.show_legend = false;
+                if ($(this).data('legend')) config_metric.show_legend = true;
+                div.id = metrics.replace(/,/g,"-")+"-flotr2-metrics-people";
+                DS.displayBasicMetricsPeople(upeople_id, upeople_identifier, metrics.split(","),
+                        div.id, config_metric);
+            });
+        }
+    });
+};
+
+
 })();
