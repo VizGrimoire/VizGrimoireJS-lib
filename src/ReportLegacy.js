@@ -20,8 +20,6 @@
  *
  * Authors:
  *   Alvaro del Castillo San Felix <acs@bitergia.com>
- *   Daniel Izquierdo Cortazar <dizquierdo@bitergia.com>
- *   Luis Cañas <lcanas@bitergia.com>
  *
  */
 
@@ -148,7 +146,7 @@ Report.convertFlotr2 = function (config) {
     });
 };
 
-Report.convertEnvision = function()  {
+Report.convertEnvisionLegacy = function()  {
     if ($("#all-envision").length > 0) {
         var relative = $('#all-envision').data('relative');
         var legend = $('#all-envision').data('legend-show');
@@ -179,5 +177,15 @@ Report.convertEnvision = function()  {
         }
     });
 };
+
+Report.convertSummaryLegacy = function () {
+    $.each(Report.getDataSources(), function(index, DS) {
+        var div_summary = DS.getName()+"-summary";
+        if ($("#"+div_summary).length > 0) {
+            DS.displayGlobalSummary(div_summary);
+        }
+    });        
+};
+
 
 })();

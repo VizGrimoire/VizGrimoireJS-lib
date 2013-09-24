@@ -32,6 +32,7 @@ vizgrimoire.core.js: \
     src/ReportLegacy.js \
     src/Report.js \
     src/DataSource.js \
+    src/VizLegacy.js \
     src/Viz.js \
     src/IRC.js \
     src/ITS.js \

@@ -58,7 +58,7 @@ describe( "VizGrimoireJS library", function () {
                         });
                     });
                     // Report.convertFlotr2();
-                    Report.convertBasicDataSources();
+                    Report.convertBasicMetrics();
                     $.each(Report.getDataSources(), function(index, DS) {
                         var ds_metrics = DS.getData(); 
                         $.each(DS.getMetrics(), function(name, metric) {

@@ -43,6 +43,8 @@ if (Report === undefined) var Report = {};
         markers_file = data_dir + "/markers.json",
         repos_map_file = data_dir + "/repos-map.json";
     var page_size = 10;
+    
+    var legacy = true; //  support old divs API
 
     // Public API
     Report.convertBasicDivs = convertBasicDivs;
@@ -51,6 +53,7 @@ if (Report === undefined) var Report = {};
     Report.convertCountries = convertCountries;
     Report.convertTop = convertTop;
     Report.convertDemographics = convertDemographics;
+    Report.convertEnvision = convertEnvision;
     Report.convertPeople = convertPeople;
     Report.convertRepos = convertRepos;
     Report.convertSelectors = convertSelectors;
@@ -532,6 +535,24 @@ if (Report === undefined) var Report = {};
         // Reference card with info from all data sources
         "refcard": {
             convert: convertRefcard
+        },
+        "global-data": {
+            convert: convertGlobalNumbers
+        },
+        "summary": {
+            convert: function() {
+                div_param = "summary";
+                var divs = $("." + div_param);
+                if (divs.length > 0) {
+                    $.each(divs, function(id, div) {
+                        var ds = $(this).data('data-source');
+                        var DS = getDataSourceByName(ds);
+                        if (DS === null) return;
+                        DS.displayGlobalSummary(div.id);
+                    });
+                }
+                if (legacy) Report.convertSummaryLegacy();
+            }
         }
     };
     
@@ -613,15 +634,6 @@ if (Report === undefined) var Report = {};
             });
     }
         
-    function convertSummary() {
-        $.each(Report.getDataSources(), function(index, DS) {
-            var div_summary = DS.getName()+"-summary";
-            if ($("#"+div_summary).length > 0) {
-                DS.displayGlobalSummary(div_summary);
-            }
-        });        
-    }
-    
     function convertCompanies(config) {        
         // General config for metrics viz
         var config_metric = {};
@@ -959,7 +971,7 @@ if (Report === undefined) var Report = {};
         return DS;
     }
     
-    Report.convertBasicDataSources = function(config) {
+    Report.convertBasicMetrics = function(config) {
         // General config for metrics viz
         var config_metric = {};
                 
@@ -1007,7 +1019,6 @@ if (Report === undefined) var Report = {};
                         config_viz, $(this).data('convert'));
             });
         }
-
        // Time to fix
         var div_ttfix = "TimeToFix";
         divs = $("."+div_ttfix); 
@@ -1034,7 +1045,35 @@ if (Report === undefined) var Report = {};
                 DS.displayTimeToAttention(div.id, quantil);
             });
         }
+        
+        if (legacy) Report.convertFlotr2();
     };
+    
+    function convertEnvision() {    
+        if ($("#EnvisionAll").length > 0) {
+            var relative = $('#EnvisionAll').data('relative');
+            var legend = $('#EnvisionAll').data('legend-show');
+            var summary_graph = $('#EnvisionAll').data('summary-graph');
+            Viz.displayEnvisionAll('EnvisionAll', relative, legend, summary_graph);
+        }
+        
+        div_param = "Envision";
+        var divs = $("." + div_param);
+        if (divs.length > 0) {
+            $.each(divs, function(id, div) {
+                var ds = $(this).data('data-source');
+                var DS = getDataSourceByName(ds);
+                if (DS === null) return;
+                var legend = $(this).data('legend-show');
+                var relative = $(this).data('relative');
+                var summary_graph = $(this).data('summary-graph');
+                div.id = ds+"-envision"+this.id;
+                DS.displayEnvision(div.id, relative, legend, summary_graph); 
+            });
+        }
+        
+        if (legacy) Report.convertEnvisionLegacy();
+    }
 
     function convertIdentity() {
         $.each(Report.getDataSources(), function(index, DS) {
@@ -1250,20 +1289,19 @@ if (Report === undefined) var Report = {};
     Report.convertGlobalNew = function() {
         convertTemplateDivs();
         convertBasicDivs();
-        // To be included in Basic?
         convertBasicDivsMisc();
-        convertBasicDivsLegacy();
-        Report.convertBasicDataSources(config);
-        Report.convertEnvision(); // Move to DataSources
-        convertGlobalNumbers(); // from Liferay
+        if (legacy) convertBasicDivsLegacy();
+        Report.convertBasicMetrics(config);
+        Report.convertEnvision();
+    };
+    
+    // Data available in global
+    Report.convertStudiesGlobal = function() {
         convertTop();
-        // Specific studies
-        convertSummary();
         convertActivity();
         convertPeople(); // using on demand file loading        
     };
-    
-    
+        
     function convertStudies() {
         convertRepos();
         convertCompanies();
@@ -1282,6 +1320,7 @@ if (Report === undefined) var Report = {};
 Loader.data_ready_global(function() {
     Report.configDataSources();
     Report.convertGlobalNew();
+    Report.convertStudiesGlobal();
 });
 
 Loader.data_ready(function() {
