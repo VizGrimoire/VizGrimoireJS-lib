@@ -979,28 +979,33 @@ if (Report === undefined) var Report = {};
         var divs = $("." + div_param);
         if (divs.length > 0) {
             $.each(divs, function(id, div) {
+                var config_viz = {};
+                $.each(config_metric, function(key, value) {
+                    config_viz[key] = value;
+                });
+
                 var metrics = $(this).data('metrics');
                 var ds = $(this).data('data-source');
                 var DS = getDataSourceByName(ds);
                 if (DS === null) return;
-                config_metric.help = true;
+                config_viz.help = true;
                 var help = $(this).data('help');
-                if (help !== undefined) config_metric.help = help;
-                config_metric.show_legend = false;
+                if (help !== undefined) config_viz.help = help;
+                config_viz.show_legend = false;
                 if ($(this).data('legend'))
-                    config_metric.show_legend = true;
+                    config_viz.show_legend = true;
                 if ($(this).data('frame-time'))
-                    config_metric.frame_time = true;
+                    config_viz.frame_time = true;
                 if ($(this).data('min')) {
-                    config_metric.show_legend = false;
-                    config_metric.show_labels = false;
-                    config_metric.show_grid = false;
-                    // config_metric.show_mouse = false;
-                    config_metric.help = false;                
+                    config_viz.show_legend = false;
+                    config_viz.show_labels = false;
+                    config_viz.show_grid = false;
+                    // config_viz.show_mouse = false;
+                    config_viz.help = false;
                 }
                 div.id = metrics.replace(/,/g,"-")+"-"+ds+"-metrics-evol-"+this.id;
                 DS.displayBasicMetrics(metrics.split(","),div.id,
-                        config_metric, $(this).data('convert'));
+                        config_viz, $(this).data('convert'));
             });
         }
 
