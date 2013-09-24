@@ -282,5 +282,98 @@ Report.convertPeopleLegacy = function(upeople_id, upeople_identifier) {
     });
 };
 
+Report.convertReposLegacy = function() {
+    var config_metric = {};                
+    config_metric.show_desc = false;
+    config_metric.show_title = false;
+    config_metric.show_labels = true;
+    
+    var data_ready = true;
+    var repo_valid = null;
+    var repo = Report.getParameterByName("repository");
+    var page = Report.getParameterByName("page");
+    
+    if (Loader.check_repos_page(page) === false) {
+        data_ready = false;
+    }
+    
+    if (data_ready === false) {
+        $.each(Report.getDataSources(), function(index, DS) {
+            Loader.data_load_repos_page(DS, page, Report.convertReposLegacy);
+        });
+        return;
+    }
+    
+    $.each(Report.getDataSources(), function(index, DS) {            
+        var divid = DS.getName()+"-repos-summary";
+        if ($("#"+divid).length > 0) {
+            DS.displayReposSummary(divid, this);
+        }
+        var div_repos = DS.getName()+"-flotr2-repos-static";
+        var divs = $("."+div_repos);
+        if (divs.length > 0) {
+            $.each(divs, function(id, div) {
+                var metric = $(this).data('metric');
+                var limit = $(this).data('limit');
+                var show_others = $(this).data('show-others');
+                var order_by = $(this).data('order-by');
+                config_metric.graph = $(this).data('graph');
+                div.id = metric+"-flotr2-repos-static";
+                DS.displayBasicMetricReposStatic(metric,div.id,
+                        config_metric, limit, order_by, show_others);
+            });
+        }
+        
+        var div_nav = DS.getName()+"-flotr2-repos-nav";
+        if ($("#"+div_nav).length > 0) {
+            var order_by = $("#"+div_nav).data('order-by');
+            var scm_and_its = $("#"+div_nav).data('scm-and-its');
+            DS.displayReposNav(div_nav, order_by, page, scm_and_its);
+        }            
+        
+        var divs_repos_list = DS.getName()+"-flotr2-repos-list";
+        divs = $("."+divs_repos_list);
+        if (divs.length > 0) {
+            $.each(divs, function(id, div) {
+                var metrics = $(this).data('metrics');
+                var order_by = $(this).data('order-by');
+                var scm_and_its = $(this).data('scm-and-its');
+                var show_links = true; 
+                if ($(this).data('show_links') !== undefined) 
+                    show_links = $(this).data('show_links');
+                div.id = metrics.replace(/,/g,"-")+"-flotr2-repos-list";
+                DS.displayReposList(metrics.split(","),div.id, 
+                        config_metric, order_by, page, scm_and_its, show_links);
+            });
+        }
+        
+        if (repo !== null) repo_valid = Report.getValidRepo(repo, DS);
+        // Hide all information for this data source
+        if (repo_valid === null) $("#"+DS.getName()+"-repo").hide();
+        else {                
+            divid = DS.getName()+"-refcard-repo";
+            if ($("#"+divid).length > 0) {
+                DS.displayRepoSummary(divid, repo_valid, this);
+            }
+            
+            var div_repo = DS.getName()+"-flotr2-metrics-repo";
+            divs = $("."+div_repo);
+            if (divs.length > 0) {
+                $.each(divs, function(id, div) {
+                    var metrics = $(this).data('metrics');                        
+                    config.show_legend = false;
+                    config.frame_time = false;
+                    if ($(this).data('legend')) 
+                        config_metric.show_legend = true;
+                    if ($(this).data('frame-time')) 
+                        config_metric.frame_time = true;
+                    div.id = metrics.replace(/,/g,"-")+"-flotr2-metrics-repo";
+                    DS.displayBasicMetricsRepo(repo_valid, metrics.split(","),
+                            div.id, config_metric);
+                });
+            }                
+        }            
+    });
+};
 
 })();
