@@ -44,7 +44,7 @@ if (Report === undefined) var Report = {};
         repos_map_file = data_dir + "/repos-map.json";
     var page_size = 10;
     
-    var legacy = true; //  support old divs API
+    var legacy = false; //  support old divs API
 
     // Public API
     Report.convertBasicDivs = convertBasicDivs;
@@ -75,7 +75,6 @@ if (Report === undefined) var Report = {};
         return basic_divs_misc;
     }; 
     Report.displayReportData = displayReportData;
-    Report.convertGlobal = convertGlobal;
     Report.convertStudies = convertStudies;
     Report.getDataSources = function() {
         // return data_sources.slice(0,3);
@@ -1075,63 +1074,33 @@ if (Report === undefined) var Report = {};
         if (legacy) Report.convertEnvisionLegacy();
     }
 
-    function convertIdentity() {
-        $.each(Report.getDataSources(), function(index, DS) {
-            var divid = DS.getName()+"-people";
-            if ($("#"+divid).length > 0) {
-                Identity.showList(divid, DS);
-            }
-        });
-        if ($("#unique-people").length > 0)
-            Identity.showListNested("unique-people");
-    }
-    
-    function convertTop() {
-        $.each(Report.getDataSources(), function(index, DS) {
-            if (DS.getData().length === 0) return;
-
-            var div_id_top = DS.getName()+"-top";
-            var show_all = false;
-            
-            if ($("#"+div_id_top).length > 0) {
-                if ($("#"+div_id_top).data('show_all')) show_all = true;
-                var top_metric = $("#"+div_id_top).data('metric');
-                var limit = $("#"+div_id_top).data('limit');
-                var graph = null;
-                DS.displayTop(div_id_top, show_all, top_metric, graph, limit);
-            }           
-            $.each(['pie','bars'], function (index, chart) {
-                var div_id_top = DS.getName()+"-top-"+chart;
-                if ($("#"+div_id_top).length > 0) {
-                    if ($("#"+div_id_top).data('show_all')) show_all = true;
-                    var people_links = $("#"+div_id_top).data('people_links');
-                    var show_metric = $("#"+div_id_top).data('metric');
-                    var limit = $("#"+div_id_top).data('limit');
-                    DS.displayTop(div_id_top, show_all, show_metric, 
-                            chart, limit, people_links);
+    function convertTop() {    
+        var div_id_top = "Top";        
+        var divs = $("." + div_id_top);
+        var DS, ds;
+        if (divs.length > 0) {
+            $.each(divs, function(id, div) {
+                ds = $(this).data('data-source');
+                DS = getDataSourceByName(ds);
+                if (DS === null) return;
+                if (DS.getData().length === 0) return;
+                var show_all = false;
+                if ($(this).data('show_all')) show_all = true;
+                var top_metric = $(this).data('metric');
+                var limit = $(this).data('limit');
+                var graph = $(this).data('graph');
+                var people_links = $(this).data('people_links');
+                if (!div.id) {
+                    div.id = ds+"-top"+graph;
+                    if (graph) div.id += "-"+graph;
                 }
-                div_id_top = DS.getName()+"-top-basic-"+chart;
-                if ($("#"+div_id_top).length > 0) {
-                    var doer = $("#"+div_id_top).data('doer');
-                    var action = $("#"+div_id_top).data('action');
-                    DS.displayTopBasic(div_id_top, action, doer, chart);
-                }
+                DS.displayTop(div.id, show_all, top_metric, 
+                              graph, limit, people_links);
             });
-            
-            var div_tops = DS.getName()+"-global-top-metric";
-            var divs = $("."+div_tops);
-            if (divs.length > 0) {
-                $.each(divs, function(id, div) {
-                    var metric = $(this).data('metric');
-                    var period = $(this).data('period');
-                    var titles = $(this).data('titles');
-                    div.id = metric.replace("_","-")+"-"+period+"-global-metric";
-                    DS.displayTopGlobal(div.id, metric, period, titles);
-                });
-            }
-        });
+        }
+        if (legacy) Report.convertTopLegacy();
     }
-    
+
     function convertDemographics() {
         $.each(Report.getDataSources(), function(index, DS) {
             var div_demog = DS.getName() + "-demographics";
@@ -1272,27 +1241,16 @@ if (Report === undefined) var Report = {};
         }
     };       
 
-    function convertGlobal() {
+    Report.convertGlobal = function() {
         convertTemplateDivs();
         convertBasicDivs();
         convertBasicDivsMisc();
-        convertBasicDivsLegacy();
-        Report.convertEnvision();
-        Report.convertFlotr2(config);
-        convertTop();
-        convertSummary();
-        convertActivity();
-        convertPeople(); // using on demand file loading
-        convertGlobalNumbers(); // from Liferay
-    }
-    
-    Report.convertGlobalNew = function() {
-        convertTemplateDivs();
-        convertBasicDivs();
-        convertBasicDivsMisc();
-        if (legacy) convertBasicDivsLegacy();
         Report.convertBasicMetrics(config);
         Report.convertEnvision();
+        if (legacy) {
+            convertBasicDivsLegacy();
+            Report.convertIdentity();
+        }
     };
     
     // Data available in global
@@ -1308,18 +1266,12 @@ if (Report === undefined) var Report = {};
         convertCountries();
         convertDemographics();
         convertSelectors();
-    }
-    
-    // TODO: Move to plugins
-    function convertOthers() {
-        // TODO: Create a new class for Identity?
-        convertIdentity();
-    }
+    }    
 })();
 
 Loader.data_ready_global(function() {
     Report.configDataSources();
-    Report.convertGlobalNew();
+    Report.convertGlobal();
     Report.convertStudiesGlobal();
 });
 

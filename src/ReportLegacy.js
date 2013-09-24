@@ -178,6 +178,17 @@ Report.convertEnvisionLegacy = function()  {
     });
 };
 
+Report.convertIdentity = function() {
+    $.each(Report.getDataSources(), function(index, DS) {
+        var divid = DS.getName()+"-people";
+        if ($("#"+divid).length > 0) {
+            Identity.showList(divid, DS);
+        }
+    });
+    if ($("#unique-people").length > 0)
+        Identity.showListNested("unique-people");
+};
+
 Report.convertSummaryLegacy = function () {
     $.each(Report.getDataSources(), function(index, DS) {
         var div_summary = DS.getName()+"-summary";
@@ -187,5 +198,50 @@ Report.convertSummaryLegacy = function () {
     });        
 };
 
+Report.convertTopLegacy = function () {
+    $.each(Report.getDataSources(), function(index, DS) {
+        if (DS.getData().length === 0) return;
+    
+        var div_id_top = DS.getName()+"-top";
+        var show_all = false;
+        
+        if ($("#"+div_id_top).length > 0) {
+            if ($("#"+div_id_top).data('show_all')) show_all = true;
+            var top_metric = $("#"+div_id_top).data('metric');
+            var limit = $("#"+div_id_top).data('limit');
+            var graph = null;
+            DS.displayTop(div_id_top, show_all, top_metric, graph, limit);
+        }           
+        $.each(['pie','bars'], function (index, chart) {
+            var div_id_top = DS.getName()+"-top-"+chart;
+            if ($("#"+div_id_top).length > 0) {
+                if ($("#"+div_id_top).data('show_all')) show_all = true;
+                var people_links = $("#"+div_id_top).data('people_links');
+                var show_metric = $("#"+div_id_top).data('metric');
+                var limit = $("#"+div_id_top).data('limit');
+                DS.displayTop(div_id_top, show_all, show_metric, 
+                        chart, limit, people_links);
+            }
+            div_id_top = DS.getName()+"-top-basic-"+chart;
+            if ($("#"+div_id_top).length > 0) {
+                var doer = $("#"+div_id_top).data('doer');
+                var action = $("#"+div_id_top).data('action');
+                DS.displayTopBasic(div_id_top, action, doer, chart);
+            }
+        });
+        
+        var div_tops = DS.getName()+"-global-top-metric";
+        var divs = $("."+div_tops);
+        if (divs.length > 0) {
+            $.each(divs, function(id, div) {
+                var metric = $(this).data('metric');
+                var period = $(this).data('period');
+                var titles = $(this).data('titles');
+                div.id = metric.replace("_","-")+"-"+period+"-global-metric";
+                DS.displayTopGlobal(div.id, metric, period, titles);
+            });
+        }
+    });
+};
 
 })();

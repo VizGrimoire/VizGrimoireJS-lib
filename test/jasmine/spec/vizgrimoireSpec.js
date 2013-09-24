@@ -36,7 +36,10 @@ describe( "VizGrimoireJS library", function () {
             it("html envision should be displayed", function () {
                 runs(function() {
                     $.each(Report.getDataSources(), function(index, DS) {
-                        buildNode(DS.getName()+"-envision");
+                        buildNode(DS.getName()+"-Envision", 'Envision',
+                            {
+                                'data-data-source': DS.getName(),
+                            });
                     });
                     Report.convertEnvision();
                     var envisionCreated = document.getElementsByClassName
@@ -45,11 +48,10 @@ describe( "VizGrimoireJS library", function () {
                         (Report.getDataSources().length);
                 });        
             });
-            it("html flotr2 should be displayed", function () {
+            it("html MetricsEvol should be displayed", function () {
                 runs(function() {
                     $.each(Report.getDataSources(), function(index, DS) {
                         $.each(DS.getMetrics(), function(i, metric) {
-                            // buildNode(metric.divid+"-flotr2");
                             buildNode(DS.getName()+"-MetricsEvol-"+metric.column, 'MetricsEvol',
                               {
                                   'data-data-source': DS.getName(),
@@ -57,7 +59,6 @@ describe( "VizGrimoireJS library", function () {
                               });
                         });
                     });
-                    // Report.convertFlotr2();
                     Report.convertBasicMetrics();
                     $.each(Report.getDataSources(), function(index, DS) {
                         var ds_metrics = DS.getData(); 
@@ -75,26 +76,37 @@ describe( "VizGrimoireJS library", function () {
             it("html top should be displayed", function () {               
                 runs(function() {
                     $.each(Report.getDataSources(), function(index, DS) {
-                        buildNode(DS.getName()+"-top");
-                        buildNode(DS.getName()+"-top-pie");
-                        buildNode(DS.getName()+"-top-bars");
+                        buildNode(DS.getName()+"-Top", 'Top',
+                            {
+                                'data-data-source': DS.getName(),
+                            });
+                        buildNode(DS.getName()+"-Top-pie", 'Top',
+                            {
+                                'data-data-source': DS.getName(),
+                                'data-graph':'pie'
+                            });
+                        buildNode(DS.getName()+"-Top-bars", 'Top',
+                            {
+                                'data-data-source': DS.getName(),
+                                'data-graph':'bars'
+                            });
                     });
                     Report.convertTop();
                 });
                 // TODO: JSON files for top should be loaded. 
                 //       Change this load to global data loading
                 waitsFor(function() {
-                    return (document.getElementById("its-top-bars")
+                    return (document.getElementById("its-Top-bars")
                     .childNodes.length > 0);
                 }, "It took too long to load data", 100);
                 runs(function() {
                     $.each(Report.getDataSources(), function(index, DS) {
                         if (DS.getName() === "scr") return;
-                        expect(document.getElementById(DS.getName()+"-top")
+                        expect(document.getElementById(DS.getName()+"-Top")
                                 .childNodes.length).toBeGreaterThan(0);
-                        expect(document.getElementById(DS.getName()+"-top-pie")
+                        expect(document.getElementById(DS.getName()+"-Top-pie")
                                 .childNodes.length).toBeGreaterThan(0);
-                        expect(document.getElementById(DS.getName()+"-top-bars")
+                        expect(document.getElementById(DS.getName()+"-Top-bars")
                                 .childNodes.length).toBeGreaterThan(0);
                     });
                 });        
