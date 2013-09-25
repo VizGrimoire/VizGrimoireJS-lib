@@ -49,7 +49,6 @@ if (Report === undefined) var Report = {};
     // Public API
     Report.convertBasicDivs = convertBasicDivs;
     Report.convertBasicDivsMisc = convertBasicDivsMisc;
-    Report.convertCompanies = convertCompanies;
     Report.convertTop = convertTop;
     Report.convertDemographics = convertDemographics;
     Report.convertEnvision = convertEnvision;
@@ -630,131 +629,7 @@ if (Report === undefined) var Report = {};
                 period = $(div).data('period');
                 activityInfo(div, days[period], period);
             });
-    }
-        
-    function convertCompanies(config) {        
-        // General config for metrics viz
-        var config_metric = {};
-                
-        config_metric.show_desc = false;
-        config_metric.show_title = false;
-        config_metric.show_labels = true;
-
-        if (config) {
-            $.each(config, function(key, value) {
-                config_metric[key] = value;
-            });
-        }
-        
-        var div_companies_links = "companies_links";
-        if ($("#"+div_companies_links).length > 0) {
-            var limit = $("#"+div_companies_links).data('limit');
-            var order_by = $("#"+div_companies_links).data('order-by');
-            var DS = null;
-            // scm support only
-            $.each(data_sources, function(i, ds) {
-                if (ds.getName() === "scm") {DS = ds; return false;}
-            });
-            DS.displayCompaniesLinks(div_companies_links, limit, order_by);
-        }
-        
-        var company = Report.getParameterByName("company");
-
-        $.each(Report.getDataSources(), function(index, DS) {            
-            var divid = DS.getName()+"-companies-summary";
-            if ($("#"+divid).length > 0) {
-                DS.displayCompaniesSummary(divid, this);
-            }
-            
-            divid = DS.getName()+"-refcard-company";
-            if ($("#"+divid).length > 0) {
-                DS.displayCompanySummary(divid, company, this);
-            }
-
-            var div_companies = DS.getName()+"-flotr2-companies";
-            var divs = $("."+div_companies);
-            if (divs.length > 0) {
-                $.each(divs, function(id, div) {
-                    var metric = $(this).data('metric');
-                    var limit = $(this).data('limit');
-                    var order_by = $(this).data('order-by');
-                    var stacked = false;
-                    if ($(this).data('stacked')) stacked = true;
-                    config_metric.lines = {stacked : stacked};
-                    div.id = metric+"-flotr2-companies";
-                    DS.displayBasicMetricCompanies(metric,div.id,
-                            config_metric, limit, order_by);
-                });
-            }
-            div_companies = DS.getName()+"-flotr2-companies-static";
-            divs = $("."+div_companies);
-            if (divs.length > 0) {
-                $.each(divs, function(id, div) {
-                    var metric = $(this).data('metric');
-                    var order_by = $(this).data('order-by');
-                    var limit = $(this).data('limit');
-                    var show_others = $(this).data('show-others'); 
-                    config_metric.graph = $(this).data('graph');
-                    config_metric.show_legend = $(this).data('legend');
-                    if ($('#'+$(this).data('legend-div')).length>0) {
-                        config_metric.legend = {
-                            container: $(this).data('legend-div')};
-                    } else config_metric.legend = {container: null};
-                    div.id = metric+"-flotr2-companies-static";
-                    DS.displayBasicMetricCompaniesStatic(metric,div.id,
-                            config_metric, limit, order_by, show_others);
-                });
-            }
-            var div_company = DS.getName()+"-flotr2-metrics-company";
-            divs = $("."+div_company);
-            if (divs.length > 0 && company) {
-                $.each(divs, function(id, div) {
-                    config_metric.help = true;
-                    var help = $(this).data('help');
-                    if (help !== undefined) config_metric.help = help;
-                    config_metric.show_legend = false;                    
-                    var metrics = $(this).data('metrics');
-                    if ($(this).data('legend')) config_metric.show_legend = true;
-                    div.id = metrics.replace(/,/g,"-")+"-flotr2-metrics-company-"+$(this).id;
-                    DS.displayBasicMetricsCompany(company, metrics.split(","),
-                            div.id, config_metric);
-                });
-            }
-
-            var div_nav = DS.getName()+"-flotr2-companies-nav";
-            if ($("#"+div_nav).length > 0) {
-                var metric = $("#"+div_nav).data('order-by');
-                DS.displayCompaniesNav(div_nav, metric);
-            }
-            var divs_comp_list = DS.getName()+"-flotr2-companies-list";
-            divs = $("."+divs_comp_list);
-            if (divs.length > 0) {
-                $.each(divs, function(id, div) {
-                    var metrics = $(this).data('metrics');
-                    var sort_metric = $(this).data('order-by');
-                    var show_links = true; 
-                    if ($(this).data('show_links') !== undefined) 
-                        show_links = $(this).data('show_links');
-                    div.id = metrics.replace(/,/g,"-")+"-flotr2-companies-list";
-                    DS.displayCompaniesList(metrics.split(","),div.id,
-                            config_metric, sort_metric, show_links);
-                });
-            }
-
-            div_companies = DS.getName()+"-flotr2-top-company";
-            divs = $("."+div_companies);
-            if (divs.length > 0) {
-                $.each(divs, function(id, div) {
-                    var metric = $(this).data('metric');
-                    var period = $(this).data('period');
-                    var titles = $(this).data('titles');
-                    div.id = metric+"-"+period+"-flotr2-top-company";
-                    div.className = "";
-                    DS.displayTopCompany(company,div.id,metric,period,titles);
-                });
-            }            
-        });
-    }
+    }        
     
     // Needed for callback from Loader
     Report.convertRepos = function() {
@@ -769,10 +644,11 @@ if (Report === undefined) var Report = {};
         
         var data_ready = true;
         var repo_valid = null;
-        var repo = null, country = null, divs = null, divlabel = null;
+        var repo = null, country = null, company = null, divs = null, divlabel = null;
         
         if (type === "repos") repo = Report.getParameterByName("repository");
         if (type === "countries") country = Report.getParameterByName("country");
+        if (type === "companies") company = Report.getParameterByName("company");
         var page = Report.getParameterByName("page");
         
         // TODO: On demand loading only for repos yet
@@ -791,6 +667,7 @@ if (Report === undefined) var Report = {};
         }
         if (type === "repos") divlabel = "ReposSummary";
         if (type === "countries") divlabel = "CountriesSummary";
+        if (type === "companies") divlabel = "CompaniesSummary";
         divs = $("."+divlabel);
         if (divs.length > 0) {
             $.each(divs, function(id, div) {
@@ -802,11 +679,14 @@ if (Report === undefined) var Report = {};
                     DS.displayReposSummary(div.id, DS);
                 if (type === "countries")
                     DS.displayCountriesSummary(div.id, DS);
+                if (type === "companies")
+                    DS.displayCompaniesSummary(div.id, DS);
             });
         }
         
         if (type === "repos") divlabel = "ReposGlobal";
         if (type === "countries") divlabel = "CountriesGlobal";
+        if (type === "companies") divlabel = "CompaniesGlobal";
         divs = $("."+divlabel);
         if (divs.length > 0) {
             $.each(divs, function(id, div) {
@@ -817,6 +697,11 @@ if (Report === undefined) var Report = {};
                 var limit = $(this).data('limit');
                 var show_others = $(this).data('show-others');
                 var order_by = $(this).data('order-by');
+                config_metric.show_legend = $(this).data('legend');
+                if ($('#'+$(this).data('legend-div')).length>0) {
+                    config_metric.legend = {
+                    container: $(this).data('legend-div')};
+                } else config_metric.legend = {container: null};
                 config_metric.graph = $(this).data('graph');
                 div.id = metric+"-"+divlabel;
                 if (type === "repos")
@@ -825,11 +710,15 @@ if (Report === undefined) var Report = {};
                 if (type === "countries")
                     DS.displayBasicMetricCountriesStatic(metric,div.id,
                         config_metric, limit, order_by, show_others);
+                if (type === "companies")
+                    DS.displayBasicMetricCompaniesStatic(metric,div.id,
+                        config_metric, limit, order_by, show_others);
             });
         }
 
         if (type === "repos") divlabel = "ReposNav";
         if (type === "countries") divlabel = "CountriesNav";
+        if (type === "companies") divlabel = "CompaniesNav";
         divs = $("."+divlabel);
         if (divs.length > 0) {
             $.each(divs, function(id, div) {
@@ -843,11 +732,14 @@ if (Report === undefined) var Report = {};
                     DS.displayReposNav(div.id, order_by, page, scm_and_its);
                 if (type === "countries")
                     DS.displayCountriesNav(div.id, order_by, page, scm_and_its);
+                if (type === "companies")
+                    DS.displayCompaniesNav(div.id, order_by);
             });
         }
         
         if (type === "repos") divlabel = "ReposList";
         if (type === "countries") divlabel = "CountriesList";
+        if (type === "companies") divlabel = "CompaniesList";
         divs = $("."+divlabel);
         if (divs.length > 0) {
             $.each(divs, function(id, div) {
@@ -867,6 +759,9 @@ if (Report === undefined) var Report = {};
                 if (type === "countries")
                     DS.displayCountriesList(metrics.split(","),div.id, 
                         config_metric, order_by, show_links);
+                if (type === "companies")
+                    DS.displayCompaniesList(metrics.split(","),div.id,
+                        config_metric, order_by, show_links);
             });
         }
         
@@ -878,9 +773,11 @@ if (Report === undefined) var Report = {};
         var item = null;
         if (type === "repos") item = repo;
         if (type === "countries") item = country;
+        if (type === "companies") item = company;
         
         if (type === "repos") divlabel = "RepoRefcard";
         if (type === "countries") divlabel = "CountryRefcard";
+        if (type === "companies") divlabel = "CompanyRefcard";
         divs = $("."+divlabel);
         if (item !== null && divs.length > 0) {
             $.each(divs, function(id, div) {
@@ -890,13 +787,16 @@ if (Report === undefined) var Report = {};
                 div.id = ds+"-"+divlabel;
                 if (type === "repos")
                     DS.displayRepoSummary(div.id, repo, DS);
-                if (type === "countries") divlabel = "CountryRefcard";
-                    DS.displayCountrySummary(div.id, country, DS);                
+                if (type === "countries")
+                    DS.displayCountrySummary(div.id, country, DS);
+                if (type === "companies")
+                    DS.displayCompanySummary(div.id, company, DS);
             });
         }
 
         if (type === "repos") divlabel = "RepoMetrics";
         if (type === "countries") divlabel = "CountryMetrics";
+        if (type === "companies") divlabel = "CompanyMetrics";
         divs = $("."+divlabel);
         if (item !== null && divs.length > 0) {
             $.each(divs, function(id, div) {
@@ -917,12 +817,36 @@ if (Report === undefined) var Report = {};
                 if (type === "countries")
                     DS.displayBasicMetricsCountry(country, metrics.split(","),
                         div.id, config_metric);
+                if (type === "companies")
+                    DS.displayBasicMetricsCompany(company, metrics.split(","),
+                        div.id, config_metric);
             });
         }
-        
+
+        if (type === "repos") divlabel = "RepoTop";
+        if (type === "countries") divlabel = "CountryTop";
+        if (type === "companies") divlabel = "CompanyTop";        
+        divs = $("."+divlabel);
+        if (divs.length > 0) {
+            $.each(divs, function(id, div) {
+                ds = $(this).data('data-source');
+                DS = getDataSourceByName(ds);
+                if (DS === null) return;
+                var metric = $(this).data('metric');
+                var period = $(this).data('period');
+                var titles = $(this).data('titles');
+                div.id = metric+"-"+period+"-"+divlabel;
+                div.className = "";
+                // Only for Company yet
+                if (type === "companies")
+                    DS.displayTopCompany(company,div.id,metric,period,titles);
+            });
+        }
+
         if (legacy) {
             if (type === "repos") Report.convertReposLegacy();
             if (type === "countries") Report.convertCountriesLegacy();
+            if (type === "companies") Report.convertCompaniesLegacy();
         }        
     }
 
@@ -1267,11 +1191,9 @@ if (Report === undefined) var Report = {};
     };
         
     function convertStudies() {
-        // convertRepos();
-        // convertCountries();
         convertStudy('repos');
         convertStudy('countries');
-        convertCompanies();
+        convertStudy('companies');
         convertDemographics();
         convertSelectors();
     }    
