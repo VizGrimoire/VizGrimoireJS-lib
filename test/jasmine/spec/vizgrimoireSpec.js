@@ -334,14 +334,14 @@ describe( "VizGrimoireJS library", function () {
         var ncanvas = document.getElementsByClassName
             ('flotr-canvas').length;
         if (report === "repos")
-            Report.convertRepos();
+            Report.convertStudy(report);
         else if (report === "companies")
             Report.convertCompanies();
         else if (report === "countries")
-            Report.convertCountries();
+            Report.convertStudy(report);
         var new_ncanvas = document.getElementsByClassName
             ('flotr-canvas').length;
-        expect(new_ncanvas-ncanvas).toEqual(total_canvas);        
+        expect(new_ncanvas-ncanvas).toEqual(total_canvas);
     }
     
     describe("Repositories checking", function() {

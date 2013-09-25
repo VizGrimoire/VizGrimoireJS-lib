@@ -2,6 +2,8 @@
 .PeopleMetrics {
 	   height:150px;
 }
-.ReposGlobal {
+.ReposGlobal,
+.CountriesGlobal,
+.RepoMetrics {
     height:200px;
 }

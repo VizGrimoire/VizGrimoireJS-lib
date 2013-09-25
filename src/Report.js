@@ -50,12 +50,11 @@ if (Report === undefined) var Report = {};
     Report.convertBasicDivs = convertBasicDivs;
     Report.convertBasicDivsMisc = convertBasicDivsMisc;
     Report.convertCompanies = convertCompanies;
-    Report.convertCountries = convertCountries;
     Report.convertTop = convertTop;
     Report.convertDemographics = convertDemographics;
     Report.convertEnvision = convertEnvision;
     Report.convertPeople = convertPeople;
-    Report.convertRepos = convertRepos;
+    Report.convertStudy = convertStudy;
     Report.convertSelectors = convertSelectors;
     Report.createDataSources = createDataSources;
     Report.getAllMetrics = getAllMetrics;
@@ -757,79 +756,12 @@ if (Report === undefined) var Report = {};
         });
     }
     
-    function convertCountries() {
-        var config_metric = {};                
-        config_metric.show_desc = false;
-        config_metric.show_title = false;
-        config_metric.show_labels = true;
-        
-        var country = Report.getParameterByName("country");
-
-        $.each(Report.getDataSources(), function(index, DS) {
-            var divid = DS.getName()+"-countries-summary";
-            if ($("#"+divid).length > 0) {
-                DS.displayCountriesSummary(divid, this);
-            }
-            
-            var div_countries = DS.getName()+"-flotr2-countries-static";
-            var divs = $("."+div_countries);
-            if (divs.length > 0) {
-                $.each(divs, function(id, div) {
-                    var metric = $(this).data('metric');
-                    var limit = $(this).data('limit');
-                    var show_others = $(this).data('show-others');
-                    var order_by = $(this).data('order-by');
-                    config_metric.graph = $(this).data('graph');
-                    div.id = metric+"-flotr2-countries-static";
-                    DS.displayBasicMetricCountriesStatic(metric,div.id,
-                            config_metric, limit, order_by, show_others);
-                });
-            }
-            
-            var div_nav = DS.getName()+"-flotr2-countries-nav";
-            if ($("#"+div_nav).length > 0) {
-                var order_by = $("#"+div_nav).data('order-by');
-                DS.displayCountriesNav(div_nav, order_by);
-            }
-            
-            var divs_countries_list = DS.getName()+"-flotr2-countries-list";
-            divs = $("."+divs_countries_list);
-            if (divs.length > 0) {
-                $.each(divs, function(id, div) {
-                    var metrics = $(this).data('metrics');
-                    var order_by = $(this).data('order-by');
-                    var show_links = true; 
-                    if ($(this).data('show_links') !== undefined) 
-                        show_links = $(this).data('show_links');
-                    div.id = metrics.replace(/,/g,"-")+"-flotr2-countries-list";
-                    DS.displayCountriesList(metrics.split(","),div.id, 
-                            config_metric, order_by, show_links);
-                });
-            }
-            
-            if (country !== null) {
-                divid = DS.getName()+"-refcard-country";
-                if ($("#"+divid).length > 0) {
-                    DS.displayCountrySummary(divid, country, this);
-                }
-                
-                var div_country = DS.getName()+"-flotr2-metrics-country";
-                divs = $("."+div_country);
-                if (divs.length) {
-                    $.each(divs, function(id, div) {
-                        var metrics = $(this).data('metrics');
-                        config.show_legend = false;
-                        if ($(this).data('legend')) config_metric.show_legend = true;
-                        div.id = metrics.replace(/,/g,"-")+"-flotr2-metrics-country";
-                        DS.displayBasicMetricsCountry(country, metrics.split(","),
-                                div.id, config_metric);
-                    });
-                }                
-            }            
-        });        
-    }
-        
-    function convertRepos() {
+    // Needed for callback from Loader
+    Report.convertRepos = function() {
+        convertStudy('repos');
+    };
+           
+    function convertStudy(type) {
         var config_metric = {};      
         config_metric.show_desc = false;
         config_metric.show_title = false;
@@ -837,32 +769,45 @@ if (Report === undefined) var Report = {};
         
         var data_ready = true;
         var repo_valid = null;
-        var repo = Report.getParameterByName("repository");
+        var repo = null, country = null, divs = null, divlabel = null;
+        
+        if (type === "repos") repo = Report.getParameterByName("repository");
+        if (type === "countries") country = Report.getParameterByName("country");
         var page = Report.getParameterByName("page");
         
-        if (Loader.check_repos_page(page) === false) {
-            data_ready = false;
+        // TODO: On demand loading only for repos yet
+        if (type === "repos") {
+            if (Loader.check_repos_page(page) === false) {
+                data_ready = false;
+            }
         }
         
         if (data_ready === false) {
             $.each(Report.getDataSources(), function(index, DS) {
-                Loader.data_load_repos_page(DS, page, Report.convertRepos);
+                if (type === "repos")
+                    Loader.data_load_repos_page(DS, page, Report.convertRepos);
             });
             return;
         }
-        
-        var divs = $(".ReposSummary");
+        if (type === "repos") divlabel = "ReposSummary";
+        if (type === "countries") divlabel = "CountriesSummary";
+        divs = $("."+divlabel);
         if (divs.length > 0) {
             $.each(divs, function(id, div) {
                 ds = $(this).data('data-source');
                 DS = getDataSourceByName(ds);
                 if (DS === null) return;
-                div.id = ds+"-ReposSummary";
-                DS.displayReposSummary(div.id, DS);
+                div.id = ds+"-"+divlabel;
+                if (type === "repos")
+                    DS.displayReposSummary(div.id, DS);
+                if (type === "countries")
+                    DS.displayCountriesSummary(div.id, DS);
             });
         }
         
-        divs = $(".ReposGlobal");
+        if (type === "repos") divlabel = "ReposGlobal";
+        if (type === "countries") divlabel = "CountriesGlobal";
+        divs = $("."+divlabel);
         if (divs.length > 0) {
             $.each(divs, function(id, div) {
                 ds = $(this).data('data-source');
@@ -873,13 +818,19 @@ if (Report === undefined) var Report = {};
                 var show_others = $(this).data('show-others');
                 var order_by = $(this).data('order-by');
                 config_metric.graph = $(this).data('graph');
-                div.id = metric+"-ReposGlobal";
-                DS.displayBasicMetricReposStatic(metric,div.id,
+                div.id = metric+"-"+divlabel;
+                if (type === "repos")
+                    DS.displayBasicMetricReposStatic(metric,div.id,
+                        config_metric, limit, order_by, show_others);
+                if (type === "countries")
+                    DS.displayBasicMetricCountriesStatic(metric,div.id,
                         config_metric, limit, order_by, show_others);
             });
         }
 
-        divs = $(".ReposNav");
+        if (type === "repos") divlabel = "ReposNav";
+        if (type === "countries") divlabel = "CountriesNav";
+        divs = $("."+divlabel);
         if (divs.length > 0) {
             $.each(divs, function(id, div) {
                 ds = $(this).data('data-source');
@@ -887,12 +838,17 @@ if (Report === undefined) var Report = {};
                 if (DS === null) return;
                 var order_by = $(this).data('order-by');
                 var scm_and_its = $(this).data('scm-and-its');
-                div.id = ds+"-ReposNav";
-                DS.displayReposNav(div.id, order_by, page, scm_and_its);
+                div.id = ds+"-"+divlabel;
+                if (type === "repos")
+                    DS.displayReposNav(div.id, order_by, page, scm_and_its);
+                if (type === "countries")
+                    DS.displayCountriesNav(div.id, order_by, page, scm_and_its);
             });
         }
         
-        divs = $(".ReposList");
+        if (type === "repos") divlabel = "ReposList";
+        if (type === "countries") divlabel = "CountriesList";
+        divs = $("."+divlabel);
         if (divs.length > 0) {
             $.each(divs, function(id, div) {
                 ds = $(this).data('data-source');
@@ -904,30 +860,45 @@ if (Report === undefined) var Report = {};
                 var show_links = true; 
                 if ($(this).data('show_links') !== undefined) 
                     show_links = $(this).data('show_links');
-                div.id = metrics.replace(/,/g,"-")+"-ReposList";
-                DS.displayReposList(metrics.split(","),div.id, 
+                div.id = metrics.replace(/,/g,"-")+"-"+divlabel;
+                if (type === "repos")
+                    DS.displayReposList(metrics.split(","),div.id, 
                         config_metric, order_by, page, scm_and_its, show_links);
+                if (type === "countries")
+                    DS.displayCountriesList(metrics.split(","),div.id, 
+                        config_metric, order_by, show_links);
             });
         }
         
-        // TODO: This logic should be adapted
+        // TODO: This repos logic should be adapted
         //if (repo !== null) repo_valid = Report.getValidRepo(repo, DS);
         //if (repo_valid === null) $("#"+DS.getName()+"-repo").hide();
         //else {
         
-        divs = $(".RepoRefcard");
-        if (repo !== null && divs.length > 0) {
+        var item = null;
+        if (type === "repos") item = repo;
+        if (type === "countries") item = country;
+        
+        if (type === "repos") divlabel = "RepoRefcard";
+        if (type === "countries") divlabel = "CountryRefcard";
+        divs = $("."+divlabel);
+        if (item !== null && divs.length > 0) {
             $.each(divs, function(id, div) {
                 ds = $(this).data('data-source');
                 DS = getDataSourceByName(ds);
                 if (DS === null) return;
-                div.id = ds+"-RepoRefcard";
-                DS.displayRepoSummary(divid, repo_valid, DS);
+                div.id = ds+"-"+divlabel;
+                if (type === "repos")
+                    DS.displayRepoSummary(div.id, repo, DS);
+                if (type === "countries") divlabel = "CountryRefcard";
+                    DS.displayCountrySummary(div.id, country, DS);                
             });
         }
-        
-        divs = $(".RepoMetrics");
-        if (repo !== null && divs.length > 0) {
+
+        if (type === "repos") divlabel = "RepoMetrics";
+        if (type === "countries") divlabel = "CountryMetrics";
+        divs = $("."+divlabel);
+        if (item !== null && divs.length > 0) {
             $.each(divs, function(id, div) {
                 ds = $(this).data('data-source');
                 DS = getDataSourceByName(ds);
@@ -939,13 +910,20 @@ if (Report === undefined) var Report = {};
                     config_metric.show_legend = true;
                 if ($(this).data('frame-time')) 
                     config_metric.frame_time = true;
-                div.id = metrics.replace(/,/g,"-")+"-RepoMetrics";
-                DS.displayBasicMetricsRepo(repo_valid, metrics.split(","),
+                div.id = metrics.replace(/,/g,"-")+"-"+divlabel;
+                if (type === "repos")
+                    DS.displayBasicMetricsRepo(repo, metrics.split(","),
+                        div.id, config_metric);
+                if (type === "countries")
+                    DS.displayBasicMetricsCountry(country, metrics.split(","),
                         div.id, config_metric);
             });
         }
         
-        if (legacy) Report.convertReposLegacy();
+        if (legacy) {
+            if (type === "repos") Report.convertReposLegacy();
+            if (type === "countries") Report.convertCountriesLegacy();
+        }        
     }
 
     function convertPeople(upeople_id, upeople_identifier) {
@@ -1289,9 +1267,11 @@ if (Report === undefined) var Report = {};
     };
         
     function convertStudies() {
-        convertRepos();
+        // convertRepos();
+        // convertCountries();
+        convertStudy('repos');
+        convertStudy('countries');
         convertCompanies();
-        convertCountries();
         convertDemographics();
         convertSelectors();
     }    
