@@ -764,6 +764,32 @@ if (Report === undefined) var Report = {};
                         config_metric, order_by, show_links);
             });
         }
+
+        if (type === "repos") divlabel = "ReposCompare";
+        if (type === "countries") divlabel = "CountriesCompare";
+        if (type === "companies") divlabel = "CompaniesCompare";
+        divs = $("."+divlabel);
+        if (divs.length > 0) {
+            $.each(divs, function(id, div) {
+                ds = $(this).data('data-source');
+                DS = getDataSourceByName(ds);
+                if (DS === null) return;
+                var metric = $(this).data('metric');
+                var limit = $(this).data('limit');
+                var order_by = $(this).data('order-by');
+                var stacked = false;
+                if ($(this).data('stacked')) stacked = true;
+                config_metric.lines = {stacked : stacked};
+                div.id = metric+"-"+divlabel;
+                if (type === "companies")
+                    DS.displayBasicMetricCompanies(metric,div.id,
+                        config_metric, limit, order_by);
+                if (type === "repos")
+                    DS.displayBasicMetricRepos(metric,div.id,
+                        config_metric, limit, order_by);
+            });
+        }
+
         
         // TODO: This repos logic should be adapted
         //if (repo !== null) repo_valid = Report.getValidRepo(repo, DS);
