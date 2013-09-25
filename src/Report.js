@@ -830,8 +830,122 @@ if (Report === undefined) var Report = {};
     }
         
     function convertRepos() {
-        if (legacy || true) Report.convertReposLegacy();
-        if (true) return;        
+        var config_metric = {};      
+        config_metric.show_desc = false;
+        config_metric.show_title = false;
+        config_metric.show_labels = true;
+        
+        var data_ready = true;
+        var repo_valid = null;
+        var repo = Report.getParameterByName("repository");
+        var page = Report.getParameterByName("page");
+        
+        if (Loader.check_repos_page(page) === false) {
+            data_ready = false;
+        }
+        
+        if (data_ready === false) {
+            $.each(Report.getDataSources(), function(index, DS) {
+                Loader.data_load_repos_page(DS, page, Report.convertRepos);
+            });
+            return;
+        }
+        
+        var divs = $(".ReposSummary");
+        if (divs.length > 0) {
+            $.each(divs, function(id, div) {
+                ds = $(this).data('data-source');
+                DS = getDataSourceByName(ds);
+                if (DS === null) return;
+                div.id = ds+"-ReposSummary";
+                DS.displayReposSummary(div.id, DS);
+            });
+        }
+        
+        divs = $(".ReposGlobal");
+        if (divs.length > 0) {
+            $.each(divs, function(id, div) {
+                ds = $(this).data('data-source');
+                DS = getDataSourceByName(ds);
+                if (DS === null) return;        
+                var metric = $(this).data('metric');
+                var limit = $(this).data('limit');
+                var show_others = $(this).data('show-others');
+                var order_by = $(this).data('order-by');
+                config_metric.graph = $(this).data('graph');
+                div.id = metric+"-ReposGlobal";
+                DS.displayBasicMetricReposStatic(metric,div.id,
+                        config_metric, limit, order_by, show_others);
+            });
+        }
+
+        divs = $(".ReposNav");
+        if (divs.length > 0) {
+            $.each(divs, function(id, div) {
+                ds = $(this).data('data-source');
+                DS = getDataSourceByName(ds);
+                if (DS === null) return;
+                var order_by = $("#"+div_nav).data('order-by');
+                var scm_and_its = $("#"+div_nav).data('scm-and-its');
+                div.id = ds+"-ReposNav";
+                DS.displayReposNav(div.id, order_by, page, scm_and_its);
+            });
+        }
+        
+        divs = $(".ReposList");
+        if (divs.length > 0) {
+            $.each(divs, function(id, div) {
+                ds = $(this).data('data-source');
+                DS = getDataSourceByName(ds);
+                if (DS === null) return;
+                var metrics = $(this).data('metrics');
+                var order_by = $(this).data('order-by');
+                var scm_and_its = $(this).data('scm-and-its');
+                var show_links = true; 
+                if ($(this).data('show_links') !== undefined) 
+                    show_links = $(this).data('show_links');
+                div.id = metrics.replace(/,/g,"-")+"-ReposList";
+                DS.displayReposList(metrics.split(","),div.id, 
+                        config_metric, order_by, page, scm_and_its, show_links);
+            });
+        }
+        
+        // TODO: This logic should be adapted
+        //if (repo !== null) repo_valid = Report.getValidRepo(repo, DS);
+        //if (repo_valid === null) $("#"+DS.getName()+"-repo").hide();
+        //else {
+        
+        divs = $(".RepoRefcard");
+        if (repo !== null && divs.length > 0) {
+            $.each(divs, function(id, div) {
+                ds = $(this).data('data-source');
+                DS = getDataSourceByName(ds);
+                if (DS === null) return;
+                div.id = ds+"-RepoRefcard";
+                DS.displayRepoSummary(divid, repo_valid, DS);
+            });
+        }
+        
+        divs = $(".RepoMetrics");
+        if (repo !== null && divs.length > 0) {
+            $.each(divs, function(id, div) {
+                ds = $(this).data('data-source');
+                DS = getDataSourceByName(ds);
+                if (DS === null) return;
+                var metrics = $(this).data('metrics');                        
+                config.show_legend = false;
+                config.frame_time = false;
+                if ($(this).data('legend')) 
+                    config_metric.show_legend = true;
+                if ($(this).data('frame-time')) 
+                    config_metric.frame_time = true;
+                div.id = metrics.replace(/,/g,"-")+"-RepoMetrics";
+                DS.displayBasicMetricsRepo(repo_valid, metrics.split(","),
+                        div.id, config_metric);
+            });
+        }
+        
+        if (legacy) Report.convertReposLegacy();
     }
 
     function convertPeople(upeople_id, upeople_identifier) {

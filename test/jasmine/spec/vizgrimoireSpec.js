@@ -301,6 +301,11 @@ describe( "VizGrimoireJS library", function () {
         });        
     }
     
+    function capitaliseFirstLetter(string)
+    {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+    
     function checkVizReport(report) {
         if ($.inArray(report,['repos','companies','countries'])===-1) 
             return;
@@ -319,10 +324,11 @@ describe( "VizGrimoireJS library", function () {
             if (ds_name === "scm") metrics = "scm_commits,scm_authors"; 
             if (ds_name === "its") metrics = "its_closed,its_closers";
             if (ds_name === "mls") metrics = "mls_sent,mls_senders"; 
-            buildNode(DS.getName()+"-flotr2-"+report+"-list",
-                      DS.getName()+"-flotr2-"+report+"-list",
+            buildNode(ds_name+"-"+report+"List",
+                    capitaliseFirstLetter(report)+"List",
                     {
                         'data-metrics': metrics,
+                        'data-data-source': ds_name
             });
         });
         var ncanvas = document.getElementsByClassName
