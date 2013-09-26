@@ -473,30 +473,15 @@ if (Report === undefined) var Report = {};
     };
         
     var basic_divs = {
-        "navigation": {
-            convert: function() {
-                $.get(html_dir+"navigation.html", function(navigation) {
-                    $("#navigation").html(navigation);
-                    var addURL = Report.addDataDir(); 
-                    if (addURL) {
-                        var $links = $("#navigation a");
-                        $.each($links, function(index, value){
-                            if (value.href.indexOf("data_dir")!==-1) return;
-                            value.href += "?"+addURL;
-                        });
-                    }
-                });                
-            }
-        },
-        "navbar": {
+        "Navbar": {
             convert: function() {
                 $.get(html_dir+"navbar.html", function(navigation) {
-                    $("#navbar").html(navigation);
+                    $("#Navbar").html(navigation);
                     displayReportData();
                     displayActiveMenu();
                     var addURL = Report.addDataDir(); 
                     if (addURL) {                    
-                        var $links = $("#navbar a");
+                        var $links = $("#Navbar a");
                         $.each($links, function(index, value){
                             if (value.href.indexOf("data_dir")!==-1) return;
                             value.href += "?"+addURL;
@@ -505,46 +490,31 @@ if (Report === undefined) var Report = {};
                 });                
             }
         },
-        "header": {
-            convert: function() {
-                $.get(html_dir+"header.html", function(header) {
-                    $("#header").html(header);
-                    displayReportData();
-                    var addURL = Report.addDataDir();
-                    if (addURL) {                    
-                        var $links = $("#header a");
-                        $.each($links, function(index, value){
-                            if (value.href.indexOf("data_dir")!==-1) return;
-                            value.href += "?"+addURL;
-                        });
-                    }
-                });
-            }
-        },
-        "footer": {
+        "Footer": {
             convert: function() {
                 $.get(html_dir+"footer.html", function(footer) {
-                    $("#footer").html(footer);
+                    $("#Footer").html(footer);
                     $("#vizjs-lib-version").append(vizjslib_git_tag);
                 });
             }
         },
         // Reference card with info from all data sources
-        "refcard": {
+        "Refcard": {
             convert: convertRefcard
         },
-        "global-data": {
+        "GlobalData": {
             convert: convertGlobalNumbers
         },
-        "summary": {
+        "Summary": {
             convert: function() {
-                div_param = "summary";
+                div_param = "Summary";
                 var divs = $("." + div_param);
                 if (divs.length > 0) {
                     $.each(divs, function(id, div) {
                         var ds = $(this).data('data-source');
                         var DS = getDataSourceByName(ds);
                         if (DS === null) return;
+                        div.id = ds+'-Summary';
                         DS.displayGlobalSummary(div.id);
                     });
                 }
@@ -554,50 +524,37 @@ if (Report === undefined) var Report = {};
     };
     
     var basic_divs_misc = {
-        "radar-activity": {
+        "RadarActivity": {
             convert: function() {
-                Viz.displayRadarActivity('radar-activity');
+                Viz.displayRadarActivity('RadarActivity');
             }
         },
-        "radar-community": {
+        "RadarCommunity": {
             convert: function() {
-                Viz.displayRadarCommunity('radar-community');
+                Viz.displayRadarCommunity('RadarCommunity');
             }
         },
-        "treemap": {
+        "Treemap": {
             convert: function() {
-                var file = $('#treemap').data('file');
-                Viz.displayTreeMap('treemap', file);
+                var file = $('#Treemap').data('file');
+                Viz.displayTreeMap('Treemap', file);
             }
         },
-        "bubbles": {
+        "Bubbles": {
             convert: function() {
-                $.each(Report.getDataSources(), function(index, DS) {
-                    if (DS.getData().length === 0) return;
-            
-                    var div_time = DS.getName() + "-time-bubbles";
-                    if ($("#" + div_time).length > 0) {
-                        var radius = $("#" + div_time).data('radius');
-                        DS.displayBubbles(div_time, radius);
-                    }
-                });        
-            }
-        }
-    };
-    
-    // Legacy widgets to be removed in the future
-    var basic_divs_legacy = {
-        "gridster": {
-            convert: function() {
-                var gridster = $("#gridster").gridster({
-                    widget_margins : [ 10, 10 ],
-                    widget_base_dimensions : [ 140, 140 ]
-                }).data('gridster');
-    
-                Report.setGridster(gridster);
-                gridster.add_widget("<div id='metric_selector'></div>", 1, 3);
-                Viz.displayGridMetricSelector('metric_selector');
-                Viz.displayGridMetricAll(true);
+                div_param = "Bubbles";
+                var divs = $("." + div_param);
+                if (divs.length > 0) {
+                    $.each(divs, function(id, div) {
+                        var ds = $(this).data('data-source');
+                        var DS = getDataSourceByName(ds);
+                        if (DS === null) return;
+                        if (DS.getData().length === 0) return;
+                        var radius = $(this).data('radius');
+                        div.id = ds + "-Bubbles";
+                        DS.displayBubbles(div.id, radius);
+                    });
+                }    
             }
         }
     };
@@ -1080,12 +1037,12 @@ if (Report === undefined) var Report = {};
             refcard = res1[0];
             projcard = res2[0];
 
-            $("#refcard").html(refcard);
+            $("#Refcard").html(refcard);
             displayReportData();
             $.each(getProjectsData(), function(prj_name, prj_data) {
                 var new_div = "card-"+prj_name.replace(".","").replace(" ","");
-                $("#refcard #projects_info").append(projcard);
-                $("#refcard #projects_info #new_card")
+                $("#Refcard #projects_info").append(projcard);
+                $("#Refcard #projects_info #new_card")
                     .attr("id", new_div);
                 $.each(data_sources, function(i, DS) {
                     if (DS.getProject() !== prj_name) {
@@ -1138,13 +1095,6 @@ if (Report === undefined) var Report = {};
     
     function convertBasicDivsMisc() {
         $.each (basic_divs_misc, function(divid, value) {
-            if ($("#"+divid).length > 0) value.convert();
-            if ($("."+divid).length > 0) value.convert();
-        });
-    }
-
-    function convertBasicDivsLegacy() {
-        $.each (basic_divs_legacy, function(divid, value) {
             if ($("#"+divid).length > 0) value.convert();
             if ($("."+divid).length > 0) value.convert();
         });
@@ -1205,7 +1155,7 @@ if (Report === undefined) var Report = {};
         Report.convertEnvision();
         convertActivity();
         if (legacy) {
-            convertBasicDivsLegacy();
+            Report.convertBasicDivsLegacy();
             Report.convertIdentity();
         }
     };

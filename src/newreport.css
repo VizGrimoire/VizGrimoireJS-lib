@@ -1,7 +1,10 @@
 .MetricsEvol,
-.PeopleMetrics {
+.PeopleMetrics,
+.TimeToFix,
+.TimeToAttention {
 	   height:150px;
 }
+
 .ReposCompare,
 .ReposGlobal,
 .RepoMetrics,
@@ -12,5 +15,10 @@
 .CompaniesGlobal,
 .CompanyMetrics
  {
+    height:200px;
+}
+
+.Bubbles,
+.Radar {
     height:200px;
 }

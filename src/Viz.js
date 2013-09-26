@@ -832,8 +832,8 @@ if (Viz === undefined) var Viz = {};
 
             var div = d3.select("#"+divid);
 
-            var width = $("#treemap").width(), 
-                height = $("#treemap").height();
+            var width = $("#"+divid).width(), 
+                height = $("#"+divid).height();
 
             var treemap = d3.layout.treemap()
                 .size([ width, height ])

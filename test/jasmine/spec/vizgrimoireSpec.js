@@ -14,7 +14,7 @@ describe( "VizGrimoireJS library", function () {
             });
         });
         
-        var blocks = ["navigation","refcard","header","footer"];
+        var blocks = ["Navbar","Refcard","Footer"];
         it(blocks.join() + " should be loaded from file", function () {
             runs(function() {
                 $.each(blocks, function(index, value) {buildNode(value);});
@@ -114,7 +114,10 @@ describe( "VizGrimoireJS library", function () {
             it("html bubbles should be displayed", function () {
                 runs(function() {
                     $.each(Report.getDataSources(), function(index, DS) {
-                        buildNode(DS.getName()+"-time-bubbles","bubbles");
+                        buildNode(DS.getName()+"-time-bubbles","Bubbles",
+                                {
+                                    'data-data-source': DS.getName()
+                                });
                     });
                     var ncanvas = document.getElementsByClassName
                         ('flotr-canvas').length;
@@ -185,9 +188,9 @@ describe( "VizGrimoireJS library", function () {
                 });
             });
             it("html radar should be displayed", function () {
-                runs(function() {
-                    buildNode("radar-activity","radar");
-                    buildNode("radar-community","radar");
+                runs(function() {                
+                    buildNode("RadarActivity","radar");
+                    buildNode("RadarCommunity","radar");
                     var ncanvas = document.getElementsByClassName
                         ('flotr-canvas').length;
                     Report.convertBasicDivsMisc();
@@ -205,11 +208,11 @@ describe( "VizGrimoireJS library", function () {
 //                    expect(grids).toEqual(18);
 //                });        
 //            });
-            it("html treemap should be displayed", function () {               
+            it("html Treemap should be displayed", function () {               
                 runs(function() {
-                    buildNode("treemap","treemap",
+                    buildNode("Treemap","treemap",
                             {'data-file':'data/json/treemap.json'});
-                    Report.getBasicDivsMisc()["treemap"].convert();
+                    Report.getBasicDivsMisc()["Treemap"].convert();
                 });
                 waitsFor(function() {
                     return (document.getElementsByClassName("treemap-node").length>0);

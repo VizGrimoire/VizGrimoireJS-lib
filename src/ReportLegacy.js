@@ -572,6 +572,183 @@ Report.convertCompaniesLegacy = function(config) {
     });
 };
 
+function convertGlobalNumbersLegacy(){
+    $.each(Report.getDataSources(), function(index, DS) {
+       var data = DS.getGlobalData();
+       var divs = $(".global-data");
+       if (divs.length > 0) {
+           $.each(divs, function(id, div) {
+               var key = $(this).data('field');
+               $(this).text(data[key]);
+            });
+         }
+    });
+}
+
+
+function convertRefcardLegacy() {
+    $.when($.get(html_dir+"refcard.html"), 
+            $.get(html_dir+"project-card.html"))
+    .done (function(res1, res2) {
+        refcard = res1[0];
+        projcard = res2[0];
+    
+        $("#refcard").html(refcard);
+        displayReportData();
+        $.each(getProjectsData(), function(prj_name, prj_data) {
+            var new_div = "card-"+prj_name.replace(".","").replace(" ","");
+            $("#refcard #projects_info").append(projcard);
+            $("#refcard #projects_info #new_card")
+                .attr("id", new_div);
+            $.each(data_sources, function(i, DS) {
+                if (DS.getProject() !== prj_name) {
+                    $("#" + new_div + ' .'+DS.getName()+'-info').hide();
+                    return;
+                }
+                DS.displayData(new_div);
+            });
+            $("#"+new_div+" #project_name").text(prj_name);
+            if (projects_dirs.length>1)
+                $("#"+new_div+" .project_info")
+                    .append(' <a href="VizGrimoireJS/browser/index.html?data_dir=../../'+prj_data.dir+'">Report</a>');
+            
+            $("#"+new_div+" #project_url")
+                .attr("href", prj_data.url);
+        });
+    });
+}
+
+// Legacy widgets to be removed in the future
+var basic_divs_legacy = {
+    "gridster": {
+        convert: function() {
+            var gridster = $("#gridster").gridster({
+                widget_margins : [ 10, 10 ],
+                widget_base_dimensions : [ 140, 140 ]
+            }).data('gridster');
+
+            Report.setGridster(gridster);
+            gridster.add_widget("<div id='metric_selector'></div>", 1, 3);
+            Viz.displayGridMetricSelector('metric_selector');
+            Viz.displayGridMetricAll(true);
+        }
+    },
+    "navigation": {
+        convert: function() {
+            $.get(html_dir+"navigation.html", function(navigation) {
+                $("#navigation").html(navigation);
+                var addURL = Report.addDataDir(); 
+                if (addURL) {
+                    var $links = $("#navigation a");
+                    $.each($links, function(index, value){
+                        if (value.href.indexOf("data_dir")!==-1) return;
+                        value.href += "?"+addURL;
+                    });
+                }
+            });                
+        }
+    },
+    "header": {
+        convert: function() {
+            $.get(html_dir+"header.html", function(header) {
+                $("#header").html(header);
+                displayReportData();
+                var addURL = Report.addDataDir();
+                if (addURL) {                    
+                    var $links = $("#header a");
+                    $.each($links, function(index, value){
+                        if (value.href.indexOf("data_dir")!==-1) return;
+                        value.href += "?"+addURL;
+                    });
+                }
+            });
+        }
+    },
+    "navbar": {
+        convert: function() {
+            $.get(html_dir+"navbar.html", function(navigation) {
+                $("#navbar").html(navigation);
+                displayReportData();
+                displayActiveMenu();
+                var addURL = Report.addDataDir(); 
+                if (addURL) {                    
+                    var $links = $("#navbar a");
+                    $.each($links, function(index, value){
+                        if (value.href.indexOf("data_dir")!==-1) return;
+                        value.href += "?"+addURL;
+                    });
+                }
+            });                
+        }
+    },
+    "footer": {
+        convert: function() {
+            $.get(html_dir+"footer.html", function(footer) {
+                $("#footer").html(footer);
+                $("#vizjs-lib-version").append(vizjslib_git_tag);
+            });
+        }
+    },
+    // Reference card with info from all data sources
+    "refcard": {
+        convert: convertRefcardLegacy
+    },
+    "global-data": {
+        convert: convertGlobalNumbersLegacy
+    },
+    "summary": {
+        convert: function() {
+            div_param = "summary";
+            var divs = $("." + div_param);
+            if (divs.length > 0) {
+                $.each(divs, function(id, div) {
+                    var ds = $(this).data('data-source');
+                    var DS = getDataSourceByName(ds);
+                    if (DS === null) return;
+                    div.id = ds+'-summary';
+                    DS.displayGlobalSummary(div.id);
+                });
+            }
+            if (legacy) Report.convertSummaryLegacy();
+        }
+    },
+    "radar-activity": {
+        convert: function() {
+            Viz.displayRadarActivity('radar-activity');
+        }
+    },
+    "radar-community": {
+        convert: function() {
+            Viz.displayRadarCommunity('radar-community');
+        }
+    },
+    "treemap": {
+        convert: function() {
+            var file = $('#treemap').data('file');
+            Viz.displayTreeMap('treemap', file);
+        }
+    },
+    "bubbles": {
+        convert: function() {
+            $.each(Report.getDataSources(), function(index, DS) {
+                if (DS.getData().length === 0) return;
+        
+                var div_time = DS.getName() + "-time-bubbles";
+                if ($("#" + div_time).length > 0) {
+                    var radius = $("#" + div_time).data('radius');
+                    DS.displayBubbles(div_time, radius);
+                }
+            });        
+        }
+    }
+};
+
+Report.convertBasicDivsLegacy = function() {
+    $.each (basic_divs_legacy, function(divid, value) {
+        if ($("#"+divid).length > 0) value.convert();
+        if ($("."+divid).length > 0) value.convert();
+    });
+};
 
 
 })();
