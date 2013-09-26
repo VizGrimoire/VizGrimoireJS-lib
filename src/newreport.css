@@ -1,19 +1,18 @@
 .MetricsEvol,
-.PeopleMetrics,
-.TimeToFix,
-.TimeToAttention {
+.PersonMetrics,
+.TimeTo {
 	   height:150px;
 }
 
-.ReposCompare,
+.ReposMetricsEvol,
 .ReposGlobal,
-.RepoMetrics,
-.CountriesCompare,
+.RepoMetricsEvol,
+.CountriesMetricsEvol,
 .CountriesGlobal,
-.CountryMetrics,
-.CompaniesCompare,
+.CountryMetricsEvol,
+.CompaniesMetricsEvol,
 .CompaniesGlobal,
-.CompanyMetrics
+.CompanyMetricsEvol
  {
     height:200px;
 }

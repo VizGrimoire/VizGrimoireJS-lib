@@ -33,10 +33,10 @@ describe( "VizGrimoireJS library", function () {
         });
         
         describe( "html report should be converted", function () {        
-            it("html envision should be displayed", function () {
+            it("html MetricsEvolSet should be displayed", function () {
                 runs(function() {
                     $.each(Report.getDataSources(), function(index, DS) {
-                        buildNode(DS.getName()+"-Envision", 'Envision',
+                        buildNode(DS.getName()+"-MetricsEvolSet", 'MetricsEvolSet',
                             {
                                 'data-data-source': DS.getName(),
                             });
@@ -327,8 +327,8 @@ describe( "VizGrimoireJS library", function () {
             if (ds_name === "scm") metrics = "scm_commits,scm_authors"; 
             if (ds_name === "its") metrics = "its_closed,its_closers";
             if (ds_name === "mls") metrics = "mls_sent,mls_senders"; 
-            buildNode(ds_name+"-"+report+"List",
-                    capitaliseFirstLetter(report)+"List",
+            buildNode(ds_name+"-"+report+"MiniCharts",
+                    capitaliseFirstLetter(report)+"MiniCharts",
                     {
                         'data-metrics': metrics,
                         'data-data-source': ds_name
@@ -406,7 +406,7 @@ describe( "VizGrimoireJS library", function () {
                         metrics = 'mls_sent';
                     }
                     buildNode(DS.getName()+"-people-metrics",
-                            "PeopleMetrics",
+                            "PersonMetrics",
                           {
                               'data-metrics': metrics,
                               'data-data-source': DS.getName(),

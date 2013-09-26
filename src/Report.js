@@ -339,9 +339,9 @@ if (Report === undefined) var Report = {};
 
     // Include divs to be convertad later
     var template_divs = {
-        "microdash": {
+        "Microdash": {
             convert: function() {
-                var divs = $(".microdash");
+                var divs = $(".Microdash");
                 if (divs.length > 0) {
                     $.each(divs, function(id, div) {
                         var metric = $(this).data('metric');
@@ -351,7 +351,7 @@ if (Report === undefined) var Report = {};
                         html += '<div style="float:left">';
                         html += '<h4>'+total+' '+ds.getMetrics()[metric].name+'</h4>';
                         html += '</div>';
-                        html += '<div id="microdash" '+
+                        html += '<div id="Microdash" '+
                                 'class="MetricsEvol" data-data-source="'+ds.getName()+'" data-metrics="'+
                                 metric+'" data-min=true style="margin-left:10px; float:left;width:100px; height:25px;"></div>';
                         html += '<div style="clear:both"></div><div>';
@@ -381,9 +381,9 @@ if (Report === undefined) var Report = {};
             }
         },
         // TODO: share logic between three periods duration
-        "microdash2": {
+        "MicrodashText": {
             convert: function() {
-                var divs = $(".microdash2");
+                var divs = $(".MicrodashText");
                 if (divs.length > 0) {
                     $.each(divs, function(id, div) {
                         var metric = $(this).data('metric');
@@ -694,9 +694,9 @@ if (Report === undefined) var Report = {};
             });
         }
         
-        if (type === "repos") divlabel = "ReposList";
-        if (type === "countries") divlabel = "CountriesList";
-        if (type === "companies") divlabel = "CompaniesList";
+        if (type === "repos") divlabel = "ReposMiniCharts";
+        if (type === "countries") divlabel = "CountriesMiniCharts";
+        if (type === "companies") divlabel = "CompaniesMiniCharts";
         divs = $("."+divlabel);
         if (divs.length > 0) {
             $.each(divs, function(id, div) {
@@ -722,9 +722,9 @@ if (Report === undefined) var Report = {};
             });
         }
 
-        if (type === "repos") divlabel = "ReposCompare";
-        if (type === "countries") divlabel = "CountriesCompare";
-        if (type === "companies") divlabel = "CompaniesCompare";
+        if (type === "repos") divlabel = "ReposMetricsEvol";
+        if (type === "countries") divlabel = "CountriesMetricsEvol";
+        if (type === "companies") divlabel = "CompaniesMetricsEvol";
         divs = $("."+divlabel);
         if (divs.length > 0) {
             $.each(divs, function(id, div) {
@@ -758,9 +758,9 @@ if (Report === undefined) var Report = {};
         if (type === "countries") item = country;
         if (type === "companies") item = company;
         
-        if (type === "repos") divlabel = "RepoRefcard";
-        if (type === "countries") divlabel = "CountryRefcard";
-        if (type === "companies") divlabel = "CompanyRefcard";
+        if (type === "repos") divlabel = "RepoSummary";
+        if (type === "countries") divlabel = "CountrySummary";
+        if (type === "companies") divlabel = "CompanySummary";
         divs = $("."+divlabel);
         if (item !== null && divs.length > 0) {
             $.each(divs, function(id, div) {
@@ -777,9 +777,9 @@ if (Report === undefined) var Report = {};
             });
         }
 
-        if (type === "repos") divlabel = "RepoMetrics";
-        if (type === "countries") divlabel = "CountryMetrics";
-        if (type === "companies") divlabel = "CompanyMetrics";
+        if (type === "repos") divlabel = "RepoMetricsEvol";
+        if (type === "countries") divlabel = "CountryMetricsEvol";
+        if (type === "companies") divlabel = "CompanyMetricsEvol";
         divs = $("."+divlabel);
         if (item !== null && divs.length > 0) {
             $.each(divs, function(id, div) {
@@ -846,7 +846,7 @@ if (Report === undefined) var Report = {};
 
         if (upeople_id === undefined) return;
 
-        var divs = $(".PeopleRefcard");
+        var divs = $(".PersonSummary");
         if (divs.length > 0) {
             $.each(divs, function(id, div) {
                 ds = $(this).data('data-source');
@@ -857,7 +857,7 @@ if (Report === undefined) var Report = {};
             });
         }
         
-        divs = $(".PeopleMetrics");
+        divs = $(".PersonMetrics");
         if (divs.length) {
             $.each(divs, function(id, div) {
                 ds = $(this).data('data-source');
@@ -931,30 +931,21 @@ if (Report === undefined) var Report = {};
                         config_viz, $(this).data('convert'));
             });
         }
-       // Time to fix
-        var div_ttfix = "TimeToFix";
-        divs = $("."+div_ttfix); 
+        
+        var div_tt = "TimeTo";
+        divs = $("."+div_tt); 
         if (divs.length > 0) {
             $.each(divs, function(id, div) {
                 var ds = $(this).data('data-source');
                 var DS = getDataSourceByName(ds);
                 if (DS === null) return;
                 var quantil = $(this).data('quantil');
-                div.id = ds+"-time-to-fix-"+quantil;
-                DS.displayTimeToFix(div.id, quantil);
-            });
-        }
-        // Time to attention
-        var div_ttatt = "TimeToAttention";
-        divs = $("."+div_ttatt); 
-        if (divs.length > 0) {
-            $.each(divs, function(id, div) {
-                var ds = $(this).data('data-source');
-                var DS = getDataSourceByName(ds);
-                if (DS === null) return;
-                var quantil = $(this).data('quantil');
-                div.id = ds+"-time-to-attention-"+quantil;
-                DS.displayTimeToAttention(div.id, quantil);
+                var type = $(this).data('type');
+                div.id = ds+"-time-to-"+type+"-"+quantil;
+                if (type === "fix")
+                    DS.displayTimeToFix(div.id, quantil);
+                if (type === "attention")
+                    DS.displayTimeToAttention(div.id, quantil);
             });
         }
         
@@ -962,24 +953,23 @@ if (Report === undefined) var Report = {};
     };
     
     function convertEnvision() {    
-        if ($("#EnvisionAll").length > 0) {
-            var relative = $('#EnvisionAll').data('relative');
-            var legend = $('#EnvisionAll').data('legend-show');
-            var summary_graph = $('#EnvisionAll').data('summary-graph');
-            Viz.displayEnvisionAll('EnvisionAll', relative, legend, summary_graph);
-        }
-        
-        div_param = "Envision";
+        div_param = "MetricsEvolSet";
         var divs = $("." + div_param);
         if (divs.length > 0) {
             $.each(divs, function(id, div) {
-                var ds = $(this).data('data-source');
-                var DS = getDataSourceByName(ds);
-                if (DS === null) return;
-                var legend = $(this).data('legend-show');
+                var all = $(this).data('all');
                 var relative = $(this).data('relative');
                 var summary_graph = $(this).data('summary-graph');
-                div.id = ds+"-envision"+this.id;
+                var legend = $(this).data('legend-show');
+                div.id = ds+"-envision-"+this.id;
+                if (all === true) {
+                    div.id = ds+"-envision-all";
+                    Viz.displayEnvisionAll(div.id, relative, legend, summary_graph);
+                    return false;
+                }
+                var ds = $(this).data('data-source');
+                var DS = getDataSourceByName(ds);
+                if (DS === null) return;                
                 DS.displayEnvision(div.id, relative, legend, summary_graph); 
             });
         }
@@ -1149,6 +1139,7 @@ if (Report === undefined) var Report = {};
 
     Report.convertGlobal = function() {
         convertTemplateDivs();
+        if (legacy) Report.convertTemplateDivsLegacy();
         convertBasicDivs();
         convertBasicDivsMisc();
         Report.convertBasicMetrics(config);
