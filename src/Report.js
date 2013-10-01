@@ -465,7 +465,7 @@ var Report = {};
                         var metric = $(this).data('metric');
                         var ds = getMetricDS(metric)[0];
                         var total = ds.getGlobalData()[metric];
-                        var change7 = ds.getGlobalData()[metric+"_7"];
+                        //var change7 = ds.getGlobalData()[metric+"_7"];
                         //initial square: total
                         var html = '<div class="row-fluid"><div class="span3">';
                         html += '<h4>'+total+'</h4> '+ds.getMetrics()[metric].name;
@@ -474,7 +474,7 @@ var Report = {};
                         //second square: arrow + % for last 7 days
                         html += '<div class="span3">';
                         var netvalue = ds.getGlobalData()["diff_net"+metric+"_7"];
-                        var percentagevalue = ds.GlobalData()["percentage_"+metric+"_7"]
+                        var percentagevalue = ds.GlobalData()["percentage_"+metric+"_7"];
                         if (netvalue > 0){
                             html += '<i class="icon-circle-arrow-up"></i>&nbsp;';
                             html += netvalue + '<span class="fppercent">&nbsp;('+percentagevalue+'%)</span>&nbsp;';
@@ -506,8 +506,8 @@ var Report = {};
 
                         //third square: arrow + % for last 30 days
                         html += '<div class="span3">';
-                        var netvalue = ds.getGlobalData()["diff_net"+metric+"_30"];
-                        var percentagevalue = ds.GlobalData()["percentage_"+metric+"_30"]
+                        netvalue = ds.getGlobalData()["diff_net"+metric+"_30"];
+                        percentagevalue = ds.GlobalData()["percentage_"+metric+"_30"];
                         if (netvalue > 0){
                             html += '<i class="icon-circle-arrow-up"></i>&nbsp;';
                             html += netvalue + '<span class="fppercent">&nbsp;('+percentagevalue+'%)</span>&nbsp;';
@@ -517,13 +517,14 @@ var Report = {};
                         } else if (netvalue === 0){
                             html += '<i class="icon-circle-arrow-right"></i>&nbsp;';
                             html += netvalue + '<span class="fppercent">&nbsp;(0%)</span>&nbsp;';
+                        }
                         html += '<br><span class="dayschange">30 Days Change</span>';
                         html += '</div><!--span3-->';
                         
                         //fourth square: arrow + % for last 365 days
                         html += '<div class="span3">';
-                        var netvalue = ds.getGlobalData()["diff_net"+metric+"_365"];
-                        var percentagevalue = ds.GlobalData()["percentage_"+metric+"_365"]
+                        netvalue = ds.getGlobalData()["diff_net"+metric+"_365"];
+                        percentagevalue = ds.GlobalData()["percentage_"+metric+"_365"];
                         if (netvalue > 0){
                             html += '<i class="icon-circle-arrow-up"></i>&nbsp;';
                             html += netvalue + '<span class="fppercent">&nbsp;('+percentagevalue+'%)</span>&nbsp;';
@@ -533,6 +534,7 @@ var Report = {};
                         } else if (netvalue === 0){
                             html += '<i class="icon-circle-arrow-right"></i>&nbsp;';
                             html += netvalue + '<span class="fppercent">&nbsp;(0%)</span>&nbsp;';
+                        }
                         html += '<br><span class="dayschange">365 Days Change</span>';
                         html += '</div><!--span3-->';   
 
