@@ -474,7 +474,7 @@ var Report = {};
                         //second square: arrow + % for last 7 days
                         html += '<div class="span3">';
                         var netvalue = ds.getGlobalData()["diff_net"+metric+"_7"];
-                        var percentagevalue = ds.GlobalData()["percentage_"+metric+"_7"];
+                        var percentagevalue = ds.getGlobalData()["percentage_"+metric+"_7"];
                         if (netvalue > 0){
                             html += '<i class="icon-circle-arrow-up"></i>&nbsp;';
                             html += netvalue + '<span class="fppercent">&nbsp;('+percentagevalue+'%)</span>&nbsp;';
@@ -507,7 +507,7 @@ var Report = {};
                         //third square: arrow + % for last 30 days
                         html += '<div class="span3">';
                         netvalue = ds.getGlobalData()["diff_net"+metric+"_30"];
-                        percentagevalue = ds.GlobalData()["percentage_"+metric+"_30"];
+                        percentagevalue = ds.getGlobalData()["percentage_"+metric+"_30"];
                         if (netvalue > 0){
                             html += '<i class="icon-circle-arrow-up"></i>&nbsp;';
                             html += netvalue + '<span class="fppercent">&nbsp;('+percentagevalue+'%)</span>&nbsp;';
@@ -524,7 +524,7 @@ var Report = {};
                         //fourth square: arrow + % for last 365 days
                         html += '<div class="span3">';
                         netvalue = ds.getGlobalData()["diff_net"+metric+"_365"];
-                        percentagevalue = ds.GlobalData()["percentage_"+metric+"_365"];
+                        percentagevalue = ds.getGlobalData()["percentage_"+metric+"_365"];
                         if (netvalue > 0){
                             html += '<i class="icon-circle-arrow-up"></i>&nbsp;';
                             html += netvalue + '<span class="fppercent">&nbsp;('+percentagevalue+'%)</span>&nbsp;';
