@@ -559,40 +559,48 @@ if (Report === undefined) var Report = {};
             convert: Report.convertSummary
         }
     };
-    
+
+    Report.convertRadarActivity = function() {
+        Viz.displayRadarActivity('RadarActivity');
+    };
+
+    Report.convertRadarCommunity = function() {
+        Viz.displayRadarCommunity('RadarCommunity');
+    };
+
+    Report.convertTreemap = function() {
+        var file = $('#Treemap').data('file');
+        Viz.displayTreeMap('Treemap', file);
+    };
+
+    Report.convertBubbles = function() {
+        div_param = "Bubbles";
+        var divs = $("." + div_param);
+        if (divs.length > 0) {
+            $.each(divs, function(id, div) {
+                var ds = $(this).data('data-source');
+                var DS = getDataSourceByName(ds);
+                if (DS === null) return;
+                if (DS.getData().length === 0) return;
+                var radius = $(this).data('radius');
+                div.id = ds + "-Bubbles";
+                DS.displayBubbles(div.id, radius);
+            });
+        }
+    };
+
     var basic_divs_misc = {
         "RadarActivity": {
-            convert: function() {
-                Viz.displayRadarActivity('RadarActivity');
-            }
+            convert: Report.convertRadarActivity
         },
         "RadarCommunity": {
-            convert: function() {
-                Viz.displayRadarCommunity('RadarCommunity');
-            }
+            convert: Report.convertRadarCommunity
         },
         "Treemap": {
-            convert: function() {
-                var file = $('#Treemap').data('file');
-                Viz.displayTreeMap('Treemap', file);
-            }
+            convert: Report.convertTreemap
         },
         "Bubbles": {
-            convert: function() {
-                div_param = "Bubbles";
-                var divs = $("." + div_param);
-                if (divs.length > 0) {
-                    $.each(divs, function(id, div) {
-                        var ds = $(this).data('data-source');
-                        var DS = getDataSourceByName(ds);
-                        if (DS === null) return;
-                        if (DS.getData().length === 0) return;
-                        var radius = $(this).data('radius');
-                        div.id = ds + "-Bubbles";
-                        DS.displayBubbles(div.id, radius);
-                    });
-                }    
-            }
+            convert: Report.convertBubbles
         }
     };
     
@@ -1106,7 +1114,7 @@ if (Report === undefined) var Report = {};
              }
        });
     };
-    
+
     // Build mapping between Data Sources and Projects
     Report.configDataSources = function() {
         var prjs_dss = Report.getProjectsDataSources();
