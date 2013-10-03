@@ -51,7 +51,6 @@ if (Report === undefined) var Report = {};
     Report.convertBasicDivsMisc = convertBasicDivsMisc;
     Report.convertTop = convertTop;
     Report.convertDemographics = convertDemographics;
-    Report.convertEnvision = convertEnvision;
     Report.convertPeople = convertPeople;
     Report.convertStudy = convertStudy;
     Report.convertSelectors = convertSelectors;
@@ -350,7 +349,7 @@ if (Report === undefined) var Report = {};
                 var html = '<div class="row-fluid"><div class="span3">';
                 html += '<h4>'+total+'</h4> '+ds.getMetrics()[metric].name;
                 html += '</div><!--span3-->';
-  
+
                 //second square: arrow + % for last 7 days
                 html += '<div class="span3">';
                 var value = ds.getGlobalData()[metric+"_7"];
@@ -409,56 +408,58 @@ if (Report === undefined) var Report = {};
                     html += old_value + '<span class="fppercent">&nbsp;('+inc+'%)</span>&nbsp;';
                 }
                 html += '<br><span class="dayschange">365 Days Change</span>';
-                html += '</div><!--span3-->';   
-    
+                html += '</div><!--span3-->';
+
                 html += '</div><!--row-fluid-->';
                 $(div).append(html);
             });
         }
     };
 
+    Report.convertMicrodash = function () {
+        var divs = $(".Microdash");
+        if (divs.length > 0) {
+            $.each(divs, function(id, div) {
+                var metric = $(this).data('metric');
+                var ds = getMetricDS(metric)[0];
+                var total = ds.getGlobalData()[metric];
+                var html = '<div>';
+                html += '<div style="float:left">';
+                html += '<h4>'+total+' '+ds.getMetrics()[metric].name+'</h4>';
+                html += '</div>';
+                html += '<div id="Microdash" '+
+                        'class="MetricsEvol" data-data-source="'+ds.getName()+'" data-metrics="'+
+                        metric+'" data-min=true style="margin-left:10px; float:left;width:100px; height:25px;"></div>';
+                html += '<div style="clear:both"></div><div>';
+                $.each({7:'week',30:'month',365:'year'}, function(period, name) {
+                    var value = ds.getGlobalData()[metric+"_"+period];
+                    var value2 = ds.getGlobalData()[metric+"_"+(period*2)];
+                    var old_value = value2-value;
+                    html += "<em>"+name+"</em>:"+value+"&nbsp;";
+                    var inc = parseInt(((value-old_value)/old_value)*100,null);
+                    if (value === old_value) {
+                        html += '';
+                    }
+                    else if (value > old_value) {
+                        html += '<i class="icon-circle-arrow-up"></i>';
+                        html += '<small>('+inc+'%)</small>&nbsp;';
+                    } else if (value < old_value) {
+                        html += '<i class="icon-circle-arrow-down"></i>';
+                        html += '<small>('+inc+'%)</small>&nbsp;';
+                    }
+                });
+                html += '</div>';
+                html += '<div>';
+                $(div).append(html);
+            });
+        }
+        Report.convertMetricsEvol();
+    };
+
     // Include divs to be convertad later
     var template_divs = {
         "Microdash": {
-            convert: function() {
-                var divs = $(".Microdash");
-                if (divs.length > 0) {
-                    $.each(divs, function(id, div) {
-                        var metric = $(this).data('metric');
-                        var ds = getMetricDS(metric)[0];
-                        var total = ds.getGlobalData()[metric];
-                        var html = '<div>';
-                        html += '<div style="float:left">';
-                        html += '<h4>'+total+' '+ds.getMetrics()[metric].name+'</h4>';
-                        html += '</div>';
-                        html += '<div id="Microdash" '+
-                                'class="MetricsEvol" data-data-source="'+ds.getName()+'" data-metrics="'+
-                                metric+'" data-min=true style="margin-left:10px; float:left;width:100px; height:25px;"></div>';
-                        html += '<div style="clear:both"></div><div>';
-                        $.each({7:'week',30:'month',365:'year'}, function(period, name) {
-                            var value = ds.getGlobalData()[metric+"_"+period];
-                            var value2 = ds.getGlobalData()[metric+"_"+(period*2)];
-                            var old_value = value2-value;
-                            html += "<em>"+name+"</em>:"+value+"&nbsp;";
-                            var inc = parseInt(((value-old_value)/old_value)*100,null);
-                            if (value === old_value) {
-                                html += '';
-                            }
-                            else if (value > old_value) {
-                                html += '<i class="icon-circle-arrow-up"></i>';
-                                html += '<small>('+inc+'%)</small>&nbsp;';
-                            } else if (value < old_value) {
-                                html += '<i class="icon-circle-arrow-down"></i>';
-                                html += '<small>('+inc+'%)</small>&nbsp;';
-                            }
-                            
-                        });
-                        html += '</div>';
-                        html += '<div>';
-                        $(div).append(html);
-                    });
-                }
-            }
+            convert: Report.convertMicrodash
         },
         "MicrodashText": {
             convert: Report.convertMicrodashText
@@ -930,21 +931,20 @@ if (Report === undefined) var Report = {};
         return DS;
     }
     
-    Report.convertBasicMetrics = function(config) {
+    Report.convertMetricsEvol = function() {
         // General config for metrics viz
         var config_metric = {};
-                
+
         config_metric.show_desc = false;
         config_metric.show_title = false;
         config_metric.show_labels = true;
-    
+
         if (config) {
             $.each(config, function(key, value) {
                 config_metric[key] = value;
             });
         }
 
-        // Metrics evolution
         var div_param = "MetricsEvol";
         var divs = $("." + div_param);
         if (divs.length > 0) {
@@ -978,7 +978,11 @@ if (Report === undefined) var Report = {};
                         config_viz, $(this).data('convert'));
             });
         }
-        
+
+        if (legacy) Report.convertFlotr2();
+    };
+
+    Report.convertTimeTo = function() {
         var div_tt = "TimeTo";
         divs = $("."+div_tt); 
         if (divs.length > 0) {
@@ -995,11 +999,14 @@ if (Report === undefined) var Report = {};
                     DS.displayTimeToAttention(div.id, quantil);
             });
         }
-        
-        if (legacy) Report.convertFlotr2();
     };
-    
-    function convertEnvision() {    
+
+    Report.convertBasicMetrics = function(config) {
+        Report.convertMetricsEvol();
+        Report.convertTimeTo();
+    };
+
+    Report.convertMetricsEvolSet = function() {
         div_param = "MetricsEvolSet";
         var divs = $("." + div_param);
         if (divs.length > 0) {
@@ -1008,9 +1015,9 @@ if (Report === undefined) var Report = {};
                 var relative = $(this).data('relative');
                 var summary_graph = $(this).data('summary-graph');
                 var legend = $(this).data('legend-show');
-                div.id = ds+"-envision-"+this.id;
+                div.id = ds+"-MetricsEvolSet-"+this.id;
                 if (all === true) {
-                    div.id = ds+"-envision-all";
+                    div.id = ds+"-All";
                     Viz.displayEnvisionAll(div.id, relative, legend, summary_graph);
                     return false;
                 }
@@ -1020,9 +1027,9 @@ if (Report === undefined) var Report = {};
                 DS.displayEnvision(div.id, relative, legend, summary_graph); 
             });
         }
-        
+
         if (legacy) Report.convertEnvisionLegacy();
-    }
+    };
 
     function convertTop() {    
         var div_id_top = "Top";        
@@ -1157,8 +1164,8 @@ if (Report === undefined) var Report = {};
         if (legacy) Report.convertTemplateDivsLegacy();
         convertBasicDivs();
         convertBasicDivsMisc();
-        Report.convertBasicMetrics(config);
-        Report.convertEnvision();
+        Report.convertBasicMetrics();
+        Report.convertMetricsEvolSet();
         Report.convertLastActivity();
         if (legacy) {
             Report.convertBasicDivsLegacy();

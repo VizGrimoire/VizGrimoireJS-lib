@@ -41,7 +41,7 @@ describe( "VizGrimoireJS library", function () {
                                 'data-data-source': DS.getName(),
                             });
                     });
-                    Report.convertEnvision();
+                    Report.convertMetricsEvolSet();
                     var envisionCreated = document.getElementsByClassName
                         ('envision-visualization');
                     expect(envisionCreated.length).toEqual
