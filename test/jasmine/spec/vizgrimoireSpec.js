@@ -327,16 +327,17 @@ describe( "VizGrimoireJS library", function () {
             if (ds_name === "scm") metrics = "scm_commits,scm_authors"; 
             if (ds_name === "its") metrics = "its_closed,its_closers";
             if (ds_name === "mls") metrics = "mls_sent,mls_senders"; 
-            buildNode(ds_name+"-"+report+"MiniCharts",
-                    capitaliseFirstLetter(report)+"MiniCharts",
+            buildNode(ds_name+"-"+report+"-MiniCharts",
+                    "FilterItemsMiniCharts",
                     {
                         'data-metrics': metrics,
-                        'data-data-source': ds_name
+                        'data-data-source': ds_name,
+                        'data-filter': report
             });
         });
         var ncanvas = document.getElementsByClassName
             ('flotr-canvas').length;
-        Report.convertStudy(report);
+        Report.convertFilterStudy(report);
         var new_ncanvas = document.getElementsByClassName
             ('flotr-canvas').length;
         expect(new_ncanvas-ncanvas).toEqual(total_canvas);

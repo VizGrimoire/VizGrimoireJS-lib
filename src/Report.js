@@ -52,7 +52,7 @@ if (Report === undefined) var Report = {};
     Report.convertTop = convertTop;
     Report.convertDemographics = convertDemographics;
     Report.convertPeople = convertPeople;
-    Report.convertStudy = convertStudy;
+    Report.convertFilterStudy = convertFilterStudy;
     Report.convertSelectors = convertSelectors;
     Report.createDataSources = createDataSources;
     Report.getAllMetrics = getAllMetrics;
@@ -636,68 +636,49 @@ if (Report === undefined) var Report = {};
             });
     };
 
-    // Needed for callback from Loader
-    Report.convertRepos = function() {
-        convertStudy('repos');
-    };
-           
-    function convertStudy(type) {
-        var config_metric = {};      
+    function filterItemsConfig() {
+        var config_metric = {};
         config_metric.show_desc = false;
         config_metric.show_title = false;
         config_metric.show_labels = true;
-        
-        var data_ready = true;
-        var repo_valid = null;
-        var repo = null, country = null, company = null, divs = null, divlabel = null;
-        
-        if (type === "repos") repo = Report.getParameterByName("repository");
-        if (type === "countries") country = Report.getParameterByName("country");
-        if (type === "companies") company = Report.getParameterByName("company");
-        var page = Report.getParameterByName("page");
-        
-        // TODO: On demand loading only for repos yet
-        if (type === "repos") {
-            if (Loader.check_repos_page(page) === false) {
-                data_ready = false;
-            }
-        }
-        
-        if (data_ready === false) {
-            $.each(Report.getDataSources(), function(index, DS) {
-                if (type === "repos")
-                    Loader.data_load_repos_page(DS, page, Report.convertRepos);
-            });
-            return;
-        }
-        if (type === "repos") divlabel = "ReposSummary";
-        if (type === "countries") divlabel = "CountriesSummary";
-        if (type === "companies") divlabel = "CompaniesSummary";
+        return config_metric;
+    }
+
+    // Needed for callback from Loader
+    Report.convertRepos = function() {
+        convertFilterStudy('repos');
+    };
+
+    Report.convertFilterItemsSummary = function() {
+        var divlabel = "FilterItemsSummary";
         divs = $("."+divlabel);
         if (divs.length > 0) {
             $.each(divs, function(id, div) {
                 ds = $(this).data('data-source');
                 DS = getDataSourceByName(ds);
                 if (DS === null) return;
+                var filter = $(this).data('filter');
                 div.id = ds+"-"+divlabel;
-                if (type === "repos")
+                if (filter === "repos")
                     DS.displayReposSummary(div.id, DS);
-                if (type === "countries")
+                if (filter === "countries")
                     DS.displayCountriesSummary(div.id, DS);
-                if (type === "companies")
+                if (filter === "companies")
                     DS.displayCompaniesSummary(div.id, DS);
             });
         }
-        
-        if (type === "repos") divlabel = "ReposGlobal";
-        if (type === "countries") divlabel = "CountriesGlobal";
-        if (type === "companies") divlabel = "CompaniesGlobal";
+    };
+
+    Report.convertFilterItemsGlobal = function() {
+        var config_metric = filterItemsConfig();
+        var divlabel = "FilterItemsGlobal";
         divs = $("."+divlabel);
         if (divs.length > 0) {
             $.each(divs, function(id, div) {
                 ds = $(this).data('data-source');
                 DS = getDataSourceByName(ds);
-                if (DS === null) return;        
+                if (DS === null) return;
+                var filter = $(this).data('filter');
                 var metric = $(this).data('metric');
                 var limit = $(this).data('limit');
                 var show_others = $(this).data('show-others');
@@ -709,76 +690,53 @@ if (Report === undefined) var Report = {};
                 } else config_metric.legend = {container: null};
                 config_metric.graph = $(this).data('graph');
                 div.id = metric+"-"+divlabel;
-                if (type === "repos")
+                if (filter === "repos")
                     DS.displayBasicMetricReposStatic(metric,div.id,
                         config_metric, limit, order_by, show_others);
-                if (type === "countries")
+                if (filter === "countries")
                     DS.displayBasicMetricCountriesStatic(metric,div.id,
                         config_metric, limit, order_by, show_others);
-                if (type === "companies")
+                if (filter === "companies")
                     DS.displayBasicMetricCompaniesStatic(metric,div.id,
                         config_metric, limit, order_by, show_others);
             });
         }
+    };
 
-        if (type === "repos") divlabel = "ReposNav";
-        if (type === "countries") divlabel = "CountriesNav";
-        if (type === "companies") divlabel = "CompaniesNav";
+    Report.convertFilterItemsNav = function(page) {
+        var divlabel = "FilterItemsNav";
         divs = $("."+divlabel);
         if (divs.length > 0) {
             $.each(divs, function(id, div) {
                 ds = $(this).data('data-source');
                 DS = getDataSourceByName(ds);
                 if (DS === null) return;
+                var filter = $(this).data('filter');
+                if ($(this).data('page')) page = $(this).data('page');
                 var order_by = $(this).data('order-by');
                 var scm_and_its = $(this).data('scm-and-its');
                 div.id = ds+"-"+divlabel;
-                if (type === "repos")
+                if (filter === "repos")
                     DS.displayReposNav(div.id, order_by, page, scm_and_its);
-                if (type === "countries")
+                if (filter === "countries")
                     DS.displayCountriesNav(div.id, order_by, page, scm_and_its);
-                if (type === "companies")
+                if (filter === "companies")
                     DS.displayCompaniesNav(div.id, order_by);
             });
         }
-        
-        if (type === "repos") divlabel = "ReposMiniCharts";
-        if (type === "countries") divlabel = "CountriesMiniCharts";
-        if (type === "companies") divlabel = "CompaniesMiniCharts";
-        divs = $("."+divlabel);
-        if (divs.length > 0) {
-            $.each(divs, function(id, div) {
-                ds = $(this).data('data-source');
-                DS = getDataSourceByName(ds);
-                if (DS === null) return;
-                var metrics = $(this).data('metrics');
-                var order_by = $(this).data('order-by');
-                var scm_and_its = $(this).data('scm-and-its');
-                var show_links = true; 
-                if ($(this).data('show_links') !== undefined) 
-                    show_links = $(this).data('show_links');
-                div.id = metrics.replace(/,/g,"-")+"-"+divlabel;
-                if (type === "repos")
-                    DS.displayReposList(metrics.split(","),div.id, 
-                        config_metric, order_by, page, scm_and_its, show_links);
-                if (type === "countries")
-                    DS.displayCountriesList(metrics.split(","),div.id, 
-                        config_metric, order_by, show_links);
-                if (type === "companies")
-                    DS.displayCompaniesList(metrics.split(","),div.id,
-                        config_metric, order_by, show_links);
-            });
-        }
+    };
 
-        if (type === "repos") divlabel = "ReposMetricsEvol";
-        if (type === "countries") divlabel = "CountriesMetricsEvol";
-        if (type === "companies") divlabel = "CompaniesMetricsEvol";
+    Report.convertFilterItemsMetricsEvol = function() {
+        var config_metric = filterItemsConfig();
+
+        var divlabel = "FilterItemsMetricsEvol";
         divs = $("."+divlabel);
         if (divs.length > 0) {
             $.each(divs, function(id, div) {
                 ds = $(this).data('data-source');
                 DS = getDataSourceByName(ds);
                 if (DS === null) return;
+                var filter = $(this).data('filter');
                 var metric = $(this).data('metric');
                 var limit = $(this).data('limit');
                 var order_by = $(this).data('order-by');
@@ -786,54 +744,90 @@ if (Report === undefined) var Report = {};
                 if ($(this).data('stacked')) stacked = true;
                 config_metric.lines = {stacked : stacked};
                 div.id = metric+"-"+divlabel;
-                if (type === "companies")
+                if (filter === "companies")
                     DS.displayBasicMetricCompanies(metric,div.id,
                         config_metric, limit, order_by);
-                if (type === "repos")
+                if (filter === "repos")
                     DS.displayBasicMetricRepos(metric,div.id,
                         config_metric, limit, order_by);
             });
         }
+    };
 
-        
+    Report.convertFilterItemsMiniCharts = function(page) {
+        var config_metric = filterItemsConfig();
+
+        var divlabel = "FilterItemsMiniCharts";
+        divs = $("."+divlabel);
+        if (divs.length > 0) {
+            $.each(divs, function(id, div) {
+                ds = $(this).data('data-source');
+                DS = getDataSourceByName(ds);
+                if (DS === null) return;
+                var filter = $(this).data('filter');
+                if ($(this).data('page')) page = $(this).data('page');
+                var metrics = $(this).data('metrics');
+                var order_by = $(this).data('order-by');
+                var scm_and_its = $(this).data('scm-and-its');
+                var show_links = true;
+                if ($(this).data('show_links') !== undefined)
+                    show_links = $(this).data('show_links');
+                div.id = metrics.replace(/,/g,"-")+"-"+divlabel;
+                if (filter === "repos")
+                    DS.displayReposList(metrics.split(","),div.id,
+                        config_metric, order_by, page, scm_and_its, show_links);
+                if (filter === "countries")
+                    DS.displayCountriesList(metrics.split(","),div.id,
+                        config_metric, order_by, show_links);
+                if (filter === "companies")
+                    DS.displayCompaniesList(metrics.split(","),div.id,
+                        config_metric, order_by, show_links);
+            });
+        }
+    };
+
+    Report.convertFilterItemSummary = function(item) {
         // TODO: This repos logic should be adapted
         //if (repo !== null) repo_valid = Report.getValidRepo(repo, DS);
         //if (repo_valid === null) $("#"+DS.getName()+"-repo").hide();
         //else {
         
-        var item = null;
-        if (type === "repos") item = repo;
-        if (type === "countries") item = country;
-        if (type === "companies") item = company;
-        
-        if (type === "repos") divlabel = "RepoSummary";
-        if (type === "countries") divlabel = "CountrySummary";
-        if (type === "companies") divlabel = "CompanySummary";
+        var divlabel = "FilterItemSummary";
         divs = $("."+divlabel);
         if (item !== null && divs.length > 0) {
             $.each(divs, function(id, div) {
                 ds = $(this).data('data-source');
                 DS = getDataSourceByName(ds);
                 if (DS === null) return;
+                var filter = $(this).data('filter');
+                if ($(this).data('item')) item = $(this).data('item');
                 div.id = ds+"-"+divlabel;
-                if (type === "repos")
-                    DS.displayRepoSummary(div.id, repo, DS);
-                if (type === "countries")
-                    DS.displayCountrySummary(div.id, country, DS);
-                if (type === "companies")
-                    DS.displayCompanySummary(div.id, company, DS);
+                if (filter === "repos")
+                    DS.displayRepoSummary(div.id, item, DS);
+                if (filter === "countries")
+                    DS.displayCountrySummary(div.id, item, DS);
+                if (filter === "companies")
+                    DS.displayCompanySummary(div.id, item, DS);
             });
         }
 
-        if (type === "repos") divlabel = "RepoMetricsEvol";
-        if (type === "countries") divlabel = "CountryMetricsEvol";
-        if (type === "companies") divlabel = "CompanyMetricsEvol";
+    };
+
+    Report.convertFilterItemMetricsEvol = function(item) {
+        var config_metric = filterItemsConfig();
+        config_metric.show_desc = false;
+        config_metric.show_title = false;
+        config_metric.show_labels = true;
+
+        var divlabel = "FilterItemMetricsEvol";
         divs = $("."+divlabel);
         if (item !== null && divs.length > 0) {
             $.each(divs, function(id, div) {
                 ds = $(this).data('data-source');
                 DS = getDataSourceByName(ds);
                 if (DS === null) return;
+                var filter = $(this).data('filter');
+                if ($(this).data('item')) item = $(this).data('item');
                 var metrics = $(this).data('metrics');                        
                 config.show_legend = false;
                 config.frame_time = false;
@@ -842,42 +836,82 @@ if (Report === undefined) var Report = {};
                 if ($(this).data('frame-time')) 
                     config_metric.frame_time = true;
                 div.id = metrics.replace(/,/g,"-")+"-"+divlabel;
-                if (type === "repos")
-                    DS.displayBasicMetricsRepo(repo, metrics.split(","),
+                if (filter === "repos")
+                    DS.displayBasicMetricsRepo(item, metrics.split(","),
                         div.id, config_metric);
-                if (type === "countries")
-                    DS.displayBasicMetricsCountry(country, metrics.split(","),
+                if (filter === "countries")
+                    DS.displayBasicMetricsCountry(item, metrics.split(","),
                         div.id, config_metric);
-                if (type === "companies")
-                    DS.displayBasicMetricsCompany(company, metrics.split(","),
+                if (filter === "companies")
+                    DS.displayBasicMetricsCompany(item, metrics.split(","),
                         div.id, config_metric);
             });
         }
+    };
 
-        if (type === "repos") divlabel = "RepoTop";
-        if (type === "countries") divlabel = "CountryTop";
-        if (type === "companies") divlabel = "CompanyTop";        
+    Report.convertFilterItemTop = function(item) {
+        var divlabel = "FilterItemTop";
         divs = $("."+divlabel);
         if (divs.length > 0) {
             $.each(divs, function(id, div) {
                 ds = $(this).data('data-source');
                 DS = getDataSourceByName(ds);
                 if (DS === null) return;
+                var filter = $(this).data('filter');
+                if ($(this).data('item')) item = $(this).data('item');
                 var metric = $(this).data('metric');
                 var period = $(this).data('period');
                 var titles = $(this).data('titles');
                 div.id = metric+"-"+period+"-"+divlabel;
                 div.className = "";
                 // Only for Company yet
-                if (type === "companies")
+                if (filter === "companies")
                     DS.displayTopCompany(company,div.id,metric,period,titles);
             });
         }
+    };
+
+    function convertFilterStudy(filter) {
+        var config_metric = filterItemsConfig();
+
+        var data_ready = true;
+        var repo_valid = null;
+        var item = null, divs = null, divlabel = null;
+
+        if (filter === "repos") item = Report.getParameterByName("repository");
+        if (filter === "countries") item = Report.getParameterByName("country");
+        if (filter === "companies") item = Report.getParameterByName("company");
+        var page = Report.getParameterByName("page");
+
+        // TODO: On demand loading only for repos yet
+        if (filter === "repos") {
+            if (Loader.check_repos_page(page) === false) {
+                data_ready = false;
+            }
+        }
+
+        if (data_ready === false) {
+            $.each(Report.getDataSources(), function(index, DS) {
+                if (filter === "repos")
+                    Loader.data_load_repos_page(DS, page, Report.convertRepos);
+            });
+            return;
+        }
+
+        Report.convertFilterItemsSummary();
+        Report.convertFilterItemsGlobal();
+        Report.convertFilterItemsNav();
+        Report.convertFilterItemsMetricsEvol();
+        Report.convertFilterItemsMiniCharts(page);
+
+        Report.convertFilterItemSummary(item);
+        Report.convertFilterItemMetricsEvol(item);
+        Report.convertFilterItemTop(item);
 
         if (legacy) {
-            if (type === "repos") Report.convertReposLegacy();
-            if (type === "countries") Report.convertCountriesLegacy();
-            if (type === "companies") Report.convertCompaniesLegacy();
+            if (filter === "repos") Report.convertReposLegacy();
+            if (filter === "countries") Report.convertCountriesLegacy();
+            if (filter === "companies") Report.convertCompaniesLegacy();
         }        
     }
 
@@ -1191,9 +1225,9 @@ if (Report === undefined) var Report = {};
     };
         
     function convertStudies() {
-        convertStudy('repos');
-        convertStudy('countries');
-        convertStudy('companies');
+        convertFilterStudy('repos');
+        convertFilterStudy('countries');
+        convertFilterStudy('companies');
         convertDemographics();
         convertSelectors();
     }    
