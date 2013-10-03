@@ -881,30 +881,12 @@ if (Report === undefined) var Report = {};
         }        
     }
 
-    function convertPeople(upeople_id, upeople_identifier) {
+    Report.convertPersonMetrics = function (upeople_id, upeople_identifier) {
         var config_metric = {};                
         config_metric.show_desc = false;
         config_metric.show_title = false;
         config_metric.show_labels = true;
-        
-        if (upeople_id === undefined)
-            upeople_id = Report.getParameterByName("id");
-        if (upeople_identifier === undefined)
-            upeople_identifier = Report.getParameterByName("name");
 
-        if (upeople_id === undefined) return;
-
-        var divs = $(".PersonSummary");
-        if (divs.length > 0) {
-            $.each(divs, function(id, div) {
-                ds = $(this).data('data-source');
-                DS = getDataSourceByName(ds);
-                if (DS === null) return;
-                div.id = ds+"-refcard-people";
-                DS.displayPeopleSummary(div.id, upeople_id, upeople_identifier, DS);
-            });
-        }
-        
         divs = $(".PersonMetrics");
         if (divs.length) {
             $.each(divs, function(id, div) {
@@ -914,11 +896,40 @@ if (Report === undefined) var Report = {};
                 var metrics = $(this).data('metrics');
                 config.show_legend = false;
                 if ($(this).data('legend')) config_metric.show_legend = true;
+                if ($(this).data('person_id')) upeople_id = $(this).data('person_id');
+                if ($(this).data('person_name')) upeople_identifier = $(this).data('person_name');
                 div.id = metrics.replace(/,/g,"-")+"-people-metrics";
                 DS.displayBasicMetricsPeople(upeople_id, upeople_identifier, metrics.split(","),
                         div.id, config_metric);
             });
         }
+    };
+
+    Report.convertPersonSummary = function (upeople_id, upeople_identifier) {
+        var divs = $(".PersonSummary");
+        if (divs.length > 0) {
+            $.each(divs, function(id, div) {
+                ds = $(this).data('data-source');
+                DS = getDataSourceByName(ds);
+                if (DS === null) return;
+                if ($(this).data('person_id')) upeople_id = $(this).data('person_id');
+                if ($(this).data('person_name')) upeople_identifier = $(this).data('person_name');
+                div.id = ds+"-refcard-people";
+                DS.displayPeopleSummary(div.id, upeople_id, upeople_identifier, DS);
+            });
+        }
+    };
+
+    function convertPeople(upeople_id, upeople_identifier) {
+        if (upeople_id === undefined)
+            upeople_id = Report.getParameterByName("id");
+        if (upeople_identifier === undefined)
+            upeople_identifier = Report.getParameterByName("name");
+
+        if (upeople_id === undefined) return;
+
+        Report.convertPersonSummary(upeople_id, upeople_identifier);
+        Report.convertPersonMetrics(upeople_id, upeople_identifier);
         
         if (legacy) Report.convertPeopleLegacy(upeople_id, upeople_identifier);
     }
