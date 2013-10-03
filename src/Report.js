@@ -462,7 +462,38 @@ if (Report === undefined) var Report = {};
             }
         }
     };
+
+    Report.convertRefcard = function() {
+        $.when($.get(html_dir+"refcard.html"),
+                $.get(html_dir+"project-card.html"))
+        .done (function(res1, res2) {
+            refcard = res1[0];
+            projcard = res2[0];
     
+            $("#Refcard").html(refcard);
+            displayReportData();
+            $.each(getProjectsData(), function(prj_name, prj_data) {
+                var new_div = "card-"+prj_name.replace(".","").replace(" ","");
+                $("#Refcard #projects_info").append(projcard);
+                $("#Refcard #projects_info #new_card")
+                    .attr("id", new_div);
+                $.each(data_sources, function(i, DS) {
+                    if (DS.getProject() !== prj_name) {
+                        $("#" + new_div + ' .'+DS.getName()+'-info').hide();
+                        return;
+                    }
+                    DS.displayData(new_div);
+                });
+                $("#"+new_div+" #project_name").text(prj_name);
+                if (projects_dirs.length>1)
+                    $("#"+new_div+" .project_info")
+                        .append(' <a href="VizGrimoireJS/browser/index.html?data_dir=../../'+prj_data.dir+'">Report</a>');
+                $("#"+new_div+" #project_url")
+                    .attr("href", prj_data.url);
+            });
+        });
+    };
+
     Report.addDataDir = function () {
         var addURL;
         var querystr = window.location.search.substr(1);
@@ -471,55 +502,61 @@ if (Report === undefined) var Report = {};
         }
         return addURL;
     };
+
+    Report.convertNavbar = function() {
+        $.get(html_dir+"navbar.html", function(navigation) {
+            $("#Navbar").html(navigation);
+            displayReportData();
+            displayActiveMenu();
+            var addURL = Report.addDataDir(); 
+            if (addURL) {
+                var $links = $("#Navbar a");
+                $.each($links, function(index, value){
+                    if (value.href.indexOf("data_dir")!==-1) return;
+                    value.href += "?"+addURL;
+                });
+            }
+        });
+    };
+
+    Report.convertFooter = function() {
+        $.get(html_dir+"footer.html", function(footer) {
+            $("#Footer").html(footer);
+            $("#vizjs-lib-version").append(vizjslib_git_tag);
+        });
+    };
+
+    Report.convertSummary = function() {
+        div_param = "Summary";
+        var divs = $("." + div_param);
+        if (divs.length > 0) {
+            $.each(divs, function(id, div) {
+                var ds = $(this).data('data-source');
+                var DS = getDataSourceByName(ds);
+                if (DS === null) return;
+                div.id = ds+'-Summary';
+                DS.displayGlobalSummary(div.id);
+            });
+        }
+        if (legacy) Report.convertSummaryLegacy();
+    };
         
     var basic_divs = {
         "Navbar": {
-            convert: function() {
-                $.get(html_dir+"navbar.html", function(navigation) {
-                    $("#Navbar").html(navigation);
-                    displayReportData();
-                    displayActiveMenu();
-                    var addURL = Report.addDataDir(); 
-                    if (addURL) {                    
-                        var $links = $("#Navbar a");
-                        $.each($links, function(index, value){
-                            if (value.href.indexOf("data_dir")!==-1) return;
-                            value.href += "?"+addURL;
-                        });
-                    }
-                });                
-            }
+            convert: Report.convertNavbar
         },
         "Footer": {
-            convert: function() {
-                $.get(html_dir+"footer.html", function(footer) {
-                    $("#Footer").html(footer);
-                    $("#vizjs-lib-version").append(vizjslib_git_tag);
-                });
-            }
+            convert: Report.convertFooter 
         },
         // Reference card with info from all data sources
         "Refcard": {
-            convert: convertRefcard
+            convert: Report.convertRefcard
         },
         "GlobalData": {
-            convert: convertGlobalNumbers
+            convert: Report.convertGlobalNumbers
         },
         "Summary": {
-            convert: function() {
-                div_param = "Summary";
-                var divs = $("." + div_param);
-                if (divs.length > 0) {
-                    $.each(divs, function(id, div) {
-                        var ds = $(this).data('data-source');
-                        var DS = getDataSourceByName(ds);
-                        if (DS === null) return;
-                        div.id = ds+'-Summary';
-                        DS.displayGlobalSummary(div.id);
-                    });
-                }
-                if (legacy) Report.convertSummaryLegacy();
-            }
+            convert: Report.convertSummary
         }
     };
     
@@ -1018,40 +1055,7 @@ if (Report === undefined) var Report = {};
                 DS.displayDemographics(divs[i].id, file, period);
             }
         });
-    }
-    
-    function convertRefcard() {
-        $.when($.get(html_dir+"refcard.html"), 
-                $.get(html_dir+"project-card.html"))
-        .done (function(res1, res2) {
-            refcard = res1[0];
-            projcard = res2[0];
-
-            $("#Refcard").html(refcard);
-            displayReportData();
-            $.each(getProjectsData(), function(prj_name, prj_data) {
-                var new_div = "card-"+prj_name.replace(".","").replace(" ","");
-                $("#Refcard #projects_info").append(projcard);
-                $("#Refcard #projects_info #new_card")
-                    .attr("id", new_div);
-                $.each(data_sources, function(i, DS) {
-                    if (DS.getProject() !== prj_name) {
-                        $("#" + new_div + ' .'+DS.getName()+'-info').hide();
-                        return;
-                    }
-                    DS.displayData(new_div);
-                });
-                $("#"+new_div+" #project_name").text(prj_name);
-                if (projects_dirs.length>1)
-                    $("#"+new_div+" .project_info")
-                        .append(' <a href="VizGrimoireJS/browser/index.html?data_dir=../../'+prj_data.dir+'">Report</a>');
-                
-                $("#"+new_div+" #project_url")
-                    .attr("href", prj_data.url);
-            });
-        });
-    }
-
+    }    
     
     function convertSelectors() {       
         // Selectors
@@ -1090,7 +1094,7 @@ if (Report === undefined) var Report = {};
         });
     }
 
-    function convertGlobalNumbers(){
+    Report.convertGlobalNumbers = function (){
         $.each(Report.getDataSources(), function(index, DS) {
            var data = DS.getGlobalData();
            var divs = $(".global-data");
@@ -1101,7 +1105,7 @@ if (Report === undefined) var Report = {};
                 });
              }
        });
-    }
+    };
     
     // Build mapping between Data Sources and Projects
     Report.configDataSources = function() {
