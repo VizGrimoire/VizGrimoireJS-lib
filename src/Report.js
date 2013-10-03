@@ -337,6 +337,86 @@ if (Report === undefined) var Report = {};
         return true;
     }
 
+    // TODO: share logic between three periods duration
+    Report.convertMicrodashText = function () {
+        var divs = $(".MicrodashText");
+        if (divs.length > 0) {
+            $.each(divs, function(id, div) {
+                var metric = $(this).data('metric');
+                var ds = getMetricDS(metric)[0];
+                var total = ds.getGlobalData()[metric];
+                var change7 = ds.getGlobalData()[metric+"_7"];
+                //initial square: total
+                var html = '<div class="row-fluid"><div class="span3">';
+                html += '<h4>'+total+'</h4> '+ds.getMetrics()[metric].name;
+                html += '</div><!--span3-->';
+  
+                //second square: arrow + % for last 7 days
+                html += '<div class="span3">';
+                var value = ds.getGlobalData()[metric+"_7"];
+                var value2 = ds.getGlobalData()[metric+"_14"];
+                var old_value = value2 - value;
+                var inc = parseInt(((value-old_value)/old_value)*100,null);
+                if (inc > 0) inc = '+' + inc;
+                if (value === old_value) {
+                    html += '';
+                }
+                else if (value > old_value) {
+                    html += '<i class="icon-circle-arrow-up"></i>&nbsp;';
+                    html += old_value + '<span class="fppercent">&nbsp;('+inc+'%)</span>&nbsp;';
+                } else if (value < old_value) {
+                    html += '<i class="icon-circle-arrow-down"></i>&nbsp;';
+                    html += old_value + '<span class="fppercent">&nbsp;('+inc+'%)</span>&nbsp;';
+                }
+                html += '<br><span class="dayschange">7 Days Change</span>';
+                html += '</div><!--span3-->';
+
+                //third square: arrow + % for last 30 days
+                html += '<div class="span3">';
+                value = ds.getGlobalData()[metric+"_30"];
+                value2 = ds.getGlobalData()[metric+"_60"];
+                old_value = value2 - value;
+                inc = parseInt(((value-old_value)/old_value)*100,null);
+                if (inc > 0) inc = '+' + inc;
+                if (value === old_value) {
+                    html += '';
+                }
+                else if (value > old_value) {
+                    html += '<i class="icon-circle-arrow-up"></i>&nbsp;';
+                    html += old_value + '<span class="fppercent">&nbsp;('+inc+'%)</span>&nbsp;';
+                } else if (value < old_value) {
+                    html += '<i class="icon-circle-arrow-down"></i>&nbsp;';
+                    html += old_value + '<span class="fppercent">&nbsp;('+inc+'%)</span>&nbsp;';
+                }
+                html += '<br><span class="dayschange">30 Days Change</span>';
+                html += '</div><!--span3-->';
+
+                //fourth square: arrow + % for last 365 days
+                html += '<div class="span3">';
+                value = ds.getGlobalData()[metric+"_365"];
+                value2 = ds.getGlobalData()[metric+"_730"];
+                old_value = value2 - value;
+                inc = parseInt(((value-old_value)/old_value)*100,null);
+                if (inc > 0) inc = '+' + inc;
+                if (value === old_value) {
+                    html += '';
+                }
+                else if (value > old_value) {
+                    html += '<i class="icon-circle-arrow-up"></i>&nbsp;';
+                    html += old_value + '<span class="fppercent">&nbsp;('+inc+'%)</span>&nbsp;';
+                } else if (value < old_value) {
+                    html += '<i class="icon-circle-arrow-down"></i>&nbsp;';
+                    html += old_value + '<span class="fppercent">&nbsp;('+inc+'%)</span>&nbsp;';
+                }
+                html += '<br><span class="dayschange">365 Days Change</span>';
+                html += '</div><!--span3-->';   
+    
+                html += '</div><!--row-fluid-->';
+                $(div).append(html);
+            });
+        }
+    };
+
     // Include divs to be convertad later
     var template_divs = {
         "Microdash": {
@@ -380,86 +460,8 @@ if (Report === undefined) var Report = {};
                 }
             }
         },
-        // TODO: share logic between three periods duration
         "MicrodashText": {
-            convert: function() {
-                var divs = $(".MicrodashText");
-                if (divs.length > 0) {
-                    $.each(divs, function(id, div) {
-                        var metric = $(this).data('metric');
-                        var ds = getMetricDS(metric)[0];
-                        var total = ds.getGlobalData()[metric];
-                        var change7 = ds.getGlobalData()[metric+"_7"];
-                        //initial square: total
-                        var html = '<div class="row-fluid"><div class="span3">';
-                        html += '<h4>'+total+'</h4> '+ds.getMetrics()[metric].name;
-                        html += '</div><!--span3-->';
-                         
-                        //second square: arrow + % for last 7 days
-                        html += '<div class="span3">';
-                        var value = ds.getGlobalData()[metric+"_7"];
-                        var value2 = ds.getGlobalData()[metric+"_14"];
-                        var old_value = value2 - value;
-                        var inc = parseInt(((value-old_value)/old_value)*100,null);
-                        if (inc > 0) inc = '+' + inc;
-                        if (value === old_value) {
-                            html += '';
-                        }
-                        else if (value > old_value) {
-                            html += '<i class="icon-circle-arrow-up"></i>&nbsp;';
-                            html += old_value + '<span class="fppercent">&nbsp;('+inc+'%)</span>&nbsp;';
-                        } else if (value < old_value) {
-                            html += '<i class="icon-circle-arrow-down"></i>&nbsp;';
-                            html += old_value + '<span class="fppercent">&nbsp;('+inc+'%)</span>&nbsp;';
-                        }
-                        html += '<br><span class="dayschange">7 Days Change</span>';
-                        html += '</div><!--span3-->';
-
-                        //third square: arrow + % for last 30 days
-                        html += '<div class="span3">';
-                        value = ds.getGlobalData()[metric+"_30"];
-                        value2 = ds.getGlobalData()[metric+"_60"];
-                        old_value = value2 - value;
-                        inc = parseInt(((value-old_value)/old_value)*100,null);
-                        if (inc > 0) inc = '+' + inc;
-                        if (value === old_value) {
-                            html += '';
-                        }
-                        else if (value > old_value) {
-                            html += '<i class="icon-circle-arrow-up"></i>&nbsp;';
-                            html += old_value + '<span class="fppercent">&nbsp;('+inc+'%)</span>&nbsp;';
-                        } else if (value < old_value) {
-                            html += '<i class="icon-circle-arrow-down"></i>&nbsp;';
-                            html += old_value + '<span class="fppercent">&nbsp;('+inc+'%)</span>&nbsp;';
-                        }
-                        html += '<br><span class="dayschange">30 Days Change</span>';
-                        html += '</div><!--span3-->';
-                        
-                        //fourth square: arrow + % for last 365 days
-                        html += '<div class="span3">';
-                        value = ds.getGlobalData()[metric+"_365"];
-                        value2 = ds.getGlobalData()[metric+"_730"];
-                        old_value = value2 - value;
-                        inc = parseInt(((value-old_value)/old_value)*100,null);
-                        if (inc > 0) inc = '+' + inc;
-                        if (value === old_value) {
-                            html += '';
-                        }
-                        else if (value > old_value) {
-                            html += '<i class="icon-circle-arrow-up"></i>&nbsp;';
-                            html += old_value + '<span class="fppercent">&nbsp;('+inc+'%)</span>&nbsp;';
-                        } else if (value < old_value) {
-                            html += '<i class="icon-circle-arrow-down"></i>&nbsp;';
-                            html += old_value + '<span class="fppercent">&nbsp;('+inc+'%)</span>&nbsp;';
-                        }
-                        html += '<br><span class="dayschange">365 Days Change</span>';
-                        html += '</div><!--span3-->';   
-
-                        html += '</div><!--row-fluid-->';
-                        $(div).append(html);
-                    });
-                }
-            }
+            convert: Report.convertMicrodashText
         }
     };
 
@@ -553,7 +555,7 @@ if (Report === undefined) var Report = {};
             convert: Report.convertRefcard
         },
         "GlobalData": {
-            convert: Report.convertGlobalNumbers
+            convert: Report.convertGlobalData
         },
         "Summary": {
             convert: Report.convertSummary
@@ -604,7 +606,7 @@ if (Report === undefined) var Report = {};
         }
     };
     
-    function convertActivity() {
+    Report.convertLastActivity = function() {
         var all_metrics = Report.getAllMetrics();
         var label = null;
         function activityInfo(div, period, label) {
@@ -620,10 +622,10 @@ if (Report === undefined) var Report = {};
                         html += label + ":" + data[key] + "<br>";
                     }
                 });
-            });  
+            });
             $(div).append(html);
         }        
-        var divs = $(".activity");
+        var divs = $(".LastActivity");
         var period = null;
         var days = {"Week":7,"Month":30,"Quarter":90,"Year":365};
         if (divs.length > 0)
@@ -631,8 +633,8 @@ if (Report === undefined) var Report = {};
                 period = $(div).data('period');
                 activityInfo(div, days[period], period);
             });
-    }        
-    
+    };
+
     // Needed for callback from Loader
     Report.convertRepos = function() {
         convertStudy('repos');
@@ -1102,17 +1104,18 @@ if (Report === undefined) var Report = {};
         });
     }
 
-    Report.convertGlobalNumbers = function (){
-        $.each(Report.getDataSources(), function(index, DS) {
-           var data = DS.getGlobalData();
-           var divs = $(".global-data");
-           if (divs.length > 0) {
-               $.each(divs, function(id, div) {
-                   var key = $(this).data('field');
-                   $(this).text(data[key]);
-                });
-             }
-       });
+    Report.convertGlobalData = function (){
+        var divs = $(".GlobalData");
+        if (divs.length > 0) {
+            $.each(divs, function(id, div) {
+                ds = $(this).data('data-source');
+                DS = getDataSourceByName(ds);
+                if (DS === null) return;
+                var data = DS.getGlobalData();
+                var key = $(this).data('field');
+                $(this).text(data[key]);
+            });
+        }
     };
 
     // Build mapping between Data Sources and Projects
@@ -1156,7 +1159,7 @@ if (Report === undefined) var Report = {};
         convertBasicDivsMisc();
         Report.convertBasicMetrics(config);
         Report.convertEnvision();
-        convertActivity();
+        Report.convertLastActivity();
         if (legacy) {
             Report.convertBasicDivsLegacy();
             Report.convertIdentity();
