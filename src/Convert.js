@@ -684,8 +684,8 @@ Convert.convertFilterItemMetricsEvol = function(item) {
             var filter = $(this).data('filter');
             if ($(this).data('item')) item = $(this).data('item');
             var metrics = $(this).data('metrics');                        
-            config.show_legend = false;
-            config.frame_time = false;
+            config_metric.show_legend = false;
+            config_metric.frame_time = false;
             if ($(this).data('legend')) 
                 config_metric.show_legend = true;
             if ($(this).data('frame-time')) 
