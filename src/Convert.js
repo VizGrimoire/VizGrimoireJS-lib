@@ -245,7 +245,7 @@ Convert.convertGlobalData = function (){
     if (divs.length > 0) {
         $.each(divs, function(id, div) {
             ds = $(this).data('data-source');
-            DS = getDataSourceByName(ds);
+            DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
             var data = DS.getGlobalData();
             var key = $(this).data('field');
