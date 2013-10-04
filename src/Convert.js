@@ -721,7 +721,7 @@ Convert.convertFilterItemTop = function(item) {
             div.className = "";
             // Only for Company yet
             if (filter === "companies")
-                DS.displayTopCompany(company,div.id,metric,period,titles);
+                DS.displayTopCompany(item,div.id,metric,period,titles);
         });
     }
 };
