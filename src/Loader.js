@@ -50,8 +50,8 @@ var Loader = {};
     Loader.data_load = function () {
         data_load_file(Report.getProjectFile(), 
                 function(data, self) {Report.setProjectData(data);});
-        data_load_file(Report.getConfigFile(), 
-                function(data, self) {Report.setConfig(data);});
+        data_load_file(Report.getVizConfigFile(), 
+                function(data, self) {Report.setVizConfig(data);});
         data_load_file(Report.getMarkersFile(), 
                 function(data, self) {Report.setMarkers(data);});
         var projects_dirs = Report.getProjectsDirs();
@@ -394,7 +394,7 @@ var Loader = {};
     function check_data_loaded_global() {
         var check = true;
         if (Report.getProjectData() === null || 
-                Report.getConfig() === null || Report.getMarkers() === null) 
+                Report.getVizConfig() === null || Report.getMarkers() === null) 
             return false;
 
         if (!(check_projects_loaded())) return false;

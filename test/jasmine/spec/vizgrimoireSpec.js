@@ -18,8 +18,7 @@ describe( "VizGrimoireJS library", function () {
         it(blocks.join() + " should be loaded from file", function () {
             runs(function() {
                 $.each(blocks, function(index, value) {buildNode(value);});
-                $.each(blocks, function(index, value) {
-                    Report.getBasicDivs()[value].convert();});
+                $.each(blocks, function(index, value) {Convert["convert"+value]();});
             });
             waitsFor(function() {
                 var loaded = document.getElementsByClassName('info-pill');
@@ -41,7 +40,7 @@ describe( "VizGrimoireJS library", function () {
                                 'data-data-source': DS.getName(),
                             });
                     });
-                    Report.convertMetricsEvolSet();
+                    Convert.convertMetricsEvolSet();
                     var envisionCreated = document.getElementsByClassName
                         ('envision-visualization');
                     expect(envisionCreated.length).toEqual
@@ -59,7 +58,7 @@ describe( "VizGrimoireJS library", function () {
                               });
                         });
                     });
-                    Report.convertBasicMetrics();
+                    Convert.convertMetricsEvol();
                     $.each(Report.getDataSources(), function(index, DS) {
                         var ds_metrics = DS.getData(); 
                         $.each(DS.getMetrics(), function(name, metric) {
@@ -91,7 +90,7 @@ describe( "VizGrimoireJS library", function () {
                                 'data-graph':'bars'
                             });
                     });
-                    Report.convertTop();
+                    Convert.convertTop();
                 });
                 // TODO: JSON files for top should be loaded. 
                 //       Change this load to global data loading
@@ -121,7 +120,7 @@ describe( "VizGrimoireJS library", function () {
                     });
                     var ncanvas = document.getElementsByClassName
                         ('flotr-canvas').length;
-                    Report.convertBasicDivsMisc();
+                    Convert.convertBubbles();
                     var new_ncanvas = document.getElementsByClassName
                         ('flotr-canvas').length;
                     // SCR and IRC does not support bubbles yet
@@ -149,7 +148,7 @@ describe( "VizGrimoireJS library", function () {
                     buildNodesDemographic('birth');
                     ncanvas = document.getElementsByClassName
                         ('flotr-canvas').length;
-                    Report.convertDemographics();
+                    Convert.convertDemographics();
                 });
                 // TODO: JSON files for top should be loaded. 
                 //       Change this load to global data loading
@@ -163,37 +162,38 @@ describe( "VizGrimoireJS library", function () {
                     expect(new_ncanvas-ncanvas).toEqual(6);
                 });        
             });
-            it("html selectors should be displayed", function () {
-                runs(function() {
-                    $.each(Report.getDataSources(), function(index, DS) {
-                        // TODO: SCM and ITS selectors not supported yet
-                        if (DS.getName() === "mls")
-                            buildNode(DS.getName()+"-selector");
-                            buildNode(DS.getName()+"-flotr2-lists", "mls-dyn-list");
-                            buildNode(DS.getName()+"-envision-lists");
-                    });
-                    Report.convertSelectors();
-                });
-                // TODO: Move JSON loading to global loading
-                waitsFor(function() {
-                        return (document.getElementById("form_mls_selector") != null);
-                    }, "It took too long to load data", 100);               
-                runs(function() {
-                    $.each(Report.getDataSources(), function(index, DS) {
-                        if (DS.getName() === "mls")
-                            expect(document.getElementById
-                                ("form_"+DS.getName()+"_selector")
-                                .childNodes.length).toBeGreaterThan(0);
-                    });
-                });
-            });
+//            it("html selectors should be displayed", function () {
+//                runs(function() {
+//                    $.each(Report.getDataSources(), function(index, DS) {
+//                        // TODO: SCM and ITS selectors not supported yet
+//                        if (DS.getName() === "mls")
+//                            buildNode(DS.getName()+"-selector");
+//                            buildNode(DS.getName()+"-flotr2-lists", "mls-dyn-list");
+//                            buildNode(DS.getName()+"-envision-lists");
+//                    });
+//                    Report.convertSelectors();
+//                });
+//                // TODO: Move JSON loading to global loading
+//                waitsFor(function() {
+//                        return (document.getElementById("form_mls_selector") != null);
+//                    }, "It took too long to load data", 100);               
+//                runs(function() {
+//                    $.each(Report.getDataSources(), function(index, DS) {
+//                        if (DS.getName() === "mls")
+//                            expect(document.getElementById
+//                                ("form_"+DS.getName()+"_selector")
+//                                .childNodes.length).toBeGreaterThan(0);
+//                    });
+//                });
+//            });
             it("html radar should be displayed", function () {
                 runs(function() {                
                     buildNode("RadarActivity","radar");
                     buildNode("RadarCommunity","radar");
                     var ncanvas = document.getElementsByClassName
                         ('flotr-canvas').length;
-                    Report.convertBasicDivsMisc();
+                    Convert.convertRadarActivity();
+                    Convert.convertRadarCommunity();
                     var new_ncanvas = document.getElementsByClassName
                         ('flotr-canvas').length;
                     expect(new_ncanvas-ncanvas).toEqual(2);
@@ -212,7 +212,7 @@ describe( "VizGrimoireJS library", function () {
                 runs(function() {
                     buildNode("Treemap","treemap",
                             {'data-file':'data/json/treemap.json'});
-                    Report.getBasicDivsMisc()["Treemap"].convert();
+                    Convert.convertTreemap();
                 });
                 waitsFor(function() {
                     return (document.getElementsByClassName("treemap-node").length>0);
@@ -337,7 +337,7 @@ describe( "VizGrimoireJS library", function () {
         });
         var ncanvas = document.getElementsByClassName
             ('flotr-canvas').length;
-        Report.convertFilterStudy(report);
+        Convert.convertFilterStudy(report);
         var new_ncanvas = document.getElementsByClassName
             ('flotr-canvas').length;
         expect(new_ncanvas-ncanvas).toEqual(total_canvas);
@@ -415,7 +415,7 @@ describe( "VizGrimoireJS library", function () {
                 });
                 ncanvas = document.getElementsByClassName
                     ('flotr-canvas').length;
-                Report.convertPeople(people_id,'');
+                Convert.convertPeople(people_id,'');
             });
             waitsFor(function() {
                 return (document.getElementsByClassName('flotr-canvas').length>=ncanvas+nds);

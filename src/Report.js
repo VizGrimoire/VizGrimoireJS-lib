@@ -29,7 +29,7 @@ if (Report === undefined) var Report = {};
 (function() {
 
     // Shared config
-    var project_data = null, markers = null, config = null, 
+    var project_data = null, markers = null, viz_config = null, 
         gridster = {}, data_sources = [], html_dir="";
     var data_dir = "data/json";
     var default_data_dir = "data/json";
@@ -39,7 +39,7 @@ if (Report === undefined) var Report = {};
     var projects_datasources = {};
     var repos_map = {};
     var project_file = data_dir + "/project-info.json",
-        config_file = data_dir + "/viz_cfg.json",
+        viz_config_file = data_dir + "/viz_cfg.json",
         markers_file = data_dir + "/markers.json",
         repos_map_file = data_dir + "/repos-map.json";
     var page_size = 10;
@@ -47,17 +47,10 @@ if (Report === undefined) var Report = {};
     var legacy = false; //  support old divs API
 
     // Public API
-    Report.convertBasicDivs = convertBasicDivs;
-    Report.convertBasicDivsMisc = convertBasicDivsMisc;
-    Report.convertTop = convertTop;
-    Report.convertDemographics = convertDemographics;
-    Report.convertPeople = convertPeople;
-    Report.convertFilterStudy = convertFilterStudy;
-    Report.convertSelectors = convertSelectors;
     Report.createDataSources = createDataSources;
     Report.getAllMetrics = getAllMetrics;
     Report.getMarkers = getMarkers;
-    Report.getConfig = getConfig;
+    Report.getVizConfig = getVizConfig;
     Report.getMetricDS = getMetricDS;
     Report.getGridster = getGridster;
     Report.setGridster = setGridster;
@@ -65,14 +58,8 @@ if (Report === undefined) var Report = {};
     Report.setPageSize = function(size) {page_size = size;};
     Report.getProjectData = getProjectData;
     Report.getProjectsData = getProjectsData;
-    Report.getBasicDivs = function() {
-        return basic_divs;
-    };
-    Report.getBasicDivsMisc = function() {
-        return basic_divs_misc;
-    }; 
-    Report.displayReportData = displayReportData;
     Report.convertStudies = convertStudies;
+    Report.getLegacy = function() {return legacy;};
     Report.getDataSources = function() {
         // return data_sources.slice(0,3);
         return data_sources;
@@ -83,6 +70,9 @@ if (Report === undefined) var Report = {};
     
     Report.setHtmlDir = function (dir) {
         html_dir = dir;
+    };
+    Report.getHtmlDir = function () {
+        return html_dir;
     };
 
     Report.getDataDir = function() {
@@ -141,16 +131,16 @@ if (Report === undefined) var Report = {};
         return valid_repo;
     };
 
-    function getConfig() {
-        return config;
+    function getVizConfig() {
+        return viz_config;
     }
     
-    Report.setConfig = function(cfg) {
-        config = cfg;
+    Report.setVizConfig = function(cfg) {
+        viz_config = cfg;
     };
     
-    Report.getConfigFile = function() {
-        return config_file;
+    Report.getVizConfigFile = function() {
+        return viz_config_file;
     };
 
     function getGridster() {
@@ -223,6 +213,14 @@ if (Report === undefined) var Report = {};
         });
         return ds;
     }
+    
+    Report.getDataSourceByName = function(ds) {
+        var DS = null;
+        $.each(Report.getDataSources(), function(index, DSaux) {
+            if (DSaux.getName() === ds) {DS = DSaux; return false;}
+        });
+        return DS;
+    };
 
     function getAllMetrics() {
         var all = {};
@@ -232,7 +230,7 @@ if (Report === undefined) var Report = {};
         return all;
     }
     
-    function displayActiveMenu() {
+    Report.displayActiveMenu = function() {
         var active = window.location.href;
         var page = active.substr(active.lastIndexOf("/")+1,active.length);
         page = page.split(".html")[0];
@@ -256,32 +254,7 @@ if (Report === undefined) var Report = {};
                 $(".experimental-menu")[0].className = 
                 $(".experimental-menu")[0].className + " active";
         }
-    }
-
-    function displayReportData() {
-        data = project_data;
-        document.title = data.project_name + ' Report by Bitergia';
-        if (data.title) document.title = data.title;
-        $(".report_date").text(data.date);
-        $(".report_name").text(data.project_name);
-        str = data.blog_url;
-        if (str && str.length > 0) {
-            $('#blogEntry').html(
-                    "<br><a href='" + str
-                            + "'>Blog post with some more details</a>");
-            $('.blog_url').attr("href", data.blog_url);
-        } else {
-            $('#more_info').hide();
-        }
-        str = data.producer;
-        if (str && str.length > 0) {
-            $('#producer').html(str);
-        } else {
-            $('#producer').html("<a href='http://bitergia.com'>Bitergia</a>");
-        }
-        $(".project_name").text(data.project_name);
-        $("#project_url").attr("href", data.project_url);
-    }
+    };
 
     function checkDynamicConfig() {
         var data_sources = [];
@@ -336,167 +309,6 @@ if (Report === undefined) var Report = {};
         return true;
     }
 
-    // TODO: share logic between three periods duration
-    Report.convertMicrodashText = function () {
-        var divs = $(".MicrodashText");
-        if (divs.length > 0) {
-            $.each(divs, function(id, div) {
-                var metric = $(this).data('metric');
-                var ds = getMetricDS(metric)[0];
-                var total = ds.getGlobalData()[metric];
-                var change7 = ds.getGlobalData()[metric+"_7"];
-                //initial square: total
-                var html = '<div class="row-fluid"><div class="span3">';
-                html += '<h4>'+total+'</h4> '+ds.getMetrics()[metric].name;
-                html += '</div><!--span3-->';
-
-                //second square: arrow + % for last 7 days
-                html += '<div class="span3">';
-                var value = ds.getGlobalData()[metric+"_7"];
-                var value2 = ds.getGlobalData()[metric+"_14"];
-                var old_value = value2 - value;
-                var inc = parseInt(((value-old_value)/old_value)*100,null);
-                if (inc > 0) inc = '+' + inc;
-                if (value === old_value) {
-                    html += '';
-                }
-                else if (value > old_value) {
-                    html += '<i class="icon-circle-arrow-up"></i>&nbsp;';
-                    html += old_value + '<span class="fppercent">&nbsp;('+inc+'%)</span>&nbsp;';
-                } else if (value < old_value) {
-                    html += '<i class="icon-circle-arrow-down"></i>&nbsp;';
-                    html += old_value + '<span class="fppercent">&nbsp;('+inc+'%)</span>&nbsp;';
-                }
-                html += '<br><span class="dayschange">7 Days Change</span>';
-                html += '</div><!--span3-->';
-
-                //third square: arrow + % for last 30 days
-                html += '<div class="span3">';
-                value = ds.getGlobalData()[metric+"_30"];
-                value2 = ds.getGlobalData()[metric+"_60"];
-                old_value = value2 - value;
-                inc = parseInt(((value-old_value)/old_value)*100,null);
-                if (inc > 0) inc = '+' + inc;
-                if (value === old_value) {
-                    html += '';
-                }
-                else if (value > old_value) {
-                    html += '<i class="icon-circle-arrow-up"></i>&nbsp;';
-                    html += old_value + '<span class="fppercent">&nbsp;('+inc+'%)</span>&nbsp;';
-                } else if (value < old_value) {
-                    html += '<i class="icon-circle-arrow-down"></i>&nbsp;';
-                    html += old_value + '<span class="fppercent">&nbsp;('+inc+'%)</span>&nbsp;';
-                }
-                html += '<br><span class="dayschange">30 Days Change</span>';
-                html += '</div><!--span3-->';
-
-                //fourth square: arrow + % for last 365 days
-                html += '<div class="span3">';
-                value = ds.getGlobalData()[metric+"_365"];
-                value2 = ds.getGlobalData()[metric+"_730"];
-                old_value = value2 - value;
-                inc = parseInt(((value-old_value)/old_value)*100,null);
-                if (inc > 0) inc = '+' + inc;
-                if (value === old_value) {
-                    html += '';
-                }
-                else if (value > old_value) {
-                    html += '<i class="icon-circle-arrow-up"></i>&nbsp;';
-                    html += old_value + '<span class="fppercent">&nbsp;('+inc+'%)</span>&nbsp;';
-                } else if (value < old_value) {
-                    html += '<i class="icon-circle-arrow-down"></i>&nbsp;';
-                    html += old_value + '<span class="fppercent">&nbsp;('+inc+'%)</span>&nbsp;';
-                }
-                html += '<br><span class="dayschange">365 Days Change</span>';
-                html += '</div><!--span3-->';
-
-                html += '</div><!--row-fluid-->';
-                $(div).append(html);
-            });
-        }
-    };
-
-    Report.convertMicrodash = function () {
-        var divs = $(".Microdash");
-        if (divs.length > 0) {
-            $.each(divs, function(id, div) {
-                var metric = $(this).data('metric');
-                var ds = getMetricDS(metric)[0];
-                var total = ds.getGlobalData()[metric];
-                var html = '<div>';
-                html += '<div style="float:left">';
-                html += '<h4>'+total+' '+ds.getMetrics()[metric].name+'</h4>';
-                html += '</div>';
-                html += '<div id="Microdash" '+
-                        'class="MetricsEvol" data-data-source="'+ds.getName()+'" data-metrics="'+
-                        metric+'" data-min=true style="margin-left:10px; float:left;width:100px; height:25px;"></div>';
-                html += '<div style="clear:both"></div><div>';
-                $.each({7:'week',30:'month',365:'year'}, function(period, name) {
-                    var value = ds.getGlobalData()[metric+"_"+period];
-                    var value2 = ds.getGlobalData()[metric+"_"+(period*2)];
-                    var old_value = value2-value;
-                    html += "<em>"+name+"</em>:"+value+"&nbsp;";
-                    var inc = parseInt(((value-old_value)/old_value)*100,null);
-                    if (value === old_value) {
-                        html += '';
-                    }
-                    else if (value > old_value) {
-                        html += '<i class="icon-circle-arrow-up"></i>';
-                        html += '<small>('+inc+'%)</small>&nbsp;';
-                    } else if (value < old_value) {
-                        html += '<i class="icon-circle-arrow-down"></i>';
-                        html += '<small>('+inc+'%)</small>&nbsp;';
-                    }
-                });
-                html += '</div>';
-                html += '<div>';
-                $(div).append(html);
-            });
-        }
-        Report.convertMetricsEvol();
-    };
-
-    // Include divs to be convertad later
-    var template_divs = {
-        "Microdash": {
-            convert: Report.convertMicrodash
-        },
-        "MicrodashText": {
-            convert: Report.convertMicrodashText
-        }
-    };
-
-    Report.convertRefcard = function() {
-        $.when($.get(html_dir+"refcard.html"),
-                $.get(html_dir+"project-card.html"))
-        .done (function(res1, res2) {
-            refcard = res1[0];
-            projcard = res2[0];
-    
-            $("#Refcard").html(refcard);
-            displayReportData();
-            $.each(getProjectsData(), function(prj_name, prj_data) {
-                var new_div = "card-"+prj_name.replace(".","").replace(" ","");
-                $("#Refcard #projects_info").append(projcard);
-                $("#Refcard #projects_info #new_card")
-                    .attr("id", new_div);
-                $.each(data_sources, function(i, DS) {
-                    if (DS.getProject() !== prj_name) {
-                        $("#" + new_div + ' .'+DS.getName()+'-info').hide();
-                        return;
-                    }
-                    DS.displayData(new_div);
-                });
-                $("#"+new_div+" #project_name").text(prj_name);
-                if (projects_dirs.length>1)
-                    $("#"+new_div+" .project_info")
-                        .append(' <a href="VizGrimoireJS/browser/index.html?data_dir=../../'+prj_data.dir+'">Report</a>');
-                $("#"+new_div+" #project_url")
-                    .attr("href", prj_data.url);
-            });
-        });
-    };
-
     Report.addDataDir = function () {
         var addURL;
         var querystr = window.location.search.substr(1);
@@ -505,671 +317,7 @@ if (Report === undefined) var Report = {};
         }
         return addURL;
     };
-
-    Report.convertNavbar = function() {
-        $.get(html_dir+"navbar.html", function(navigation) {
-            $("#Navbar").html(navigation);
-            displayReportData();
-            displayActiveMenu();
-            var addURL = Report.addDataDir(); 
-            if (addURL) {
-                var $links = $("#Navbar a");
-                $.each($links, function(index, value){
-                    if (value.href.indexOf("data_dir")!==-1) return;
-                    value.href += "?"+addURL;
-                });
-            }
-        });
-    };
-
-    Report.convertFooter = function() {
-        $.get(html_dir+"footer.html", function(footer) {
-            $("#Footer").html(footer);
-            $("#vizjs-lib-version").append(vizjslib_git_tag);
-        });
-    };
-
-    Report.convertSummary = function() {
-        div_param = "Summary";
-        var divs = $("." + div_param);
-        if (divs.length > 0) {
-            $.each(divs, function(id, div) {
-                var ds = $(this).data('data-source');
-                var DS = getDataSourceByName(ds);
-                if (DS === null) return;
-                div.id = ds+'-Summary';
-                DS.displayGlobalSummary(div.id);
-            });
-        }
-        if (legacy) Report.convertSummaryLegacy();
-    };
-        
-    var basic_divs = {
-        "Navbar": {
-            convert: Report.convertNavbar
-        },
-        "Footer": {
-            convert: Report.convertFooter 
-        },
-        // Reference card with info from all data sources
-        "Refcard": {
-            convert: Report.convertRefcard
-        },
-        "GlobalData": {
-            convert: Report.convertGlobalData
-        },
-        "Summary": {
-            convert: Report.convertSummary
-        }
-    };
-
-    Report.convertRadarActivity = function() {
-        Viz.displayRadarActivity('RadarActivity');
-    };
-
-    Report.convertRadarCommunity = function() {
-        Viz.displayRadarCommunity('RadarCommunity');
-    };
-
-    Report.convertTreemap = function() {
-        var file = $('#Treemap').data('file');
-        Viz.displayTreeMap('Treemap', file);
-    };
-
-    Report.convertBubbles = function() {
-        div_param = "Bubbles";
-        var divs = $("." + div_param);
-        if (divs.length > 0) {
-            $.each(divs, function(id, div) {
-                var ds = $(this).data('data-source');
-                var DS = getDataSourceByName(ds);
-                if (DS === null) return;
-                if (DS.getData().length === 0) return;
-                var radius = $(this).data('radius');
-                div.id = ds + "-Bubbles";
-                DS.displayBubbles(div.id, radius);
-            });
-        }
-    };
-
-    var basic_divs_misc = {
-        "RadarActivity": {
-            convert: Report.convertRadarActivity
-        },
-        "RadarCommunity": {
-            convert: Report.convertRadarCommunity
-        },
-        "Treemap": {
-            convert: Report.convertTreemap
-        },
-        "Bubbles": {
-            convert: Report.convertBubbles
-        }
-    };
     
-    Report.convertLastActivity = function() {
-        var all_metrics = Report.getAllMetrics();
-        var label = null;
-        function activityInfo(div, period, label) {
-            var html = "<h4>Last "+ label + "</h4>";
-            $.each(Report.getDataSources(), function(index, DS) {
-                var data = DS.getGlobalData();
-                $.each(data, function (key,val) {
-                    var suffix = "_"+period; 
-                    if (key.indexOf(suffix, key.length - suffix.length) !== -1) {
-                        var metric = key.substring(0, key.length - suffix.length);
-                        label = metric;
-                        if (all_metrics[metric]) label = all_metrics[metric].name;
-                        html += label + ":" + data[key] + "<br>";
-                    }
-                });
-            });
-            $(div).append(html);
-        }        
-        var divs = $(".LastActivity");
-        var period = null;
-        var days = {"Week":7,"Month":30,"Quarter":90,"Year":365};
-        if (divs.length > 0)
-            $.each(divs, function(id, div) {
-                period = $(div).data('period');
-                activityInfo(div, days[period], period);
-            });
-    };
-
-    function filterItemsConfig() {
-        var config_metric = {};
-        config_metric.show_desc = false;
-        config_metric.show_title = false;
-        config_metric.show_labels = true;
-        return config_metric;
-    }
-
-    // Needed for callback from Loader
-    Report.convertRepos = function() {
-        convertFilterStudy('repos');
-    };
-
-    Report.convertFilterItemsSummary = function() {
-        var divlabel = "FilterItemsSummary";
-        divs = $("."+divlabel);
-        if (divs.length > 0) {
-            $.each(divs, function(id, div) {
-                ds = $(this).data('data-source');
-                DS = getDataSourceByName(ds);
-                if (DS === null) return;
-                var filter = $(this).data('filter');
-                div.id = ds+"-"+divlabel;
-                if (filter === "repos")
-                    DS.displayReposSummary(div.id, DS);
-                if (filter === "countries")
-                    DS.displayCountriesSummary(div.id, DS);
-                if (filter === "companies")
-                    DS.displayCompaniesSummary(div.id, DS);
-            });
-        }
-    };
-
-    Report.convertFilterItemsGlobal = function() {
-        var config_metric = filterItemsConfig();
-        var divlabel = "FilterItemsGlobal";
-        divs = $("."+divlabel);
-        if (divs.length > 0) {
-            $.each(divs, function(id, div) {
-                ds = $(this).data('data-source');
-                DS = getDataSourceByName(ds);
-                if (DS === null) return;
-                var filter = $(this).data('filter');
-                var metric = $(this).data('metric');
-                var limit = $(this).data('limit');
-                var show_others = $(this).data('show-others');
-                var order_by = $(this).data('order-by');
-                config_metric.show_legend = $(this).data('legend');
-                if ($('#'+$(this).data('legend-div')).length>0) {
-                    config_metric.legend = {
-                    container: $(this).data('legend-div')};
-                } else config_metric.legend = {container: null};
-                config_metric.graph = $(this).data('graph');
-                div.id = metric+"-"+divlabel;
-                if (filter === "repos")
-                    DS.displayBasicMetricReposStatic(metric,div.id,
-                        config_metric, limit, order_by, show_others);
-                if (filter === "countries")
-                    DS.displayBasicMetricCountriesStatic(metric,div.id,
-                        config_metric, limit, order_by, show_others);
-                if (filter === "companies")
-                    DS.displayBasicMetricCompaniesStatic(metric,div.id,
-                        config_metric, limit, order_by, show_others);
-            });
-        }
-    };
-
-    Report.convertFilterItemsNav = function(page) {
-        var divlabel = "FilterItemsNav";
-        divs = $("."+divlabel);
-        if (divs.length > 0) {
-            $.each(divs, function(id, div) {
-                ds = $(this).data('data-source');
-                DS = getDataSourceByName(ds);
-                if (DS === null) return;
-                var filter = $(this).data('filter');
-                if ($(this).data('page')) page = $(this).data('page');
-                var order_by = $(this).data('order-by');
-                var scm_and_its = $(this).data('scm-and-its');
-                div.id = ds+"-"+divlabel;
-                if (filter === "repos")
-                    DS.displayReposNav(div.id, order_by, page, scm_and_its);
-                if (filter === "countries")
-                    DS.displayCountriesNav(div.id, order_by, page, scm_and_its);
-                if (filter === "companies")
-                    DS.displayCompaniesNav(div.id, order_by);
-            });
-        }
-    };
-
-    Report.convertFilterItemsMetricsEvol = function() {
-        var config_metric = filterItemsConfig();
-
-        var divlabel = "FilterItemsMetricsEvol";
-        divs = $("."+divlabel);
-        if (divs.length > 0) {
-            $.each(divs, function(id, div) {
-                ds = $(this).data('data-source');
-                DS = getDataSourceByName(ds);
-                if (DS === null) return;
-                var filter = $(this).data('filter');
-                var metric = $(this).data('metric');
-                var limit = $(this).data('limit');
-                var order_by = $(this).data('order-by');
-                var stacked = false;
-                if ($(this).data('stacked')) stacked = true;
-                config_metric.lines = {stacked : stacked};
-                div.id = metric+"-"+divlabel;
-                if (filter === "companies")
-                    DS.displayBasicMetricCompanies(metric,div.id,
-                        config_metric, limit, order_by);
-                if (filter === "repos")
-                    DS.displayBasicMetricRepos(metric,div.id,
-                        config_metric, limit, order_by);
-            });
-        }
-    };
-
-    Report.convertFilterItemsMiniCharts = function(page) {
-        var config_metric = filterItemsConfig();
-
-        var divlabel = "FilterItemsMiniCharts";
-        divs = $("."+divlabel);
-        if (divs.length > 0) {
-            $.each(divs, function(id, div) {
-                ds = $(this).data('data-source');
-                DS = getDataSourceByName(ds);
-                if (DS === null) return;
-                var filter = $(this).data('filter');
-                if ($(this).data('page')) page = $(this).data('page');
-                var metrics = $(this).data('metrics');
-                var order_by = $(this).data('order-by');
-                var scm_and_its = $(this).data('scm-and-its');
-                var show_links = true;
-                if ($(this).data('show_links') !== undefined)
-                    show_links = $(this).data('show_links');
-                div.id = metrics.replace(/,/g,"-")+"-"+divlabel;
-                if (filter === "repos")
-                    DS.displayReposList(metrics.split(","),div.id,
-                        config_metric, order_by, page, scm_and_its, show_links);
-                if (filter === "countries")
-                    DS.displayCountriesList(metrics.split(","),div.id,
-                        config_metric, order_by, show_links);
-                if (filter === "companies")
-                    DS.displayCompaniesList(metrics.split(","),div.id,
-                        config_metric, order_by, show_links);
-            });
-        }
-    };
-
-    Report.convertFilterItemSummary = function(item) {
-        // TODO: This repos logic should be adapted
-        //if (repo !== null) repo_valid = Report.getValidRepo(repo, DS);
-        //if (repo_valid === null) $("#"+DS.getName()+"-repo").hide();
-        //else {
-        
-        var divlabel = "FilterItemSummary";
-        divs = $("."+divlabel);
-        if (item !== null && divs.length > 0) {
-            $.each(divs, function(id, div) {
-                ds = $(this).data('data-source');
-                DS = getDataSourceByName(ds);
-                if (DS === null) return;
-                var filter = $(this).data('filter');
-                if ($(this).data('item')) item = $(this).data('item');
-                div.id = ds+"-"+divlabel;
-                if (filter === "repos")
-                    DS.displayRepoSummary(div.id, item, DS);
-                if (filter === "countries")
-                    DS.displayCountrySummary(div.id, item, DS);
-                if (filter === "companies")
-                    DS.displayCompanySummary(div.id, item, DS);
-            });
-        }
-
-    };
-
-    Report.convertFilterItemMetricsEvol = function(item) {
-        var config_metric = filterItemsConfig();
-        config_metric.show_desc = false;
-        config_metric.show_title = false;
-        config_metric.show_labels = true;
-
-        var divlabel = "FilterItemMetricsEvol";
-        divs = $("."+divlabel);
-        if (item !== null && divs.length > 0) {
-            $.each(divs, function(id, div) {
-                ds = $(this).data('data-source');
-                DS = getDataSourceByName(ds);
-                if (DS === null) return;
-                var filter = $(this).data('filter');
-                if ($(this).data('item')) item = $(this).data('item');
-                var metrics = $(this).data('metrics');                        
-                config.show_legend = false;
-                config.frame_time = false;
-                if ($(this).data('legend')) 
-                    config_metric.show_legend = true;
-                if ($(this).data('frame-time')) 
-                    config_metric.frame_time = true;
-                div.id = metrics.replace(/,/g,"-")+"-"+divlabel;
-                if (filter === "repos")
-                    DS.displayBasicMetricsRepo(item, metrics.split(","),
-                        div.id, config_metric);
-                if (filter === "countries")
-                    DS.displayBasicMetricsCountry(item, metrics.split(","),
-                        div.id, config_metric);
-                if (filter === "companies")
-                    DS.displayBasicMetricsCompany(item, metrics.split(","),
-                        div.id, config_metric);
-            });
-        }
-    };
-
-    Report.convertFilterItemTop = function(item) {
-        var divlabel = "FilterItemTop";
-        divs = $("."+divlabel);
-        if (divs.length > 0) {
-            $.each(divs, function(id, div) {
-                ds = $(this).data('data-source');
-                DS = getDataSourceByName(ds);
-                if (DS === null) return;
-                var filter = $(this).data('filter');
-                if ($(this).data('item')) item = $(this).data('item');
-                var metric = $(this).data('metric');
-                var period = $(this).data('period');
-                var titles = $(this).data('titles');
-                div.id = metric+"-"+period+"-"+divlabel;
-                div.className = "";
-                // Only for Company yet
-                if (filter === "companies")
-                    DS.displayTopCompany(company,div.id,metric,period,titles);
-            });
-        }
-    };
-
-    function convertFilterStudy(filter) {
-        var config_metric = filterItemsConfig();
-
-        var data_ready = true;
-        var repo_valid = null;
-        var item = null, divs = null, divlabel = null;
-
-        if (filter === "repos") item = Report.getParameterByName("repository");
-        if (filter === "countries") item = Report.getParameterByName("country");
-        if (filter === "companies") item = Report.getParameterByName("company");
-        var page = Report.getParameterByName("page");
-
-        // TODO: On demand loading only for repos yet
-        if (filter === "repos") {
-            if (Loader.check_repos_page(page) === false) {
-                data_ready = false;
-            }
-        }
-
-        if (data_ready === false) {
-            $.each(Report.getDataSources(), function(index, DS) {
-                if (filter === "repos")
-                    Loader.data_load_repos_page(DS, page, Report.convertRepos);
-            });
-            return;
-        }
-
-        Report.convertFilterItemsSummary();
-        Report.convertFilterItemsGlobal();
-        Report.convertFilterItemsNav();
-        Report.convertFilterItemsMetricsEvol();
-        Report.convertFilterItemsMiniCharts(page);
-
-        Report.convertFilterItemSummary(item);
-        Report.convertFilterItemMetricsEvol(item);
-        Report.convertFilterItemTop(item);
-
-        if (legacy) {
-            if (filter === "repos") Report.convertReposLegacy();
-            if (filter === "countries") Report.convertCountriesLegacy();
-            if (filter === "companies") Report.convertCompaniesLegacy();
-        }        
-    }
-
-    Report.convertPersonMetrics = function (upeople_id, upeople_identifier) {
-        var config_metric = {};                
-        config_metric.show_desc = false;
-        config_metric.show_title = false;
-        config_metric.show_labels = true;
-
-        divs = $(".PersonMetrics");
-        if (divs.length) {
-            $.each(divs, function(id, div) {
-                ds = $(this).data('data-source');
-                DS = getDataSourceByName(ds);
-                if (DS === null) return;
-                var metrics = $(this).data('metrics');
-                config.show_legend = false;
-                if ($(this).data('legend')) config_metric.show_legend = true;
-                if ($(this).data('person_id')) upeople_id = $(this).data('person_id');
-                if ($(this).data('person_name')) upeople_identifier = $(this).data('person_name');
-                div.id = metrics.replace(/,/g,"-")+"-people-metrics";
-                DS.displayBasicMetricsPeople(upeople_id, upeople_identifier, metrics.split(","),
-                        div.id, config_metric);
-            });
-        }
-    };
-
-    Report.convertPersonSummary = function (upeople_id, upeople_identifier) {
-        var divs = $(".PersonSummary");
-        if (divs.length > 0) {
-            $.each(divs, function(id, div) {
-                ds = $(this).data('data-source');
-                DS = getDataSourceByName(ds);
-                if (DS === null) return;
-                if ($(this).data('person_id')) upeople_id = $(this).data('person_id');
-                if ($(this).data('person_name')) upeople_identifier = $(this).data('person_name');
-                div.id = ds+"-refcard-people";
-                DS.displayPeopleSummary(div.id, upeople_id, upeople_identifier, DS);
-            });
-        }
-    };
-
-    function convertPeople(upeople_id, upeople_identifier) {
-        if (upeople_id === undefined)
-            upeople_id = Report.getParameterByName("id");
-        if (upeople_identifier === undefined)
-            upeople_identifier = Report.getParameterByName("name");
-
-        if (upeople_id === undefined) return;
-
-        Report.convertPersonSummary(upeople_id, upeople_identifier);
-        Report.convertPersonMetrics(upeople_id, upeople_identifier);
-        
-        if (legacy) Report.convertPeopleLegacy(upeople_id, upeople_identifier);
-    }
-
-    function getDataSourceByName(ds) {
-        var DS = null;
-        $.each(Report.getDataSources(), function(index, DSaux) {
-            if (DSaux.getName() === ds) {DS = DSaux; return false;}
-        });
-        return DS;
-    }
-    
-    Report.convertMetricsEvol = function() {
-        // General config for metrics viz
-        var config_metric = {};
-
-        config_metric.show_desc = false;
-        config_metric.show_title = false;
-        config_metric.show_labels = true;
-
-        if (config) {
-            $.each(config, function(key, value) {
-                config_metric[key] = value;
-            });
-        }
-
-        var div_param = "MetricsEvol";
-        var divs = $("." + div_param);
-        if (divs.length > 0) {
-            $.each(divs, function(id, div) {
-                var config_viz = {};
-                $.each(config_metric, function(key, value) {
-                    config_viz[key] = value;
-                });
-
-                var metrics = $(this).data('metrics');
-                var ds = $(this).data('data-source');
-                var DS = getDataSourceByName(ds);
-                if (DS === null) return;
-                config_viz.help = true;
-                var help = $(this).data('help');
-                if (help !== undefined) config_viz.help = help;
-                config_viz.show_legend = false;
-                if ($(this).data('legend'))
-                    config_viz.show_legend = true;
-                if ($(this).data('frame-time'))
-                    config_viz.frame_time = true;
-                if ($(this).data('min')) {
-                    config_viz.show_legend = false;
-                    config_viz.show_labels = false;
-                    config_viz.show_grid = false;
-                    // config_viz.show_mouse = false;
-                    config_viz.help = false;
-                }
-                div.id = metrics.replace(/,/g,"-")+"-"+ds+"-metrics-evol-"+this.id;
-                DS.displayMetricsEvol(metrics.split(","),div.id,
-                        config_viz, $(this).data('convert'));
-            });
-        }
-
-        if (legacy) Report.convertFlotr2();
-    };
-
-    Report.convertTimeTo = function() {
-        var div_tt = "TimeTo";
-        divs = $("."+div_tt); 
-        if (divs.length > 0) {
-            $.each(divs, function(id, div) {
-                var ds = $(this).data('data-source');
-                var DS = getDataSourceByName(ds);
-                if (DS === null) return;
-                var quantil = $(this).data('quantil');
-                var type = $(this).data('type');
-                div.id = ds+"-time-to-"+type+"-"+quantil;
-                if (type === "fix")
-                    DS.displayTimeToFix(div.id, quantil);
-                if (type === "attention")
-                    DS.displayTimeToAttention(div.id, quantil);
-            });
-        }
-    };
-
-    Report.convertBasicMetrics = function(config) {
-        Report.convertMetricsEvol();
-        Report.convertTimeTo();
-    };
-
-    Report.convertMetricsEvolSet = function() {
-        div_param = "MetricsEvolSet";
-        var divs = $("." + div_param);
-        if (divs.length > 0) {
-            $.each(divs, function(id, div) {
-                var all = $(this).data('all');
-                var relative = $(this).data('relative');
-                var summary_graph = $(this).data('summary-graph');
-                var legend = $(this).data('legend-show');
-                div.id = ds+"-MetricsEvolSet-"+this.id;
-                if (all === true) {
-                    div.id = ds+"-All";
-                    Viz.displayEnvisionAll(div.id, relative, legend, summary_graph);
-                    return false;
-                }
-                var ds = $(this).data('data-source');
-                var DS = getDataSourceByName(ds);
-                if (DS === null) return;                
-                DS.displayEnvision(div.id, relative, legend, summary_graph); 
-            });
-        }
-
-        if (legacy) Report.convertEnvisionLegacy();
-    };
-
-    function convertTop() {    
-        var div_id_top = "Top";        
-        var divs = $("." + div_id_top);
-        var DS, ds;
-        if (divs.length > 0) {
-            $.each(divs, function(id, div) {
-                ds = $(this).data('data-source');
-                DS = getDataSourceByName(ds);
-                if (DS === null) return;
-                if (DS.getData().length === 0) return;
-                var show_all = false;
-                if ($(this).data('show_all')) show_all = true;
-                var top_metric = $(this).data('metric');
-                var limit = $(this).data('limit');
-                var graph = $(this).data('graph');
-                var people_links = $(this).data('people_links');
-                if (!div.id) {
-                    div.id = ds+"-top"+graph;
-                    if (graph) div.id += "-"+graph;
-                }
-                DS.displayTop(div.id, show_all, top_metric, 
-                              graph, limit, people_links);
-            });
-        }
-        if (legacy) Report.convertTopLegacy();
-    }
-
-    function convertDemographics() {
-        $.each(Report.getDataSources(), function(index, DS) {
-            var div_demog = DS.getName() + "-demographics";
-            if ($("#" + div_demog).length > 0)
-                DS.displayDemographics(div_demog);
-            // Specific demographics loaded from files
-            var divs = $('[id^="' + DS.getName() + '-demographics"]');
-            for ( var i = 0; i < divs.length; i++) {
-                var file = $(divs[i]).data('file');
-                // period in years
-                var period = $(divs[i]).data('period');
-                DS.displayDemographics(divs[i].id, file, period);
-            }
-        });
-    }    
-    
-    function convertSelectors() {       
-        // Selectors
-        $.each(Report.getDataSources(), function(index, DS) {
-            var div_selector = DS.getName() + "-selector";
-            var div_envision = DS.getName() + "-envision-lists";
-            var div_flotr2 = DS.getName() + "-flotr2-lists";
-            if ($("#" + div_selector).length > 0)
-                // TODO: Only MLS supported 
-                if (DS instanceof MLS) {
-                    DS.displayEvoBasicListSelector(div_selector, div_envision,
-                            div_flotr2);
-                }
-        });
-    }
-    
-    // HTML code that will be converted later
-    function convertTemplateDivs() {
-        $.each (template_divs, function(divid, value) {
-            if ($("#"+divid).length > 0) value.convert();
-            if ($("."+divid).length > 0) value.convert();
-        });
-    }
-
-    function convertBasicDivs() {
-        $.each (basic_divs, function(divid, value) {
-            if ($("#"+divid).length > 0) value.convert();
-            if ($("."+divid).length > 0) value.convert();
-        });
-    }
-    
-    function convertBasicDivsMisc() {
-        $.each (basic_divs_misc, function(divid, value) {
-            if ($("#"+divid).length > 0) value.convert();
-            if ($("."+divid).length > 0) value.convert();
-        });
-    }
-
-    Report.convertGlobalData = function (){
-        var divs = $(".GlobalData");
-        if (divs.length > 0) {
-            $.each(divs, function(id, div) {
-                ds = $(this).data('data-source');
-                DS = getDataSourceByName(ds);
-                if (DS === null) return;
-                var data = DS.getGlobalData();
-                var key = $(this).data('field');
-                $(this).text(data[key]);
-            });
-        }
-    };
-
     // Build mapping between Data Sources and Projects
     Report.configDataSources = function() {
         var prjs_dss = Report.getProjectsDataSources();
@@ -1205,13 +353,14 @@ if (Report === undefined) var Report = {};
     };       
 
     Report.convertGlobal = function() {
-        convertTemplateDivs();
         if (legacy) Report.convertTemplateDivsLegacy();
-        convertBasicDivs();
-        convertBasicDivsMisc();
-        Report.convertBasicMetrics();
-        Report.convertMetricsEvolSet();
-        Report.convertLastActivity();
+        Convert.convertBasicDivs();
+        Convert.convertBasicDivsMisc();
+        Convert.convertBasicMetrics();
+        Convert.convertMetricsEvolSet();
+        Convert.convertLastActivity();
+        Convert.convertMicrodash();
+        Convert.convertMicrodashText();
         if (legacy) {
             Report.convertBasicDivsLegacy();
             Report.convertIdentity();
@@ -1220,16 +369,16 @@ if (Report === undefined) var Report = {};
     
     // Data available in global
     Report.convertStudiesGlobal = function() {
-        convertTop();
-        convertPeople(); // using on demand file loading        
+        Convert.convertTop();
+        Convert.convertPeople(); // using on demand file loading        
     };
         
     function convertStudies() {
-        convertFilterStudy('repos');
-        convertFilterStudy('countries');
-        convertFilterStudy('companies');
-        convertDemographics();
-        convertSelectors();
+        Convert.convertFilterStudy('repos');
+        Convert.convertFilterStudy('countries');
+        Convert.convertFilterStudy('companies');
+        Convert.convertDemographics();
+        if (legacy) ReportLegacy.convertSelectorsLegacy();
     }    
 })();
 

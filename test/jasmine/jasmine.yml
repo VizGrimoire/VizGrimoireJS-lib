@@ -13,6 +13,7 @@ src_files:
   - "src/SCR.js"
   - "src/Loader.js"
   - "src/ReportLegacy.js"
+  - "src/Convert.js"
   - "src/Report.js"
   - "src/Envision_Report.js"
   - "src/Viz.js"

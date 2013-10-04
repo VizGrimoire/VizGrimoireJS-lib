@@ -1117,7 +1117,7 @@ if (Viz === undefined) var Viz = {};
         for ( var id in basic_metrics) {
             var metric = basic_metrics[id];
             if (data[0][metric.divid] === undefined) continue;
-            if ($.inArray(metric.divid, Report.getConfig()[hide]) > -1)
+            if ($.inArray(metric.divid, Report.getVizConfig()[hide]) > -1)
                 continue;
             displayBasicMetricHTML(metric, data, div_target, config, projs);
         }
@@ -1225,7 +1225,7 @@ if (Viz === undefined) var Viz = {};
 
     function displayEnvisionAll(div_id, relative, legend_show, summary_graph) {
         var projects_full_data = Report.getProjectsDataSources();
-        var config = Report.getConfig();
+        var config = Report.getVizConfig();
         var options = Viz.getEnvisionOptions(div_id, projects_full_data, null,
                 config.summary_hide, summary_graph);
         options.legend_show = legend_show;

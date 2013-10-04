@@ -884,6 +884,21 @@ Report.convertTemplateDivsLegacy = function() {
     });
 };
 
+Report.convertSelectorsLegacy = function() {       
+    // Selectors
+    $.each(Report.getDataSources(), function(index, DS) {
+        var div_selector = DS.getName() + "-selector";
+        var div_envision = DS.getName() + "-envision-lists";
+        var div_flotr2 = DS.getName() + "-flotr2-lists";
+        if ($("#" + div_selector).length > 0)
+            // TODO: Only MLS supported 
+            if (DS instanceof MLS) {
+                DS.displayEvoBasicListSelector(div_selector, div_envision,
+                        div_flotr2);
+            }
+    });
+};
+
 
 
 

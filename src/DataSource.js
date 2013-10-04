@@ -815,9 +815,9 @@ function DataSource(name, basic_metrics) {
     };
 
     this.envisionEvo = function(div_id, history, relative, legend_show, summary_graph) {
-        config = Report.getConfig();
+        config = Report.getVizConfig();
         var options = Viz.getEnvisionOptions(div_id, history, this.getName(),
-                Report.getConfig()[this.getName()+"_hide"], summary_graph);
+                Report.getVizConfig()[this.getName()+"_hide"], summary_graph);
         options.legend_show = legend_show;
         
         if (relative)
@@ -885,7 +885,7 @@ function DataSource(name, basic_metrics) {
     this.basicEvo = function(history) {
         for (var id in this.basic_metrics) {
             var metric = this.basic_metrics[id];
-            if ($.inArray(metric.column, Report.getConfig()[this.getName()+"_hide"]) > -1)
+            if ($.inArray(metric.column, Report.getVizConfig()[this.getName()+"_hide"]) > -1)
                 continue;
             if ($('#' + metric.divid).length)
                 Viz.displayBasicLines(metric.divid, history, metric.column,

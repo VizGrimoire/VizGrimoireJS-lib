@@ -30,6 +30,7 @@ vizgrimoire.core.js: \
     src/Loader.js \
     src/DataProcess.js \
     src/ReportLegacy.js \
+    src/Convert.js \
     src/Report.js \
     src/DataSource.js \
     src/VizLegacy.js \
