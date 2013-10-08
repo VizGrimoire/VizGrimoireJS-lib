@@ -508,7 +508,7 @@ Convert.convertRepos = function() {
     Convert.convertFilterStudy('repos');
 };
 
-Convert.convertFilterItemsSummary = function() {
+Convert.convertFilterItemsSummary = function(filter) {
     var divlabel = "FilterItemsSummary";
     divs = $("."+divlabel);
     if (divs.length > 0) {
@@ -516,7 +516,7 @@ Convert.convertFilterItemsSummary = function() {
             ds = $(this).data('data-source');
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
-            var filter = $(this).data('filter');
+            if (filter !== $(this).data('filter')) return;
             div.id = ds+"-"+divlabel;
             if (filter === "repos")
                 DS.displayReposSummary(div.id, DS);
@@ -528,7 +528,7 @@ Convert.convertFilterItemsSummary = function() {
     }
 };
 
-Convert.convertFilterItemsGlobal = function() {
+Convert.convertFilterItemsGlobal = function(filter) {
     var config_metric = filterItemsConfig();
     var divlabel = "FilterItemsGlobal";
     divs = $("."+divlabel);
@@ -537,7 +537,7 @@ Convert.convertFilterItemsGlobal = function() {
             ds = $(this).data('data-source');
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
-            var filter = $(this).data('filter');
+            if (filter !== $(this).data('filter')) return;
             var metric = $(this).data('metric');
             var limit = $(this).data('limit');
             var show_others = $(this).data('show-others');
@@ -562,7 +562,7 @@ Convert.convertFilterItemsGlobal = function() {
     }
 };
 
-Convert.convertFilterItemsNav = function(page) {
+Convert.convertFilterItemsNav = function(filter, page) {
     var divlabel = "FilterItemsNav";
     divs = $("."+divlabel);
     if (divs.length > 0) {
@@ -570,7 +570,7 @@ Convert.convertFilterItemsNav = function(page) {
             ds = $(this).data('data-source');
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
-            var filter = $(this).data('filter');
+            if (filter !== $(this).data('filter')) return;
             if ($(this).data('page')) page = $(this).data('page');
             var order_by = $(this).data('order-by');
             var scm_and_its = $(this).data('scm-and-its');
@@ -585,7 +585,7 @@ Convert.convertFilterItemsNav = function(page) {
     }
 };
 
-Convert.convertFilterItemsMetricsEvol = function() {
+Convert.convertFilterItemsMetricsEvol = function(filter) {
     var config_metric = filterItemsConfig();
     
     var divlabel = "FilterItemsMetricsEvol";
@@ -595,7 +595,7 @@ Convert.convertFilterItemsMetricsEvol = function() {
             ds = $(this).data('data-source');
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
-            var filter = $(this).data('filter');
+            if (filter !== $(this).data('filter')) return;
             var metric = $(this).data('metric');
             var limit = $(this).data('limit');
             var order_by = $(this).data('order-by');
@@ -613,7 +613,7 @@ Convert.convertFilterItemsMetricsEvol = function() {
     }
 };
 
-Convert.convertFilterItemsMiniCharts = function(page) {
+Convert.convertFilterItemsMiniCharts = function(filter, page) {
     var config_metric = filterItemsConfig();
     
     var divlabel = "FilterItemsMiniCharts";
@@ -623,7 +623,7 @@ Convert.convertFilterItemsMiniCharts = function(page) {
             ds = $(this).data('data-source');
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
-            var filter = $(this).data('filter');
+            if (filter !== $(this).data('filter')) return;
             if ($(this).data('page')) page = $(this).data('page');
             var metrics = $(this).data('metrics');
             var order_by = $(this).data('order-by');
@@ -645,7 +645,7 @@ Convert.convertFilterItemsMiniCharts = function(page) {
     }
 };
 
-Convert.convertFilterItemSummary = function(item) {
+Convert.convertFilterItemSummary = function(filter, item) {
     // TODO: This repos logic should be adapted
     //if (repo !== null) repo_valid = Report.getValidRepo(repo, DS);
     //if (repo_valid === null) $("#"+DS.getName()+"-repo").hide();
@@ -658,7 +658,7 @@ Convert.convertFilterItemSummary = function(item) {
             ds = $(this).data('data-source');
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
-            var filter = $(this).data('filter');
+            if (filter !== $(this).data('filter')) return;
             if ($(this).data('item')) item = $(this).data('item');
             div.id = ds+"-"+divlabel;
             if (filter === "repos")
@@ -671,7 +671,7 @@ Convert.convertFilterItemSummary = function(item) {
     }
 };
 
-Convert.convertFilterItemMetricsEvol = function(item) {
+Convert.convertFilterItemMetricsEvol = function(filter, item) {
     var config_metric = filterItemsConfig();
     
     var divlabel = "FilterItemMetricsEvol";
@@ -681,7 +681,7 @@ Convert.convertFilterItemMetricsEvol = function(item) {
             ds = $(this).data('data-source');
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
-            var filter = $(this).data('filter');
+            if (filter !== $(this).data('filter')) return;
             if ($(this).data('item')) item = $(this).data('item');
             var metrics = $(this).data('metrics');                        
             config_metric.show_legend = false;
@@ -704,7 +704,7 @@ Convert.convertFilterItemMetricsEvol = function(item) {
     }
 };
 
-Convert.convertFilterItemTop = function(item) {
+Convert.convertFilterItemTop = function(filter, item) {
     var divlabel = "FilterItemTop";
     divs = $("."+divlabel);
     if (divs.length > 0) {
@@ -712,7 +712,7 @@ Convert.convertFilterItemTop = function(item) {
             ds = $(this).data('data-source');
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
-            var filter = $(this).data('filter');
+            if (filter !== $(this).data('filter')) return;
             if ($(this).data('item')) item = $(this).data('item');
             var metric = $(this).data('metric');
             var period = $(this).data('period');
@@ -750,15 +750,15 @@ Convert.convertFilterStudy = function(filter) {
         return;
     }
     
-    Convert.convertFilterItemsSummary();
-    Convert.convertFilterItemsGlobal();
-    Convert.convertFilterItemsNav();
-    Convert.convertFilterItemsMetricsEvol();
-    Convert.convertFilterItemsMiniCharts(page);
+    Convert.convertFilterItemsSummary(filter);
+    Convert.convertFilterItemsGlobal(filter);
+    Convert.convertFilterItemsNav(filter);
+    Convert.convertFilterItemsMetricsEvol(filter);
+    Convert.convertFilterItemsMiniCharts(filter, page);
     
-    Convert.convertFilterItemSummary(item);
-    Convert.convertFilterItemMetricsEvol(item);
-    Convert.convertFilterItemTop(item);
+    Convert.convertFilterItemSummary(filter, item);
+    Convert.convertFilterItemMetricsEvol(filter, item);
+    Convert.convertFilterItemTop(filter, item);
     
     if (Report.getLegacy()) {
         if (filter === "repos") Report.convertReposLegacy();

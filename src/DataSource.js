@@ -433,6 +433,9 @@ function DataSource(name, basic_metrics) {
         else if (report=="countries")
           data = this.getCountriesGlobalData();
         else return;
+
+        if ($.isEmptyObject(data)) return;
+
         if (limit) {
             var sorted = null;
             var item = null;

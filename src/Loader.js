@@ -172,6 +172,8 @@ var Loader = {};
                 if (DS.getName() === "scm") file_static += "authors";
                 if (DS.getName() === "its") file_static += "closers";
                 if (DS.getName() === "mls") file_static += "senders";
+                // Top not yet supported in SCR
+                if (DS.getName() === "scr") return;
                 var file_all = file_static + ".json";
                 $.when($.getJSON(file_all))
                     .done(function(history) {
@@ -331,11 +333,14 @@ var Loader = {};
             for (key in DS.getCompaniesGlobalData()) {companies_loaded++;}
             if (companies_loaded !== DS.getCompaniesData().length)
                 return false;
-            if (DS.getCompaniesTopData() === null) return false;
-            companies_loaded = 0;
-            for (key in DS.getCompaniesTopData()) {companies_loaded++;}
-            if (companies_loaded !== DS.getCompaniesData().length) 
-                return false;
+            // Tops not yet supported in SCR Data Source (gerrit)
+            if (DS.getName() !== "scr") {
+                if (DS.getCompaniesTopData() === null) return false;
+                companies_loaded = 0;
+                for (key in DS.getCompaniesTopData()) {companies_loaded++;}
+                if (companies_loaded !== DS.getCompaniesData().length)
+                    return false;
+            }
         }
         return true;
     }
