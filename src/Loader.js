@@ -150,7 +150,8 @@ var Loader = {};
             });
         });
     }
-    
+
+    // Companies preloading disabled. This functions is not used
     function data_load_companies_metrics() {
         var data_sources = Report.getDataSources();
         $.each(data_sources, function(i, DS) {
@@ -183,26 +184,37 @@ var Loader = {};
                     DS.setCompaniesTopData([], self);
                     end_data_load();
                 });
-
-                
             });
         });
     }
     
-    Loader.check_repos_page = function(page) {
+    Loader.check_filter_page = function(page, filter) {
         var check = true;
         if (page === undefined) page = 1;
         var start = Report.getPageSize()*(page-1);
         var end = start + Report.getPageSize();
         $.each(Report.getDataSources(), function(index, DS) {
-            var total_repos = DS.getReposData().length;
-            if (end>total_repos) end = total_repos;
+            var total = 0;
+            if (filter === "repos") total = DS.getReposData().length;
+            if (filter === "companies") total = DS.getCompaniesData().length;
+            if (end>total) end = total;
             for (var i=start;i<end;i++) {
-                var repo = DS.getReposData()[i];
-                if (DS.getReposGlobalData()[repo] === undefined ||
-                    DS.getReposMetricsData()[repo] === undefined) {
-                    check = false;
-                    return false;
+                var item;
+                if (filter === "repos") {
+                    item = DS.getReposData()[i];
+                    if (DS.getReposGlobalData()[item] === undefined ||
+                        DS.getReposMetricsData()[item] === undefined) {
+                        check = false;
+                        return false;
+                    }
+                }
+                if (filter === "companies") {
+                    item = DS.getCompaniesData()[i];
+                    if (DS.getCompaniesGlobalData()[item] === undefined ||
+                        DS.getCompaniesMetricsData()[item] === undefined) {
+                        check = false;
+                        return false;
+                    }
                 }
             }
             end = start + Report.getPageSize();
@@ -210,38 +222,75 @@ var Loader = {};
         return check;
     };
 
-    Loader.data_load_repos_page = function (DS, page, cb) {
+    Loader.check_companies_page = function(page) {
+        return Loader.check_filter_page (page, "companies");
+    };
+
+    Loader.check_repos_page = function(page) {
+        return Loader.check_filter_page (page, "repos");
+    };
+
+    Loader.data_load_items_page = function (DS, page, cb, filter) {
         if (page === undefined) page = 1;
-        if (DS.getReposData() === null) return false;
+        if (filter === "repos")
+            if (DS.getReposData() === null) return false;
+        if (filter === "companies")
+            if (DS.getReposData() === null) return false;
         // No data
-        var total_repos = DS.getReposData().length;
-        if (total_repos === 0) return true;
+        var total = 0;
+        if (filter === "repos") total = DS.getReposData().length;
+        if (filter === "companies") total = DS.getCompaniesData().length;
+        if (total === 0) return true;
         // Check if we have the data for the page and if not load
         var start = Report.getPageSize()*(page-1);
         var end = start + Report.getPageSize();
-        if (end>total_repos) end = total_repos;
+        if (end>total) end = total;
         for (var i=start;i<end;i++) {
-            var repo = DS.getReposData()[i];
-            data_load_repo_page(repo, DS, page, cb);
+            if (filter === "repos") {
+                var repo = DS.getReposData()[i];
+                data_load_repo_page(repo, DS, page, cb);
+            } else if (filter === "companies") {
+                var company = DS.getCompaniesData()[i];
+                data_load_company_page(company, DS, page, cb);
+            }
         }
     };
 
-    function data_load_repo_page(repo, DS, page, cb) {
-        repo_uri = encodeURIComponent(repo);
-        var file = DS.getDataDir()+"/"+repo_uri+"-";
+    Loader.data_load_companies_page = function (DS, page, cb) {
+        Loader.data_load_items_page (DS, page, cb, "companies");
+    };
+
+    Loader.data_load_repos_page = function (DS, page, cb) {
+        Loader.data_load_items_page (DS, page, cb, "repos");
+    };
+
+    function data_load_item_page(item, DS, page, cb, filter) {
+        item_uri = encodeURIComponent(item);
+        var file = DS.getDataDir()+"/"+item_uri+"-";
         file_evo = file + DS.getName()+"-evolutionary.json";
         file_static = file + DS.getName()+"-static.json";
         $.when($.getJSON(file_evo),$.getJSON(file_static)
                 ).done(function(evo, global) {
-            DS.addRepoMetricsData(repo, evo[0], DS);
-            DS.addRepoGlobalData(repo, global[0], DS);
-            if (Loader.check_repos_page(page)) {
-                if (cb.called !== true) {
-                    cb();
-                }
+            if (filter === "repos") {
+                DS.addRepoMetricsData(item, evo[0], DS);
+                DS.addRepoGlobalData(item, global[0], DS);
+            } else if (filter === "companies") {
+                DS.addCompanyMetricsData(item, evo[0], DS);
+                DS.addCompanyGlobalData(item, global[0], DS);
+            }
+            if (Loader.check_filter_page (page, filter)) {
+                if (cb.called !== true) cb();
                 cb.called = true;
             }
         });
+    }
+
+    function data_load_repo_page(repo, DS, page, cb) {
+        data_load_item_page(repo, DS, page, cb, "repos");
+    }
+
+    function data_load_company_page(company, DS, page, cb) {
+        data_load_item_page(company, DS, page, cb, "companies");
     }
 
     // Repos preloading disabled. This functions is not used
@@ -318,11 +367,13 @@ var Loader = {};
     function check_companies_loaded(DS) {
         if (DS.getCompaniesData() === null) return false;
         else {
-            if (DS.getCompaniesData().length>0 && !check_companies) {
-                check_companies = true;
-                data_load_companies_metrics();
-                return false;
-            }
+            // Companies metrics will be loaded when needed
+            return true;
+//            if (DS.getCompaniesData().length>0 && !check_companies) {
+//                check_companies = true;
+//                data_load_companies_metrics();
+//                return false;
+//            }
         }
         if (check_companies && DS.getCompaniesData().length>0) {
             var companies_loaded = 0;

@@ -304,11 +304,6 @@ describe( "VizGrimoireJS library", function () {
         });        
     }
     
-    function capitaliseFirstLetter(string)
-    {
-        return string.charAt(0).toUpperCase() + string.slice(1);
-    }
-    
     function checkVizReport(report) {
         if ($.inArray(report,['repos','companies','countries'])===-1) 
             return;
@@ -318,13 +313,16 @@ describe( "VizGrimoireJS library", function () {
             var ds_name = DS.getName();
             if (ds_name === "scr") return;
             if (report === "repos")
-                total_canvas += 2*DS.getReposData().length;
+                total_repos = DS.getReposData().length;
             else if (report === "companies")
-                total_canvas += 2*DS.getCompaniesData().length;
+                total_repos = DS.getCompaniesData().length;
             else if (report === "countries")
                 total_canvas += 2*DS.getCountriesData().length;
+            if (total_repos > Report.getPageSize())
+                total_repos = Report.getPageSize();
+            total_canvas += 2*total_repos;
             var metrics = "";
-            if (ds_name === "scm") metrics = "scm_commits,scm_authors"; 
+            if (ds_name === "scm") metrics = "scm_commits,scm_authors";
             if (ds_name === "its") metrics = "its_closed,its_closers";
             if (ds_name === "mls") metrics = "mls_sent,mls_senders"; 
             buildNode(ds_name+"-"+report+"-MiniCharts",

@@ -523,12 +523,24 @@ function DataSource(name, basic_metrics) {
         Viz.displayMetricsEvol(metric_ids, data, div_target, config);
     };
 
-    this.displayCompaniesNav = function (div_nav, sort_metric) {
-        var nav = "<span id='nav'></span>";
+    this.displayCompaniesNav = function (div_nav, sort_metric, page_str) {
+        var page = parseInt(page_str, null);
+        if (isNaN(page)) page = 1;
+        var nav = '<h4 style="font-weight: bold;display:inline;">List of Companies</h4> (';
+        if (page) {
+            nav += (page-1)*Report.getPageSize()+1 + "<>";
+            nav += (page*Report.getPageSize()) + ")<br>";
+        }
+
+        if (page && page>1)
+            nav += "<a href='?page="+(page-1)+"'>&lt;</a> ";
+        nav += "<span id='nav'></span>";
         var sorted_companies = DataProcess.sortCompanies(this, sort_metric);
         $.each(sorted_companies, function(id, company) {
             nav += "<a href='#"+company+"-nav'>"+company + "</a> ";
         });
+        if (page && page*Report.getPageSize()<this.getCompaniesData().length)
+            nav += " <a href='?page="+(parseInt(page,null)+1)+"'>&gt;</a>";
         $("#"+div_nav).append(nav);
     };
     

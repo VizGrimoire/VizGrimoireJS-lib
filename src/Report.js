@@ -354,13 +354,15 @@ if (Report === undefined) var Report = {};
 
     Report.convertGlobal = function() {
         if (legacy) Report.convertTemplateDivsLegacy();
+        // Templates markup divs
+        Convert.convertMicrodash();
+        Convert.convertMicrodashText();
+        // Normal markup divs
         Convert.convertBasicDivs();
         Convert.convertBasicDivsMisc();
         Convert.convertBasicMetrics();
         Convert.convertMetricsEvolSet();
         Convert.convertLastActivity();
-        Convert.convertMicrodash();
-        Convert.convertMicrodashText();
         if (legacy) {
             Report.convertBasicDivsLegacy();
             Report.convertIdentity();

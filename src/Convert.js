@@ -142,7 +142,6 @@ Convert.convertMicrodash = function () {
             $(div).append(html);
         });
     }
-    Convert.convertMetricsEvol();
 };
 
 Convert.convertNavbar = function() {
@@ -503,11 +502,6 @@ function filterItemsConfig() {
     return config_metric;
 }
 
-// Needed for callback from Loader
-Convert.convertRepos = function() {
-    Convert.convertFilterStudy('repos');
-};
-
 Convert.convertFilterItemsSummary = function(filter) {
     var divlabel = "FilterItemsSummary";
     divs = $("."+divlabel);
@@ -580,7 +574,7 @@ Convert.convertFilterItemsNav = function(filter, page) {
             if (filter === "countries")
                 DS.displayCountriesNav(div.id, order_by, page, scm_and_its);
             if (filter === "companies")
-                DS.displayCompaniesNav(div.id, order_by);
+                DS.displayCompaniesNav(div.id, order_by, page);
         });
     }
 };
@@ -726,8 +720,15 @@ Convert.convertFilterItemTop = function(filter, item) {
     }
 };
 
+//Needed for callback from Loader
+Convert.convertRepos = function() {
+    Convert.convertFilterStudy('repos');
+};
+Convert.convertCompanies = function() {
+    Convert.convertFilterStudy('companies');
+};
+
 Convert.convertFilterStudy = function(filter) {
-    var data_ready = true;
     var item = null;
     
     if (filter === "repos") item = Report.getParameterByName("repository");
@@ -735,21 +736,25 @@ Convert.convertFilterStudy = function(filter) {
     if (filter === "companies") item = Report.getParameterByName("company");
     var page = Report.getParameterByName("page");
     
-    // TODO: On demand loading only for repos yet
+    // TODO: On demand loading only for repos and companies yet
     if (filter === "repos") {
         if (Loader.check_repos_page(page) === false) {
-            data_ready = false;
+            $.each(Report.getDataSources(), function(index, DS) {
+                Loader.data_load_repos_page(DS, page, Convert.convertRepos);
+            });
+            return;
         }
     }
-    
-    if (data_ready === false) {
-        $.each(Report.getDataSources(), function(index, DS) {
-            if (filter === "repos")
-                Loader.data_load_repos_page(DS, page, Convert.convertRepos);
-        });
-        return;
+
+    if (filter === "companies") {
+        if (Loader.check_companies_page(page) === false) {
+            $.each(Report.getDataSources(), function(index, DS) {
+                Loader.data_load_companies_page(DS, page, Convert.convertCompanies);
+            });
+            return;
+        }
     }
-    
+
     Convert.convertFilterItemsSummary(filter);
     Convert.convertFilterItemsGlobal(filter);
     Convert.convertFilterItemsNav(filter, page);
