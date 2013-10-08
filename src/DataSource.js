@@ -643,7 +643,8 @@ function DataSource(name, basic_metrics) {
             if (scm_and_its && (!(Report.getReposMap()[item]))) return;
             list += "<div class='subreport-list' id='"+item+"-nav'>";
             list += "<div style='float:left;'>";
-            var addURL = Report.addDataDir();
+            var addURL = "page="+page;
+            if (Report.addDataDir()) addURL = "&"+Report.addDataDir();
             if (show_links) {
                 if (report === "companies") { 
                     list += "<a href='company.html?company="+item;

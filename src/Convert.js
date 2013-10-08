@@ -752,7 +752,7 @@ Convert.convertFilterStudy = function(filter) {
     
     Convert.convertFilterItemsSummary(filter);
     Convert.convertFilterItemsGlobal(filter);
-    Convert.convertFilterItemsNav(filter);
+    Convert.convertFilterItemsNav(filter, page);
     Convert.convertFilterItemsMetricsEvol(filter);
     Convert.convertFilterItemsMiniCharts(filter, page);
     
