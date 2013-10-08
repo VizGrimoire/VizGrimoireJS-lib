@@ -274,11 +274,14 @@ var Loader = {};
             for (key in DS.getCompaniesGlobalData()) {companies_loaded++;}
             if (companies_loaded !== DS.getCompaniesData().length)
                 return false;
-            if (DS.getCompaniesTopData() === null) return false;
-            companies_loaded = 0;
-            for (key in DS.getCompaniesTopData()) {companies_loaded++;}
-            if (companies_loaded !== DS.getCompaniesData().length) 
-                return false;
+            // Don't check scr top now
+            if (DS.getName() !== "scr") {
+                if (DS.getCompaniesTopData() === null) return false;
+                companies_loaded = 0;
+                for (key in DS.getCompaniesTopData()) {companies_loaded++;}
+                if (companies_loaded !== DS.getCompaniesData().length)
+                    return false;
+            }
         }
         return true;
     }
