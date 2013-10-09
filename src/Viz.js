@@ -344,11 +344,15 @@ if (Viz === undefined) var Viz = {};
     // TODO: Probably we should also fill history
     function displayDSLines(div_id, history, lines_data, title, config_metric) {
         var container = document.getElementById(div_id);
+        var legend_div = null;
+        if (config_metric && config_metric.legend && config_metric.legend.container)
+            legend_div = $('#'+config_metric.legend.container);
 
         var config = {
             title : title,
             legend: {
-              show: false
+              show: false,
+              container: legend_div
             },
             xaxis : {
                 minorTickFreq : 4,
@@ -371,6 +375,7 @@ if (Viz === undefined) var Viz = {};
                 show : false
             },
             mouse : {
+                container: legend_div,
                 track : true,
                 trackY : false,
                 trackFormatter : function(o) {
@@ -1167,7 +1172,8 @@ if (Viz === undefined) var Viz = {};
     function displayBasicMetricCompaniesHTML(metric, data, div_target, 
             config, start, end) {
         config = checkBasicConfig(config);
-        config.show_legend = true;
+        if (config.show_legend !== false)
+            config.show_legend = true;
         var title = metric;
         displayMetricSubReportLines(div_target, metric, data, title, 
                 config, start, end);

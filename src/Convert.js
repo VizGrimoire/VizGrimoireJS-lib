@@ -596,6 +596,11 @@ Convert.convertFilterItemsMetricsEvol = function(filter) {
             var stacked = false;
             if ($(this).data('stacked')) stacked = true;
             config_metric.lines = {stacked : stacked};
+            if ($('#'+$(this).data('legend-div')).length>0) {
+                config_metric.legend = {
+                container: $(this).data('legend-div')};
+            } else config_metric.legend = {container: null};
+            config_metric.show_legend = $(this).data('legend');
             div.id = metric+"-"+divlabel;
             if (filter === "companies")
                 DS.displayBasicMetricCompanies(metric,div.id,
