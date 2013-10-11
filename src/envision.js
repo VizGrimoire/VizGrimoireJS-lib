@@ -3442,7 +3442,7 @@ Text.prototype = {
 
     var div = D.create('div');
 
-    D.setStyles(div, { 'position' : 'absolute', 'top' : '-10000px' });
+    D.setStyles(div, { 'position' : 'absolute', 'top' : '-100000px' });
     D.insert(div, '<div style="'+style+'" class="'+className+' flotr-dummy-div">' + text + '</div>');
     D.insert(this.o.element, div);
 
