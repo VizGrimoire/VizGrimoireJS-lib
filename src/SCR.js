@@ -44,6 +44,13 @@ function SCR() {
             'name' : "merged",
             'desc' : ""
         },
+        'scr_mergers' : {
+            'divid' : "scr_mergers",
+            'column' : "mergers",
+            'name' : "mergers",
+            'action': "merged",
+            'desc' : ""
+        },
         'scr_new' : {
             'divid' : "scr_new",
             'column' : "new",
