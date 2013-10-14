@@ -31,19 +31,15 @@ if (Viz === undefined) var Viz = {};
     Viz.displayTopBasic = displayTopBasic;
     Viz.displayTopCompany = displayTopCompany;
     Viz.displayTopGlobal = displayTopGlobal;
-    Viz.displayBasicHTML = displayBasicHTML;
     Viz.displayBasicChart = displayBasicChart;
-    Viz.displayBasicMetricHTML = displayBasicMetricHTML;
-    Viz.displayBasicMetricCompaniesHTML = displayBasicMetricCompaniesHTML;
-    Viz.displayBasicMetricSubReportStatic = displayBasicMetricSubReportStatic;
-    Viz.displayBasicMetricsCompany = displayBasicMetricsCompany;
-    Viz.displayBasicMetricsPeople = displayBasicMetricsPeople;
-    Viz.displayBasicMetricsRepo = displayBasicMetricsRepo;
-    Viz.displayBasicMetricRepos = displayBasicMetricRepos;
-    Viz.displayBasicMetricsCountry = displayBasicMetricsCountry;
+    Viz.displayMetricCompanies = displayMetricCompanies;
+    Viz.displayMetricSubReportStatic = displayMetricSubReportStatic;
+    Viz.displayMetricsCompany = displayMetricsCompany;
+    Viz.displayMetricsPeople = displayMetricsPeople;
+    Viz.displayMetricsRepo = displayMetricsRepo;
+    Viz.displayMetricRepos = displayMetricRepos;
+    Viz.displayMetricsCountry = displayMetricsCountry;
     Viz.displayMetricsEvol = displayMetricsEvol;
-    Viz.displayBasicLinesFile = displayBasicLinesFile;
-    Viz.displayBasicLines = displayBasicLines;
     Viz.displayBubbles = displayBubbles;
     Viz.displayDemographics = displayDemographics;
     Viz.displayEnvisionAll = displayEnvisionAll;
@@ -53,7 +49,6 @@ if (Viz === undefined) var Viz = {};
     Viz.displayRadarActivity = displayRadarActivity;
     Viz.displayRadarCommunity = displayRadarCommunity;
     Viz.displayTreeMap = displayTreeMap;
-    Viz.drawMetric = drawMetric;
     Viz.getEnvisionOptions = getEnvisionOptions;
     Viz.checkBasicConfig = checkBasicConfig;
 
@@ -80,27 +75,6 @@ if (Viz === undefined) var Viz = {};
         else if (item.lastIndexOf("<") === 0)
             label = MLS.displayMLSListName(item);
         return label;
-    }
-
-    function drawMetric(metric_id, divid) {
-        var config_metric = {};
-        config_metric.show_desc = false;
-        config_metric.show_title = false;
-        config_metric.show_labels = true;
-        var drawn = false;
-
-        $.each(Report.getDataSources(), function(index, DS) {
-            if (drawn) return false;
-            var list_metrics = DS.getMetrics();
-            $.each(list_metrics, function(metric, value) {
-                if (value.column === metric_id) {
-                    DS.displayBasicMetricHTML(value.column, divid,
-                            config_metric);
-                    drawn = true;
-                    return false;
-                }
-            });
-        });
     }
 
     function displayTopMetricTable(history, metric_id, doer, limit, people_links) {
@@ -187,96 +161,6 @@ if (Viz === undefined) var Viz = {};
         }
     }
 
-    function displayBasicLinesFile(div_id, json_file, column, labels, title, projects) {
-        $.getJSON(json_file, null, function(history) {
-            displayBasicLines(div_id, history, column, labels, title, projects);
-        });
-    }
-
-    // Lines from different Data Sources
-    function displayBasicLines(div_id, history, column, labels, title, projects) {
-        var lines_data = [];
-        var data = [];
-        var full_history_id = [], dates = [];
-        container = document.getElementById(div_id);
-        
-        if (history instanceof Array) data = history;
-        else data = [history];
-                
-        $.each(data, function(i, serie) {
-            if (serie.id && serie.id.length > full_history_id.length) {
-                full_history_id = serie.id;
-                dates = serie.date;                
-            }
-        });
-
-        for ( var j = 0; j < data.length; j++) {
-            lines_data[j] = [];
-            if (data[j][column] === undefined) continue;
-            for ( var i = 0; i < data[j][column].length; i++) {
-                lines_data[j][i] = [ data[j].id[i], parseInt(data[j][column][i], 10) ];
-            }
-            // TODO: projects should be included in data not in a different array
-            if (projects)
-                lines_data[j] = {label:projects[j], 
-                    data:DataProcess.fillHistoryLines(full_history_id, lines_data[j])};
-            else
-                lines_data[j] = {data:DataProcess.fillHistoryLines(full_history_id, lines_data[j])};
-        }
-
-        // TODO: Hack to have lines_data visible in track/tickFormatter
-        (function() {var x = lines_data;})();
-        
-        var config = {
-            xaxis : {
-                minorTickFreq : 4,
-                tickFormatter : function(x) {
-                    var index = null;
-                    for ( var i = 0; i < full_history_id.length; i++) {
-                        if (parseInt(x, null)===full_history_id[i]) {
-                            index = i; break;}
-                    }
-                    return dates[index];
-                }
-            },
-            yaxis : {
-                minorTickFreq : 1000,
-                tickFormatter : function(y) {
-                    return parseInt(y, 10) + "";
-                }
-            },
-
-            grid : {
-                show : false
-            },
-            mouse : {
-                track : true,
-                trackY : false,
-                trackFormatter : function(o) {
-                    var label = dates[parseInt(o.index, 10)] + "<br>";
-
-                    for (var i=0; i<lines_data.length; i++) {
-                        if (lines_data.length > 1)
-                            label += lines_data[i].label +":";
-                        label += lines_data[i].data[o.index][1]+"<br>";
-                    }
-                    return label;
-                }
-            }
-        };
-
-        config.title = title;
-
-        if (!labels || labels === 0) {
-            config.xaxis.showLabels = false;
-            config.yaxis.showLabels = false;
-        }
-        if (projects && projects.length === 1) config.legend = {show:false};
-            
-        graph = Flotr.draw(container, lines_data, config);
-    }
-    
-    
     function showHelp(div_id, metrics) {
         var all_metrics = Report.getAllMetrics();
         var help ='<a href="#" class="help"';
@@ -764,7 +648,6 @@ if (Viz === undefined) var Viz = {};
         for (var i=0; i<history[metrics[0]].length;i++) {
             new_history.id.push(i);
         }
-        // Viz.displayBasicLines(div_id, new_history, metrics[0], labels, title);
         var config = {show_legend: true, show_labels: true};
         displayMetricsLines(div_id, metrics, new_history, column, config);
     }
@@ -1112,22 +995,6 @@ if (Viz === undefined) var Viz = {};
         return config;
     }
 
-    function displayBasicHTML(data, div_target, title, basic_metrics, hide,
-            config, projs) {
-        config = checkBasicConfig(config);
-        //var new_div = '<div class="info-pill">';
-        var new_div = '<h4>' + title + '</h4>';
-        // new_div += '</div>';
-        $("#" + div_target).append(new_div);
-        for ( var id in basic_metrics) {
-            var metric = basic_metrics[id];
-            if (data[0][metric.divid] === undefined) continue;
-            if ($.inArray(metric.divid, Report.getVizConfig()[hide]) > -1)
-                continue;
-            displayBasicMetricHTML(metric, data, div_target, config, projs);
-        }
-    }
-
     function displayMetricsEvol(metrics, data, div_target, config) {
         config = checkBasicConfig(config);
         var title = metrics.join(",");
@@ -1135,25 +1002,25 @@ if (Viz === undefined) var Viz = {};
         displayMetricsLines(div_target, metrics, data, title, config);
     }
 
-    function displayBasicMetricsCompany (company, metrics, data, div_id, config) {
+    function displayMetricsCompany (company, metrics, data, div_id, config) {
         config = checkBasicConfig(config);
         var title = company;
         displayMetricsLines(div_id, metrics, data, title, config);
     }
     
-    function displayBasicMetricsRepo (repo, metrics, data, div_id, config) {
+    function displayMetricsRepo (repo, metrics, data, div_id, config) {
         config = checkBasicConfig(config);
         var title = repo;
         displayMetricsLines(div_id, metrics, data, title, config);
     }
     
-    function displayBasicMetricsPeople (upeople_identifier, metrics, data, div_id, config) {
+    function displayMetricsPeople (upeople_identifier, metrics, data, div_id, config) {
         config = checkBasicConfig(config);
         var title = upeople_identifier;
         displayMetricsLines(div_id, metrics, data, title, config);
     }
     
-    function displayBasicMetricRepos(metric, data, div_target, 
+    function displayMetricRepos(metric, data, div_target, 
             config, start, end) {
         config = checkBasicConfig(config);
         config.show_legend = true;
@@ -1162,14 +1029,14 @@ if (Viz === undefined) var Viz = {};
                 config, start, end);
     }
     
-    function displayBasicMetricsCountry (country, metrics, data, div_id, 
+    function displayMetricsCountry (country, metrics, data, div_id, 
             config) {
         config = checkBasicConfig(config);
         var title = country;
         displayMetricsLines(div_id, metrics, data, title, config);
     }
 
-    function displayBasicMetricCompaniesHTML(metric, data, div_target, 
+    function displayMetricCompanies(metric, data, div_target, 
             config, start, end) {
         config = checkBasicConfig(config);
         if (config.show_legend !== false)
@@ -1179,7 +1046,7 @@ if (Viz === undefined) var Viz = {};
                 config, start, end);
     }
 
-    function displayBasicMetricSubReportStatic(metric, data,
+    function displayMetricSubReportStatic(metric, data,
             div_id, config) {
         config = checkBasicConfig(config);
         var title = metric;
@@ -1195,38 +1062,6 @@ if (Viz === undefined) var Viz = {};
             metric_data.push(data[metric]);
         });
         displayBasicChart(div_id, labels, metric_data, graph, title, config);
-    }
-
-    function displayBasicMetricHTML(metric, data, div_target, config, projs) {
-        config = checkBasicConfig(config);
-        var title = metric.name;
-        if (!config.show_title)
-            title = '';
-
-        //var new_div = '<div class="info-pill">';
-        //$("#" + div_target).append(new_div);
-        new_div = '<div id="flotr2_' + metric.divid
-                + '" class="m0-box-div">';
-        new_div += '<h4>' + metric.name + '</h4>';
-        if (config.realtime) {            
-            new_div += '<div class="basic-metric-html" id="' + metric.divid;
-            new_div += "_" + div_target;
-        }
-        else
-            new_div += '<div class="basic-metric-html" id="' + metric.divid;
-        new_div += '"></div>';
-        if (config.show_desc === true)
-            new_div += '<p>' + metric.desc + '</p>';
-        new_div += '</div>';
-        $("#" + div_target).append(new_div);
-        if (config.realtime)
-            displayBasicLinesFile(metric.divid+"_"+div_target, config.json_ds, 
-                    metric.column, config.show_labels, title, projs);
-        else
-            // displayBasicLines(metric.divid, data, metric.column,
-            // TODO: temporal hack for ns metric name
-            displayBasicLines(metric.divid, data, metric.divid,
-                    config.show_labels, title, projs);
     }
 
     function displayEnvisionAll(div_id, relative, legend_show, summary_graph) {

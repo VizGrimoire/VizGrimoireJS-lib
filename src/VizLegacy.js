@@ -32,6 +32,169 @@ var gridster_debug = false;
 Viz.displayGridMetric = displayGridMetric;
 Viz.displayGridMetricSelector = displayGridMetricSelector;
 Viz.displayGridMetricAll = displayGridMetricAll;
+Viz.drawMetric = drawMetric;
+Viz.displayBasicHTML = displayBasicHTML;
+Viz.displayBasicMetricHTML = displayBasicMetricHTML;
+Viz.displayBasicLinesFile = displayBasicLinesFile;
+Viz.displayBasicLines = displayBasicLines;
+
+function displayBasicLinesFile(div_id, json_file, column, labels, title, projects) {
+    $.getJSON(json_file, null, function(history) {
+        displayBasicLines(div_id, history, column, labels, title, projects);
+    });
+}
+
+// Lines from different Data Sources
+function displayBasicLines(div_id, history, column, labels, title, projects) {
+    var lines_data = [];
+    var data = [];
+    var full_history_id = [], dates = [];
+    container = document.getElementById(div_id);
+    
+    if (history instanceof Array) data = history;
+    else data = [history];
+            
+    $.each(data, function(i, serie) {
+        if (serie.id && serie.id.length > full_history_id.length) {
+            full_history_id = serie.id;
+            dates = serie.date;                
+        }
+    });
+    
+    for ( var j = 0; j < data.length; j++) {
+        lines_data[j] = [];
+        if (data[j][column] === undefined) continue;
+        for ( var i = 0; i < data[j][column].length; i++) {
+            lines_data[j][i] = [ data[j].id[i], parseInt(data[j][column][i], 10) ];
+        }
+        // TODO: projects should be included in data not in a different array
+        if (projects)
+            lines_data[j] = {label:projects[j], 
+                data:DataProcess.fillHistoryLines(full_history_id, lines_data[j])};
+        else
+            lines_data[j] = {data:DataProcess.fillHistoryLines(full_history_id, lines_data[j])};
+    }
+    
+    // TODO: Hack to have lines_data visible in track/tickFormatter
+    (function() {var x = lines_data;})();
+    
+    var config = {
+        xaxis : {
+            minorTickFreq : 4,
+            tickFormatter : function(x) {
+                var index = null;
+                for ( var i = 0; i < full_history_id.length; i++) {
+                    if (parseInt(x, null)===full_history_id[i]) {
+                        index = i; break;}
+                }
+                return dates[index];
+            }
+        },
+        yaxis : {
+            minorTickFreq : 1000,
+            tickFormatter : function(y) {
+                return parseInt(y, 10) + "";
+            }
+        },
+    
+        grid : {
+            show : false
+        },
+        mouse : {
+            track : true,
+            trackY : false,
+            trackFormatter : function(o) {
+                var label = dates[parseInt(o.index, 10)] + "<br>";
+    
+                for (var i=0; i<lines_data.length; i++) {
+                    if (lines_data.length > 1)
+                        label += lines_data[i].label +":";
+                    label += lines_data[i].data[o.index][1]+"<br>";
+                }
+                return label;
+            }
+        }
+    };
+    
+    config.title = title;
+    
+    if (!labels || labels === 0) {
+        config.xaxis.showLabels = false;
+        config.yaxis.showLabels = false;
+    }
+    if (projects && projects.length === 1) config.legend = {show:false};
+        
+    graph = Flotr.draw(container, lines_data, config);
+}
+
+function drawMetric(metric_id, divid) {
+    var config_metric = {};
+    config_metric.show_desc = false;
+    config_metric.show_title = false;
+    config_metric.show_labels = true;
+    var drawn = false;
+    
+    $.each(Report.getDataSources(), function(index, DS) {
+        if (drawn) return false;
+        var list_metrics = DS.getMetrics();
+        $.each(list_metrics, function(metric, value) {
+            if (value.column === metric_id) {
+                DS.displayBasicMetricHTML(value.column, divid,
+                        config_metric);
+                drawn = true;
+                return false;
+            }
+        });
+    });
+}
+
+function displayBasicHTML(data, div_target, title, basic_metrics, hide,
+        config, projs) {
+    config = checkBasicConfig(config);
+    //var new_div = '<div class="info-pill">';
+    var new_div = '<h4>' + title + '</h4>';
+    // new_div += '</div>';
+    $("#" + div_target).append(new_div);
+    for ( var id in basic_metrics) {
+        var metric = basic_metrics[id];
+        if (data[0][metric.divid] === undefined) continue;
+        if ($.inArray(metric.divid, Report.getVizConfig()[hide]) > -1)
+            continue;
+        displayBasicMetricHTML(metric, data, div_target, config, projs);
+    }
+}
+
+function displayBasicMetricHTML(metric, data, div_target, config, projs) {
+    config = checkBasicConfig(config);
+    var title = metric.name;
+    if (!config.show_title)
+        title = '';
+    
+    //var new_div = '<div class="info-pill">';
+    //$("#" + div_target).append(new_div);
+    new_div = '<div id="flotr2_' + metric.divid
+            + '" class="m0-box-div">';
+    new_div += '<h4>' + metric.name + '</h4>';
+    if (config.realtime) {            
+        new_div += '<div class="basic-metric-html" id="' + metric.divid;
+        new_div += "_" + div_target;
+    }
+    else
+        new_div += '<div class="basic-metric-html" id="' + metric.divid;
+    new_div += '"></div>';
+    if (config.show_desc === true)
+        new_div += '<p>' + metric.desc + '</p>';
+    new_div += '</div>';
+    $("#" + div_target).append(new_div);
+    if (config.realtime)
+        displayBasicLinesFile(metric.divid+"_"+div_target, config.json_ds, 
+                metric.column, config.show_labels, title, projs);
+    else
+        // displayBasicLines(metric.divid, data, metric.column,
+        // TODO: temporal hack for ns metric name
+        displayBasicLines(metric.divid, data, metric.divid,
+                config.show_labels, title, projs);
+}
 
 
 Viz.displayEvoSummary = function(div_id, relative, legend_show, summary_graph) {

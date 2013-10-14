@@ -459,7 +459,7 @@ Convert.convertPersonMetrics = function (upeople_id, upeople_identifier) {
             if ($(this).data('person_id')) upeople_id = $(this).data('person_id');
             if ($(this).data('person_name')) upeople_identifier = $(this).data('person_name');
             div.id = metrics.replace(/,/g,"-")+"-people-metrics";
-            DS.displayBasicMetricsPeople(upeople_id, upeople_identifier, metrics.split(","),
+            DS.displayMetricsPeople(upeople_id, upeople_identifier, metrics.split(","),
                     div.id, config_metric);
         });
     }
@@ -544,13 +544,13 @@ Convert.convertFilterItemsGlobal = function(filter) {
             config_metric.graph = $(this).data('graph');
             div.id = metric+"-"+divlabel;
             if (filter === "repos")
-                DS.displayBasicMetricReposStatic(metric,div.id,
+                DS.displayMetricReposStatic(metric,div.id,
                     config_metric, limit, order_by, show_others);
             if (filter === "countries")
-                DS.displayBasicMetricCountriesStatic(metric,div.id,
+                DS.displayMetricCountriesStatic(metric,div.id,
                     config_metric, limit, order_by, show_others);
             if (filter === "companies")
-                DS.displayBasicMetricCompaniesStatic(metric,div.id,
+                DS.displayMetricCompaniesStatic(metric,div.id,
                     config_metric, limit, order_by, show_others);
         });
     }
@@ -603,10 +603,10 @@ Convert.convertFilterItemsMetricsEvol = function(filter) {
             config_metric.show_legend = $(this).data('legend');
             div.id = metric+"-"+divlabel;
             if (filter === "companies")
-                DS.displayBasicMetricCompanies(metric,div.id,
+                DS.displayMetricCompanies(metric,div.id,
                     config_metric, limit, order_by);
             if (filter === "repos")
-                DS.displayBasicMetricRepos(metric,div.id,
+                DS.displayMetricRepos(metric,div.id,
                     config_metric, limit, order_by);
         });
     }
@@ -691,13 +691,13 @@ Convert.convertFilterItemMetricsEvol = function(filter, item) {
                 config_metric.frame_time = true;
             div.id = metrics.replace(/,/g,"-")+"-"+divlabel;
             if (filter === "repos")
-                DS.displayBasicMetricsRepo(item, metrics.split(","),
+                DS.displayMetricsRepo(item, metrics.split(","),
                     div.id, config_metric);
             if (filter === "countries")
-                DS.displayBasicMetricsCountry(item, metrics.split(","),
+                DS.displayMetricsCountry(item, metrics.split(","),
                     div.id, config_metric);
             if (filter === "companies")
-                DS.displayBasicMetricsCompany(item, metrics.split(","),
+                DS.displayMetricsCompany(item, metrics.split(","),
                     div.id, config_metric);
         });
     }

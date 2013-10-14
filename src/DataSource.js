@@ -325,7 +325,7 @@ function DataSource(name, basic_metrics) {
         return company;
     };
 
-    this.displayBasicMetricCompanies = function(metric_id,
+    this.displayMetricCompanies = function(metric_id,
             div_target, config, limit, order_by) {
         if (order_by === undefined) order_by = metric_id;
         var companies_data = this.getCompaniesMetricsData();
@@ -340,24 +340,24 @@ function DataSource(name, basic_metrics) {
             }
             companies_data = companies_data_limit;
         }
-        Viz.displayBasicMetricCompaniesHTML(metric_id, companies_data,
+        Viz.displayMetricCompanies(metric_id, companies_data,
                 div_target, config, limit);
     };
     
-    this.displayBasicMetricMyCompanies = function(companies, metric_id,
+    this.displayMetricMyCompanies = function(companies, metric_id,
             div_target, config, start, end) {
         var companies_data = {};
         var self = this;
         $.each(companies, function(i,name) {
             companies_data[name] = self.getCompaniesMetricsData()[name];
         });
-        Viz.displayBasicMetricCompaniesHTML(metric_id, companies_data,
+        Viz.displayMetricCompanies(metric_id, companies_data,
                 div_target, config, start, end);
     };
 
     
-    // TODO: mix with displayBasicMetricCompanies
-    this.displayBasicMetricRepos = function(metric_id,
+    // TODO: mix with displayMetricCompanies
+    this.displayMetricRepos = function(metric_id,
             div_target, config, limit, order_by) {
         if (order_by === undefined) order_by = metric_id;
         var repos_data = this.getReposMetricsData();
@@ -372,7 +372,7 @@ function DataSource(name, basic_metrics) {
             }
             repos_data = repos_data_limit;
         }
-        Viz.displayBasicMetricRepos(metric_id, repos_data,
+        Viz.displayMetricRepos(metric_id, repos_data,
                 div_target, config, limit);
     };
     
@@ -396,33 +396,33 @@ function DataSource(name, basic_metrics) {
             }
             repos_data[name] = metrics;
         });
-        Viz.displayBasicMetricRepos(metric_id, repos_data,
+        Viz.displayMetricRepos(metric_id, repos_data,
                 div_target, config, start, end);
     };
 
-    this.displayBasicMetricCompaniesStatic = function (metric_id,
+    this.displayMetricCompaniesStatic = function (metric_id,
             div_target, config, limit, order_by, show_others) {
         
-        this.displayBasicMetricSubReportStatic ("companies",metric_id,
+        this.displayMetricSubReportStatic ("companies",metric_id,
                 div_target, config, limit, order_by, show_others);
     };
     
-    this.displayBasicMetricReposStatic = function (metric_id,
+    this.displayMetricReposStatic = function (metric_id,
             div_target, config, limit, order_by, show_others) {
         
-        this.displayBasicMetricSubReportStatic ("repos", metric_id,
+        this.displayMetricSubReportStatic ("repos", metric_id,
                 div_target, config, limit, order_by, show_others);
     };
     
-    this.displayBasicMetricCountriesStatic = function (metric_id,
+    this.displayMetricCountriesStatic = function (metric_id,
           div_target, config, limit, order_by, show_others) {
     
-        this.displayBasicMetricSubReportStatic ("countries", metric_id,
+        this.displayMetricSubReportStatic ("countries", metric_id,
             div_target, config, limit, order_by, show_others);
     };
     
     
-    this.displayBasicMetricSubReportStatic = function (report, metric_id,
+    this.displayMetricSubReportStatic = function (report, metric_id,
             div_target, config, limit, order_by, show_others) {
         if (order_by === undefined) order_by = metric_id;
         var data = null;
@@ -465,39 +465,39 @@ function DataSource(name, basic_metrics) {
             data = data_limit;
         }
         
-        Viz.displayBasicMetricSubReportStatic(metric_id, data,
+        Viz.displayMetricSubReportStatic(metric_id, data,
             div_target, config, limit);
     };    
 
-    this.displayBasicMetricsCompany = function (
+    this.displayMetricsCompany = function (
             company, metrics, div_id, config) {
         var data = this.getCompaniesMetricsData()[company];
         if (data === undefined) return;
-        Viz.displayBasicMetricsCompany(company, metrics, data, div_id, config);
+        Viz.displayMetricsCompany(company, metrics, data, div_id, config);
     };
     
-    this.displayBasicMetricsRepo = function (repo, metrics, div_id, config) {
+    this.displayMetricsRepo = function (repo, metrics, div_id, config) {
         var data = this.getReposMetricsData()[repo];
         if (data === undefined) return;
-        Viz.displayBasicMetricsRepo(repo, metrics, data, div_id, config);
+        Viz.displayMetricsRepo(repo, metrics, data, div_id, config);
     };
     
-    this.displayBasicMetricsPeople = function (upeople_id, upeople_identifier, metrics, div_id, config) {
+    this.displayMetricsCountry = function (country, metrics, div_id, config) {
+        Viz.displayMetricsCountry(country, metrics,
+                this.getCountriesMetricsData()[country], div_id, config);
+    };
+
+    this.displayMetricsPeople = function (upeople_id, upeople_identifier, metrics, div_id, config) {
         var json_file = "people-"+upeople_id+"-"+this.getName()+"-evolutionary.json";
         var self = this;
         $.when($.getJSON(this.getDataDir()+"/"+json_file)).done(function(history) {
             history = nameSpaceMetrics(history, self);
-            Viz.displayBasicMetricsPeople(upeople_identifier, metrics, history, div_id, config);
+            Viz.displayMetricsPeople(upeople_identifier, metrics, history, div_id, config);
         }).fail(function() {
             $("#"+div_id).hide();
             // $("#people").empty();
             // $("#people").html('No data available for people');
         });
-    };
-    
-    this.displayBasicMetricsCountry = function (country, metrics, div_id, config) {
-        Viz.displayBasicMetricsCountry(country, metrics,
-                this.getCountriesMetricsData()[country], div_id, config);
     };
 
     // TODO: suppport multiproject
