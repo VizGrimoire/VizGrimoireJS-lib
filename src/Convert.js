@@ -454,7 +454,7 @@ Convert.convertPersonMetrics = function (upeople_id, upeople_identifier) {
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
             var metrics = $(this).data('metrics');
-            config.show_legend = false;
+            config_metric.show_legend = false;
             if ($(this).data('legend')) config_metric.show_legend = true;
             if ($(this).data('person_id')) upeople_id = $(this).data('person_id');
             if ($(this).data('person_name')) upeople_identifier = $(this).data('person_name');

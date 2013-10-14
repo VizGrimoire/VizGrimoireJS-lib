@@ -21,7 +21,7 @@
  *   Alvaro del Castillo San Felix <acs@bitergia.com>
  */
 
-var Loader = {};
+if (Loader === undefined) var Loader = {};
 
 (function() {
     
@@ -151,43 +151,6 @@ var Loader = {};
         });
     }
 
-    // Companies preloading disabled. This functions is not used
-    function data_load_companies_metrics() {
-        var data_sources = Report.getDataSources();
-        $.each(data_sources, function(i, DS) {
-            var companies = DS.getCompaniesData();
-            if (!companies) return;
-            $.each(companies, function(i, company) {
-                var file = DS.getDataDir()+"/"+company+"-";
-                var file_evo = file + DS.getName()+"-evolutionary.json";
-                $.when($.getJSON(file_evo)).done(function(history) {
-                    DS.addCompanyMetricsData(company, history, DS);
-                    end_data_load();
-                });
-                var file_static = file + DS.getName()+"-static.json";
-                $.when($.getJSON(file_static)).done(function(history) {
-                    DS.addCompanyGlobalData(company, history, DS);
-                    end_data_load();
-                });
-                file_static = file + DS.getName()+"-top-";
-                if (DS.getName() === "scm") file_static += "authors";
-                if (DS.getName() === "its") file_static += "closers";
-                if (DS.getName() === "mls") file_static += "senders";
-                // Top not yet supported in SCR
-                if (DS.getName() === "scr") return;
-                var file_all = file_static + ".json";
-                $.when($.getJSON(file_all))
-                    .done(function(history) {
-                        DS.addCompanyTopData(company, history, DS, "all");
-                        end_data_load();
-                }).fail(function() {
-                    DS.setCompaniesTopData([], self);
-                    end_data_load();
-                });
-            });
-        });
-    }
-    
     Loader.check_filter_page = function(page, filter) {
         var check = true;
         if (page === undefined) page = 1;
@@ -291,29 +254,6 @@ var Loader = {};
 
     function data_load_company_page(company, DS, page, cb) {
         data_load_item_page(company, DS, page, cb, "companies");
-    }
-
-    // Repos preloading disabled. This functions is not used
-    function data_load_repos_metrics() {
-        var data_sources = Report.getDataSources();
-        $.each(data_sources, function(i, DS) {
-            var repos = DS.getReposData();
-            if (repos === null) return;
-            $.each(repos, function(i, repo) {
-                repo_uri = encodeURIComponent(repo);
-                var file = DS.getDataDir()+"/"+repo_uri+"-";
-                file_evo = file + DS.getName()+"-evolutionary.json";
-                $.when($.getJSON(file_evo)).done(function(history) {
-                    DS.addRepoMetricsData(repo, history, DS);
-                    end_data_load();
-                });
-                file_static = file + DS.getName()+"-static.json";
-                $.when($.getJSON(file_static)).done(function(history) {
-                    DS.addRepoGlobalData(repo, history, DS);
-                    end_data_load();
-                });
-            });
-        });
     }
 
     function data_load_countries_metrics() {
