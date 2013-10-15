@@ -72,7 +72,8 @@
     height: 300px;
 }
 
-.demographic-bars {
+.demographic-bars,
+.Demographics {
     width:400px;height:200px;
 }
 

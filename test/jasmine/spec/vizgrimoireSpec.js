@@ -133,10 +133,10 @@ describe( "VizGrimoireJS library", function () {
                     $.each(Report.getDataSources(), function(index, DS) {
                         if (DS.getName() !== "scr" && DS.getName() !== "irc")
                             buildNode(DS.getName()+"-demographics-"+type,
-                                      DS.getName()+"-demographics-"+type,
+                                      'Demographics',
                                     {
                                         'data-period': '0.25',
-                                        'class': 'demographic-bars',
+                                        'data-data-source': DS.getName(),
                                         'data-file':'data/json/'+DS.getName()+'-demographics-'+type+'.json',
                                         'style':'position: relative'
                                     });
@@ -150,10 +150,8 @@ describe( "VizGrimoireJS library", function () {
                         ('flotr-canvas').length;
                     Convert.convertDemographics();
                 });
-                // TODO: JSON files for top should be loaded. 
-                //       Change this load to global data loading
                 waitsFor(function() {
-                    return (document.getElementById("scm-demographics-birth")
+                    return (document.getElementsByClassName("Demographics")[0]
                     .childNodes.length > 0);
                 }, "It took too long to load data", 100);
                 runs(function() {

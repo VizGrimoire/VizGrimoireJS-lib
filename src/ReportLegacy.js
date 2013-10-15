@@ -876,6 +876,22 @@ var template_divs_legacy = {
     }
 };
 
+Report.convertDemographics = function() {
+    $.each(Report.getDataSources(), function(index, DS) {
+        var div_demog = DS.getName() + "-demographics";
+        if ($("#" + div_demog).length > 0)
+            DS.displayDemographics(div_demog);
+        // Specific demographics loaded from files
+        var divs = $('[id^="' + DS.getName() + '-demographics"]');
+        for ( var i = 0; i < divs.length; i++) {
+            var file = $(divs[i]).data('file');
+            // period in years
+            var period = $(divs[i]).data('period');
+            DS.displayDemographics(divs[i].id, file, period);
+        }
+    });
+};
+
 // HTML code that will be converted later
 Report.convertTemplateDivsLegacy = function() {
     $.each (template_divs_legacy, function(divid, value) {

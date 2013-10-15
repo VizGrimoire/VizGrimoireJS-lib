@@ -494,6 +494,22 @@ Convert.convertPeople = function(upeople_id, upeople_identifier) {
     if (Report.getLegacy()) Report.convertPeopleLegacy(upeople_id, upeople_identifier);
 };
 
+Convert.convertDemographics = function() {
+    var divs = $(".Demographics");
+    if (divs.length > 0) {
+        $.each(divs, function(id, div) {
+            ds = $(this).data('data-source');
+            DS = Report.getDataSourceByName(ds);
+            if (DS === null) return;
+            var file = $(this).data('file');
+            // period in years
+            var period = $(this).data('period');
+            div.id = "Demographics"+"-"+file+"-"+period;
+            DS.displayDemographics(div.id, file, period);
+        });
+    }
+};
+
 function filterItemsConfig() {
     var config_metric = {};
     config_metric.show_desc = false;
@@ -777,21 +793,6 @@ Convert.convertFilterStudy = function(filter) {
     }        
 };
 
-Convert.convertDemographics = function() {
-    $.each(Report.getDataSources(), function(index, DS) {
-        var div_demog = DS.getName() + "-demographics";
-        if ($("#" + div_demog).length > 0)
-            DS.displayDemographics(div_demog);
-        // Specific demographics loaded from files
-        var divs = $('[id^="' + DS.getName() + '-demographics"]');
-        for ( var i = 0; i < divs.length; i++) {
-            var file = $(divs[i]).data('file');
-            // period in years
-            var period = $(divs[i]).data('period');
-            DS.displayDemographics(divs[i].id, file, period);
-        }
-    });
-};
 
 Convert.convertBasicDivs = function() {
     Convert.convertNavbar();
