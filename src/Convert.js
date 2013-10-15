@@ -526,7 +526,8 @@ Convert.convertFilterItemsSummary = function(filter) {
             ds = $(this).data('data-source');
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
-            if (filter !== $(this).data('filter')) return;
+            if (filter === undefined) filter = $(this).data('filter');
+            if (!filter) return;
             div.id = ds+"-"+divlabel;
             if (filter === "repos")
                 DS.displayReposSummary(div.id, DS);
@@ -547,7 +548,8 @@ Convert.convertFilterItemsGlobal = function(filter) {
             ds = $(this).data('data-source');
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
-            if (filter !== $(this).data('filter')) return;
+            if (filter === undefined) filter = $(this).data('filter');
+            if (!filter) return;
             var metric = $(this).data('metric');
             var limit = $(this).data('limit');
             var show_others = $(this).data('show-others');
@@ -580,7 +582,8 @@ Convert.convertFilterItemsNav = function(filter, page) {
             ds = $(this).data('data-source');
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
-            if (filter !== $(this).data('filter')) return;
+            if (filter === undefined) filter = $(this).data('filter');
+            if (!filter) return;
             if ($(this).data('page')) page = $(this).data('page');
             var order_by = $(this).data('order-by');
             var scm_and_its = $(this).data('scm-and-its');
@@ -605,7 +608,8 @@ Convert.convertFilterItemsMetricsEvol = function(filter) {
             ds = $(this).data('data-source');
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
-            if (filter !== $(this).data('filter')) return;
+            if (filter === undefined) filter = $(this).data('filter');
+            if (!filter) return;
             var metric = $(this).data('metric');
             var limit = $(this).data('limit');
             var order_by = $(this).data('order-by');
@@ -638,7 +642,8 @@ Convert.convertFilterItemsMiniCharts = function(filter, page) {
             ds = $(this).data('data-source');
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
-            if (filter !== $(this).data('filter')) return;
+            if (filter === undefined) filter = $(this).data('filter');
+            if (!filter) return;
             if ($(this).data('page')) page = $(this).data('page');
             var metrics = $(this).data('metrics');
             var order_by = $(this).data('order-by');
@@ -673,7 +678,8 @@ Convert.convertFilterItemSummary = function(filter, item) {
             ds = $(this).data('data-source');
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
-            if (filter !== $(this).data('filter')) return;
+            if (filter === undefined) filter = $(this).data('filter');
+            if (!filter) return;
             if ($(this).data('item')) item = $(this).data('item');
             div.id = ds+"-"+divlabel;
             if (filter === "repos")
@@ -696,7 +702,8 @@ Convert.convertFilterItemMetricsEvol = function(filter, item) {
             ds = $(this).data('data-source');
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
-            if (filter !== $(this).data('filter')) return;
+            if (filter === undefined) filter = $(this).data('filter');
+            if (!filter) return;
             if ($(this).data('item')) item = $(this).data('item');
             var metrics = $(this).data('metrics');                        
             config_metric.show_legend = false;
@@ -727,7 +734,8 @@ Convert.convertFilterItemTop = function(filter, item) {
             ds = $(this).data('data-source');
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
-            if (filter !== $(this).data('filter')) return;
+            if (filter === undefined) filter = $(this).data('filter');
+            if (!filter) return;
             if ($(this).data('item')) item = $(this).data('item');
             var metric = $(this).data('metric');
             var period = $(this).data('period');
