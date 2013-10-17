@@ -1177,8 +1177,9 @@ var Report = {};
                 if ($("#"+div_id_top).data('show_all')) show_all = true;
                 var top_metric = $("#"+div_id_top).data('metric');
                 var limit = $("#"+div_id_top).data('limit');
+                var people_links = $("#"+div_id_top).data('people_links');
                 var graph = null;
-                DS.displayTop(div_id_top, show_all, top_metric, graph, limit);
+                DS.displayTop(div_id_top, show_all, top_metric, graph, limit, people_links);
             }           
             $.each(['pie','bars'], function (index, chart) {
                 var div_id_top = DS.getName()+"-top-"+chart;
