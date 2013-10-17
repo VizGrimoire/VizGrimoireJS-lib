@@ -527,6 +527,7 @@ Convert.convertFilterItemsSummary = function(filter) {
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
             if (filter === undefined) filter = $(this).data('filter');
+            if (filter !== $(this).data('filter')) return;            
             if (!filter) return;
             div.id = ds+"-"+divlabel;
             if (filter === "repos")
@@ -549,6 +550,7 @@ Convert.convertFilterItemsGlobal = function(filter) {
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
             if (filter === undefined) filter = $(this).data('filter');
+            if (filter !== $(this).data('filter')) return;
             if (!filter) return;
             var metric = $(this).data('metric');
             var limit = $(this).data('limit');
@@ -583,6 +585,7 @@ Convert.convertFilterItemsNav = function(filter, page) {
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
             if (filter === undefined) filter = $(this).data('filter');
+            if (filter !== $(this).data('filter')) return;
             if (!filter) return;
             if ($(this).data('page')) page = $(this).data('page');
             var order_by = $(this).data('order-by');
@@ -609,6 +612,7 @@ Convert.convertFilterItemsMetricsEvol = function(filter) {
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
             if (filter === undefined) filter = $(this).data('filter');
+            if (filter !== $(this).data('filter')) return;
             if (!filter) return;
             var metric = $(this).data('metric');
             var limit = $(this).data('limit');
@@ -643,6 +647,7 @@ Convert.convertFilterItemsMiniCharts = function(filter, page) {
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
             if (filter === undefined) filter = $(this).data('filter');
+            if (filter !== $(this).data('filter')) return;
             if (!filter) return;
             if ($(this).data('page')) page = $(this).data('page');
             var metrics = $(this).data('metrics');
@@ -679,6 +684,7 @@ Convert.convertFilterItemSummary = function(filter, item) {
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
             if (filter === undefined) filter = $(this).data('filter');
+            if (filter !== $(this).data('filter')) return;
             if (!filter) return;
             if ($(this).data('item')) item = $(this).data('item');
             div.id = ds+"-"+divlabel;
@@ -703,6 +709,7 @@ Convert.convertFilterItemMetricsEvol = function(filter, item) {
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
             if (filter === undefined) filter = $(this).data('filter');
+            if (filter !== $(this).data('filter')) return;
             if (!filter) return;
             if ($(this).data('item')) item = $(this).data('item');
             var metrics = $(this).data('metrics');                        
@@ -735,6 +742,7 @@ Convert.convertFilterItemTop = function(filter, item) {
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
             if (filter === undefined) filter = $(this).data('filter');
+            if (filter !== $(this).data('filter')) return;
             if (!filter) return;
             if ($(this).data('item')) item = $(this).data('item');
             var metric = $(this).data('metric');
