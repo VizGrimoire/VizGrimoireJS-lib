@@ -812,14 +812,14 @@ var Viz = {};
         });
     }
 
-    function displayTopCompany(company, div, ds, metric_id, period, titles) {
+    function displayTopCompany(company, div, ds, metric_id, period, titles, people_links) {
         var project = ds.getProject();
         var metric = ds.getMetrics()[metric_id];
         var graph = null;
         var data = ds.getCompaniesTopData()[company];
         if (data === undefined) return;
         data = ds.getCompaniesTopData()[company][period];
-        displayTopMetric(div, project, metric, period, data, graph, titles);
+        displayTopMetric(div, project, metric, period, data, graph, titles, undefined, people_links);
     }
 
     function displayTopGlobal(div, data_source, metric_id, period, titles) {

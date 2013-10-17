@@ -802,9 +802,10 @@ var Report = {};
                     var metric = $(this).data('metric');
                     var period = $(this).data('period');
                     var titles = $(this).data('titles');
+                    var people_links = $(this).data('people_links');
                     div.id = metric+"-"+period+"-flotr2-top-company";
                     div.className = "";
-                    DS.displayTopCompany(company,div.id,metric,period,titles);
+                    DS.displayTopCompany(company,div.id,metric,period,titles,people_links);
                 });
             }            
         });
