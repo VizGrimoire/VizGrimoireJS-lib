@@ -523,27 +523,54 @@ function DataSource(name, basic_metrics) {
         Viz.displayMetricsEvol(metric_ids, data, div_target, config);
     };
 
-    this.displayCompaniesNav = function (div_nav, sort_metric, page_str) {
+    function cleanLabel(item) {
+        var label = item;
+        if (item.lastIndexOf("http") === 0 || item.split("_").length > 3) {
+            var aux = item.split("_");
+            label = aux.pop();
+            if (label === '') label = aux.pop();
+            if (self.getName() === "its") {
+                label = label.replace('buglist.cgi?product=','');
+            }
+        }
+        else if (item.lastIndexOf("<") === 0)
+            label = MLS.displayMLSListName(item);
+        return label;
+    }
+
+    this.displayItemsNav = function (div_nav, type, sort_metric, page_str) {
         var page = parseInt(page_str, null);
         if (isNaN(page)) page = 1;
-        var nav = '<h4 style="font-weight: bold;display:inline;">List of Companies</h4> (';
+        var sorted_items = null;
+        var items = null;
+        var title = "";
+        if (type === "companies") {
+            sorted_items = DataProcess.sortCompanies(this, sort_metric);
+            items = this.getCompaniesData();
+            title = "List of companies";
+        } else if (type === "repos") {
+            sorted_items = DataProcess.sortRepos(this, sort_metric);
+            items = this.getReposData();
+            title = "List of repositories";
+        } else {
+            return;
+        }
+        var nav = '<h4 style="font-weight: bold;display:inline;">'+title+'</h4> (';
         if (page) {
             nav += (page-1)*Report.getPageSize()+1 + "<>";
             nav += (page*Report.getPageSize()) + ")<br>";
+            if (page>1) nav += "<a href='?page="+(page-1)+"'>&lt;</a> ";
         }
-
-        if (page && page>1)
-            nav += "<a href='?page="+(page-1)+"'>&lt;</a> ";
         nav += "<span id='nav'></span>";
-        var sorted_companies = DataProcess.sortCompanies(this, sort_metric);
-        $.each(sorted_companies, function(id, company) {
-            nav += "<a href='#"+company+"-nav'>"+company + "</a> ";
+        $.each(sorted_items, function(id, item) {
+            var label = cleanLabel(item);
+            nav += "<a href='#"+item+"-nav'>"+label + "</a> ";
         });
-        if (page && page*Report.getPageSize()<this.getCompaniesData().length)
+        if (page && page*Report.getPageSize()<items.length)
             nav += " <a href='?page="+(parseInt(page,null)+1)+"'>&gt;</a>";
         $("#"+div_nav).append(nav);
     };
-    
+
     this.displayCompaniesLinks = function (div_links, limit, sort_metric) {
         var sorted_companies = DataProcess.sortCompanies(this, sort_metric);
         var links = "";
@@ -566,65 +593,27 @@ function DataSource(name, basic_metrics) {
         });
         $("#"+div_nav).append(nav);
     };
-    
-    this.displayReposNav = function (div_nav, sort_metric, page_str, scm_and_its) {
-        var page = parseInt(page_str, null);
-        if (isNaN(page)) page = 1;
-        var nav = '<h4 style="font-weight: bold;display:inline;">List of repositories</h4> (';
-        if (page) {
-            nav += (page-1)*Report.getPageSize()+1 + "<>";
-            nav += (page*Report.getPageSize()) + ")<br>";
-        }
-        nav += "<span id='nav'></span>";
-        var sorted_repos = DataProcess.sortRepos(this, sort_metric);
-        // sorted_repos_pag = DataProcess.paginate(sorted_repos, page);
-        var self = this;
-        if (page && page>1)
-            nav += "<a href='?page="+(page-1)+"'>&lt;</a> ";
-        $.each(sorted_repos, function(id, repo) {
-            if (scm_and_its && (!(Report.getReposMap()[repo]))) return;
-            nav += "<a href='#" + repo + "-nav'>";
-            var label = repo;
-            if (repo.lastIndexOf("http") === 0 || repo.split("_").length > 3) {
-                var aux = repo.split("_");
-                label = aux.pop();
-                if (label === '') label = aux.pop();
-                if (self.getName() === "its") {
-                    label = label.replace('buglist.cgi?product=','');
-                }
-                // label = repo.substr(repo.lastIndexOf("_") + 1);
-            }
-            else if (repo.lastIndexOf("<") === 0)
-                label = MLS.displayMLSListName(repo);
-            nav += label;
-            nav += "</a> ";
-        });
-        if (page && page*Report.getPageSize()<this.getReposData().length)
-            nav += " <a href='?page="+(parseInt(page,null)+1)+"'>&gt;</a>";
-        $("#" + div_nav).append(nav);
-    };
-
 
     this.displayCompaniesList = function (metrics,div_id, 
             config_metric, sort_metric, show_links) {
         this.displaySubReportList("companies",metrics,div_id, 
-                config_metric, sort_metric, undefined, undefined, show_links);
+                config_metric, sort_metric, undefined, show_links);
     };
     
     this.displayReposList = function (metrics,div_id, 
-            config_metric, sort_metric, page, scm_and_its, show_links) {
+            config_metric, sort_metric, page, show_links) {
         this.displaySubReportList("repos",metrics,div_id, 
-                config_metric, sort_metric, page, scm_and_its, show_links);
+                config_metric, sort_metric, page, show_links);
     };
     
     this.displayCountriesList = function (metrics,div_id, 
             config_metric, sort_metric, show_links) {
         this.displaySubReportList("countries",metrics,div_id, 
-                config_metric, sort_metric, undefined, undefined, show_links);
+                config_metric, sort_metric, undefined, show_links);
     };
     
     this.displaySubReportList = function (report, metrics,div_id, 
-            config_metric, sort_metric, page_str, scm_and_its, show_links) {
+            config_metric, sort_metric, page_str, show_links) {
 
         var page = parseInt(page_str, null);
         if (isNaN(page)) page = 1;
@@ -652,7 +641,6 @@ function DataSource(name, basic_metrics) {
         metrics.reverse();
 
         $.each(sorted, function(id, item) {
-            if (scm_and_its && (!(Report.getReposMap()[item]))) return;
             list += "<div class='subreport-list' id='"+item+"-nav'>";
             list += "<div style='float:left;'>";
             var addURL = "page="+page;
@@ -709,18 +697,9 @@ function DataSource(name, basic_metrics) {
         $("#"+div_id).append(list);
         // Draw the graphs
         $.each(sorted, function(id, item) {
-            if (scm_and_its && (!(Report.getReposMap()[item]))) return;
             $.each(metrics, function(id, metric) {
                 var item_data = data[item];
-                if (item_data[metric] === undefined && report === "repos") {
-                    // Hack to support showing ITS+SCM metrics in repos
-                    var map_repo = Report.getReposMap()[item];                    
-                    if (map_repo) {
-                        new_data = ds.getITS().getReposMetricsData()[map_repo];
-                        item_data = new_data;
-                    }
-                    else return;
-                }
+                if (item_data[metric] === undefined) return;
                 var div_id = item+"-"+metric;
                 var items = {};
                 items[item] = item_data;

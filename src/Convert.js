@@ -589,14 +589,13 @@ Convert.convertFilterItemsNav = function(filter, page) {
             if (!filter) return;
             if ($(this).data('page')) page = $(this).data('page');
             var order_by = $(this).data('order-by');
-            var scm_and_its = $(this).data('scm-and-its');
             div.id = ds+"-"+divlabel;
             if (filter === "repos")
-                DS.displayReposNav(div.id, order_by, page, scm_and_its);
+                DS.displayItemsNav(div.id, filter, order_by, page);
             if (filter === "countries")
-                DS.displayCountriesNav(div.id, order_by, page, scm_and_its);
+                DS.displayCountriesNav(div.id, order_by, page);
             if (filter === "companies")
-                DS.displayCompaniesNav(div.id, order_by, page);
+                DS.displayItemsNav(div.id, filter, order_by, page);
         });
     }
 };
@@ -652,14 +651,13 @@ Convert.convertFilterItemsMiniCharts = function(filter, page) {
             if ($(this).data('page')) page = $(this).data('page');
             var metrics = $(this).data('metrics');
             var order_by = $(this).data('order-by');
-            var scm_and_its = $(this).data('scm-and-its');
             var show_links = true;
             if ($(this).data('show_links') !== undefined)
                 show_links = $(this).data('show_links');
             div.id = metrics.replace(/,/g,"-")+"-"+divlabel;
             if (filter === "repos")
                 DS.displayReposList(metrics.split(","),div.id,
-                    config_metric, order_by, page, scm_and_its, show_links);
+                    config_metric, order_by, page, show_links);
             if (filter === "countries")
                 DS.displayCountriesList(metrics.split(","),div.id,
                     config_metric, order_by, show_links);
