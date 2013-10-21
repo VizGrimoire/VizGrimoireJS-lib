@@ -544,6 +544,7 @@ function DataSource(name, basic_metrics) {
         var sorted_items = null;
         var items = null;
         var title = "";
+        var total = 0;
         if (type === "companies") {
             sorted_items = DataProcess.sortCompanies(this, sort_metric);
             items = this.getCompaniesData();
@@ -555,17 +556,23 @@ function DataSource(name, basic_metrics) {
         } else {
             return;
         }
+        $.each(sorted_items, function(id, item) {
+            total = total+1;
+        });
         var nav = '<h4 style="font-weight: bold;display:inline;">'+title+'</h4> (';
         if (page) {
             nav += (page-1)*Report.getPageSize()+1 + "<>";
-            nav += (page*Report.getPageSize()) + ")<br>";
+            nav += (page*Report.getPageSize());
+            nav += "/"+total+")<br>";
             if (page>1) nav += "<a href='?page="+(page-1)+"'>&lt;</a> ";
         }
         nav += "<span id='nav'></span>";
-        $.each(sorted_items, function(id, item) {
-            var label = cleanLabel(item);
-            nav += "<a href='#"+item+"-nav'>"+label + "</a> ";
-        });
+        // Show only the items navbar when there are more than 10 items
+        if (Report.getPageSize()>10)
+            $.each(sorted_items, function(id, item) {
+                var label = cleanLabel(item);
+                nav += "<a href='#"+item+"-nav'>"+label + "</a> ";
+            });
         if (page && page*Report.getPageSize()<items.length)
             nav += " <a href='?page="+(parseInt(page,null)+1)+"'>&gt;</a>";
         $("#"+div_nav).append(nav);
