@@ -327,9 +327,10 @@ if (Report === undefined) var Report = {};
                 if (project.dir === ds.getDataDir()) {                    
                     if (prjs_dss[name] === undefined) prjs_dss[name] = [];
                     // Support data reloading. Each project has instance per DS
-                    for (var i in prjs_dss[name]) {
-                        if (ds.getName() === prjs_dss[name][i].getName()) return false;
-                    }
+                    $.each(prjs_dss[name], function (prj, prjds) {
+                        if (ds.getName() === prjds.getName())
+                            return false;
+                    });
                     // if ($.inArray(ds, prjs_dss[name]) > -1) return false;
                     ds.setProject(name);
                     prjs_dss[name].push(ds);
