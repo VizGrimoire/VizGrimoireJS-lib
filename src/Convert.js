@@ -387,7 +387,6 @@ Convert.convertTimeTo = function() {
 
 Convert.convertLastActivity = function() {
     var all_metrics = Report.getAllMetrics();
-    var label = null;
     function activityInfo(div, period, label) {
         var html = "<h4>Last "+ label + "</h4>";
         $.each(Report.getDataSources(), function(index, DS) {
