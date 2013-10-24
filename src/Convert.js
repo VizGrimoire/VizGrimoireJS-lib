@@ -39,22 +39,33 @@ Convert.convertMicrodashText = function () {
             html += '</div><!--span3-->';
 
             $.each({7:'week',30:'month',365:'year'}, function(period, name) {
-                //second square: arrow + % for last period days
-                html += '<div class="span3">';
+                // Try to read values from JSON. If not available, compute them
+                var column = ds.getMetrics()[metric].column;
+                var netvalue = ds.getGlobalData()["diff_net"+column+"_"+period];
+                var percentagevalue = ds.getGlobalData()["percentage_"+column+"_"+period];
                 var value = ds.getGlobalData()[metric+"_"+period];
-                var value2 = ds.getGlobalData()[metric+"_"+period*2];
-                var old_value = value2 - value;
-                var inc = parseInt(((value-old_value)/old_value)*100,null);
-                if (inc > 0) inc = '+' + inc;
-                if (value === old_value) {
+                if (netvalue === undefined || percentagevalue === undefined) {
+                    var value2 = ds.getGlobalData()[metric+"_"+(period*2)];
+                    var old_value = value2-value;
+                    percentagevalue = parseInt(((value-old_value)/old_value)*100,null);
+                    netvalue = value-old_value;
+                }
+
+                html += '<div class="span3">';
+                if (netvalue > 0) percentagevalue = '+' + percentagevalue;
+                if (netvalue < 0) percentagevalue = '-' + percentagevalue;
+                if (netvalue === 0) {
                     html += '';
                 }
-                else if (value > old_value) {
+                else if (netvalue > 0) {
                     html += '<i class="icon-circle-arrow-up"></i>&nbsp;';
-                    html += old_value + '<span class="fppercent">&nbsp;('+inc+'%)</span>&nbsp;';
-                } else if (value < old_value) {
+                    // TODO: lcanas, dizquierdo why old_value?
+                    // html += old_value + '<span class="fppercent">&nbsp;('+percentagevalue+'%)</span>&nbsp;';
+                    html += value + '<span class="fppercent">&nbsp;('+percentagevalue+'%)</span>&nbsp;';
+                } else if (netvalue < 0) {
                     html += '<i class="icon-circle-arrow-down"></i>&nbsp;';
-                    html += old_value + '<span class="fppercent">&nbsp;('+inc+'%)</span>&nbsp;';
+                    // html += old_value + '<span class="fppercent">&nbsp;('+percentagevalue+'%)</span>&nbsp;';
+                    html += value + '<span class="fppercent">&nbsp;('+percentagevalue+'%)</span>&nbsp;';
                 }
                 html += '<br><span class="dayschange">'+period+' Days Change</span>';
                 html += '</div><!--span3-->';
