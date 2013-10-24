@@ -110,6 +110,8 @@ Convert.convertMicrodash = function () {
     if (divs.length > 0) {
         $.each(divs, function(id, div) {
             var metric = $(this).data('metric');
+            // Microdash text or graphical
+            var text = $(this).data('text');
             var ds = Report.getMetricDS(metric)[0];
             var total = ds.getGlobalData()[metric];
             var html = '<div>';
@@ -121,20 +123,27 @@ Convert.convertMicrodash = function () {
                     metric+'" data-min=true style="margin-left:10px; float:left;width:100px; height:25px;"></div>';
             html += '<div style="clear:both"></div><div>';
             $.each({7:'week',30:'month',365:'year'}, function(period, name) {
+                // Try to read values from JSON. If not available, compute them
+                var column = ds.getMetrics()[metric].column;
+                var netvalue = ds.getGlobalData()["diff_net"+column+"_"+period];
+                var percentagevalue = ds.getGlobalData()["percentage_"+column+"_"+period];
                 var value = ds.getGlobalData()[metric+"_"+period];
-                var value2 = ds.getGlobalData()[metric+"_"+(period*2)];
-                var old_value = value2-value;
+                if (netvalue === undefined || percentagevalue === undefined) {
+                    var value2 = ds.getGlobalData()[metric+"_"+(period*2)];
+                    var old_value = value2-value;
+                    percentagevalue = parseInt(((value-old_value)/old_value)*100,null);
+                    netvalue = value-old_value;
+                }
                 html += "<em>"+name+"</em>:"+value+"&nbsp;";
-                var inc = parseInt(((value-old_value)/old_value)*100,null);
-                if (value === old_value) {
+                if (netvalue === 0) {
                     html += '';
                 }
-                else if (value > old_value) {
+                else if (netvalue > 0) {
                     html += '<i class="icon-circle-arrow-up"></i>';
-                    html += '<small>('+inc+'%)</small>&nbsp;';
-                } else if (value < old_value) {
+                    html += '<small>('+percentagevalue+'%)</small>&nbsp;';
+                } else if (netvalue < 0) {
                     html += '<i class="icon-circle-arrow-down"></i>';
-                    html += '<small>('+inc+'%)</small>&nbsp;';
+                    html += '<small>('+percentagevalue+'%)</small>&nbsp;';
                 }
             });
             html += '</div>';
