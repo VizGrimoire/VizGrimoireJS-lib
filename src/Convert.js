@@ -33,7 +33,7 @@ Convert.convertMicrodashText = function () {
             var metric = $(this).data('metric');
             var ds = Report.getMetricDS(metric)[0];
             var total = ds.getGlobalData()[metric];
-            var change7 = ds.getGlobalData()[metric+"_7"];
+            var colname = ds.getMetrics()[metric].column;
             //initial square: total
             var html = '<div class="row-fluid"><div class="span3">';
             html += '<h4>'+total+'</h4> '+ds.getMetrics()[metric].name;
@@ -41,60 +41,51 @@ Convert.convertMicrodashText = function () {
 
             //second square: arrow + % for last 7 days
             html += '<div class="span3">';
-            var value = ds.getGlobalData()[metric+"_7"];
-            var value2 = ds.getGlobalData()[metric+"_14"];
-            var old_value = value2 - value;
-            var inc = parseInt(((value-old_value)/old_value)*100,null);
-            if (inc > 0) inc = '+' + inc;
-            if (value === old_value) {
-                html += '';
-            }
-            else if (value > old_value) {
+            var netvalue = ds.getGlobalData()["diff_net"+colname+"_7"];
+            var percentagevalue = ds.getGlobalData()["percentage_"+colname+"_7"];
+            if (netvalue > 0){
                 html += '<i class="icon-circle-arrow-up"></i>&nbsp;';
-                html += old_value + '<span class="fppercent">&nbsp;('+inc+'%)</span>&nbsp;';
-            } else if (value < old_value) {
+                html += netvalue + '<span class="fppercent">&nbsp;('+percentagevalue+'%)</span>&nbsp;';
+            } else if (netvalue < 0) {
                 html += '<i class="icon-circle-arrow-down"></i>&nbsp;';
-                html += old_value + '<span class="fppercent">&nbsp;('+inc+'%)</span>&nbsp;';
+                html += netvalue + '<span class="fppercent">&nbsp;('+percentagevalue+'%)</span>&nbsp;';
+            } else if (netvalue === 0){
+                html += '<i class="icon-circle-arrow-right"></i>&nbsp;';
+                html += netvalue + '<span class="fppercent">&nbsp;(0%)</span>&nbsp;';
             }
             html += '<br><span class="dayschange">7 Days Change</span>';
             html += '</div><!--span3-->';
 
             //third square: arrow + % for last 30 days
             html += '<div class="span3">';
-            value = ds.getGlobalData()[metric+"_30"];
-            value2 = ds.getGlobalData()[metric+"_60"];
-            old_value = value2 - value;
-            inc = parseInt(((value-old_value)/old_value)*100,null);
-            if (inc > 0) inc = '+' + inc;
-            if (value === old_value) {
-                html += '';
-            }
-            else if (value > old_value) {
+            netvalue = ds.getGlobalData()["diff_net"+colname+"_30"];
+            percentagevalue = ds.getGlobalData()["percentage_"+colname+"_30"];
+            if (netvalue > 0){
                 html += '<i class="icon-circle-arrow-up"></i>&nbsp;';
-                html += old_value + '<span class="fppercent">&nbsp;('+inc+'%)</span>&nbsp;';
-            } else if (value < old_value) {
+                html += netvalue + '<span class="fppercent">&nbsp;('+percentagevalue+'%)</span>&nbsp;';
+            } else if (netvalue < 0) {
                 html += '<i class="icon-circle-arrow-down"></i>&nbsp;';
-                html += old_value + '<span class="fppercent">&nbsp;('+inc+'%)</span>&nbsp;';
+                html += netvalue + '<span class="fppercent">&nbsp;('+percentagevalue+'%)</span>&nbsp;';
+            } else if (netvalue === 0){
+                html += '<i class="icon-circle-arrow-right"></i>&nbsp;';
+                html += netvalue + '<span class="fppercent">&nbsp;(0%)</span>&nbsp;';
             }
             html += '<br><span class="dayschange">30 Days Change</span>';
             html += '</div><!--span3-->';
 
             //fourth square: arrow + % for last 365 days
             html += '<div class="span3">';
-            value = ds.getGlobalData()[metric+"_365"];
-            value2 = ds.getGlobalData()[metric+"_730"];
-            old_value = value2 - value;
-            inc = parseInt(((value-old_value)/old_value)*100,null);
-            if (inc > 0) inc = '+' + inc;
-            if (value === old_value) {
-                html += '';
-            }
-            else if (value > old_value) {
+            netvalue = ds.getGlobalData()["diff_net"+colname+"_365"];
+            percentagevalue = ds.getGlobalData()["percentage_"+colname+"_365"];
+            if (netvalue > 0){
                 html += '<i class="icon-circle-arrow-up"></i>&nbsp;';
-                html += old_value + '<span class="fppercent">&nbsp;('+inc+'%)</span>&nbsp;';
-            } else if (value < old_value) {
+                html += netvalue + '<span class="fppercent">&nbsp;('+percentagevalue+'%)</span>&nbsp;';
+            } else if (netvalue < 0) {
                 html += '<i class="icon-circle-arrow-down"></i>&nbsp;';
-                html += old_value + '<span class="fppercent">&nbsp;('+inc+'%)</span>&nbsp;';
+                html += netvalue + '<span class="fppercent">&nbsp;('+percentagevalue+'%)</span>&nbsp;';
+            } else if (netvalue === 0){
+                html += '<i class="icon-circle-arrow-right"></i>&nbsp;';
+                html += netvalue + '<span class="fppercent">&nbsp;(0%)</span>&nbsp;';
             }
             html += '<br><span class="dayschange">365 Days Change</span>';
             html += '</div><!--span3-->';
