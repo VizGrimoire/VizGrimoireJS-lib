@@ -552,7 +552,8 @@ function DataSource(name, basic_metrics) {
         } else if (type === "repos") {
             sorted_items = DataProcess.sortRepos(this, sort_metric);
             items = this.getReposData();
-            title = "List of repositories";
+            // title = "List of repositories";
+            title = "List";
         } else {
             return;
         }
