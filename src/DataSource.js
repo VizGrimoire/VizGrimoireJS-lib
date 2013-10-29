@@ -703,7 +703,7 @@ function DataSource(name, basic_metrics) {
                 label = MLS.displayMLSListName(item);
             list += label;
             list += "</strong>";
-            if (show_links) list += "+info</a>";
+            if (show_links) list += "</a>";
             list += "<br><a href='#nav'>^</a>";
             list += "</div>";
             $.each(metrics, function(id, metric) {
