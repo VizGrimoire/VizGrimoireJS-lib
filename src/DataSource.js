@@ -538,6 +538,33 @@ function DataSource(name, basic_metrics) {
         return label;
     }
 
+    this.isPageDisplayed = function (visited, linked, total, displayed) {
+        // Returns true if link page should be displayed.
+        // Receive: number of visited page,
+        //   number of page to be displayed,
+        //   total number of pages,
+        //   number of pages to be displayed
+
+        var window = Math.floor((displayed - 3)/2);
+        var lowest_barrier = visited - window;
+        var highest_barrier = (visited + window);
+
+
+        if ((linked === 1) || (linked === total) || (linked == visited)){
+            return true;
+        }
+        //else if ((linked >= (visited - window)) || (linked <= (visited + window))) {
+        else if ((linked >= lowest_barrier) && (linked < visited)){
+            return true;
+        }
+        else if ((linked <= highest_barrier) && (linked > visited)){
+            return true;
+        }
+        else{
+            return false;
+        }
+    };
+
     this.displayItemsNav = function (div_nav, type, sort_metric, page_str) {
         var page = parseInt(page_str, null);
         if (isNaN(page)) page = 1;
@@ -560,24 +587,45 @@ function DataSource(name, basic_metrics) {
         $.each(items, function(id, item) {
             total = total+1;
         });
-        var nav = '<h4 style="font-weight: bold;display:inline;">'+title+'</h4> (';
+        var nav = '<h4 style="font-weight: bold;display:inline;">'+title+'</h4>';
         if (page) {
-            nav += (page-1)*Report.getPageSize()+1 + "<>";
+            // Bootstrap
+            nav += "<div class='pagination'><ul class='pagination'>";
+            if (page>1) {
+                nav += "<li><a href='?page="+(page-1)+"'>&laquo;</a></li>";
+            }
+            else{
+                nav += "<li class='disabled'><a href='?page="+(page-1)+"'>&laquo;</a></li>";
+            }
+            number_pages = Math.floor(total/Report.getPageSize());
+            displayed_pages = 5;
+            for (var j=0; j*Report.getPageSize()<total; j++) {
+                if (this.isPageDisplayed(page, (j+1), number_pages, displayed_pages) === true){
+                    if (page === (j+1)) {
+                        nav += "<li class='active'><a href='?page="+(j+1)+"'>" + (j+1) + "</a></li>";
+                    }
+                    else {
+                        nav += "<li><a href='?page="+(j+1)+"'>" + (j+1) + "</a></li>";
+                    }
+                }
+                else {
+                    // if it is next to the last page or the second and is not displayed, we add the '..'
+                    if ( ((j+1+1) === number_pages) || ((j+1-1) === 1) ){
+                        nav += "<li class='disabled'><a href='#'> .. </a></li>";
+                    }
+                }
+            }
+            if (page*Report.getPageSize()<items.length) {
+                nav += "<li><a href='?page="+(parseInt(page,null)+1)+"'>";
+                nav += "&raquo;</a></li>";
+            }
+            nav += "</ul>";
+            nav += "<span class='pagination_text'> "+((page-1)*Report.getPageSize()+1) + " to ";
             var page_end = (page*Report.getPageSize());
             if (page_end>total) page_end = total;
             nav += page_end;
-            nav += "/"+total+")<br>";
-            // Bootstrap
-            nav += "<ul class='pager'>";
-            if (page>1) {
-                nav += "<li class='previous'><a href='?page="+(page-1)+"'>";
-                nav += "&larr; Prev</a></li>";
-            }
-            if (page*Report.getPageSize()<items.length) {
-                nav += "<li class='next'><a href='?page="+(parseInt(page,null)+1)+"'>";
-                nav += "Next &rarr;</a></li>";
-            }
-            nav += "</ul>";
+            nav += " of "+total+" </span>";//<br>";
+            nav += "</div>";
         }
         nav += "<span id='nav'></span>";
         // Show only the items navbar when there are more than 10 items
