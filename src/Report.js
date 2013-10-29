@@ -193,7 +193,16 @@ if (Report === undefined) var Report = {};
            DS.setMetricsDefinition(metrics[DS.getName()]); 
         });
     };
-    
+
+    function escapeHtml(unsafe) {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
     // http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values
     Report.getParameterByName = function(name) {
         // _jshint_ does not like it
@@ -201,7 +210,8 @@ if (Report === undefined) var Report = {};
         name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
         var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
             results = regex.exec(location.search);
-        return results === null ? undefined : decodeURIComponent(results[1].replace(/\+/g, " "));
+        return results === null ? undefined :
+            escapeHtml(decodeURIComponent(results[1].replace(/\+/g, " ")));
     };
 
     function getMetricDS(metric_id) {
