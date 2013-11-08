@@ -28,14 +28,14 @@ function MediaWiki() {
         'mediawiki_reviews' : {
             'divid' : "mediawiki_reviews",
             'column' : "reviews",
-            'name' : "Reviews",
-            'desc' : "Wiki page reviews"
+            'name' : "Editions",
+            'desc' : "Wiki page editions"
         },
         'mediawiki_authors' : {
             'divid' : "mediawiki_authors",
             'column' : "authors",
-            'name' : "Authors",
-            'desc' : "Reviews authors",
+            'name' : "Editors",
+            'desc' : "Editors doing editions",
             'action' : 'reviews'
         }
     };
