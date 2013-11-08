@@ -108,9 +108,9 @@ if (Viz === undefined) var Viz = {};
     function displayTopMetric
         (div_id, project, metric, metric_period, history, graph, titles, limit, people_links) {
 
-        if (!history) return;  
+        if (!history || $.isEmptyObject(history)) return;
         var metric_id = metric.action;
-        if (limit && history[metric_id].length<limit) { 
+        if (limit && history[metric_id].length<limit) {
             limit = history[metric_id].length;
             graph = false; // Not enough height next to the item list
         }

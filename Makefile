@@ -37,6 +37,7 @@ vizgrimoire.core.js: \
     src/Viz.js \
     src/IRC.js \
     src/ITS.js \
+    src/MediaWiki.js \
     src/MLS.js \
     src/SCM.js \
     src/SCR.js \

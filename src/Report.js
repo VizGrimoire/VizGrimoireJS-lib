@@ -297,6 +297,7 @@ if (Report === undefined) var Report = {};
 
         $.each(projects_dirs, function (i, project) {
             // TODO: Only DS with data should exist
+            // TODO: use config.json to configure DS available
             var its = new ITS();
             Report.registerDataSource(its);
             var mls = new MLS();        
@@ -307,15 +308,18 @@ if (Report === undefined) var Report = {};
             Report.registerDataSource(scr);
             var irc = new IRC();
             Report.registerDataSource(irc);
-        
+            var mediawiki = new MediaWiki();
+            Report.registerDataSource(mediawiki);
+
             its.setDataDir(project);
             mls.setDataDir(project);
             scm.setDataDir(project);
             scr.setDataDir(project);
             irc.setDataDir(project);
+            mediawiki.setDataDir(project);
             scm.setITS(its);
         });
-        
+
         return true;
     }
 
