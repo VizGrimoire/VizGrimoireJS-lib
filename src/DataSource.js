@@ -682,8 +682,8 @@ function DataSource(name, basic_metrics) {
 
         var page = parseInt(page_str, null);
         if (isNaN(page)) page = 1;
-
         var list = "";
+        var cont = ( page - 1 ) * Report.getPageSize() + 1;
         var ds = this;
         var data = null, sorted = null;
         if (show_links === undefined) show_links = true;
@@ -699,15 +699,25 @@ function DataSource(name, basic_metrics) {
         else if (report === "countries") {
             data = this.getCountriesMetricsData();
             sorted = DataProcess.sortCountries(this, sort_metric);
-        } 
+        }
         else return;
 
-        // Preserve order when float right
-        metrics.reverse();
-
+        list += '<table class="table table-hover">';
+        list += '<tr><th></th>';
+        $.each(metrics, function(id,metric){
+            if (ds.getMetrics()[metric]){
+                title = ds.getMetrics()[metric].name;
+                list += '<th>' + title + '</th>';
+            }
+            else{
+                list += '<th>' + metric + '</th>';
+            }
+        });
+        list += '</tr>';
         $.each(sorted, function(id, item) {
-            list += "<div class='subreport-list' id='"+item+"-nav'>";
-            list += "<div style='float:left;'>";
+            list += "<tr><td class='span2 repository-name'>";
+            list += "#" + cont + "&nbsp;";
+            cont++;
             var addURL = "page="+page;
             if (Report.addDataDir()) addURL = "&"+Report.addDataDir();
             if (show_links) {
@@ -751,14 +761,15 @@ function DataSource(name, basic_metrics) {
             list += label;
             list += "</strong>";
             if (show_links) list += "</a>";
-            list += "<br><a href='#nav'>^</a>";
-            list += "</div>";
+            //list += "<br><a href='#nav'>^</a>";
+            list += "</td>";
             $.each(metrics, function(id, metric) {
-                list += "<div id='"+item+"-"+metric+"'";
-                list +=" class='subreport-list-item'></div>";
+                list += "<td class='span5'><div id='"+item+"-"+metric+"'";
+                list +=" class='subreport-list-item'>";
             });
-            list += "</div>";
+            list += "</td></tr>";
         });
+        list += "</table>";
         $("#"+div_id).append(list);
         // Draw the graphs
         $.each(sorted, function(id, item) {
@@ -768,9 +779,7 @@ function DataSource(name, basic_metrics) {
                 var div_id = item+"-"+metric;
                 var items = {};
                 items[item] = item_data;
-                var title = metric;
-                if (ds.getMetrics()[metric])
-                    title = ds.getMetrics()[metric].name;
+                var title = '';
                 Viz.displayMetricSubReportLines(div_id, metric, items, title);
             });
         });
