@@ -580,24 +580,27 @@ function DataSource(name, basic_metrics) {
             sorted_items = DataProcess.sortRepos(this, sort_metric);
             items = this.getReposData();
             // title = "List of repositories";
-            title = "List";
         } else {
             return;
         }
         $.each(items, function(id, item) {
             total = total+1;
         });
-        var nav = '<h4 style="font-weight: bold;display:inline;">'+title+'</h4>';
+        var nav = '';
         if (page) {
+            nav += "<div class='pagination'>";
+            var number_pages = Math.floor(total/Report.getPageSize());
+            nav += "<span class='pagination_text'> Page " + page + " of " + number_pages + " </span>";
+
             // Bootstrap
-            nav += "<div class='pagination'><ul class='pagination'>";
+            nav += "<ul class='pagination'>";
             if (page>1) {
                 nav += "<li><a href='?page="+(page-1)+"'>&laquo;</a></li>";
             }
             else{
                 nav += "<li class='disabled'><a href='?page="+(page-1)+"'>&laquo;</a></li>";
             }
-            number_pages = Math.floor(total/Report.getPageSize());
+
             displayed_pages = 5;
             for (var j=0; j*Report.getPageSize()<total; j++) {
                 if (this.isPageDisplayed(page, (j+1), number_pages, displayed_pages) === true){
@@ -620,11 +623,7 @@ function DataSource(name, basic_metrics) {
                 nav += "&raquo;</a></li>";
             }
             nav += "</ul>";
-            nav += "<span class='pagination_text'> "+((page-1)*Report.getPageSize()+1) + " to ";
-            var page_end = (page*Report.getPageSize());
-            if (page_end>total) page_end = total;
-            nav += page_end;
-            nav += " of "+total+" </span>";//<br>";
+            //nav += "<span class='pagination_text'> "+((page-1)*Report.getPageSize()+1) + " to ";
             nav += "</div>";
         }
         nav += "<span id='nav'></span>";
