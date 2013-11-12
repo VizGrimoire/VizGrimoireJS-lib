@@ -572,6 +572,7 @@ function DataSource(name, basic_metrics) {
         var items = null;
         var title = "";
         var total = 0;
+        var displayed_pages = 5; // page displayed in the paginator
         if (type === "companies") {
             sorted_items = DataProcess.sortCompanies(this, sort_metric);
             items = this.getCompaniesData();
@@ -579,7 +580,6 @@ function DataSource(name, basic_metrics) {
         } else if (type === "repos") {
             sorted_items = DataProcess.sortRepos(this, sort_metric);
             items = this.getReposData();
-            // title = "List of repositories";
         } else {
             return;
         }
@@ -587,10 +587,16 @@ function DataSource(name, basic_metrics) {
             total = total+1;
         });
         var nav = '';
+        var psize = Report.getPageSize();
         if (page) {
             nav += "<div class='pagination'>";
-            var number_pages = Math.floor(total/Report.getPageSize());
-            nav += "<span class='pagination_text'> Page " + page + " of " + number_pages + " </span>";
+            var number_pages = Math.floor(total/psize);
+            // number to compose the text message (from_item - to_item / total)
+            var from_item = ((page-1) * psize) + 1;
+            var to_item = page * psize;
+            if (to_item > total){
+                to_item = total;
+            }
 
             // Bootstrap
             nav += "<ul class='pagination'>";
@@ -601,7 +607,6 @@ function DataSource(name, basic_metrics) {
                 nav += "<li class='disabled'><a href='?page="+(page-1)+"'>&laquo;</a></li>";
             }
 
-            displayed_pages = 5;
             for (var j=0; j*Report.getPageSize()<total; j++) {
                 if (this.isPageDisplayed(page, (j+1), number_pages, displayed_pages) === true){
                     if (page === (j+1)) {
@@ -623,10 +628,10 @@ function DataSource(name, basic_metrics) {
                 nav += "&raquo;</a></li>";
             }
             nav += "</ul>";
-            //nav += "<span class='pagination_text'> "+((page-1)*Report.getPageSize()+1) + " to ";
+            nav += "<span class='pagination-text'> (" + from_item +" - "+ to_item + "/" + total+ ")</span>";
             nav += "</div>";
         }
-        nav += "<span id='nav'></span>";
+        //nav += "<span id='nav'></span>";
         // Show only the items navbar when there are more than 10 items
         if (Report.getPageSize()>10)
             $.each(sorted_items, function(id, item) {
@@ -702,7 +707,7 @@ function DataSource(name, basic_metrics) {
         }
         else return;
 
-        list += '<table class="table table-hover">';
+        list += '<table class="table table-hover table-repositories">';
         list += '<tr><th></th>';
         $.each(metrics, function(id,metric){
             if (ds.getMetrics()[metric]){
