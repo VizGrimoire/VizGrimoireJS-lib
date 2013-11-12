@@ -572,6 +572,7 @@ function DataSource(name, basic_metrics) {
         var items = null;
         var title = "";
         var total = 0;
+        var displayed_pages = 5; // page displayed in the paginator
         if (type === "companies") {
             sorted_items = DataProcess.sortCompanies(this, sort_metric);
             items = this.getCompaniesData();
@@ -579,26 +580,33 @@ function DataSource(name, basic_metrics) {
         } else if (type === "repos") {
             sorted_items = DataProcess.sortRepos(this, sort_metric);
             items = this.getReposData();
-            // title = "List of repositories";
-            title = "List";
         } else {
             return;
         }
         $.each(items, function(id, item) {
             total = total+1;
         });
-        var nav = '<h4 style="font-weight: bold;display:inline;">'+title+'</h4>';
+        var nav = '';
+        var psize = Report.getPageSize();
         if (page) {
+            nav += "<div class='pagination'>";
+            var number_pages = Math.floor(total/psize);
+            // number to compose the text message (from_item - to_item / total)
+            var from_item = ((page-1) * psize) + 1;
+            var to_item = page * psize;
+            if (to_item > total){
+                to_item = total;
+            }
+
             // Bootstrap
-            nav += "<div class='pagination'><ul class='pagination'>";
+            nav += "<ul class='pagination'>";
             if (page>1) {
                 nav += "<li><a href='?page="+(page-1)+"'>&laquo;</a></li>";
             }
             else{
                 nav += "<li class='disabled'><a href='?page="+(page-1)+"'>&laquo;</a></li>";
             }
-            number_pages = Math.floor(total/Report.getPageSize());
-            displayed_pages = 5;
+
             for (var j=0; j*Report.getPageSize()<total; j++) {
                 if (this.isPageDisplayed(page, (j+1), number_pages, displayed_pages) === true){
                     if (page === (j+1)) {
@@ -620,14 +628,10 @@ function DataSource(name, basic_metrics) {
                 nav += "&raquo;</a></li>";
             }
             nav += "</ul>";
-            nav += "<span class='pagination_text'> "+((page-1)*Report.getPageSize()+1) + " to ";
-            var page_end = (page*Report.getPageSize());
-            if (page_end>total) page_end = total;
-            nav += page_end;
-            nav += " of "+total+" </span>";//<br>";
+            nav += "<span class='pagination-text'> (" + from_item +" - "+ to_item + "/" + total+ ")</span>";
             nav += "</div>";
         }
-        nav += "<span id='nav'></span>";
+        //nav += "<span id='nav'></span>";
         // Show only the items navbar when there are more than 10 items
         if (Report.getPageSize()>10)
             $.each(sorted_items, function(id, item) {
@@ -683,8 +687,8 @@ function DataSource(name, basic_metrics) {
 
         var page = parseInt(page_str, null);
         if (isNaN(page)) page = 1;
-
         var list = "";
+        var cont = ( page - 1 ) * Report.getPageSize() + 1;
         var ds = this;
         var data = null, sorted = null;
         if (show_links === undefined) show_links = true;
@@ -700,15 +704,25 @@ function DataSource(name, basic_metrics) {
         else if (report === "countries") {
             data = this.getCountriesMetricsData();
             sorted = DataProcess.sortCountries(this, sort_metric);
-        } 
+        }
         else return;
 
-        // Preserve order when float right
-        metrics.reverse();
-
+        list += '<table class="table table-hover table-repositories">';
+        list += '<tr><th></th>';
+        $.each(metrics, function(id,metric){
+            if (ds.getMetrics()[metric]){
+                title = ds.getMetrics()[metric].name;
+                list += '<th>' + title + '</th>';
+            }
+            else{
+                list += '<th>' + metric + '</th>';
+            }
+        });
+        list += '</tr>';
         $.each(sorted, function(id, item) {
-            list += "<div class='subreport-list' id='"+item+"-nav'>";
-            list += "<div style='float:left;'>";
+            list += "<tr><td class='span2 repository-name'>";
+            list += "#" + cont + "&nbsp;";
+            cont++;
             var addURL = "page="+page;
             if (Report.addDataDir()) addURL = "&"+Report.addDataDir();
             if (show_links) {
@@ -752,14 +766,15 @@ function DataSource(name, basic_metrics) {
             list += label;
             list += "</strong>";
             if (show_links) list += "</a>";
-            list += "<br><a href='#nav'>^</a>";
-            list += "</div>";
+            //list += "<br><a href='#nav'>^</a>";
+            list += "</td>";
             $.each(metrics, function(id, metric) {
-                list += "<div id='"+item+"-"+metric+"'";
-                list +=" class='subreport-list-item'></div>";
+                list += "<td class='span5'><div id='"+item+"-"+metric+"'";
+                list +=" class='subreport-list-item'>";
             });
-            list += "</div>";
+            list += "</td></tr>";
         });
+        list += "</table>";
         $("#"+div_id).append(list);
         // Draw the graphs
         $.each(sorted, function(id, item) {
@@ -769,9 +784,7 @@ function DataSource(name, basic_metrics) {
                 var div_id = item+"-"+metric;
                 var items = {};
                 items[item] = item_data;
-                var title = metric;
-                if (ds.getMetrics()[metric])
-                    title = ds.getMetrics()[metric].name;
+                var title = '';
                 Viz.displayMetricSubReportLines(div_id, metric, items, title);
             });
         });
