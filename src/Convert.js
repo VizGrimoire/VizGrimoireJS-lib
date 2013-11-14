@@ -465,12 +465,12 @@ Convert.convertPeople = function(upeople_id, upeople_identifier) {
         upeople_id = Report.getParameterByName("id");
     if (upeople_identifier === undefined)
         upeople_identifier = Report.getParameterByName("name");
-    
+
     if (upeople_id === undefined) return;
-    
+
     Convert.convertPersonSummary(upeople_id, upeople_identifier);
     Convert.convertPersonMetrics(upeople_id, upeople_identifier);
-    
+
     if (Report.getLegacy()) Report.convertPeopleLegacy(upeople_id, upeople_identifier);
 };
 
@@ -496,6 +496,20 @@ function filterItemsConfig() {
     config_metric.show_title = false;
     config_metric.show_labels = true;
     return config_metric;
+}
+
+//Use mapping between repos for locating real item names
+function getRealItem(ds, filter, item) {
+    if (filter === "repos") {
+        var rdata = ds.getReposMetricsData()[item];
+        if (rdata === undefined) {
+            var repos_map = Report.getReposMap()[item];
+            if (repos_map && repos_map[ds.getName()])
+                item = repos_map[ds.getName()];
+            else item = null;
+        }
+    }
+    return item;
 }
 
 Convert.convertFilterItemsSummary = function(filter) {
@@ -582,7 +596,7 @@ Convert.convertFilterItemsNav = function(filter, page) {
 
 Convert.convertFilterItemsMetricsEvol = function(filter) {
     var config_metric = filterItemsConfig();
-    
+
     var divlabel = "FilterItemsMetricsEvol";
     divs = $("."+divlabel);
     if (divs.length > 0) {
@@ -610,7 +624,8 @@ Convert.convertFilterItemsMetricsEvol = function(filter) {
                     config_metric, limit, order_by);
             if (filter === "repos")
                 DS.displayMetricRepos(metric,div.id,
-                    config_metric, limit, order_by);
+                            config_metric, limit, order_by);
+
         });
     }
 };
@@ -649,11 +664,6 @@ Convert.convertFilterItemsMiniCharts = function(filter, page) {
 };
 
 Convert.convertFilterItemSummary = function(filter, item) {
-    // TODO: This repos logic should be adapted
-    //if (repo !== null) repo_valid = Report.getValidRepo(repo, DS);
-    //if (repo_valid === null) $("#"+DS.getName()+"-repo").hide();
-    //else {
-    
     var divlabel = "FilterItemSummary";
     divs = $("."+divlabel);
     if (item !== null && divs.length > 0) {
@@ -666,8 +676,10 @@ Convert.convertFilterItemSummary = function(filter, item) {
             if (!filter) return;
             if ($(this).data('item')) item = $(this).data('item');
             div.id = ds+"-"+divlabel;
-            if (filter === "repos")
-                DS.displayRepoSummary(div.id, item, DS);
+            if (filter === "repos") {
+                item = getRealItem(DS, filter, item);
+                if (item) DS.displayRepoSummary(div.id, item, DS);
+            }
             if (filter === "countries")
                 DS.displayCountrySummary(div.id, item, DS);
             if (filter === "companies")
@@ -678,7 +690,6 @@ Convert.convertFilterItemSummary = function(filter, item) {
 
 Convert.convertFilterItemMetricsEvol = function(filter, item) {
     var config_metric = filterItemsConfig();
-    
     var divlabel = "FilterItemMetricsEvol";
     divs = $("."+divlabel);
     if (item !== null && divs.length > 0) {
@@ -698,9 +709,12 @@ Convert.convertFilterItemMetricsEvol = function(filter, item) {
             if ($(this).data('frame-time')) 
                 config_metric.frame_time = true;
             div.id = metrics.replace(/,/g,"-")+"-"+divlabel;
-            if (filter === "repos")
-                DS.displayMetricsRepo(item, metrics.split(","),
-                    div.id, config_metric);
+            if (filter === "repos") {
+                item = getRealItem(DS, filter, item);
+                if (item)
+                    DS.displayMetricsRepo(item, metrics.split(","),
+                            div.id, config_metric);
+            }
             if (filter === "countries")
                 DS.displayMetricsCountry(item, metrics.split(","),
                     div.id, config_metric);
@@ -744,13 +758,8 @@ Convert.convertCompanies = function() {
 };
 
 Convert.convertFilterStudy = function(filter) {
-    var item = null;
-    
-    if (filter === "repos") item = Report.getParameterByName("repository");
-    if (filter === "countries") item = Report.getParameterByName("country");
-    if (filter === "companies") item = Report.getParameterByName("company");
     var page = Report.getParameterByName("page");
-    
+
     // TODO: On demand loading only for repos and companies yet
     if (filter === "repos") {
         if (Loader.check_repos_page(page) === false) {
@@ -775,16 +784,23 @@ Convert.convertFilterStudy = function(filter) {
     Convert.convertFilterItemsNav(filter, page);
     Convert.convertFilterItemsMetricsEvol(filter);
     Convert.convertFilterItemsMiniCharts(filter, page);
-    
-    Convert.convertFilterItemSummary(filter, item);
-    Convert.convertFilterItemMetricsEvol(filter, item);
-    Convert.convertFilterItemTop(filter, item);
-    
+
+    var item = null;
+    if (filter === "repos") item = Report.getParameterByName("repository");
+    if (filter === "countries") item = Report.getParameterByName("country");
+    if (filter === "companies") item = Report.getParameterByName("company");
+
+    if (item) {
+        Convert.convertFilterItemSummary(filter, item);
+        Convert.convertFilterItemMetricsEvol(filter, item);
+        Convert.convertFilterItemTop(filter, item);
+    }
+
     if (Report.getLegacy()) {
         if (filter === "repos") Report.convertReposLegacy();
         if (filter === "countries") Report.convertCountriesLegacy();
         if (filter === "companies") Report.convertCompaniesLegacy();
-    }        
+    }
 };
 
 

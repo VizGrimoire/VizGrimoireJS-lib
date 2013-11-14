@@ -107,38 +107,15 @@ if (Report === undefined) var Report = {};
     Report.getReposMapFile = function () {
         return repos_map_file;
     };
-    Report.getValidRepo = function (repo, ds) {
-        var valid_repo = null;
-        var repos = ds.getReposGlobalData();
-        if (repos[repo]) return repo;
-        // Search for a mapping repository
-        $.each(Report.getReposMap(), function (repo_name, repo_map) {
-            var test_repo = null;
-            if (repo_name === repo) {
-                test_repo = repo_map;
-                if (repos[test_repo]!== undefined) {
-                    valid_repo = test_repo;
-                    return false;
-                }
-            } else if (repo_map === repo) {
-                test_repo = repo_name;
-                if (repos[test_repo]!== undefined) {
-                    valid_repo = test_repo;
-                    return false;
-                }
-            }
-        });
-        return valid_repo;
-    };
 
     function getVizConfig() {
         return viz_config;
     }
-    
+
     Report.setVizConfig = function(cfg) {
         viz_config = cfg;
     };
-    
+
     Report.getVizConfigFile = function() {
         return viz_config_file;
     };
@@ -154,11 +131,11 @@ if (Report === undefined) var Report = {};
     function getProjectData() {
         return project_data;
     }
-    
+
     Report.setProjectData = function(data) {
         project_data = data;
     };
-    
+
     Report.getProjectFile = function () {
         return project_file;
     };
@@ -166,16 +143,15 @@ if (Report === undefined) var Report = {};
     function getProjectsData() {
         return projects_data;
     }
-    
+
     Report.getProjectsDirs = function () {
         return projects_dirs;
     };
-    
+
     Report.setProjectsDirs = function (dirs) {
         projects_dirs = dirs;
     };
 
-    
     Report.getProjectsList = function () {
         var projects_list = [];
         $.each(getProjectsData(), function (key,val) {
@@ -183,11 +159,11 @@ if (Report === undefined) var Report = {};
         });
         return projects_list;
     };
-    
+
     Report.getProjectsDataSources = function () {
       return projects_datasources;
     };
-    
+
     Report.setMetricsDefinition = function(metrics) {
         $.each(Report.getDataSources(), function(i, DS) {
            DS.setMetricsDefinition(metrics[DS.getName()]); 
@@ -223,7 +199,7 @@ if (Report === undefined) var Report = {};
         });
         return ds;
     }
-    
+
     Report.getDataSourceByName = function(ds) {
         var DS = null;
         $.each(Report.getDataSources(), function(index, DSaux) {
@@ -239,7 +215,7 @@ if (Report === undefined) var Report = {};
         });
         return all;
     }
-    
+
     Report.displayActiveMenu = function() {
         var active = window.location.href;
         var page = active.substr(active.lastIndexOf("/")+1,active.length);
@@ -268,19 +244,19 @@ if (Report === undefined) var Report = {};
 
     function checkDynamicConfig() {
         var data_sources = [];
-        
+
         function getDataDirs(dirs_config) {
             var full_params = dirs_config.split ("&");
             var dirs_param = $.grep(full_params,function(item, index) {
                 return (item.indexOf("data_dir=") === 0);
             });
-            for (var i=0; i< dirs_param.length; i++) {                
+            for (var i=0; i< dirs_param.length; i++) {
                 var data_dir = dirs_param[i].split("=")[1];
                 data_sources.push(data_dir);
                 if (i === 0) Report.setDataDir(data_dir);
-            }             
+            }
         }
-        
+
         var querystr = window.location.search.substr(1);
         // Config in GET URL
         if (querystr && querystr.indexOf("data_dir")>=0) {
@@ -289,10 +265,10 @@ if (Report === undefined) var Report = {};
                 Report.setProjectsDirs(data_sources);
         }
     }
-    
+
     function createDataSources() {
         checkDynamicConfig();
-        
+
         var projects_dirs = Report.getProjectsDirs(); 
 
         $.each(projects_dirs, function (i, project) {
@@ -331,7 +307,7 @@ if (Report === undefined) var Report = {};
         }
         return addURL;
     };
-    
+
     // Build mapping between Data Sources and Projects
     Report.configDataSources = function() {
         var prjs_dss = Report.getProjectsDataSources();
@@ -350,10 +326,10 @@ if (Report === undefined) var Report = {};
                     prjs_dss[name].push(ds);
                     return false;
                 }
-            });            
-        });        
+            });
+        });
     };
-    
+
     Report.setReportConfig = function (data) {
         if (data) {
             if (data['global-html-dir'])
@@ -365,7 +341,7 @@ if (Report === undefined) var Report = {};
             if (data['projects-data-dirs'])
                 Report.setProjectsDirs(data['projects-data-dirs']);
         }
-    };       
+    };
 
     Report.convertGlobal = function() {
         if (legacy) Report.convertTemplateDivsLegacy();
@@ -383,20 +359,20 @@ if (Report === undefined) var Report = {};
             Report.convertIdentity();
         }
     };
-    
+
     // Data available in global
     Report.convertStudiesGlobal = function() {
         Convert.convertTop();
         Convert.convertPeople(); // using on demand file loading        
     };
-        
+
     function convertStudies() {
         Convert.convertFilterStudy('repos');
         Convert.convertFilterStudy('countries');
         Convert.convertFilterStudy('companies');
         Convert.convertDemographics();
         if (legacy) ReportLegacy.convertSelectorsLegacy();
-    }    
+    }
 })();
 
 Loader.data_ready_global(function() {
@@ -442,4 +418,3 @@ $(window).resize(function () {
     clearTimeout(resized);
     resized = setTimeout(resizedw, 100);
 });
-

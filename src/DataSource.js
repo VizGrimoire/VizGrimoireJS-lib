@@ -476,11 +476,6 @@ function DataSource(name, basic_metrics) {
 
     this.displayMetricsRepo = function (repo, metrics, div_id, config) {
         var data = this.getReposMetricsData()[repo];
-        if (data === undefined) {
-            var repos_map = Report.getReposMap()[repo];
-            if (repos_map && repos_map[this.getName()])
-                data = this.getReposMetricsData()[repos_map[this.getName()]];
-        }
         if (data === undefined) return;
         Viz.displayMetricsRepo(repo, metrics, data, div_id, config);
     };
@@ -796,19 +791,19 @@ function DataSource(name, basic_metrics) {
     this.displayGlobalSummary = function(divid) {
         this.displaySummary(null, divid, null, this);
     };
-    
+
     this.displayCompanySummary = function(divid, company, ds) {
         this.displaySummary("companies",divid, company, ds);
     };
-    
+
     this.displayRepoSummary = function(divid, repo, ds) {
         this.displaySummary("repositories",divid, repo, ds);
     };
-    
+
     this.displayCountrySummary = function(divid, repo, ds) {
         this.displaySummary("countries",divid, repo, ds);
     };
-    
+
     // On demand file loading for people
     this.displayPeopleSummary = function(divid, upeople_id, 
             upeople_identifier, ds) {
@@ -840,16 +835,16 @@ function DataSource(name, basic_metrics) {
 
         $("#"+divid).append(html);
     };
-    
+
     this.displaySummary = function(report, divid, item, ds) {};
-    
+
     this.displayReposSummary = function(divid, ds) {
         var html = "";
         var data = ds.getGlobalData();
         html += "Total repositories: " + data[ds.getName()+"_repositories"] +"<br>";
         $("#"+divid).append(html);
     };
-    
+
     this.displayCountriesSummary = function(divid, ds) {
       var html = "";
       var data = ds.getGlobalData();

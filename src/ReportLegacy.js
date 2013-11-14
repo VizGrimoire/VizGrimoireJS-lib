@@ -915,7 +915,28 @@ Report.convertSelectorsLegacy = function() {
     });
 };
 
-
-
+Report.getValidRepo = function (repo, ds) {
+    var valid_repo = null;
+    var repos = ds.getReposGlobalData();
+    if (repos[repo]) return repo;
+    // Search for a mapping repository
+    $.each(Report.getReposMap(), function (repo_name, repo_map) {
+        var test_repo = null;
+        if (repo_name === repo) {
+            test_repo = repo_map;
+            if (repos[test_repo]!== undefined) {
+                valid_repo = test_repo;
+                return false;
+            }
+        } else if (repo_map === repo) {
+            test_repo = repo_name;
+            if (repos[test_repo]!== undefined) {
+                valid_repo = test_repo;
+                return false;
+            }
+        }
+    });
+    return valid_repo;
+};
 
 })();
