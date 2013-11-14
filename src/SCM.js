@@ -219,11 +219,7 @@ function SCM() {
         $(div_id + ' #scm_url').attr("href", url);
         $(div_id + ' #scm_name').text(this.global_data.type);
 
-        var company = this.getCompanyQuery();
         var data = this.getGlobalData();
-        if (company) {
-            data = this.getCompaniesGlobalData()[company];
-        }
         $(div_id + ' #scmFirst').text(data.first_date);
         $(div_id + ' #scmLast').text(data.last_date);
         $(div_id + ' #scmCommits').text(data.scm_commits);

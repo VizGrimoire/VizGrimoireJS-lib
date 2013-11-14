@@ -110,11 +110,8 @@ function IRC() {
             $(div_id + ' #irc_type').text(Report.getProjectData().irc_type);
         }
 
-        var company = this.getCompanyQuery();
+
         var data = this.getGlobalData();
-        if (company) {
-            data = this.getCompaniesGlobalData()[company];
-        }
 
         $(div_id + ' #ircFirst').text(data.first_date);
         $(div_id + ' #ircLast').text(data.last_date);

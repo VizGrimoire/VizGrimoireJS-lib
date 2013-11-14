@@ -178,11 +178,7 @@ function ITS() {
         $(div_id + ' #its_url').attr("href", url);
         $(div_id + ' #its_name').text("Tickets " + this.global_data.type);
 
-        var company = this.getCompanyQuery();
         var data = this.getGlobalData();
-        if (company) {
-            data = this.getCompaniesGlobalData()[company];
-        }
 
         $(div_id + ' #itsFirst').text(data.first_date);
         $(div_id + ' #itsLast').text(data.last_date);

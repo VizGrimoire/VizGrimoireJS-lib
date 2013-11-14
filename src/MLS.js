@@ -160,11 +160,8 @@ function MLS() {
             $(div_id + ' #mls_type').text(Report.getProjectData().mls_type);
         }
 
-        var company = this.getCompanyQuery();
+
         var data = this.getGlobalData();
-        if (company) {
-            data = this.getCompaniesGlobalData()[company];
-        }
 
         $(div_id + ' #mlsFirst').text(data.first_date);
         $(div_id + ' #mlsLast').text(data.last_date);

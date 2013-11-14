@@ -115,11 +115,7 @@ function MediaWiki() {
             $(div_id + ' #mediawiki_type').text(Report.getProjectData().mediawiki_type);
         }
 
-        var company = this.getCompanyQuery();
         var data = this.getGlobalData();
-        if (company) {
-            data = this.getCompaniesGlobalData()[company];
-        }
 
         $(div_id + ' #mediawikiFirst').text(data.first_date);
         $(div_id + ' #mediawikiLast').text(data.last_date);

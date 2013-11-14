@@ -698,10 +698,15 @@ if (Viz === undefined) var Viz = {};
         var project = ds.getProject();
         var metric = ds.getMetrics()[metric_id];
         var graph = null;
-        var data = ds.getCompaniesTopData()[company];
-        if (data === undefined) return;
-        data = ds.getCompaniesTopData()[company][period];
-        displayTopMetric(div, project, metric, period, data, graph, titles);
+        var file_top = ds.getDataDir() + "/"+ company +"-" + ds.getName()+"-top-";
+        if (DS.getName() === "scm") file_top += "authors";
+        if (DS.getName() === "its") file_top += "closers";
+        if (DS.getName() === "mls") file_top += "senders";
+        file_top += ".json";
+        $.getJSON(file_top, function(data) {
+            if (data === undefined) return;
+            displayTopMetric(div, project, metric, period, data, graph, titles);
+        });
     }
 
     function displayTopGlobal(div, data_source, metric_id, period, titles) {
