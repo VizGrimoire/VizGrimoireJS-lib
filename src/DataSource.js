@@ -29,15 +29,15 @@ function DataSource(name, basic_metrics) {
     this.getTopDataFile = function() {
         return this.top_data_file;
     };
-    
+
     this.getMetrics = function() {return this.basic_metrics;};
     this.setMetrics = function(metrics) {this.basic_metrics = metrics;};
-    
+
     this.setMetricsDefinition = function(metrics) {
         if (metrics === undefined) return;
         this.setMetrics(metrics);
     };
-    
+
     this.data_file = this.data_dir + '/'+this.name+'-evolutionary.json';
     this.getDataFile = function() {
         return this.data_file;
@@ -45,12 +45,12 @@ function DataSource(name, basic_metrics) {
     this.setDataFile = function(file) {
         this.data_file = file;
     };
-    
+
     this.data = null;
     this.getData = function() {
         return this.data;
     };
-    
+
     function nameSpaceMetrics(plain_metrics, ds) {
         // If array, no data available
         if (plain_metrics instanceof Array) 
@@ -70,18 +70,17 @@ function DataSource(name, basic_metrics) {
         });
         return metrics;
     }
-    
+
     this.setData = function(load_data, self) {
         if (self === undefined) self = this;
         self.data = nameSpaceMetrics(load_data, self);
     };
-    
-    
+
     this.demographics_file = this.data_dir + '/'+this.name+'-demographics.json';
     this.getDemographicsFile = function() {
         return this.demographics_file;
     };
-    
+
     this.demographics_data = null;
     this.getDemographicsData = function() {
         return this.demographics_data;
@@ -90,7 +89,7 @@ function DataSource(name, basic_metrics) {
         if (self === undefined) self = this;
         self.demographics_data = data;
     };
-    
+
     this.data_dir = 'data/json';
     this.getDataDir = function() {
         return this.data_dir;
@@ -121,7 +120,7 @@ function DataSource(name, basic_metrics) {
         if (self === undefined) self = this;
         self.global_data = nameSpaceMetrics(data, self);
     };
-    
+
     this.global_top_data = null;
     this.getGlobalTopData = function() {
         return this.global_top_data;
@@ -464,10 +463,9 @@ function DataSource(name, basic_metrics) {
             }
             data = data_limit;
         }
-        
         Viz.displayMetricSubReportStatic(metric_id, data,
             div_target, config, limit);
-    };    
+    };
 
     this.displayMetricsCompany = function (
             company, metrics, div_id, config) {
@@ -475,13 +473,18 @@ function DataSource(name, basic_metrics) {
         if (data === undefined) return;
         Viz.displayMetricsCompany(company, metrics, data, div_id, config);
     };
-    
+
     this.displayMetricsRepo = function (repo, metrics, div_id, config) {
         var data = this.getReposMetricsData()[repo];
+        if (data === undefined) {
+            var repos_map = Report.getReposMap()[repo];
+            if (repos_map && repos_map[this.getName()])
+                data = this.getReposMetricsData()[repos_map[this.getName()]];
+        }
         if (data === undefined) return;
         Viz.displayMetricsRepo(repo, metrics, data, div_id, config);
     };
-    
+
     this.displayMetricsCountry = function (country, metrics, div_id, config) {
         Viz.displayMetricsCountry(country, metrics,
                 this.getCountriesMetricsData()[country], div_id, config);
