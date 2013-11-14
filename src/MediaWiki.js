@@ -37,6 +37,12 @@ function MediaWiki() {
             'name' : "Editors",
             'desc' : "Editors doing editions",
             'action' : 'reviews'
+        },
+        'mediawiki_pages' : {
+            'divid' : "mediawiki_pages",
+            'column' : "pages",
+            'name' : "Pages",
+            'desc' : "Wiki pages"
         }
     };
 

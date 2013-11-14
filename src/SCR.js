@@ -24,86 +24,86 @@
 function SCR() {
     
     var self = this;
-    
+
     this.basic_metrics = {
         'scr_opened' : {
             'divid' : "scr_opened",
             'column' : "opened",
-            'name' : "opened",
-            'desc' : ""
+            'name' : "Reviews opened",
+            'desc' : "Reviews in status new or inprogress"
         },
         'scr_closed' : {
             'divid' : "scr_closed",
             'column' : "closed",
-            'name' : "closed",
-            'desc' : ""
+            'name' : "Reviews closed",
+            'desc' : "Reviews merged or abandoned"
         },
         'scr_merged' : {
             'divid' : "scr_merged",
             'column' : "merged",
-            'name' : "merged",
-            'desc' : ""
+            'name' : "Reviews merged",
+            'desc' : "Reviews merged"
         },
         'scr_mergers' : {
             'divid' : "scr_mergers",
             'column' : "mergers",
-            'name' : "mergers",
+            'name' : "Reviews mergers",
             'action': "merged",
-            'desc' : ""
+            'desc' : "People merging reviews"
         },
         'scr_new' : {
             'divid' : "scr_new",
             'column' : "new",
-            'name' : "new",
-            'desc' : ""
+            'name' : "Reviews new",
+            'desc' : "Reviews in status new"
         },
         'scr_abandoned' : {
             'divid' : "scr_abandoned",
             'column' : "abandoned",
-            'name' : "abandoned",
-            'desc' : ""
+            'name' : "Reviews abandoned",
+            'desc' : "Reviews abandoned"
         },
         'scr_verified' : {
             'divid' : "scr_verified",
             'column' : "verified",
-            'name' : "verified",
-            'desc' : ""
+            'name' : "Patches verified",
+            'desc' : "Patches verified"
         },
         'scr_approved' : {
             'divid' : "scr_approved",
             'column' : "approved",
-            'name' : "approved",
-            'desc' : ""
+            'name' : "Patches approved",
+            'desc' : "Patches approved"
         },
         'scr_codereview' : {
             'divid' : "scr_codereview",
             'column' : "codereview",
-            'name' : "codereview",
-            'desc' : ""
+            'name' : "Patches codereview",
+            'desc' : "Patches in code review process"
         },
         'scr_WaitingForReviewer' : {
             'divid' : "scr_WaitingForReviewer",
             'column' : "WaitingForReviewer",
-            'name' : "WaitingForReviewer",
-            'desc' : ""
+            'name' : "Patches waiting reviewer",
+            'desc' : "Patches waiting for reviewer"
         },        
         'scr_WaitingForSubmitter' : {
             'divid' : "scr_WaitingForSubmitter",
             'column' : "WaitingForSubmitter",
-            'name' : "WaitingForSubmitter",
-            'desc' : ""
+            'name' : "Patches waiting submitter",
+            'desc' : "Patches waiting for a new version"
         },
         'scr_submitted' : {
             'divid' : "scr_submitted",
             'column' : "submitted",
-            'name' : "submitted",
-            'desc' : ""
+            'name' : "Reviews submitted",
+            'desc' : "Reviews submitted"
         },
         'scr_sent' : {
             'divid' : "scr_sent",
             'column' : "sent",
-            'name' : "sent",
-            'desc' : ""
+            'name' : "Patches Sent",
+            'desc' : "Patches sent"
         },
         'scr_companies' : {
             'divid' : 'scr_companies',
