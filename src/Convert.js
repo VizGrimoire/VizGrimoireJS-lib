@@ -55,7 +55,8 @@ Convert.convertMicrodashText = function () {
                 if (netvalue > 0) percentagevalue = '+' + percentagevalue;
                 if (netvalue < 0) percentagevalue = '-' + percentagevalue;
                 if (netvalue === 0) {
-                    html += '';
+                    html += '<i class="icon-circle-arrow-right"></i>';
+                    html += value + '<span class="fppercent">&nbsp;('+percentagevalue+'%)</span>&nbsp;';
                 }
                 else if (netvalue > 0) {
                     html += '<i class="icon-circle-arrow-up"></i>&nbsp;';
