@@ -83,4 +83,28 @@ function data_load_repos_metrics() {
         });
     });
 }
+
+//Countries preloading disabled. This functions is not used
+function data_load_countries_metrics() {
+var data_sources = Report.getDataSources();
+$.each(data_sources, function(i, DS) {
+    var countries = DS.getCountriesData();
+    if (countries === null) return;
+    $.each(countries, function(i, country) {
+        var file = DS.getDataDir()+"/"+country+"-";
+        file_evo = file + DS.getName()+"-evolutionary.json";
+        $.when($.getJSON(file_evo)).done(function(history) {
+            DS.addCountryMetricsData(country, history, DS);
+            end_data_load();
+        });
+        file_static = file + DS.getName()+"-static.json";
+        $.when($.getJSON(file_static)).done(function(history) {
+            DS.addCountryGlobalData(country, history, DS);
+            end_data_load();
+        });
+    });
+});
+
+}
+
 })();

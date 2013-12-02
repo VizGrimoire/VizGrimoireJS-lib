@@ -24,16 +24,15 @@
 if (Loader === undefined) var Loader = {};
 
 (function() {
-    
     var data_callbacks = [];
     var data_global_callbacks = [];
     var data_repos_callbacks = [];
     var check_companies = false, check_repos = false, check_countries = false;
-    
+
     Loader.data_ready = function(callback) {
         data_callbacks.push(callback);
     };
-    
+
     Loader.data_ready_global = function(callback) {
         data_global_callbacks.push(callback);
     };
@@ -46,7 +45,7 @@ if (Loader === undefined) var Loader = {};
         var projects_data = Report.getProjectsData();
         projects_data[data.project_name] = {dir:dir,url:data.project_url};
    }
-    
+
     Loader.data_load = function () {
         data_load_file(Report.getProjectFile(), 
                 function(data, self) {Report.setProjectData(data);});
@@ -70,15 +69,7 @@ if (Loader === undefined) var Loader = {};
         data_load_time_to_fix();
         data_load_time_to_attention();
     };
-    
-    function data_load_companies() {
-        var data_sources = Report.getDataSources();
-        $.each(data_sources, function(i, DS) {
-            data_load_file(DS.getCompaniesDataFile(), 
-                    DS.setCompaniesData, DS);
-        });
-    }
-    
+
     function data_load_file(file, fn_data_set, self) {
         $.when($.getJSON(file)).done(function(history) {
             fn_data_set(history, self);
@@ -88,7 +79,15 @@ if (Loader === undefined) var Loader = {};
             end_data_load();
         });
     }
-    
+
+    function data_load_companies() {
+        var data_sources = Report.getDataSources();
+        $.each(data_sources, function(i, DS) {
+            data_load_file(DS.getCompaniesDataFile(),
+                    DS.setCompaniesData, DS);
+        });
+    }
+
     function data_load_repos() {
         var data_sources = Report.getDataSources();
         $.each(data_sources, function(i, DS) {
@@ -97,21 +96,21 @@ if (Loader === undefined) var Loader = {};
         // Repositories mapping between data sources
         data_load_file(Report.getReposMapFile(), Report.setReposMap);
     }
-    
+
     function data_load_countries() {
         var data_sources = Report.getDataSources();
         $.each(data_sources, function(i, DS) {
             data_load_file(DS.getCountriesDataFile(), DS.setCountriesData, DS);
         });
     }
-     
+
     function data_load_time_to_fix() {
         var data_sources = Report.getDataSources();
         $.each(data_sources, function(i, DS) {
             data_load_file(DS.getTimeToFixDataFile(), DS.setTimeToFixData, DS);
         });
     }
-    
+
     function data_load_time_to_attention() {
         var data_sources = Report.getDataSources();
         $.each(data_sources, function(i, DS) {
@@ -160,6 +159,7 @@ if (Loader === undefined) var Loader = {};
             var total = 0;
             if (filter === "repos") total = DS.getReposData().length;
             if (filter === "companies") total = DS.getCompaniesData().length;
+            if (filter === "countries") total = DS.getCountriesData().length;
             if (end>total) end = total;
             for (var i=start;i<end;i++) {
                 var item;
@@ -179,6 +179,14 @@ if (Loader === undefined) var Loader = {};
                         return false;
                     }
                 }
+                if (filter === "countries") {
+                    item = DS.getCountriesData()[i];
+                    if (DS.getCountriesGlobalData()[item] === undefined ||
+                        DS.getCountriesMetricsData()[item] === undefined) {
+                        check = false;
+                        return false;
+                    }
+                }
             }
             end = start + Report.getPageSize();
         });
@@ -187,6 +195,10 @@ if (Loader === undefined) var Loader = {};
 
     Loader.check_companies_page = function(page) {
         return Loader.check_filter_page (page, "companies");
+    };
+
+    Loader.check_countries_page = function(page) {
+        return Loader.check_filter_page (page, "countries");
     };
 
     Loader.check_repos_page = function(page) {
@@ -198,11 +210,14 @@ if (Loader === undefined) var Loader = {};
         if (filter === "repos")
             if (DS.getReposData() === null) return false;
         if (filter === "companies")
-            if (DS.getReposData() === null) return false;
+            if (DS.getCompaniesData() === null) return false;
+        if (filter === "countries")
+            if (DS.getCountriesData() === null) return false;
         // No data
         var total = 0;
         if (filter === "repos") total = DS.getReposData().length;
         if (filter === "companies") total = DS.getCompaniesData().length;
+        if (filter === "countries") total = DS.getCountriesData().length;
         if (total === 0) return true;
         // Check if we have the data for the page and if not load
         var start = Report.getPageSize()*(page-1);
@@ -215,12 +230,19 @@ if (Loader === undefined) var Loader = {};
             } else if (filter === "companies") {
                 var company = DS.getCompaniesData()[i];
                 data_load_company_page(company, DS, page, cb);
+            } else if (filter === "countries") {
+                var country = DS.getCountriesData()[i];
+                data_load_country_page(country, DS, page, cb);
             }
         }
     };
 
     Loader.data_load_companies_page = function (DS, page, cb) {
         Loader.data_load_items_page (DS, page, cb, "companies");
+    };
+
+    Loader.data_load_countries_page = function (DS, page, cb) {
+        Loader.data_load_items_page (DS, page, cb, "countries");
     };
 
     Loader.data_load_repos_page = function (DS, page, cb) {
@@ -240,6 +262,9 @@ if (Loader === undefined) var Loader = {};
             } else if (filter === "companies") {
                 DS.addCompanyMetricsData(item, evo[0], DS);
                 DS.addCompanyGlobalData(item, global[0], DS);
+            } else if (filter === "countries") {
+                DS.addCountryMetricsData(item, evo[0], DS);
+                DS.addCountryGlobalData(item, global[0], DS);
             }
             if (Loader.check_filter_page (page, filter)) {
                 if (cb.called !== true) cb();
@@ -256,25 +281,8 @@ if (Loader === undefined) var Loader = {};
         data_load_item_page(company, DS, page, cb, "companies");
     }
 
-    function data_load_countries_metrics() {
-        var data_sources = Report.getDataSources();
-        $.each(data_sources, function(i, DS) {
-            var countries = DS.getCountriesData();
-            if (countries === null) return;
-            $.each(countries, function(i, country) {
-                var file = DS.getDataDir()+"/"+country+"-";
-                file_evo = file + DS.getName()+"-evolutionary.json";
-                $.when($.getJSON(file_evo)).done(function(history) {
-                    DS.addCountryMetricsData(country, history, DS);
-                    end_data_load();
-                });
-                file_static = file + DS.getName()+"-static.json";
-                $.when($.getJSON(file_static)).done(function(history) {
-                    DS.addCountryGlobalData(country, history, DS);
-                    end_data_load();
-                });
-            });
-        });
+    function data_load_country_page(company, DS, page, cb) {
+        data_load_item_page(company, DS, page, cb, "countries");
     }
 
     function data_load_metrics() {
@@ -292,18 +300,18 @@ if (Loader === undefined) var Loader = {};
 
         });
     }
-    
+
     function data_load_metrics_definition() {
         data_load_file("VizGrimoireJS/data/metrics.json", Report.setMetricsDefinition);
     }
-    
+
     function data_load_people() {
         var data_sources = Report.getDataSources();
         $.each(data_sources, function(i, DS) {
             data_load_file(DS.getPeopleDataFile(), DS.setPeopleData, DS);
         });
     }
-    
+
     function check_companies_loaded(DS) {
         if (DS.getCompaniesData() === null) return false;
         else {
@@ -319,7 +327,7 @@ if (Loader === undefined) var Loader = {};
             var companies_loaded = 0;
             for (var key in DS.getCompaniesMetricsData()) {companies_loaded++;}
             if (companies_loaded !== DS.getCompaniesData().length) 
-                return false;                
+                return false;
             companies_loaded = 0;
             for (key in DS.getCompaniesGlobalData()) {companies_loaded++;}
             if (companies_loaded !== DS.getCompaniesData().length)
@@ -335,7 +343,7 @@ if (Loader === undefined) var Loader = {};
         }
         return true;
     }
-        
+
     function check_repos_loaded(DS) {
         if (DS.getReposData() === null) return false;
         else {
@@ -357,15 +365,17 @@ if (Loader === undefined) var Loader = {};
         }
         return true;
     }
-    
+
     function check_countries_loaded(DS) {
         if (DS.getCountriesData() === null) return false;
         else {
-            if (DS.getCountriesData().length>0 && !check_countries) {
-                check_countries = true;
-                data_load_countries_metrics();
-                return false;
-            }
+            // Countries metrics will be loaded when needed
+            return true;
+//            if (DS.getCountriesData().length>0 && !check_countries) {
+//                check_countries = true;
+//                data_load_countries_metrics();
+//                return false;
+//            }
         }
         if (check_countries && DS.getCountriesData().length>0) {
             var countries_loaded = 0;
@@ -377,7 +387,7 @@ if (Loader === undefined) var Loader = {};
         }
         return true;
     }
-    
+
     function check_projects_loaded() {
         var projects_loaded = 0;
         var projects_data = Report.getProjectsData();
@@ -386,7 +396,7 @@ if (Loader === undefined) var Loader = {};
         if (projects_loaded < projects_dirs.length ) return false;
         return true;
     }
-    
+
     function check_data_loaded_global() {
         var check = true;
         if (Report.getProjectData() === null || 
@@ -394,8 +404,8 @@ if (Loader === undefined) var Loader = {};
             return false;
 
         if (!(check_projects_loaded())) return false;
-        
-        var data_sources = Report.getDataSources();        
+
+        var data_sources = Report.getDataSources();
         $.each(data_sources, function(index, DS) {
             if (DS.getData() === null) {check = false; return false;}
             if (DS.getGlobalData() === null) {check = false; return false;}
@@ -405,20 +415,20 @@ if (Loader === undefined) var Loader = {};
         });
         return check;
     }
-    
+
     Loader.check_data_loaded = function() {
         var check = true;
 
         if (!(check_data_loaded_global())) return false;
-        
-        var data_sources = Report.getDataSources();        
+
+        var data_sources = Report.getDataSources();
         $.each(data_sources, function(index, DS) {
             if (DS.getPeopleData() === null) {check = false; return false;}
  
             if (!check_companies_loaded(DS)) {check = false; return false;}
             if (!check_repos_loaded(DS)) {check = false; return false;}
             if (!check_countries_loaded(DS)) {check = false; return false;}
-                   
+
             // TODO: Demographics just for SCM yet!
             if (DS instanceof SCM) {
                 if (DS.getDemographicsData() === null) {check = false; return false;} 
@@ -426,7 +436,7 @@ if (Loader === undefined) var Loader = {};
             if (DS instanceof MLS) {
                 if (DS.getListsData() === null) {check = false; return false;}
             }
-        });         
+        });
         return check;
     };
 

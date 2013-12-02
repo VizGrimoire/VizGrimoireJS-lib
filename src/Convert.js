@@ -633,7 +633,7 @@ Convert.convertFilterItemsMetricsEvol = function(filter) {
 
 Convert.convertFilterItemsMiniCharts = function(filter, page) {
     var config_metric = filterItemsConfig();
-    
+
     var divlabel = "FilterItemsMiniCharts";
     divs = $("."+divlabel);
     if (divs.length > 0) {
@@ -757,11 +757,13 @@ Convert.convertRepos = function() {
 Convert.convertCompanies = function() {
     Convert.convertFilterStudy('companies');
 };
+Convert.convertCountries = function() {
+    Convert.convertFilterStudy('countries');
+};
 
 Convert.convertFilterStudy = function(filter) {
     var page = Report.getParameterByName("page");
 
-    // TODO: On demand loading only for repos and companies yet
     if (filter === "repos") {
         if (Loader.check_repos_page(page) === false) {
             $.each(Report.getDataSources(), function(index, DS) {
@@ -775,6 +777,15 @@ Convert.convertFilterStudy = function(filter) {
         if (Loader.check_companies_page(page) === false) {
             $.each(Report.getDataSources(), function(index, DS) {
                 Loader.data_load_companies_page(DS, page, Convert.convertCompanies);
+            });
+            return;
+        }
+    }
+
+    if (filter === "countries") {
+        if (Loader.check_countries_page(page) === false) {
+            $.each(Report.getDataSources(), function(index, DS) {
+                Loader.data_load_countries_page(DS, page, Convert.convertCountries);
             });
             return;
         }
