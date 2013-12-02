@@ -572,12 +572,12 @@ function DataSource(name, basic_metrics) {
         var total = 0;
         var displayed_pages = 5; // page displayed in the paginator
         if (type === "companies") {
-            sorted_items = DataProcess.sortCompanies(this, sort_metric);
             items = this.getCompaniesData();
             title = "List of companies";
         } else if (type === "repos") {
-            sorted_items = DataProcess.sortRepos(this, sort_metric);
             items = this.getReposData();
+        } else if (type === "countries") {
+            items = this.getCountriesData();
         } else {
             return;
         }
