@@ -13,7 +13,7 @@ describe( "VizGrimoireJS library", function () {
                 expect(Loader.check_data_loaded()).toBeTruthy();
             });
         });
-        
+
         var blocks = ["Navbar","Refcard","Footer"];
         it(blocks.join() + " should be loaded from file", function () {
             runs(function() {
@@ -30,8 +30,8 @@ describe( "VizGrimoireJS library", function () {
                     .toBeGreaterThan(0);});
             });
         });
-        
-        describe( "html report should be converted", function () {        
+
+        describe( "html report should be converted", function () {
             it("html MetricsEvolSet should be displayed", function () {
                 runs(function() {
                     $.each(Report.getDataSources(), function(index, DS) {
@@ -69,8 +69,7 @@ describe( "VizGrimoireJS library", function () {
                                     .childNodes.length).toBeGreaterThan(0);
                         });
                     });
-                        
-                });        
+                });
             });
             it("html top should be displayed", function () {               
                 runs(function() {
@@ -140,7 +139,7 @@ describe( "VizGrimoireJS library", function () {
                                         'data-file':'data/json/'+DS.getName()+'-demographics-'+type+'.json',
                                         'style':'position: relative'
                                     });
-                    });                    
+                    });
                 }
                 var ncanvas = 0;
                 runs(function() {
@@ -158,7 +157,7 @@ describe( "VizGrimoireJS library", function () {
                     var new_ncanvas = document.getElementsByClassName
                         ('flotr-titles').length;
                     expect(new_ncanvas-ncanvas).toEqual(6);
-                });        
+                });
             });
 //            it("html selectors should be displayed", function () {
 //                runs(function() {
@@ -185,7 +184,7 @@ describe( "VizGrimoireJS library", function () {
 //                });
 //            });
             it("html radar should be displayed", function () {
-                runs(function() {                
+                runs(function() {
                     buildNode("RadarActivity","radar");
                     buildNode("RadarCommunity","radar");
                     var ncanvas = document.getElementsByClassName
@@ -195,7 +194,7 @@ describe( "VizGrimoireJS library", function () {
                     var new_ncanvas = document.getElementsByClassName
                         ('flotr-canvas').length;
                     expect(new_ncanvas-ncanvas).toEqual(2);
-                });        
+                });
             });
 //            it("html gridster should be displayed", function () {
 //                runs(function() {
@@ -204,7 +203,7 @@ describe( "VizGrimoireJS library", function () {
 //                    var grids = document.getElementsByClassName
 //                        ('gs_w').length;
 //                    expect(grids).toEqual(18);
-//                });        
+//                });
 //            });
             it("html Treemap should be displayed", function () {               
                 runs(function() {
@@ -219,10 +218,9 @@ describe( "VizGrimoireJS library", function () {
                     var nodes = document.getElementsByClassName
                         ('treemap-node').length;
                     expect(nodes).toEqual(252);
-                });        
+                });
             });
-
-        });        
+        });
     });
     describe("VizGrimoireJS loaded", function() {
         it("should be present in the global namespace", function () {
@@ -234,7 +232,7 @@ describe( "VizGrimoireJS library", function () {
             });
         });
     });
-    
+
     describe("Data checking", function() {
         it("Evol metrics should be present in the Global metrics", function () {
             var data_sources = Report.getDataSources();
@@ -266,10 +264,10 @@ describe( "VizGrimoireJS library", function () {
                         expect(metric_total).toEqual(global[field]);
                     }
                 }
-            });            
+            });
         });
     });
-    
+
     function checkDataReport(report) {
         if ($.inArray(report,['repos','companies','countries'])===-1) 
             return;
@@ -299,9 +297,9 @@ describe( "VizGrimoireJS library", function () {
                     }
                 }
             }
-        });        
+        });
     }
-    
+
     function checkVizReport(report) {
         if ($.inArray(report,['repos','companies','countries'])===-1) 
             return;
@@ -315,7 +313,7 @@ describe( "VizGrimoireJS library", function () {
             else if (report === "companies")
                 total_repos = DS.getCompaniesData().length;
             else if (report === "countries")
-                total_canvas += 2*DS.getCountriesData().length;
+                total_repos = DS.getCountriesData().length;
             if (total_repos > Report.getPageSize())
                 total_repos = Report.getPageSize();
             total_canvas += 2*total_repos;
@@ -338,7 +336,7 @@ describe( "VizGrimoireJS library", function () {
             ('flotr-canvas').length;
         expect(new_ncanvas-ncanvas).toEqual(total_canvas);
     }
-    
+
     describe("Repositories checking", function() {
         it("All repositories should have Evol and Global metrics", function () {
             checkDataReport('repos');
@@ -423,7 +421,7 @@ describe( "VizGrimoireJS library", function () {
             });
         });
     });
-    
+
     function buildNode (id, div_class, attr_map) {
         if (document.getElementById(id)) return;
         var node = document.createElement('div');
