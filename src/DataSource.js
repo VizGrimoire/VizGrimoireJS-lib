@@ -156,7 +156,7 @@ function DataSource(name, basic_metrics) {
         if (self === undefined) self = this;
         self.people = people;
     };
-    
+
     this.time_to_fix_data_file = this.data_dir + '/'+this.name 
             + '-quantiles-month-time_to_fix_hour.json';
     this.getTimeToFixDataFile = function() {
@@ -278,7 +278,7 @@ function DataSource(name, basic_metrics) {
     this.getReposGlobalData = function() {
         return this.repos_global_data;
     };
-    
+
     // Countries data
     this.countries_data_file = 
         this.data_dir+'/'+ this.name +'-countries.json';
@@ -652,7 +652,7 @@ function DataSource(name, basic_metrics) {
         });
         $("#"+div_links).append(links);
     };
-    
+
     this.displayCountriesNav = function (div_nav, sort_metric) {
         var nav = "<span id='nav'></span>";
         var sorted_countries = DataProcess.sortCountries(this, sort_metric);
@@ -667,19 +667,19 @@ function DataSource(name, basic_metrics) {
         this.displaySubReportList("companies",metrics,div_id, 
                 config_metric, sort_metric, undefined, show_links);
     };
-    
+
     this.displayReposList = function (metrics,div_id, 
             config_metric, sort_metric, page, show_links) {
         this.displaySubReportList("repos",metrics,div_id, 
                 config_metric, sort_metric, page, show_links);
     };
-    
+
     this.displayCountriesList = function (metrics,div_id, 
             config_metric, sort_metric, show_links) {
         this.displaySubReportList("countries",metrics,div_id, 
                 config_metric, sort_metric, undefined, show_links);
     };
-    
+
     this.displaySubReportList = function (report, metrics,div_id, 
             config_metric, sort_metric, page_str, show_links) {
 
