@@ -374,7 +374,7 @@ function DataSource(name, basic_metrics) {
         Viz.displayMetricRepos(metric_id, repos_data,
                 div_target, config, limit);
     };
-    
+
     // Includes repos mapping for actionable dashboard comparison
     this.displayBasicMetricMyRepos = function(repos, metric_id,
             div_target, config, start, end) {
@@ -401,26 +401,22 @@ function DataSource(name, basic_metrics) {
 
     this.displayMetricCompaniesStatic = function (metric_id,
             div_target, config, limit, order_by, show_others) {
-        
         this.displayMetricSubReportStatic ("companies",metric_id,
                 div_target, config, limit, order_by, show_others);
     };
-    
+
     this.displayMetricReposStatic = function (metric_id,
             div_target, config, limit, order_by, show_others) {
-        
         this.displayMetricSubReportStatic ("repos", metric_id,
                 div_target, config, limit, order_by, show_others);
     };
-    
+
     this.displayMetricCountriesStatic = function (metric_id,
           div_target, config, limit, order_by, show_others) {
-    
         this.displayMetricSubReportStatic ("countries", metric_id,
             div_target, config, limit, order_by, show_others);
     };
-    
-    
+
     this.displayMetricSubReportStatic = function (report, metric_id,
             div_target, config, limit, order_by, show_others) {
         if (order_by === undefined) order_by = metric_id;
