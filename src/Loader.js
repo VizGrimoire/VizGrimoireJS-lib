@@ -193,6 +193,34 @@ if (Loader === undefined) var Loader = {};
         return check;
     };
 
+    Loader.check_item = function(item, filter) {
+        var check = false;
+        $.each(Report.getDataSources(), function(index, DS) {
+            if (filter === "repos") {
+                if (DS.getReposGlobalData()[item] !== undefined &&
+                    DS.getReposMetricsData()[item] !== undefined) {
+                    check = true;
+                    return false;
+                }
+            }
+            if (filter === "companies") {
+                if (DS.getCompaniesGlobalData()[item] !== undefined &&
+                    DS.getCompaniesMetricsData()[item] !== undefined) {
+                    check = false;
+                    return false;
+                }
+            }
+            if (filter === "countries") {
+                if (DS.getCountriesGlobalData()[item] !== undefined &&
+                    DS.getCountriesMetricsData()[item] !== undefined) {
+                    check = false;
+                    return false;
+                }
+            }
+        });
+        return check;
+    };
+
     Loader.check_companies_page = function(page) {
         return Loader.check_filter_page (page, "companies");
     };
@@ -226,34 +254,23 @@ if (Loader === undefined) var Loader = {};
         for (var i=start;i<end;i++) {
             if (filter === "repos") {
                 var repo = DS.getReposData()[i];
-                data_load_repo_page(repo, DS, page, cb);
+                Loader.data_load_item (repo, DS, page, cb, "repos");
             } else if (filter === "companies") {
                 var company = DS.getCompaniesData()[i];
-                data_load_company_page(company, DS, page, cb);
+                Loader.data_load_item (company, DS, page, cb, "companies");
             } else if (filter === "countries") {
                 var country = DS.getCountriesData()[i];
-                data_load_country_page(country, DS, page, cb);
+                Loader.data_load_item (country, DS, page, cb, "countries");
             }
         }
     };
 
-    Loader.data_load_companies_page = function (DS, page, cb) {
-        Loader.data_load_items_page (DS, page, cb, "companies");
-    };
-
-    Loader.data_load_countries_page = function (DS, page, cb) {
-        Loader.data_load_items_page (DS, page, cb, "countries");
-    };
-
-    Loader.data_load_repos_page = function (DS, page, cb) {
-        Loader.data_load_items_page (DS, page, cb, "repos");
-    };
-
-    function data_load_item_page(item, DS, page, cb, filter) {
-        item_uri = encodeURIComponent(item);
+    // Load an item JSON data. If in a page, check all items read and cb.
+    Loader.data_load_item = function (item, DS, page, cb, filter) {
+        var item_uri = encodeURIComponent(item);
         var file = DS.getDataDir()+"/"+item_uri+"-";
-        file_evo = file + DS.getName()+"-evolutionary.json";
-        file_static = file + DS.getName()+"-static.json";
+        var file_evo = file + DS.getName()+"-evolutionary.json";
+        var file_static = file + DS.getName()+"-static.json";
         $.when($.getJSON(file_evo),$.getJSON(file_static)
                 ).done(function(evo, global) {
             if (filter === "repos") {
@@ -266,24 +283,16 @@ if (Loader === undefined) var Loader = {};
                 DS.addCountryMetricsData(item, evo[0], DS);
                 DS.addCountryGlobalData(item, global[0], DS);
             }
-            if (Loader.check_filter_page (page, filter)) {
-                if (cb.called !== true) cb();
-                cb.called = true;
+            if (page !== null) {
+                if (Loader.check_filter_page (page, filter)) {
+                    if (cb.called !== true) cb(filter);
+                    cb.called = true;
+                }
+            } else {
+                cb(filter);
             }
         });
-    }
-
-    function data_load_repo_page(repo, DS, page, cb) {
-        data_load_item_page(repo, DS, page, cb, "repos");
-    }
-
-    function data_load_company_page(company, DS, page, cb) {
-        data_load_item_page(company, DS, page, cb, "companies");
-    }
-
-    function data_load_country_page(company, DS, page, cb) {
-        data_load_item_page(company, DS, page, cb, "countries");
-    }
+    };
 
     function data_load_metrics() {
         var data_sources = Report.getDataSources();

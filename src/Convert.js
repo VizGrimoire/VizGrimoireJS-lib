@@ -761,45 +761,45 @@ Convert.convertFilterItemTop = function(filter, item) {
     }
 };
 
-//Needed for callback from Loader
-Convert.convertRepos = function() {
-    Convert.convertFilterStudy('repos');
+Convert.convertFilterStudyItem = function (filter) {
+    var item = null;
+    if (filter === "repos") item = Report.getParameterByName("repository");
+    if (filter === "countries") item = Report.getParameterByName("country");
+    if (filter === "companies") item = Report.getParameterByName("company");
+
+    if (!item) return;
+
+    // items mapping
+    var items_map = [];
+    $.each(Report.getDataSources(), function(index, DS) {
+        var itmap = getRealItem(DS, filter, item);
+        if (itmap !== undefined && itmap !== null) items_map.push(itmap);
+    });
+    for (var i in items_map) {
+        if (Loader.check_item (items_map[i], filter) === false) {
+            // don't use each inside for. don't create functions inside a for
+            var dss = Report.getDataSources();
+            for (var j in dss) {
+                Loader.data_load_item (items_map[i], dss[j], null, Convert.convertFilterStudyItem, filter);
+            }
+            return;
+        }
+    }
+    Convert.convertFilterItemSummary(filter, item);
+    Convert.convertFilterItemMetricsEvol(filter, item);
+    Convert.convertFilterItemTop(filter, item);
 };
-Convert.convertCompanies = function() {
-    Convert.convertFilterStudy('companies');
-};
-Convert.convertCountries = function() {
-    Convert.convertFilterStudy('countries');
-};
+
 
 Convert.convertFilterStudy = function(filter) {
     var page = Report.getParameterByName("page");
 
-    if (filter === "repos") {
-        if (Loader.check_repos_page(page) === false) {
-            $.each(Report.getDataSources(), function(index, DS) {
-                Loader.data_load_repos_page(DS, page, Convert.convertRepos);
-            });
-            return;
-        }
-    }
-
-    if (filter === "companies") {
-        if (Loader.check_companies_page(page) === false) {
-            $.each(Report.getDataSources(), function(index, DS) {
-                Loader.data_load_companies_page(DS, page, Convert.convertCompanies);
-            });
-            return;
-        }
-    }
-
-    if (filter === "countries") {
-        if (Loader.check_countries_page(page) === false) {
-            $.each(Report.getDataSources(), function(index, DS) {
-                Loader.data_load_countries_page(DS, page, Convert.convertCountries);
-            });
-            return;
-        }
+    // If data is not available load them and cb this function
+    if (Loader.check_filter_page (page, filter) === false) {
+        $.each(Report.getDataSources(), function(index, DS) {
+            Loader.data_load_items_page (DS, page, Convert.convertFilterStudy, filter);
+        });
+        return;
     }
 
     Convert.convertFilterItemsSummary(filter);
@@ -808,16 +808,7 @@ Convert.convertFilterStudy = function(filter) {
     Convert.convertFilterItemsMetricsEvol(filter);
     Convert.convertFilterItemsMiniCharts(filter, page);
 
-    var item = null;
-    if (filter === "repos") item = Report.getParameterByName("repository");
-    if (filter === "countries") item = Report.getParameterByName("country");
-    if (filter === "companies") item = Report.getParameterByName("company");
-
-    if (item) {
-        Convert.convertFilterItemSummary(filter, item);
-        Convert.convertFilterItemMetricsEvol(filter, item);
-        Convert.convertFilterItemTop(filter, item);
-    }
+    Convert.convertFilterStudyItem (filter);
 
     if (Report.getLegacy()) {
         if (filter === "repos") Report.convertReposLegacy();
