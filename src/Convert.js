@@ -499,18 +499,26 @@ function filterItemsConfig() {
     return config_metric;
 }
 
-//Use mapping between repos for locating real item names
+// Use mapping between repos for locating real item names
 function getRealItem(ds, filter, item) {
+    var map_item = null;
     if (filter === "repos") {
         var rdata = ds.getReposMetricsData()[item];
         if (rdata === undefined) {
-            var repos_map = Report.getReposMap()[item];
-            if (repos_map && repos_map[ds.getName()])
-                item = repos_map[ds.getName()];
-            else item = null;
+            var map = Report.getReposMap();
+            $.each(map, function(id, repos) {
+                $.each(Report.getDataSources(), function(index, DS) {
+                    if (repos[DS.getName()] === item) {
+                        map_item = repos[ds.getName()];
+                        return false;
+                    }
+                });
+                if (map_item !== null) return false;
+            });
         }
+        else map_item = item;
     }
-    return item;
+    return map_item;
 }
 
 Convert.convertFilterItemsSummary = function(filter) {
@@ -669,22 +677,23 @@ Convert.convertFilterItemSummary = function(filter, item) {
     divs = $("."+divlabel);
     if (item !== null && divs.length > 0) {
         $.each(divs, function(id, div) {
+            var real_item = item;
             ds = $(this).data('data-source');
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
             if (filter === undefined) filter = $(this).data('filter');
             if (filter !== $(this).data('filter')) return;
             if (!filter) return;
-            if ($(this).data('item')) item = $(this).data('item');
+            if ($(this).data('item')) real_item = $(this).data('item');
             div.id = ds+"-"+divlabel;
             if (filter === "repos") {
-                item = getRealItem(DS, filter, item);
-                if (item) DS.displayRepoSummary(div.id, item, DS);
+                real_item = getRealItem(DS, filter, real_item);
+                if (real_item) DS.displayRepoSummary(div.id, real_item, DS);
             }
             if (filter === "countries")
-                DS.displayCountrySummary(div.id, item, DS);
+                DS.displayCountrySummary(div.id, real_item, DS);
             if (filter === "companies")
-                DS.displayCompanySummary(div.id, item, DS);
+                DS.displayCompanySummary(div.id, real_item, DS);
         });
     }
 };
@@ -695,14 +704,15 @@ Convert.convertFilterItemMetricsEvol = function(filter, item) {
     divs = $("."+divlabel);
     if (item !== null && divs.length > 0) {
         $.each(divs, function(id, div) {
+            var real_item = item;
             ds = $(this).data('data-source');
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
             if (filter === undefined) filter = $(this).data('filter');
             if (filter !== $(this).data('filter')) return;
             if (!filter) return;
-            if ($(this).data('item')) item = $(this).data('item');
-            var metrics = $(this).data('metrics');                        
+            if ($(this).data('item')) real_item = $(this).data('item');
+            var metrics = $(this).data('metrics');
             config_metric.show_legend = false;
             config_metric.frame_time = false;
             if ($(this).data('legend')) 
@@ -711,16 +721,16 @@ Convert.convertFilterItemMetricsEvol = function(filter, item) {
                 config_metric.frame_time = true;
             div.id = metrics.replace(/,/g,"-")+"-"+divlabel;
             if (filter === "repos") {
-                item = getRealItem(DS, filter, item);
-                if (item)
-                    DS.displayMetricsRepo(item, metrics.split(","),
+                real_item = getRealItem(DS, filter, real_item);
+                if (real_item)
+                    DS.displayMetricsRepo(real_item, metrics.split(","),
                             div.id, config_metric);
             }
             if (filter === "countries")
-                DS.displayMetricsCountry(item, metrics.split(","),
+                DS.displayMetricsCountry(real_item, metrics.split(","),
                     div.id, config_metric);
             if (filter === "companies")
-                DS.displayMetricsCompany(item, metrics.split(","),
+                DS.displayMetricsCompany(real_item, metrics.split(","),
                     div.id, config_metric);
         });
     }
@@ -731,13 +741,14 @@ Convert.convertFilterItemTop = function(filter, item) {
     divs = $("."+divlabel);
     if (divs.length > 0) {
         $.each(divs, function(id, div) {
+            var real_item = item;
             ds = $(this).data('data-source');
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
             if (filter === undefined) filter = $(this).data('filter');
             if (filter !== $(this).data('filter')) return;
             if (!filter) return;
-            if ($(this).data('item')) item = $(this).data('item');
+            if ($(this).data('item')) real_item = $(this).data('item');
             var metric = $(this).data('metric');
             var period = $(this).data('period');
             var titles = $(this).data('titles');
@@ -745,7 +756,7 @@ Convert.convertFilterItemTop = function(filter, item) {
             div.className = "";
             // Only for Company yet
             if (filter === "companies")
-                DS.displayTopCompany(item,div.id,metric,period,titles);
+                DS.displayTopCompany(real_item,div.id,metric,period,titles);
         });
     }
 };
