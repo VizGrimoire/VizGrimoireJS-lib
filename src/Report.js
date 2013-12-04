@@ -384,17 +384,11 @@ Loader.data_ready_global(function() {
 Loader.data_ready(function() {
     Report.convertStudies();
     $("body").css("cursor", "auto");
-    // Popover helps system
-    $('.help').popover({
-        html: true,
-        trigger: 'manual'
-    }).click(function(e) {
-        $(this).popover('toggle');
-        e.stopPropagation();
-    });
+    // Popover help system
     $('html').click(function(e) {
         $('.help').popover('hide');
     });
+    Convert.activateHelp();
 });
 
 $(document).ready(function() {

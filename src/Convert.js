@@ -423,11 +423,11 @@ Convert.convertTop = function() {
 };
 
 Convert.convertPersonMetrics = function (upeople_id, upeople_identifier) {
-    var config_metric = {};                
+    var config_metric = {};
     config_metric.show_desc = false;
     config_metric.show_title = false;
     config_metric.show_labels = true;
-    
+
     divs = $(".PersonMetrics");
     if (divs.length) {
         $.each(divs, function(id, div) {
@@ -469,10 +469,20 @@ Convert.convertPeople = function(upeople_id, upeople_identifier) {
 
     if (upeople_id === undefined) return;
 
+    // Check we have all data
+    if (Loader.check_people_item (upeople_id) === false) {
+        $.each(Report.getDataSources(), function (index, DS)  {
+            Loader.data_load_people_item (upeople_id, DS, Convert.convertPeople);
+        });
+        return;
+    }
+
     Convert.convertPersonSummary(upeople_id, upeople_identifier);
     Convert.convertPersonMetrics(upeople_id, upeople_identifier);
 
     if (Report.getLegacy()) Report.convertPeopleLegacy(upeople_id, upeople_identifier);
+
+    Convert.activateHelp();
 };
 
 Convert.convertDemographics = function() {
@@ -788,6 +798,19 @@ Convert.convertFilterStudyItem = function (filter) {
     Convert.convertFilterItemSummary(filter, item);
     Convert.convertFilterItemMetricsEvol(filter, item);
     Convert.convertFilterItemTop(filter, item);
+
+    Convert.activateHelp();
+};
+
+Convert.activateHelp = function() {
+    // Popover help system
+    $('.help').popover({
+        html: true,
+        trigger: 'manual'
+    }).click(function(e) {
+        $(this).popover('toggle');
+        e.stopPropagation();
+    });
 };
 
 
