@@ -169,11 +169,11 @@ if (Viz === undefined) var Viz = {};
             if (metrics[i] === id) {
                 content += "<strong>"+value.name +"</strong>: "+ value.desc + "<br>";
                 return false;
-            }            
+            }
         };
         for (var i=0; i<metrics.length; i++) {
             $.each (all_metrics, addContent);
-        }         
+        }
         help += 'data-content="'+content+'" data-html="true">'; 
         help += '<img src="qm_15.png"></a>';
         $('#'+div_id).before(help);
@@ -181,6 +181,7 @@ if (Viz === undefined) var Viz = {};
 
     function displayMetricsLines(div_id, metrics, history, title, config) {
         if (!(config && config.help === false)) showHelp(div_id, metrics);
+
         var lines_data = [];
         $.each(metrics, function(id, metric) {
             if (!history[metric]) return;
@@ -428,13 +429,13 @@ if (Viz === undefined) var Viz = {};
                projects.push(ds.getProject());
            }
         });
-        
+
         // [ids, values] Complete timeline for all the data
         var dates = [[],[]];
-        
+
         // Healthy initial value
         dates = [full_data[0].id, full_data[0].date];
-        
+
         for (var i=0; i<full_data.length; i++) {
             // if empty data return
             if (full_data[i] instanceof Array) return;
@@ -1012,19 +1013,19 @@ if (Viz === undefined) var Viz = {};
         var title = company;
         displayMetricsLines(div_id, metrics, data, title, config);
     }
-    
+
     function displayMetricsRepo (repo, metrics, data, div_id, config) {
         config = checkBasicConfig(config);
         var title = repo;
         displayMetricsLines(div_id, metrics, data, title, config);
     }
-    
+
     function displayMetricsPeople (upeople_identifier, metrics, data, div_id, config) {
         config = checkBasicConfig(config);
         var title = upeople_identifier;
         displayMetricsLines(div_id, metrics, data, title, config);
     }
-    
+
     function displayMetricRepos(metric, data, div_target, 
             config, start, end) {
         config = checkBasicConfig(config);
@@ -1033,7 +1034,7 @@ if (Viz === undefined) var Viz = {};
         displayMetricSubReportLines(div_target, metric, data, title, 
                 config, start, end);
     }
-    
+
     function displayMetricsCountry (country, metrics, data, div_id, 
             config) {
         config = checkBasicConfig(config);
