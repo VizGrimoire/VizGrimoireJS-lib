@@ -362,11 +362,12 @@ describe( "VizGrimoireJS library", function () {
         });
     });
     describe("People checking", function() {
+        var people_id = null; 
         it("Top 1 SCM developer should have Evol and Global metrics", function () {
             var ncanvas = 0, nds = 0;
             runs(function() {
                 var data_sources = Report.getDataSources();
-                var people_id = null, max_people_index = 0;
+                var max_people_index = 0;
                 var metrics = null;
                 // Find developer with ITS, MLS and SCM activity
                 $.each(data_sources, function(index, DS) {
@@ -405,16 +406,17 @@ describe( "VizGrimoireJS library", function () {
                           {
                               'data-metrics': metrics,
                               'data-data-source': DS.getName(),
-                    });      
+                    });
                 });
                 ncanvas = document.getElementsByClassName
                     ('flotr-canvas').length;
                 Convert.convertPeople(people_id,'');
             });
             waitsFor(function() {
-                return (document.getElementsByClassName('flotr-canvas').length>=ncanvas+nds);
-            }, "It took too long to load data", 100);               
+                return (Loader.check_people_item (people_id));
+            }, "It took too long to load data", 100);
             runs(function() {
+                Convert.convertPeople(people_id,'');
                 var new_ncanvas = document.getElementsByClassName
                     ('flotr-canvas').length;
                 expect(new_ncanvas-ncanvas).toEqual(nds);
