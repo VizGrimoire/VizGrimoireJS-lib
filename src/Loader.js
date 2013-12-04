@@ -221,18 +221,6 @@ if (Loader === undefined) var Loader = {};
         return check;
     };
 
-    Loader.check_companies_page = function(page) {
-        return Loader.check_filter_page (page, "companies");
-    };
-
-    Loader.check_countries_page = function(page) {
-        return Loader.check_filter_page (page, "countries");
-    };
-
-    Loader.check_repos_page = function(page) {
-        return Loader.check_filter_page (page, "repos");
-    };
-
     Loader.data_load_items_page = function (DS, page, cb, filter) {
         if (page === undefined) page = 1;
         if (filter === "repos")
@@ -316,8 +304,8 @@ if (Loader === undefined) var Loader = {};
             }
             if (page !== null) {
                 if (Loader.check_filter_page (page, filter)) {
-                    if (cb.called !== true) cb(filter);
-                    cb.called = true;
+                    cb(filter);
+                    // cb.called = true;
                 }
             } else {
                 cb(filter);
