@@ -79,7 +79,7 @@ var DataProcess = {};
         });        
         return sorted;
     };
-    
+
     DataProcess.mergeConfig = function (config1, config2) {
         var new_config = {};
         $.each(config1, function(entry, value) {
@@ -98,7 +98,7 @@ var DataProcess = {};
         }
         return clean;
     };
-    
+
     // Clean 0s at the start and end of metrics in history
     DataProcess.frameTime = function(history, metrics) {
         var new_history = {};
@@ -130,9 +130,9 @@ var DataProcess = {};
                     if (new_offset<offset_end) offset_end = new_offset;
                     break;
                 }
-            }        
+            }
         });
-        
+
         for (var key in history) {
             new_history[key] = [];
             for (i =  0; i < history[key].length; i++) {
@@ -143,11 +143,11 @@ var DataProcess = {};
         }
         return new_history;  
     };
-    
-    DataProcess.filterDates = function(start_id, end_id, history) {        
+
+    DataProcess.filterDates = function(start_id, end_id, history) {
         var history_dates = {};
         $.each(history, function(name, data) {
-            history_dates[name] = [];                
+            history_dates[name] = [];
             $.each(data, function(i, value) {
                 // var id = history.id[i];
                 // TODO: week should be id
@@ -159,7 +159,7 @@ var DataProcess = {};
         });
         return history_dates;
     };
-    
+
     DataProcess.filterYear = function(year, history) {
         // var day_msecs = 1000*60*60*24;
         year = parseInt(year, null);
@@ -172,14 +172,14 @@ var DataProcess = {};
         var history_year = filterDates(min_id, max_id, history);
         return history_year;
     };
-    
+
     DataProcess.fillDates = function (dates_orig, more_dates) {
-        
+
         if (dates_orig[0].length === 0) return more_dates;
 
         // [ids, values]
         var new_dates = [[],[]];
-        
+
         // Insert older dates
         var i = 0;
         if (dates_orig[0][0]> more_dates[0][0]) {
@@ -197,7 +197,7 @@ var DataProcess = {};
                 new_dates[1].push(dates_orig[1][i]);
             }
         }
-        
+
         // Push newer dates
         if (dates_orig[0][dates_orig[0].length-1] < 
                 more_dates[0][more_dates[0].length-1]) {
@@ -209,11 +209,11 @@ var DataProcess = {};
                 }
             }
         }
-        
+
         return new_dates;
 
     };
-    
+
     DataProcess.fillHistory = function (hist_complete_id, hist_partial) {
         // [ids, values]
         var new_history = [ [], [] ];
@@ -228,34 +228,34 @@ var DataProcess = {};
         }
         return new_history;
     };
-    
+
     // Envision and Flotr2 formats are different.
     DataProcess.fillHistoryLines = function(hist_complete_id, hist_partial) {        
         // [ids, values]
         var old_history = [ [], [] ];
         var new_history = [ [], [] ];
         var lines_history = [];
-        
+
         for ( var i = 0; i < hist_partial.length; i++) {
             // ids
             old_history[0].push(hist_partial[i][0]);
             // values
             old_history[1].push(hist_partial[i][1]);
         }
-        
+
         new_history = DataProcess.fillHistory(hist_complete_id, old_history);
-        
+
         for (i = 0; i < hist_complete_id.length; i++) {
             lines_history.push([new_history[0][i],new_history[1][i]]);
         }
         return lines_history;
     };
-    
-    DataProcess.addRelativeValues = function (metrics_data, metric) {        
+
+    DataProcess.addRelativeValues = function (metrics_data, metric) {
         if (metrics_data[metric] === undefined) return;
         metrics_data[metric+"_relative"] = [];
         var added_values = [];
-        
+
         $.each(metrics_data[metric], function(index, pdata) {
             var metric_values = pdata.data[1];
             for (var i = 0; i<metric_values.length;i++) {
@@ -264,7 +264,7 @@ var DataProcess = {};
                 added_values[i] += metric_values[i];
             }
         });
-        
+
         $.each(metrics_data[metric], function(index, pdata) {
             var val_relative = [];
             for (var i = 0; i<pdata.data[0].length;i++) {
@@ -278,9 +278,9 @@ var DataProcess = {};
                 label: pdata.label,
                 data: [pdata.data[0],val_relative]
             });
-        });        
+        });
     };
-    
+
     DataProcess.aggregate = function(data, metrics) {
         var new_data = {};
         if (!(metrics instanceof Array)) metrics = [metrics];

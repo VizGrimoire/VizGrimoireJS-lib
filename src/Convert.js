@@ -273,18 +273,18 @@ Convert.convertBubbles = function() {
 Convert.convertMetricsEvol = function() {
     // General config for metrics viz
     var config_metric = {};
-    
+
     config_metric.show_desc = false;
     config_metric.show_title = false;
     config_metric.show_labels = true;
-    
+
     var config = Report.getVizConfig();
     if (config) {
         $.each(config, function(key, value) {
             config_metric[key] = value;
         });
     }
-    
+
     var div_param = "MetricsEvol";
     var divs = $("." + div_param);
     if (divs.length > 0) {
@@ -293,7 +293,7 @@ Convert.convertMetricsEvol = function() {
             $.each(config_metric, function(key, value) {
                 config_viz[key] = value;
             });
-    
+
             var metrics = $(this).data('metrics');
             var ds = $(this).data('data-source');
             var DS = Report.getDataSourceByName(ds);
@@ -318,7 +318,7 @@ Convert.convertMetricsEvol = function() {
                     config_viz, $(this).data('convert'));
         });
     }
-    
+
     if (Report.getLegacy()) Report.convertFlotr2();
 };
 
@@ -343,7 +343,7 @@ Convert.convertMetricsEvolSet = function() {
             DS.displayEnvision(div.id, relative, legend, summary_graph); 
         });
     }
-    
+
     if (Report.getLegacy()) Report.convertEnvisionLegacy();
 };
 
@@ -384,7 +384,7 @@ Convert.convertLastActivity = function() {
             });
         });
         $(div).append(html);
-    }        
+    }
     var divs = $(".LastActivity");
     var period = null;
     var days = {"Week":7,"Month":30,"Quarter":90,"Year":365};
