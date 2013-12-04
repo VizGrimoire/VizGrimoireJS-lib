@@ -265,6 +265,37 @@ if (Loader === undefined) var Loader = {};
         }
     };
 
+    Loader.check_people_item = function(item) {
+        var check = true;
+        $.each(Report.getDataSources(), function(index, DS) {
+            if (DS.getPeopleGlobalData()[item] === undefined ||
+                DS.getPeopleMetricsData()[item] === undefined) {
+                    check = false;
+                    return false;
+                }
+        });
+        return check;
+    };
+
+    Loader.data_load_people_item = function (upeople_id, DS, cb) {
+        var file = DS.getDataDir() + "/people-"+upeople_id+"-"+DS.getName();
+        var file_evo = file + "-evolutionary.json";
+        var file_static = file + "-static.json";
+        $.when($.getJSON(file_evo),$.getJSON(file_static)
+            ).done(function(evo, global) {
+            DS.addPeopleMetricsData(upeople_id, evo[0], DS);
+            DS.addPeopleGlobalData(upeople_id, global[0], DS);
+            if (Loader.check_people_item(upeople_id)) cb();
+        }).fail(function() {
+            DS.addPeopleMetricsData(upeople_id, [], DS);
+            DS.addPeopleGlobalData(upeople_id, [], DS);
+            if (Loader.check_people_item(upeople_id)) cb();
+            // $("#"+div_id).hide();
+            // $("#people").empty();
+            // $("#people").html('No data available for people');
+        });
+    };
+
     // Load an item JSON data. If in a page, check all items read and cb.
     Loader.data_load_item = function (item, DS, page, cb, filter) {
         var item_uri = encodeURIComponent(item);
