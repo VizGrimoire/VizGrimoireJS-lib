@@ -313,6 +313,25 @@ function DataSource(name, basic_metrics) {
         return this.countries_global_data;
     };
 
+    // people
+    this.people_metrics_data = {};
+    this.addPeopleMetricsData = function(id, data, self) {
+        if (self === undefined) self = this;
+        self.people_metrics_data[id] = nameSpaceMetrics(data, self);
+    };
+    this.getPeopleMetricsData = function() {
+        return this.people_metrics_data;
+    };
+
+    this.people_global_data = {};
+    this.addPeopleGlobalData = function(id, data, self) {
+        if (self === undefined) self = this;
+        self.people_global_data[id] = nameSpaceMetrics(data, self);
+    };
+    this.getPeopleGlobalData = function() {
+        return this.people_global_data;
+    };
+
 
     // TODO: Move this logic to Report
     this.getCompanyQuery = function () {
@@ -482,16 +501,13 @@ function DataSource(name, basic_metrics) {
     };
 
     this.displayMetricsPeople = function (upeople_id, upeople_identifier, metrics, div_id, config) {
-        var json_file = "people-"+upeople_id+"-"+this.getName()+"-evolutionary.json";
-        var self = this;
-        $.when($.getJSON(this.getDataDir()+"/"+json_file)).done(function(history) {
-            history = nameSpaceMetrics(history, self);
-            Viz.displayMetricsPeople(upeople_identifier, metrics, history, div_id, config);
-        }).fail(function() {
+        var history = this.getPeopleMetricsData()[upeople_id];
+
+        if (history === undefined || history instanceof Array) {
             $("#"+div_id).hide();
-            // $("#people").empty();
-            // $("#people").html('No data available for people');
-        });
+            return;
+        }
+        Viz.displayMetricsPeople(upeople_identifier, metrics, history, div_id, config);
     };
 
     // TODO: suppport multiproject
@@ -800,21 +816,21 @@ function DataSource(name, basic_metrics) {
         this.displaySummary("countries",divid, repo, ds);
     };
 
-    // On demand file loading for people
     this.displayPeopleSummary = function(divid, upeople_id, 
             upeople_identifier, ds) {
-        var json_file = "people-"+upeople_id+"-"+ds.getName()+"-static.json";
-        $.getJSON(this.getDataDir()+"/"+json_file, null, function(history) {
-            html = "<h4>"+upeople_identifier+"</h4>";
-            html += "Start: "+history.first_date+" End: "+ history.last_date;
-            html += "<br>";
-            if (ds.getName() == "scm") html += " Commits:" + history.commits;
-            else if (ds.getName() == "its") html += " Closed:" + history.closed;
-            else if (ds.getName() == "mls") html += " Sent:" + history.sent;
-            else if (ds.getName() == "irc") html += " Sent:" + history.sent;
-            else if (ds.getName() == "scr") html += " Closed:" + history.closed;
-            $("#"+divid).append(html);
-        });
+        var history = ds.getPeopleGlobalData()[upeople_id];
+
+        if (history === undefined || history instanceof Array) return;
+
+        html = "<h4>"+upeople_identifier+"</h4>";
+        html += "Start: "+history.first_date+" End: "+ history.last_date;
+        html += "<br>";
+        if (ds.getName() == "scm") html += " Commits:" + history.scm_commits;
+        else if (ds.getName() == "its") html += " Closed:" + history.its_closed;
+        else if (ds.getName() == "mls") html += " Sent:" + history.mls_sent;
+        else if (ds.getName() == "irc") html += " Sent:" + history.irc_sent;
+        else if (ds.getName() == "scr") html += " Closed:" + history.scr_closed;
+        $("#"+divid).append(html);
     };
 
     this.displayCompaniesSummary = function(divid, ds) {
