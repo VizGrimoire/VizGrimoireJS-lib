@@ -533,21 +533,6 @@ function DataSource(name, basic_metrics) {
         Viz.displayMetricsEvol(metric_ids, data, div_target, config);
     };
 
-    function cleanLabel(item) {
-        var label = item;
-        if (item.lastIndexOf("http") === 0 || item.split("_").length > 3) {
-            var aux = item.split("_");
-            label = aux.pop();
-            if (label === '') label = aux.pop();
-            if (self.getName() === "its") {
-                label = label.replace('buglist.cgi?product=','');
-            }
-        }
-        else if (item.lastIndexOf("<") === 0)
-            label = MLS.displayMLSListName(item);
-        return label;
-    }
-
     this.isPageDisplayed = function (visited, linked, total, displayed) {
         // Returns true if link page should be displayed.
         // Receive: number of visited page,
@@ -645,7 +630,7 @@ function DataSource(name, basic_metrics) {
         // Show only the items navbar when there are more than 10 items
         if (Report.getPageSize()>10)
             $.each(sorted_items, function(id, item) {
-                var label = cleanLabel(item);
+                var label = Report.cleanLabel(item);
                 nav += "<a href='#"+item+"-nav'>"+label + "</a> ";
             });
         $("#"+div_nav).append(nav);
@@ -733,8 +718,8 @@ function DataSource(name, basic_metrics) {
             list += "<tr><td class='span2 repository-name'>";
             list += "#" + cont + "&nbsp;";
             cont++;
-            var addURL = "page="+page;
-            if (Report.addDataDir()) addURL = "&"+Report.addDataDir();
+            var addURL = null;
+            if (Report.addDataDir()) addURL = Report.addDataDir();
             if (show_links) {
                 if (report === "companies") { 
                     list += "<a href='company.html?company="+item;
@@ -743,11 +728,6 @@ function DataSource(name, basic_metrics) {
                 }
                 else if (report === "repos") {
                     list += "<a href='";
-                    // Show together SCM and ITS
-                    if ((ds.getName() === "scm" || ds.getName() === "its")
-                            && (Report.getReposMap().length === undefined));
-                    else
-                        list += ds.getName() + "-";
                     list += "repository.html";
                     list += "?repository=" + encodeURIComponent(item);
                     if (addURL) list += "&"+addURL;
@@ -848,7 +828,43 @@ function DataSource(name, basic_metrics) {
         $("#"+divid).append(html);
     };
 
-    this.displaySummary = function(report, divid, item, ds) {};
+    // Return labels to be shown in the summary
+    this.getSummaryLabels = function () {};
+
+    this.displaySummary = function(report, divid, item, ds) {
+        if (!item) item = "";
+        var label = Report.cleanLabel(item);
+        var html = "<h4>" + label + " (" + ds.getName()+ ")</h4>";
+        var id_label = this.getSummaryLabels();
+        var global_data = null;
+        if (report === "companies")
+            global_data = ds.getCompaniesGlobalData()[item];
+        else if (report === "countries")
+            global_data = ds.getCountriesGlobalData()[item];
+        else if (report === "repositories")
+            global_data = ds.getReposGlobalData()[item];
+        else global_data = ds.getGlobalData();
+
+        if (!global_data) return;
+
+        var self = this;
+        html += "<table class='table-condensed table-hover'>";
+        $.each(global_data,function(id,value) {
+            html += "<tr><td>";
+            // if (id_label[id] === undefined) return;
+            if (self.getMetrics()[id]) {
+                html += self.getMetrics()[id].name + "</td><td>" + value;
+            } else if (id_label[id]) { 
+                html += id_label[id] + "</td><td>" + value;
+            } else {
+                if (report) html += id + "</td><td>" + value;
+            }
+            html += "</td></tr>";
+        });
+        html += "</table>";
+        $("#"+divid).append(html);
+    };
+
 
     this.displayReposSummary = function(divid, ds) {
         var html = "";

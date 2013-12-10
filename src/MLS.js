@@ -96,42 +96,13 @@ function MLS() {
         return "mls_sent";
     };
     
-    this.displaySummary = function(report, divid, item, ds) {
-        if (!item) item = "";
-        var label = item;
-        if (item.lastIndexOf("http") === 0) {
-            var aux = item.split("_");
-            label = aux.pop();
-            if (label === '') label = aux.pop();
-        }
-        var html = "<h4>" + label + "</h4>";
-        var id_label = {
+    this.getSummaryLabels = function () {
+        var labels = {
             first_date : "Start",
             last_date : "End"
         };
-        var global_data = null;
-        if (report === "companies")
-            global_data = ds.getCompaniesGlobalData()[item];
-        else if (report === "countries")
-            global_data = ds.getCountriesGlobalData()[item];
-        else if (report === "repositories")
-            global_data = ds.getReposGlobalData()[item];
-        else global_data = ds.getGlobalData();
-        
-        if (!global_data) return;
-        
-        var self = this;
-        $.each(global_data,function(id,value) {
-            if (self.getMetrics()[id])
-                html += self.getMetrics()[id].name + ": " + value + "<br>";
-            else if (id_label[id]) 
-                html += id_label[id] + ": " + value + "<br>";
-            else
-                if (report) html += id + ": " + value + "<br>";
-        });
-        $("#"+divid).append(html);
+        return labels;
     };
-
 
     this.displayData = function(divid) {
         var div_id = "#" + divid;
@@ -141,7 +112,7 @@ function MLS() {
             $(div_id + ' .mls_info').hide();
             return;
         }
-        
+
         var url = '';
         if (this.global_data.repositories === 1) {
             url = this.global_data.url;
@@ -175,7 +146,7 @@ function MLS() {
     this.displayBubbles = function(divid, radius) {
         Viz.displayBubbles(divid, "mls_sent", "mls_senders", radius);
     };
-        
+
     // http:__lists.webkit.org_pipermail_squirrelfish-dev_
     // <allura-dev.incubator.apache.org>
     MLS.displayMLSListName = function (listinfo) {

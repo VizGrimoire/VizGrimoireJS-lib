@@ -86,18 +86,18 @@ if (Report === undefined) var Report = {};
         markers_file = dataDir + "/markers.json";
         repos_mapping_file = data_dir + "/repos-mapping.json";
     };
-   
+
     function getMarkers() {
         return markers;
     }
-    
+
     Report.setMarkers = function (data) {
         markers = data;
-    };    
+    };
     Report.getMarkersFile = function () {
         return markers_file;
     };
-    
+
     Report.getReposMap = function() {
         return repos_map;
     };    
@@ -168,6 +168,20 @@ if (Report === undefined) var Report = {};
         $.each(Report.getDataSources(), function(i, DS) {
            DS.setMetricsDefinition(metrics[DS.getName()]); 
         });
+    };
+
+    // Extract title from repositories names
+    Report.cleanLabel = function(item) {
+        var label = item;
+        if (item.lastIndexOf("http") === 0 || item.split("_").length > 3) {
+            var aux = item.split("_");
+            label = aux.pop();
+            if (label === '') label = aux.pop();
+            label = label.replace('buglist.cgi?product=','');
+        }
+        else if (item.lastIndexOf("<") === 0)
+            label = MLS.displayMLSListName(item);
+        return label;
     };
 
     function escapeHtml(unsafe) {

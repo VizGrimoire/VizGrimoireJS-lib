@@ -144,47 +144,18 @@ function SCR() {
             'action' : 'opened'
         }
     };
-        
+
     this.getMainMetric = function() {
         return "scr_merged";
     };
-    
-    this.displaySummary = function(report, divid, item, ds) {
-        if (!item) item = "";
-        var label = item;
-        if (item.lastIndexOf("http") === 0 || item.split("_").length > 3) {
-            var aux = item.split("_");
-            label = aux.pop();
-            if (label === '') label = aux.pop();
-        }
-        var html = "<h4>" + label + "</h4>";
-        var global_data = null;
-        if (report === "companies")
-            global_data = ds.getCompaniesGlobalData()[item];
-        if (report === "countries")
-            global_data = ds.getCountriesGlobalData()[item];
-        else if (report === "repositories")
-            global_data = ds.getReposGlobalData()[item];
-        else global_data = ds.getGlobalData();        
-        if (!global_data) return;
 
+    this.getSummaryLabels = function () {
         var id_label = {
                 first_date : "Start",
                 last_date : "End"
         };
-
-        var self = this;
-        $.each(global_data,function(id,value) {
-            if (self.getMetrics()[id])
-                html += self.getMetrics()[id].name + ": " + value + "<br>";
-            else if (id_label[id]) 
-                html += id_label[id] + ": " + value + "<br>";
-            else
-                if (report) html += id + ": " + value + "<br>";
-        });
-        $("#"+divid).append(html);
+        return id_label;
     };
-
 
     this.displayData = function(divid) {
         var div_id = "#" + divid;

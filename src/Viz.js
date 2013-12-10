@@ -63,20 +63,6 @@ if (Viz === undefined) var Viz = {};
         return doer;
     }
 
-    function filterLabel(item) {
-        var label = item;
-        if (item.lastIndexOf("http") === 0 || item.split("_").length > 3) {
-            var aux = item.split("_");
-            label = aux.pop();
-            if (label === '') label = aux.pop();
-            // item = item.substr(item.lastIndexOf("_") + 1);
-            label = label.replace('buglist.cgi?product=','');
-        }
-        else if (item.lastIndexOf("<") === 0)
-            label = MLS.displayMLSListName(item);
-        return label;
-    }
-
     function displayTopMetricTable(history, metric_id, doer, limit, people_links) {
         var table = "<table><tbody>";
         table += "<tr><th></th><th>" + metric_id + "</th></tr>";
@@ -215,7 +201,7 @@ if (Viz === undefined) var Viz = {};
                 cdata[i] = [data.id[i], data[metric][i]];
             }
 
-            item = filterLabel(item);
+            item = Report.cleanLabel(item);
             lines_data.push({label:item, data:cdata});
             history = data;
         });
@@ -1063,7 +1049,7 @@ if (Viz === undefined) var Viz = {};
         if (config.graph) graph = config.graph;
 
         $.each(data, function(item, data) {
-            var label = filterLabel(item);
+            var label = Report.cleanLabel(item);
             labels.push(label);
             metric_data.push(data[metric]);
         });
