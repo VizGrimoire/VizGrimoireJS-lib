@@ -741,19 +741,7 @@ function DataSource(name, basic_metrics) {
                 }
             }
             list += "<strong>";
-            var label = item;
-            if (item.lastIndexOf("http") === 0 || item.split("_").length > 3) {
-                var aux = item.split("_");
-                label = aux.pop();
-                if (label === '') label = aux.pop();
-                if (ds.getName() === "its") {
-                    label = label.replace('buglist.cgi?product=','');
-                }
-                // label = item.substr(item.lastIndexOf("_") + 1);
-            }
-            else if (item.lastIndexOf("<") === 0)
-                label = MLS.displayMLSListName(item);
-            list += label;
+            list += Report.cleanLabel(item);
             list += "</strong>";
             if (show_links) list += "</a>";
             //list += "<br><a href='#nav'>^</a>";
@@ -802,14 +790,22 @@ function DataSource(name, basic_metrics) {
 
         if (history === undefined || history instanceof Array) return;
 
-        html = "<h4>"+upeople_identifier+"</h4>";
-        html += "Start: "+history.first_date+" End: "+ history.last_date;
-        html += "<br>";
-        if (ds.getName() == "scm") html += " Commits:" + history.scm_commits;
-        else if (ds.getName() == "its") html += " Closed:" + history.its_closed;
-        else if (ds.getName() == "mls") html += " Sent:" + history.mls_sent;
-        else if (ds.getName() == "irc") html += " Sent:" + history.irc_sent;
-        else if (ds.getName() == "scr") html += " Closed:" + history.scr_closed;
+        html = "<h4>" + ds.getName() + "</h4>";
+
+        html += "<table class='table-condensed table-hover'>";
+        html += "<tr><td>";
+        html += "Start</td><td>"+history.first_date;
+        html += "</td></tr><tr><td>";
+        html += "End</td><td>"+ history.last_date;
+        html += "</td></tr><tr><td>";
+        if (ds.getName() == "scm") html += "Commits</td><td>" + history.scm_commits;
+        else if (ds.getName() == "its") html += "Closed</td><td>" + history.its_closed;
+        else if (ds.getName() == "mls") html += "Sent</td><td>" + history.mls_sent;
+        else if (ds.getName() == "irc") html += "Sent</td><td>" + history.irc_sent;
+        else if (ds.getName() == "scr") html += "Closed</td><td>" + history.scr_closed;
+        html += "</td></tr>";
+        html += "</table>";
+
         $("#"+divid).append(html);
     };
 
