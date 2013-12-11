@@ -65,6 +65,7 @@ if (Loader === undefined) var Loader = {};
         data_load_metrics_definition();
         data_load_metrics();
         data_load_people();
+        data_load_people_identities();
         data_load_tops('authors');
         data_load_time_to_fix();
         data_load_time_to_attention();
@@ -338,6 +339,10 @@ if (Loader === undefined) var Loader = {};
         $.each(data_sources, function(i, DS) {
             data_load_file(DS.getPeopleDataFile(), DS.setPeopleData, DS);
         });
+    }
+
+    function data_load_people_identities() {
+        data_load_file(Report.getDataDir()+"/people.json", Report.setPeopleIdentities);
     }
 
     function check_companies_loaded(DS) {
