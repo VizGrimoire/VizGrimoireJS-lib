@@ -446,6 +446,29 @@ Convert.convertPersonMetrics = function (upeople_id, upeople_identifier) {
     }
 };
 
+function getRandomId() {
+    return Math.floor(Math.random()*1000+1);
+}
+
+Convert.convertPersonData = function (upeople_id, upeople_identifier) {
+    var divs = $(".PersonData"), name, email;
+    if (divs.length > 0) {
+        $.each(divs, function(id, div) {
+            if (!div.id) div.id = "PersonSummay" + getRandomId();
+            var data = Report.getPeopleIdentities()[upeople_id];
+            if (data) {
+                name = DataProcess.selectPersonName(data);
+                email = DataProcess.selectPersonEmail(data);
+                email = "("+DataProcess.hideEmail(email)+")";
+            } else {
+                name = upeople_identifier;
+                email = "";
+            }
+            $("#"+div.id).append("<h1><small>"+name + " "+ email + "</small></h1>");
+        });
+    }
+};
+
 Convert.convertPersonSummary = function (upeople_id, upeople_identifier) {
     var divs = $(".PersonSummary");
     if (divs.length > 0) {
@@ -477,6 +500,7 @@ Convert.convertPeople = function(upeople_id, upeople_identifier) {
         return;
     }
 
+    Convert.convertPersonData(upeople_id, upeople_identifier);
     Convert.convertPersonSummary(upeople_id, upeople_identifier);
     Convert.convertPersonMetrics(upeople_id, upeople_identifier);
 
