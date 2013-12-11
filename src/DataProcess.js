@@ -90,13 +90,39 @@ var DataProcess = {};
         });
         return new_config;
     };
-    
+
     DataProcess.hideEmail = function(email) {
         var clean = email;
         if (email.indexOf("@") > -1) {
             clean = email.split('@')[0];
         }
         return clean;
+    };
+
+    // Select longest name from identities
+    DataProcess.selectPersonName = function(person) {
+        var name = "", cname, ctype;
+        for (var i=0; i<person.identity.length; i++) {
+            cname = person.identity[i];
+            ctype = person.type[i];
+            if (ctype === "name") {
+                if (cname.length>name.length) name = cname;
+            }
+        }
+        return name;
+    };
+
+    // Select first email from identities
+    DataProcess.selectPersonEmail = function(person) {
+        var email = "", cemail, ctype;
+        for (var i=0; i<person.identity.length; i++) {
+            cemail = person.identity[i];
+            ctype = person.type[i];
+            if (ctype === "email") {
+                email = cemail;
+            }
+        }
+        return email;
     };
 
     // Clean 0s at the start and end of metrics in history
