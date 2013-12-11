@@ -32,6 +32,7 @@ Convert.convertMicrodashText = function () {
         $.each(divs, function(id, div) {
             var metric = $(this).data('metric');
             var ds = Report.getMetricDS(metric)[0];
+            if (ds === undefined) return;
             var total = ds.getGlobalData()[metric];
             //initial square: total
             var html = '<div class="row-fluid"><div class="span3">';
