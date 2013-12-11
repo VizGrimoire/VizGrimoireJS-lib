@@ -43,7 +43,8 @@ if (Report === undefined) var Report = {};
         markers_file = data_dir + "/markers.json",
         repos_map_file = data_dir + "/repos-map.json";
     var page_size = 10;
-    
+    var project_people_identities = {};
+
     var legacy = false; //  support old divs API
 
     // Public API
@@ -170,28 +171,44 @@ if (Report === undefined) var Report = {};
         });
     };
 
+    Report.getPeopleIdentities = function () {
+        return project_people_identities;
+    };
+
+    Report.setPeopleIdentities = function (people) {
+        project_people_identities = people;
+    };
+
     // Extract title from repositories names
     Report.cleanLabel = function(item) {
         var label = item;
-        if (item.lastIndexOf("http") === 0 || item.split("_").length > 3) {
-            var aux = item.split("_");
+        var aux = null;
+
+        // GlusterFS __gluster-devel.nongnu.org___
+        if (item.split("___").length === 2) {
+            aux = item.split(" ");
+            label = aux[0];
+        }
+        else if (item.lastIndexOf("http") === 0 || item.split("_").length > 3) {
+            aux = item.split("_");
             label = aux.pop();
             if (label === '') label = aux.pop();
             label = label.replace('buglist.cgi?product=','');
         }
         else if (item.lastIndexOf("<") === 0)
             label = MLS.displayMLSListName(item);
+
         return label;
     };
 
-    function escapeHtml(unsafe) {
+    Report.escapeHtml = function(unsafe) {
         return unsafe
             .replace(/&/g, "&amp;")
             .replace(/</g, "&lt;")
             .replace(/>/g, "&gt;")
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&#039;");
-    }
+    };
 
     // http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values
     Report.getParameterByName = function(name) {
@@ -201,7 +218,7 @@ if (Report === undefined) var Report = {};
         var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
             results = regex.exec(location.search);
         return results === null ? undefined :
-            escapeHtml(decodeURIComponent(results[1].replace(/\+/g, " ")));
+            Report.escapeHtml(decodeURIComponent(results[1].replace(/\+/g, " ")));
     };
 
     function getMetricDS(metric_id) {
