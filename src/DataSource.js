@@ -734,8 +734,7 @@ function DataSource(name, basic_metrics) {
                     list += "'>";
                 }
                 else if (report === "countries") {
-                    list += "<a href='"+ds.getName();
-                    list += "-country.html?country="+item;
+                    list += "<a href='country.html?country="+item;
                     if (addURL) list += "&"+addURL;
                     list += "'>";
                 }
