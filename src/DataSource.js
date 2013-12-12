@@ -891,10 +891,10 @@ function DataSource(name, basic_metrics) {
         Viz.displayTimeToFix(div_id, this.getTimeToFixData(), column, labels, title);
     };
     
-    this.displayTop = function(div, all, show_metric, graph, limit, people_links) {
+    this.displayTop = function(div, all, show_metric, period, graph, limit, people_links) {
         if (all === undefined) all = true;
         var titles = null;
-        Viz.displayTop(div, this, all, show_metric, graph, titles, limit, people_links);
+        Viz.displayTop(div, this, all, show_metric, period, graph, titles, limit, people_links);
     };
     
     this.displayTopBasic = function(div, action, doer, graph) {
