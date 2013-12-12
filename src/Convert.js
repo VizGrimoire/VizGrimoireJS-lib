@@ -400,6 +400,7 @@ Convert.convertTop = function() {
     var divs = $("." + div_id_top);
     var DS, ds;
     if (divs.length > 0) {
+        var unique = 0;
         $.each(divs, function(id, div) {
             ds = $(this).data('data-source');
             DS = Report.getDataSourceByName(ds);
@@ -411,11 +412,12 @@ Convert.convertTop = function() {
             var limit = $(this).data('limit');
             var graph = $(this).data('graph');
             var people_links = $(this).data('people_links');
-            if (!div.id) {
-                div.id = ds+"-top"+graph;
-                if (graph) div.id += "-"+graph;
+            var period = $(this).data('period');
+            div.id = div_id_top + (unique++);
+            if (graph){
+                div.id += "-"+graph;
             }
-            DS.displayTop(div.id, show_all, top_metric, 
+            DS.displayTop(div.id, show_all, top_metric, period,
                           graph, limit, people_links);
         });
     }

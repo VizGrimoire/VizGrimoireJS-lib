@@ -77,9 +77,9 @@ if (Viz === undefined) var Viz = {};
         return label;
     }
 
-    function displayTopMetricTable(history, metric_id, doer, limit, people_links) {
-        var table = "<table><tbody>";
-        table += "<tr><th></th><th>" + metric_id + "</th></tr>";
+    function displayTopMetricTable(history, metric_id, doer, limit, people_links, title) {
+        var table = '<table class="table table-striped"><tbody>';
+        table += "<tr><th colspan=2>" + title + "</th><th>" + metric_id + "</th></tr>";
         if (people_links === undefined) people_links = true;
         if (history[metric_id] === undefined) return;
         if (!(history[metric_id] instanceof Array)) {
@@ -87,18 +87,18 @@ if (Viz === undefined) var Viz = {};
             history[doer] = [history[doer]];
         }
         for (var i = 0; i < history[metric_id].length; i++) {
+            if (limit && limit <= i) break;
             var metric_value = history[metric_id][i];
             var doer_value = history[doer][i];
             var doer_id = null;
             if (history.id) doer_id = history.id[i];
-            table += "<tr><td>";
+            table += "<tr><td>#" + (i+1) + "</td><td>";
             if (doer_id && people_links)
                 table += "<a href='people.html?id="+doer_id+"&name="+doer_value+"'>";
             table += DataProcess.hideEmail(doer_value);
             if (doer_id && people_links) table += "</a>";
             table += "</td><td>";
             table += metric_value + "</td></tr>";
-            if (limit && limit <= i) break;
         }
         table += "</tbody></table>";
 
@@ -106,8 +106,8 @@ if (Viz === undefined) var Viz = {};
     }
 
     function displayTopMetric
-        (div_id, project, metric, metric_period, history, graph, titles, limit, people_links) {
-
+    (div_id, project, metric, metric_period, history, graph, titles, limit, people_links) {
+        var top_metric_id = metric.name;
         if (!history || $.isEmptyObject(history)) return;
         var metric_id = metric.action;
         if (limit && history[metric_id].length<limit) {
@@ -116,7 +116,8 @@ if (Viz === undefined) var Viz = {};
         }
         var doer = metric.column;
         if (doer === undefined) doer = findMetricDoer(history, metric_id);
-        var table = displayTopMetricTable(history, metric_id, doer, limit, people_links);
+        var title = "Top " + top_metric_id + " " + metric_period;
+        var table = displayTopMetricTable(history, metric_id, doer, limit, people_links, title);
         // var doer = findMetricDoer(history, metric_id);
         var div = null;
 
@@ -127,13 +128,8 @@ if (Viz === undefined) var Viz = {};
             return;
         }
 
-        var top_metric_id = metric.name;
         var div_graph = '';
         var new_div = '';
-        // new_div += "<div class='info-pill'>";
-        new_div += "<h4>";
-        // if (project) new_div += project +" ";
-        new_div += "Top " + top_metric_id + " " + metric_period + " </h4>";
         if (graph) {
             div_graph = "top-" + graph + "-" + doer + "-";
             div_graph += metric_id + "-" + metric_period;
@@ -142,7 +138,6 @@ if (Viz === undefined) var Viz = {};
         }
 
         new_div += table;
-        // new_div += "</div>";
 
         div = $("#" + div_id);
         div.append(new_div);
@@ -657,7 +652,7 @@ if (Viz === undefined) var Viz = {};
     // For example: "committers.all":{"commits":[5310, ...],"name":["Brion
     // Vibber",..]}
     // TODO: Data load should be done in Loader
-    function displayTop(div, ds, all, show_metric, graph, titles, limit, people_links) {
+    function displayTop(div, ds, all, show_metric, period, graph, titles, limit, people_links) {
         var top_file = ds.getTopDataFile();
         var basic_metrics = ds.getMetrics();
         var project = ds.getProject();
@@ -673,7 +668,9 @@ if (Viz === undefined) var Viz = {};
                 var top_period = data[1];
                 for (var id in basic_metrics) {
                     var metric = basic_metrics[id];
-                    if (metric.column == top_metric) {
+                    if (metric.column == top_metric){
+                        //continue with the loop if the period is not the one
+                        if (period && period !== top_period) return true;
                         displayTopMetric(div, project, metric, 
                                 top_period, history[key], graph, titles, limit, people_links);
                         if (!all) return false;
