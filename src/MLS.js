@@ -76,7 +76,7 @@ function MLS() {
             'desc' : "Number of active people"
         }
     };
-        
+
     this.data_lists_file = this.data_dir + '/mls-lists.json';
     this.getListsFile = function() {return this.data_lists_file;};
     this.data_lists = null;
@@ -205,11 +205,11 @@ function MLS() {
 
     this.displayBasic = function (div_id, config_metric) {
         var lists = this.getListsData();
-        
+
         lists_hide = Report.getConfig().mls_hide_lists;
         lists = lists.mailing_list;        
         if (lists === undefined) return null;
-        
+
         var user_pref = false;
 
         if (typeof lists === 'string')
@@ -282,9 +282,9 @@ function MLS() {
 
         history = this.getListsData();
         lists = history.mailing_list;
-        
+
         if (lists === undefined) return;
-        
+
         var config = Report.getConfig();
         lists_hide = config.mls_hide_lists;
         if (typeof lists === 'string') {
@@ -305,7 +305,7 @@ function MLS() {
         }
         this.displayEvoLists(id, filtered_lists);
     };
-    
+
     function cleanLocalStorage() {
         if (localStorage) {
             if (localStorage.length && localStorage.getItem(getMLSId())) {
@@ -313,7 +313,7 @@ function MLS() {
             }
         }
     }
-    
+
     this.getDefaultLists = function () {
         var default_lists = [];        
         var hide_lists = Report.getConfig().mls_hide_lists;
@@ -322,10 +322,10 @@ function MLS() {
         });
         return default_lists;
     };
-    
+
     this.displaySelectorCheckDefault = function () {
         var default_lists = this.getDefaultLists();
-        
+
         var form = document.getElementById('form_mls_selector');
         for ( var i = 0; i < form.elements.length; i++) {
             if (form.elements[i].type == "checkbox") {
@@ -337,9 +337,8 @@ function MLS() {
             }
         }
     };
-    
+
     this.displayBasicDefault = function (div_id) {
-        
         var obj = self;
         if (this instanceof MLS) obj = this;
 
@@ -398,7 +397,7 @@ function MLS() {
                         .getItem(getMLSId()));
             }
         }
-        
+
         // TODO: Hack! Methods visible to HTML
         Report.displayBasicUser = this.displayBasicUser;
         Report.displayBasicUserAll = this.displayBasicUserAll;

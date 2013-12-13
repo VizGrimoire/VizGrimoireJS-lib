@@ -30,7 +30,7 @@ if (Report === undefined) var Report = {};
 
     // Shared config
     var project_data = null, markers = null, viz_config = null, 
-        gridster = {}, data_sources = [], html_dir="";
+        gridster = {}, data_sources = [], report_config = null, html_dir="";
     var data_dir = "data/json";
     var default_data_dir = "data/json";
     var default_html_dir = "";
@@ -361,7 +361,13 @@ if (Report === undefined) var Report = {};
         });
     };
 
-    Report.setReportConfig = function (data) {
+    Report.getConfig = function () {
+        return report_config;
+    };
+
+    Report.setConfig = function (data) {
+        report_config = data;
+        if (window.console) console.log('Reading global config file');
         if (data) {
             if (data['global-html-dir'])
                 Report.setHtmlDir(data['global-html-dir']);
@@ -394,14 +400,18 @@ if (Report === undefined) var Report = {};
     // Data available in global
     Report.convertStudiesGlobal = function() {
         Convert.convertTop();
-        Convert.convertPeople(); // using on demand file loading        
+        Convert.convertPeople(); // using on demand file loading
     };
 
     function convertStudies() {
-        Convert.convertFilterStudy('repos');
-        Convert.convertFilterStudy('countries');
-        Convert.convertFilterStudy('companies');
-        Convert.convertDemographics();
+        var reports = Report.getConfig().reports;
+        // TODO: people is not yet an study
+        var reports_study = ['repositories','countries','companies'];
+        $.each (reports_study, function(i, study) {
+            if ($.inArray(study, reports) > -1)
+                Convert.convertFilterStudy(study);
+                Convert.convertFilterStudyItem (study);
+        });
         if (legacy) ReportLegacy.convertSelectorsLegacy();
     }
 })();
@@ -423,11 +433,16 @@ Loader.data_ready(function() {
 });
 
 $(document).ready(function() {
-    $.getJSON('config.json', function(data) {
-        Report.setReportConfig(data);
+    var filename = Report.getDataDir()+'/config.json'; 
+    $.getJSON(filename, function(data) {
+        Report.setConfig(data);
+    }).fail(function() {
+        if (window.console)
+            console.log("Can't read global config file " + filename);
     }).always(function (data) {
         Report.createDataSources();
-        Loader.data_load();
+        if (data) Loader.data_load_with_config();
+        else Loader.data_load_all();
         $("body").css("cursor", "progress");
     });
 });

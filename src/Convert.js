@@ -552,6 +552,7 @@ function getRealItem(ds, filter, item) {
                 });
                 if (map_item !== null) return false;
             });
+            if (map_item === null) map_item = item;
         }
         else map_item = item;
     }
@@ -801,6 +802,10 @@ Convert.convertFilterItemTop = function(filter, item) {
 
 Convert.convertFilterStudyItem = function (filter) {
     var item = null;
+
+    // repositories comes from Automator config
+    if (filter === "repositories") filter = "repos";
+
     if (filter === "repos") item = Report.getParameterByName("repository");
     if (filter === "countries") item = Report.getParameterByName("country");
     if (filter === "companies") item = Report.getParameterByName("company");
@@ -813,16 +818,21 @@ Convert.convertFilterStudyItem = function (filter) {
         var itmap = getRealItem(DS, filter, item);
         if (itmap !== undefined && itmap !== null) items_map.push(itmap);
     });
-    for (var i in items_map) {
-        if (Loader.check_item (items_map[i], filter) === false) {
-            // don't use each inside for. don't create functions inside a for
-            var dss = Report.getDataSources();
-            for (var j in dss) {
-                Loader.data_load_item (items_map[i], dss[j], null, Convert.convertFilterStudyItem, filter);
+
+    if (Loader.check_items (items_map, filter) === false) {
+        for (var i=0; i< items_map.length; i++) {
+            if (Loader.check_item (items_map[i], filter) === false) {
+                // don't use each inside for. don't create functions inside a for
+                var dss = Report.getDataSources();
+                for (var j = 0; j < dss.length; j++) {
+                    Loader.data_load_item (items_map[i], dss[j], null, 
+                            Convert.convertFilterStudyItem, filter, items_map);
+                }
             }
-            return;
         }
+        return;
     }
+
     Convert.convertFilterItemSummary(filter, item);
     Convert.convertFilterItemMetricsEvol(filter, item);
     Convert.convertFilterItemTop(filter, item);
@@ -845,6 +855,9 @@ Convert.activateHelp = function() {
 Convert.convertFilterStudy = function(filter) {
     var page = Report.getParameterByName("page");
 
+    // repositories comes from Automator config
+    if (filter === "repositories") filter = "repos";
+
     // If data is not available load them and cb this function
     if (Loader.check_filter_page (page, filter) === false) {
         $.each(Report.getDataSources(), function(index, DS) {
@@ -858,8 +871,6 @@ Convert.convertFilterStudy = function(filter) {
     Convert.convertFilterItemsNav(filter, page);
     Convert.convertFilterItemsMetricsEvol(filter);
     Convert.convertFilterItemsMiniCharts(filter, page);
-
-    Convert.convertFilterStudyItem (filter);
 
     if (Report.getLegacy()) {
         if (filter === "repos") Report.convertReposLegacy();

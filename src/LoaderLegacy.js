@@ -107,4 +107,37 @@ $.each(data_sources, function(i, DS) {
 
 }
 
+// TODO: It is better to have all the tops in the same file
+// we should move data load from Viz.displayTop here
+function data_load_tops_old(metric) {
+    var data_sources = Report.getDataSources();
+    $.each(data_sources, function(i, DS) {
+        // TODO: Support for SCM only in Webkit
+        if (DS.getName() !== "scm") {
+            DS.setGlobalTopData([], DS);
+            return;
+        }
+        var file_static = DS.getDataDir() + "/"+ DS.getName()+"-top-"+metric;
+        var file_all = file_static + ".json";
+        var file_2006 = file_static + "_2006.json";
+        var file_2009 = file_static + "_2009.json";
+        var file_2012 = file_static + "_2012.json";
+        $.when($.getJSON(file_all),
+                $.getJSON(file_2006),
+                $.getJSON(file_2009),
+                $.getJSON(file_2012)
+            ).done(function(history, hist2006, hist2009, hist2012) {
+                DS.addGlobalTopData(history[0], DS, metric, "all");
+                DS.addGlobalTopData(hist2006[0], DS, metric, "2006");
+                DS.addGlobalTopData(hist2009[0], DS, metric, "2009");
+                DS.addGlobalTopData(hist2012[0], DS, metric, "2012");
+                end_data_load();
+        }).fail(function() {
+            DS.setGlobalTopData([], DS);
+            end_data_load();
+        });
+    });
+}
+
+
 })();
