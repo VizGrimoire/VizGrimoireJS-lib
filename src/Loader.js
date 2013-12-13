@@ -357,7 +357,7 @@ if (Loader === undefined) var Loader = {};
                 }
             } else {
                 if (Loader.check_items (items_map, filter)) {
-                    if (!cb.called) cb();
+                    if (!cb.called) cb(filter);
                     cb.called = true;
                 }
             }

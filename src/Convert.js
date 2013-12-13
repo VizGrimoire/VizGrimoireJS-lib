@@ -552,12 +552,39 @@ function getRealItem(ds, filter, item) {
                 });
                 if (map_item !== null) return false;
             });
-            if (map_item === null) map_item = item;
+            // if (map_item === null) map_item = item;
         }
         else map_item = item;
     }
     return map_item;
 }
+
+// Get the data source for an item
+function getItemDS(item, filter) {
+    var ds = null;
+    $.each(Report.getDataSources(), function(index, DS) {
+        if (filter == "repos") {
+            if ($.inArray(item, DS.getReposData())>-1) {
+                ds = DS;
+                return false;
+            }
+        }
+        if (filter == "companies") {
+            if ($.inArray(item, DS.getCompaniesData())>-1) {
+                ds = DS;
+                return false;
+            }
+        }
+        if (filter == "countries") {
+            if ($.inArray(item, DS.getCountriesData())>-1) {
+                ds = DS;
+                return false;
+            }
+        }
+    });
+    return ds;
+}
+
 
 Convert.convertFilterItemsSummary = function(filter) {
     var divlabel = "FilterItemsSummary";
@@ -763,7 +790,7 @@ Convert.convertFilterItemMetricsEvol = function(filter, item) {
                 if (real_item)
                     DS.displayMetricsRepo(real_item, metrics.split(","),
                             div.id, config_metric);
-                else $(this.parentElement.parentElement).hide();
+                // else $(this.parentElement.parentElement).hide();
             }
             if (filter === "countries")
                 DS.displayMetricsCountry(real_item, metrics.split(","),
@@ -812,7 +839,7 @@ Convert.convertFilterStudyItem = function (filter) {
 
     if (!item) return;
 
-    // items mapping
+    // items mapping: all items related are loaded
     var items_map = [];
     $.each(Report.getDataSources(), function(index, DS) {
         var itmap = getRealItem(DS, filter, item);
@@ -822,12 +849,10 @@ Convert.convertFilterStudyItem = function (filter) {
     if (Loader.check_items (items_map, filter) === false) {
         for (var i=0; i< items_map.length; i++) {
             if (Loader.check_item (items_map[i], filter) === false) {
-                // don't use each inside for. don't create functions inside a for
-                var dss = Report.getDataSources();
-                for (var j = 0; j < dss.length; j++) {
-                    Loader.data_load_item (items_map[i], dss[j], null, 
-                            Convert.convertFilterStudyItem, filter, items_map);
-                }
+                var ds = getItemDS(items_map[i], filter);
+                if (ds === null) continue;
+                Loader.data_load_item (items_map[i], ds, null, 
+                        Convert.convertFilterStudyItem, filter, items_map);
             }
         }
         return;
