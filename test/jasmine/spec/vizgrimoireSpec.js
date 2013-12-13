@@ -74,6 +74,7 @@ describe( "VizGrimoireJS library", function () {
             it("html top should be displayed", function () {               
                 runs(function() {
                     $.each(Report.getDataSources(), function(index, DS) {
+                        if (DS.getName() === "scr") return;
                         buildNode(DS.getName()+"-Top", 'Top',
                             {
                                 'data-data-source': DS.getName(),
@@ -91,23 +92,25 @@ describe( "VizGrimoireJS library", function () {
                     });
                     Convert.convertTop();
                 });
+
                 // TODO: JSON files for top should be loaded. 
                 //       Change this load to global data loading
                 waitsFor(function() {
-                    return (document.getElementById("its-Top-bars")
-                    .childNodes.length > 0);
+                    return (document.getElementById("its-Top0")
+                            .childNodes.length > 0);
                 }, "It took too long to load data", 100);
                 runs(function() {
+                    var unique = 0;
                     $.each(Report.getDataSources(), function(index, DS) {
                         if (DS.getName() === "scr") return;
-                        expect(document.getElementById(DS.getName()+"-Top")
+                        expect(document.getElementById(DS.getName()+"-Top" + (unique++))
                                 .childNodes.length).toBeGreaterThan(0);
-                        expect(document.getElementById(DS.getName()+"-Top-pie")
+                        expect(document.getElementById(DS.getName()+"-Top" + (unique++) + "-pie")
                                 .childNodes.length).toBeGreaterThan(0);
-                        expect(document.getElementById(DS.getName()+"-Top-bars")
+                        expect(document.getElementById(DS.getName()+"-Top" + (unique++) +"-bars")
                                 .childNodes.length).toBeGreaterThan(0);
                     });
-                });        
+                });
             });
             it("html bubbles should be displayed", function () {
                 runs(function() {
@@ -425,6 +428,7 @@ describe( "VizGrimoireJS library", function () {
     });
 
     function buildNode (id, div_class, attr_map) {
+        // returns div node object created with parameters
         if (document.getElementById(id)) return;
         var node = document.createElement('div');
         document.body.appendChild(node);
