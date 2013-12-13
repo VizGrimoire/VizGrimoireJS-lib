@@ -637,36 +637,33 @@ if (Viz === undefined) var Viz = {};
     // Each metric can have several top: metric.period
     // For example: "committers.all":{"commits":[5310, ...],"name":["Brion
     // Vibber",..]}
-    // TODO: Data load should be done in Loader
+
     function displayTop(div, ds, all, show_metric, period, graph, titles, limit, people_links) {
-        var top_file = ds.getTopDataFile();
         var basic_metrics = ds.getMetrics();
         var project = ds.getProject();
-            
-        if (all === undefined)
-            all = true;
-        $.getJSON(top_file, function(history) {
-            $.each(history, function(key, value) {
-                // ex: commits.all
-                var data = key.split(".");
-                var top_metric = data[0];
-                if (show_metric && show_metric !== top_metric) return true;
-                var top_period = data[1];
-                for (var id in basic_metrics) {
-                    var metric = basic_metrics[id];
-                    if (metric.column == top_metric){
-                        //continue with the loop if the period is not the one
-                        if (period && period !== top_period) return true;
-                        displayTopMetric(div, project, metric, 
-                                top_period, history[key], graph, titles, limit, people_links);
-                        if (!all) return false;
-                        break;
-                    }
+
+        if (all === undefined) all = true;
+        history = ds.getGlobalTopData();
+        $.each(history, function(key, value) {
+            // ex: commits.all
+            var data = key.split(".");
+            var top_metric = data[0];
+            if (show_metric && show_metric !== top_metric) return true;
+            var top_period = data[1];
+            for (var id in basic_metrics) {
+                var metric = basic_metrics[id];
+                if (metric.column == top_metric){
+                    //continue with the loop if the period is not the one
+                    if (period && period !== top_period) return true;
+                    displayTopMetric(div, project, metric, 
+                            top_period, history[key], graph, titles, limit, people_links);
+                    if (!all) return false;
+                    break;
                 }
-            });
+            }
         });
     }
-    
+
     // Each file have just the doer and the do
     // {"authors":["Mark McLoughlin" ... ,"commits":[265 ...
     function displayTopBasic(div, ds, metric_do, metric_doer, graph, titles) {

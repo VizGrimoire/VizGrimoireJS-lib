@@ -129,16 +129,6 @@ function DataSource(name, basic_metrics) {
         if (self === undefined) self = this;
         self.global_top_data = data;
     };
-    this.addGlobalTopData = function(data, self, metric, period) {
-        if (period === undefined) period = "all";
-        if (self === undefined) self = this;
-        if (self.global_top_data === null)
-            self.global_top_data = {};
-        if (self.global_top_data[metric] === undefined)
-            self.global_top_data[metric] = {};
-        self.global_top_data[metric][period] = data;
-    };
-
     this.name = name;    
     this.getName = function() {
         return this.name;
