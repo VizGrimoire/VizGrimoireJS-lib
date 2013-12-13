@@ -851,6 +851,11 @@ Convert.activateHelp = function() {
     });
 };
 
+Convert.convertFilterStudyAll = function() {
+    $.each (Report.getActiveStudies(), function(i, study) {
+        Convert.convertFilterStudy(study);
+    });
+};
 
 Convert.convertFilterStudy = function(filter) {
     var page = Report.getParameterByName("page");
@@ -861,7 +866,7 @@ Convert.convertFilterStudy = function(filter) {
     // If data is not available load them and cb this function
     if (Loader.check_filter_page (page, filter) === false) {
         $.each(Report.getDataSources(), function(index, DS) {
-            Loader.data_load_items_page (DS, page, Convert.convertFilterStudy, filter);
+            Loader.data_load_items_page (DS, page, Convert.convertFilterStudyAll, filter);
         });
         return;
     }
