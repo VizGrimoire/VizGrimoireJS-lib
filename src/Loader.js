@@ -177,6 +177,18 @@ if (Loader === undefined) var Loader = {};
         });
     }
 
+    Loader.check_filters_page = function(page) {
+        var check = true;
+        var filters = ["repos","companies","countries"];
+        $.each(filters, function(index, filter) {
+            if (!Loader.check_filter_page(page, filter)) {
+                check = false;
+                return false;
+            }
+        });
+        return check;
+    };
+
     Loader.check_filter_page = function(page, filter) {
         var check = true;
         if (page === undefined) page = 1;
@@ -339,13 +351,13 @@ if (Loader === undefined) var Loader = {};
                 DS.addCountryGlobalData(item, global[0], DS);
             }
             if (page !== null) {
-                if (Loader.check_filter_page (page, filter)) {
+                if (Loader.check_filters_page (page)) {
                     if (!cb.called) cb(filter);
                     cb.called = true;
                 }
             } else {
                 if (Loader.check_items (items_map, filter)) {
-                    if (!cb.called) cb(filter);
+                    if (!cb.called) cb();
                     cb.called = true;
                 }
             }

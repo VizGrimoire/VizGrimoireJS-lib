@@ -397,6 +397,18 @@ if (Report === undefined) var Report = {};
         }
     };
 
+    Report.getActiveStudies = function() {
+        var activeStudies = [];
+        var reports = Report.getConfig().reports;
+        // TODO: people is not yet an study
+        var reports_study = ['repositories','countries','companies'];
+        $.each (reports_study, function(i, study) {
+            if ($.inArray(study, reports) > -1)
+                activeStudies.push(study);
+        });
+        return activeStudies;
+    };
+
     // Data available in global
     Report.convertStudiesGlobal = function() {
         Convert.convertTop();
@@ -404,13 +416,9 @@ if (Report === undefined) var Report = {};
     };
 
     function convertStudies() {
-        var reports = Report.getConfig().reports;
-        // TODO: people is not yet an study
-        var reports_study = ['repositories','countries','companies'];
-        $.each (reports_study, function(i, study) {
-            if ($.inArray(study, reports) > -1)
-                Convert.convertFilterStudy(study);
-                Convert.convertFilterStudyItem (study);
+        $.each (Report.getActiveStudies(), function(i, study) {
+            Convert.convertFilterStudy(study);
+            Convert.convertFilterStudyItem (study);
         });
         if (legacy) ReportLegacy.convertSelectorsLegacy();
     }
