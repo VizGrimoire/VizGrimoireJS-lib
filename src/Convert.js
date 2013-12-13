@@ -414,7 +414,7 @@ Convert.convertTop = function() {
             var graph = $(this).data('graph');
             var people_links = $(this).data('people_links');
             var period = $(this).data('period');
-            div.id = div_id_top + (unique++);
+            div.id = ds + "-" + div_id_top + (unique++);
             if (graph){
                 div.id += "-"+graph;
             }
