@@ -796,7 +796,7 @@ Convert.convertFilterItemMetricsEvol = function(filter, item) {
                 if (real_item)
                     DS.displayMetricsRepo(real_item, metrics.split(","),
                             div.id, config_metric);
-                // else $(this.parentElement.parentElement).hide();
+                else $(this).hide();
             }
             if (filter === "countries")
                 DS.displayMetricsCountry(real_item, metrics.split(","),
