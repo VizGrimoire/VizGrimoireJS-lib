@@ -371,22 +371,22 @@ if (Loader === undefined) var Loader = {};
             // Check all items for a page
             if (page !== null) {
                 if (Loader.check_filters_page (page)) {
-                    if (!cb.called) cb(filter);
-                    cb.called = true;
+                    if (!cb.called_page) cb(filter);
+                    cb.called_page = true;
                 }
             } 
             // Check all items for repositories mapping
             else if (items_map !== null) {
                 if (Loader.check_items (items_map, filter)) {
-                    if (!cb.called) cb(filter);
-                    cb.called = true;
+                    if (!cb.called_map) cb(filter);
+                    cb.called_map = true;
                 }
             }
             // Check just one item
             else {
                 if (Loader.check_item (item, filter)) {
-                    if (!cb.called) cb(filter);
-                    cb.called = true;
+                    if (!cb.called_item) cb(filter);
+                    cb.called_item = true;
                 }
             }
         });

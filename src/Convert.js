@@ -796,7 +796,7 @@ Convert.convertFilterItemMetricsEvol = function(filter, item) {
                 if (real_item)
                     DS.displayMetricsRepo(real_item, metrics.split(","),
                             div.id, config_metric);
-                else $(this.parentElement.parentElement).hide();
+                // else $(this.parentElement.parentElement).hide();
             }
             if (filter === "countries")
                 DS.displayMetricsCountry(real_item, metrics.split(","),
@@ -901,8 +901,6 @@ Convert.convertFilterStudyItem = function (filter) {
     Convert.convertFilterItemTop(filter, item);
 
     Convert.activateHelp();
-
-    // Convert.convertFilterStudyItem.called = true;
 };
 
 Convert.activateHelp = function() {
