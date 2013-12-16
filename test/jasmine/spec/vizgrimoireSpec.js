@@ -73,7 +73,7 @@ describe( "VizGrimoireJS library", function () {
                     });
                 });
             });
-            it("html top should be displayed", function () {               
+            it("html top should be displayed", function () {
                 runs(function() {
                     $.each(Report.getDataSources(), function(index, DS) {
                         if (DS.getName() === "scr") return;
@@ -94,13 +94,6 @@ describe( "VizGrimoireJS library", function () {
                     });
                     Convert.convertTop();
                 });
-
-                // TODO: JSON files for top should be loaded. 
-                //       Change this load to global data loading
-                waitsFor(function() {
-                    return (document.getElementById("its-Top0")
-                            .childNodes.length > 0);
-                }, "It took too long to load data", 100);
                 runs(function() {
                     var unique = 0;
                     $.each(Report.getDataSources(), function(index, DS) {
