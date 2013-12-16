@@ -1,9 +1,11 @@
-describe( "VizGrimoireJS library", function () {    
+describe( "VizGrimoireJS library", function () {
     beforeEach(function() {
+        // Logs make jasmine test exit to be error
+        Report.setLog(false);
         waitsFor(function() {
             return Loader.check_data_loaded();
         }, "It took too long to load data", 100);
-      });    
+      });
     describe( "Report", function () {
         it("data files should be loaded", function () {
             waitsFor(function() {

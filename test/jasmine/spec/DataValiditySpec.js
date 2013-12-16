@@ -1,5 +1,7 @@
 describe("VizGrimoireJS data validity", function() {
     beforeEach(function() {
+        // Logs make jasmine test exit to be error
+        Report.setLog(false);
         waitsFor(function() {
             return Loader.check_data_loaded();
         }, "It took too long to load data", 1000);
@@ -24,13 +26,13 @@ describe("VizGrimoireJS data validity", function() {
             commits = ds.getData().scm_commits;
             authors = ds.getData().scm_authors;
             expect(ss.sample_correlation(commits,authors)).toBeGreaterThan("0.9");
-        });        
+        });
         it("High commits and files", function() {
             ds = getDataSource('scm');
             commits = ds.getData().scm_commits;
             files = ds.getData().scm_files;
             expect(ss.sample_correlation(commits,files)).toBeGreaterThan("0.9");        
-        });        
+        });
         it("Medium added lines and removed lines", function() {
             ds = getDataSource('scm');
             added_lines = ds.getData().scm_added_lines;
@@ -38,7 +40,7 @@ describe("VizGrimoireJS data validity", function() {
             expect(ss.sample_correlation(added_lines,removed_lines)).toBeGreaterThan("0.8");        
         });
     });
-    
+
     describe("ITS Correlations", function() {
         it("Medium openers and opened", function() {
             ds = getDataSource('its');
@@ -57,6 +59,6 @@ describe("VizGrimoireJS data validity", function() {
             changers = ds.getData().its_changers;
             changed = ds.getData().its_changed;
             expect(ss.sample_correlation(changed, changers)).toBeGreaterThan("0.8");
-        });        
+        });
     });
 });
