@@ -300,31 +300,62 @@ if (Report === undefined) var Report = {};
     function createDataSources() {
         checkDynamicConfig();
 
-        var projects_dirs = Report.getProjectsDirs(); 
+        var projects_dirs = Report.getProjectsDirs();
+        var scm, its, mls, scr, irc, mediawiki;
 
         $.each(projects_dirs, function (i, project) {
-            // TODO: Only DS with data should exist
-            // TODO: use config.json to configure DS available
-            var its = new ITS();
-            Report.registerDataSource(its);
-            var mls = new MLS();        
-            Report.registerDataSource(mls);        
-            var scm = new SCM();
-            Report.registerDataSource(scm);
-            var scr = new SCR();
-            Report.registerDataSource(scr);
-            var irc = new IRC();
-            Report.registerDataSource(irc);
-            var mediawiki = new MediaWiki();
-            Report.registerDataSource(mediawiki);
-
-            its.setDataDir(project);
-            mls.setDataDir(project);
-            scm.setDataDir(project);
-            scr.setDataDir(project);
-            irc.setDataDir(project);
-            mediawiki.setDataDir(project);
-            scm.setITS(its);
+            if (Report.getConfig() === null) {
+                its = new ITS();
+                Report.registerDataSource(its);
+                mls = new MLS();
+                Report.registerDataSource(mls);
+                scm = new SCM();
+                Report.registerDataSource(scm);
+                scr = new SCR();
+                Report.registerDataSource(scr);
+                irc = new IRC();
+                Report.registerDataSource(irc);
+                mediawiki = new MediaWiki();
+                Report.registerDataSource(mediawiki);
+            }
+            else {
+                // "scm","mediawiki","its","irc","gerrit","mlstats"
+                var active_ds = Report.getConfig()['data-sources'];
+                $.each(active_ds, function(i, name) {
+                    if (name === "its") {
+                        its = new ITS();
+                        Report.registerDataSource(its);
+                    }
+                    else if (name === "mlstats") {
+                        mls = new MLS();
+                        Report.registerDataSource(mls);
+                    }
+                    else if (name === "scm") {
+                        scm = new SCM();
+                        Report.registerDataSource(scm);
+                    }
+                    else if (name === "gerrit") {
+                        scr = new SCR();
+                        Report.registerDataSource(scr);
+                    }
+                    else if (name === "irc") {
+                        irc = new IRC();
+                        Report.registerDataSource(irc);
+                    }
+                    else if (name === "mediawiki") {
+                        mediawiki = new MediaWiki();
+                        Report.registerDataSource(mediawiki);
+                    }
+                    else Report.log ("Not support data source " + name);
+                });
+            }
+            if (its) its.setDataDir(project);
+            if (mls) mls.setDataDir(project);
+            if (scm) scm.setDataDir(project);
+            if (scr) scr.setDataDir(project);
+            if (irc) irc.setDataDir(project);
+            if (mediawiki) mediawiki.setDataDir(project);
+            if (scm && its) scm.setITS(its);
         });
 
         return true;
