@@ -887,6 +887,9 @@ function FilterItemCheck(item, filter) {
 }
 
 Convert.convertFilterStudyItem = function (filter) {
+
+    if (Convert.convertFilterStudyItem.done === true) return;
+
     var item = null;
 
     // repositories comes from Automator config
@@ -905,6 +908,8 @@ Convert.convertFilterStudyItem = function (filter) {
     Convert.convertFilterItemTop(filter, item);
 
     Convert.activateHelp();
+    
+    Convert.convertFilterStudyItem.done = true;
 };
 
 Convert.activateHelp = function() {
