@@ -842,7 +842,7 @@ function FilterItemCheck(item, filter) {
         if (Loader.check_item (item, filter) === false) {
             ds = getItemDS(item, filter);
             if (ds === null) {
-                if (window.console) console.log("Can't find data source for " + item);
+                Report.log("Can't find data source for " + item);
                 return true;
             }
             Loader.data_load_item (item, ds, null,
@@ -861,8 +861,8 @@ function FilterItemCheck(item, filter) {
                     if (Loader.check_item (items_map[i], filter) === false) {
                         ds = getItemDS(items_map[i], filter);
                         if (ds === null) {
-                            if (window.console) console.log("Can't find " + items_map[i]);
-                            if (window.console) console.log("Check repos-map.json");
+                            Report.log("Can't find " + items_map[i]);
+                            Report.log("Check repos-map.json");
                             continue;
                         }
                         Loader.data_load_item (items_map[i], ds, null,
