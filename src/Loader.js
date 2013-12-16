@@ -46,55 +46,55 @@ if (Loader === undefined) var Loader = {};
         projects_data[data.project_name] = {dir:dir,url:data.project_url};
     }
 
-    // If we have a config file just load what is configured
-    // Multiproject not yet supported 
-    Loader.data_load_with_config = function() {
-        Report.setProjectData(Report.getConfig().project_info);
-        data_load_file(Report.getVizConfigFile(), 
-                function(data, self) {Report.setVizConfig(data);});
-        if (Report.getConfig().markers)
-            data_load_file(Report.getMarkersFile(), 
-                function(data, self) {Report.setMarkers(data);});
-
-        data_load_metrics_definition();
-        data_load_metrics();
-        data_load_tops('authors');
-        data_load_time_to_fix();
-        data_load_time_to_attention();
-
-        var active_reports = Report.getConfig().reports;
-        if ($.inArray('companies', active_reports) > -1) data_load_companies();
-        if ($.inArray('repositories', active_reports) > -1) data_load_repos();
-        if ($.inArray('countries', active_reports) > -1) data_load_countries();
-        if ($.inArray('people', active_reports) > -1) {
-            data_load_people();
-            data_load_people_identities();
-        } 
-    };
-
-    Loader.data_load_all = function () {
-        data_load_file(Report.getProjectFile(), 
+    Loader.data_load = function() {
+        // If we have a config file just load what is configured
+        if (Report.getConfig() !== null) {
+            Report.setProjectData(Report.getConfig().project_info);
+            if (Report.getConfig().markers)
+                data_load_file(Report.getMarkersFile(),
+                    function(data, self) {Report.setMarkers(data);});
+        }
+        // No config file. Try to load all
+        else {
+            data_load_file(Report.getProjectFile(),
                 function(data, self) {Report.setProjectData(data);});
-        data_load_file(Report.getVizConfigFile(), 
-                function(data, self) {Report.setVizConfig(data);});
-        data_load_file(Report.getMarkersFile(), 
-                function(data, self) {Report.setMarkers(data);});
+            data_load_file(Report.getMarkersFile(),
+                    function(data, self) {Report.setMarkers(data);});
+        }
+
+        // Multiproject not tested with config.json
         var projects_dirs = Report.getProjectsDirs();
         for (var i=0;  i<projects_dirs.length; i++) {
             var data_dir = projects_dirs[i];
             var prj_file = Report.getDataDir() + "/project-info.json";
             data_load_file(prj_file, fillProjectInfo, data_dir);
         }
-        data_load_companies();
-        data_load_repos();
-        data_load_countries();
+
+        data_load_file(Report.getVizConfigFile(),
+                function(data, self) {Report.setVizConfig(data);});
+
         data_load_metrics_definition();
         data_load_metrics();
-        data_load_people();
-        data_load_people_identities();
         data_load_tops('authors');
         data_load_time_to_fix();
         data_load_time_to_attention();
+
+        if (Report.getConfig() !== null) {
+            var active_reports = Report.getConfig().reports;
+            if ($.inArray('companies', active_reports) > -1) data_load_companies();
+            if ($.inArray('repositories', active_reports) > -1) data_load_repos();
+            if ($.inArray('countries', active_reports) > -1) data_load_countries();
+            if ($.inArray('people', active_reports) > -1) {
+                data_load_people();
+                data_load_people_identities();
+            }
+        } else {
+            data_load_companies();
+            data_load_repos();
+            data_load_countries();
+            data_load_people();
+            data_load_people_identities();
+        }
     };
 
     function data_load_file(file, fn_data_set, self) {
@@ -448,10 +448,10 @@ if (Loader === undefined) var Loader = {};
         if (Report.getProjectData() === null || Report.getVizConfig() === null)
             return false;
 
-        if (Report.getConfig().markers && Report.getMarkers() === null)
-            return false;
+        if (Report.getConfig() === null)
+            if (Report.getMarkers() === null) return false;
 
-        if (Report.getReposMap() === null) {check = false; return false;}
+        if (Report.getReposMap() === null) return false;
 
         // Multiproject not support in config.json report
         if (Report.getConfig() === null)
@@ -476,17 +476,17 @@ if (Loader === undefined) var Loader = {};
         if (!(check_data_loaded_global())) return false;
 
         var data_sources = Report.getDataSources();
-        var active_reports = Report.getConfig().reports;
+        var active_reports = ['companies','repositories','countries'];
+        if (Report.getConfig() !== null)
+            active_reports = Report.getConfig().reports;
         $.each(data_sources, function(index, DS) {
             if (DS.getPeopleData() === null) {check = false; return false;}
-
             if ($.inArray('companies', active_reports) > -1) 
                 if (!check_companies_loaded(DS)) {check = false; return false;}
             if ($.inArray('repositories', active_reports) > -1)
                 if (!check_repos_loaded(DS)) {check = false; return false;}
             if ($.inArray('countries', active_reports) > -1)
                 if (!check_countries_loaded(DS)) {check = false; return false;}
-
             if (DS instanceof MLS) {
                 if (DS.getListsData() === null) {check = false; return false;}
             }

@@ -367,8 +367,8 @@ if (Report === undefined) var Report = {};
 
     Report.setConfig = function (data) {
         report_config = data;
-        if (window.console) console.log('Reading global config file');
         if (data) {
+            Report.log('Global config file found');
             if (data['global-html-dir'])
                 Report.setHtmlDir(data['global-html-dir']);
             if (data['global-data-dir']) {
@@ -399,9 +399,13 @@ if (Report === undefined) var Report = {};
 
     Report.getActiveStudies = function() {
         var activeStudies = [];
-        var reports = Report.getConfig().reports;
+        var reports;
         // TODO: people is not yet an study
         var reports_study = ['repositories','countries','companies'];
+        if (Report.getConfig() !== null)
+            reports = Report.getConfig().reports;
+        else
+            reports = reports_study;
         $.each (reports_study, function(i, study) {
             if ($.inArray(study, reports) > -1)
                 activeStudies.push(study);
@@ -422,6 +426,15 @@ if (Report === undefined) var Report = {};
         });
         if (legacy) ReportLegacy.convertSelectorsLegacy();
     }
+
+    var log_on = true;
+    Report.getLog = function() {return log_on;};
+    Report.setLog = function(status) {log_on = status;};
+
+    Report.log = function(msg) {
+        if (Report.getLog() === true)
+            if (window.console) console.log(msg);
+    };
 })();
 
 Loader.data_ready_global(function() {
@@ -446,11 +459,10 @@ $(document).ready(function() {
         Report.setConfig(data);
     }).fail(function() {
         if (window.console)
-            console.log("Can't read global config file " + filename);
+            Report.log("Can't read global config file " + filename);
     }).always(function (data) {
         Report.createDataSources();
-        if (data) Loader.data_load_with_config();
-        else Loader.data_load_all();
+        Loader.data_load();
         $("body").css("cursor", "progress");
     });
 });
