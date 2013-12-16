@@ -538,11 +538,15 @@ function filterItemsConfig() {
 
 // Use mapping between repos for locating real item names
 function getRealItem(ds, filter, item) {
+    var map = Report.getReposMap();
+
+    // If repos map is not available returm item
+    if (map === undefined || map.length === 0) return item;
+
     var map_item = null;
     if (filter === "repos") {
         var rdata = ds.getReposMetricsData()[item];
         if (rdata === undefined) {
-            var map = Report.getReposMap();
             $.each(map, function(id, repos) {
                 $.each(Report.getDataSources(), function(index, DS) {
                     if (repos[DS.getName()] === item) {
@@ -556,6 +560,8 @@ function getRealItem(ds, filter, item) {
         }
         else map_item = item;
     }
+    else map_item = item;
+
     return map_item;
 }
 
@@ -790,7 +796,7 @@ Convert.convertFilterItemMetricsEvol = function(filter, item) {
                 if (real_item)
                     DS.displayMetricsRepo(real_item, metrics.split(","),
                             div.id, config_metric);
-                // else $(this.parentElement.parentElement).hide();
+                else $(this.parentElement.parentElement).hide();
             }
             if (filter === "countries")
                 DS.displayMetricsCountry(real_item, metrics.split(","),
@@ -827,6 +833,55 @@ Convert.convertFilterItemTop = function(filter, item) {
     }
 };
 
+// TODO: Move this logic to loader
+function FilterItemCheck(item, filter) {
+    var check = true, ds;
+    var map = Report.getReposMap();
+
+    if (filter === "repos") {
+        if (Loader.check_item (item, filter) === false) {
+            ds = getItemDS(item, filter);
+            if (ds === null) {
+                if (window.console) console.log("Can't find data source for " + item);
+                return true;
+            }
+            Loader.data_load_item (item, ds, null,
+                    Convert.convertFilterStudyItem, filter, null);
+        }
+
+        // Support repositories mapping
+        if (map !== undefined && map.length !== 0) {
+            var items_map = [];
+            $.each(Report.getDataSources(), function(index, DS) {
+                var itmap = getRealItem(DS, filter, item);
+                if (itmap !== undefined && itmap !== null) items_map.push(itmap);
+            });
+            if (Loader.check_items (items_map, filter) === false) {
+                for (var i=0; i< items_map.length; i++) {
+                    if (Loader.check_item (items_map[i], filter) === false) {
+                        ds = getItemDS(items_map[i], filter);
+                        if (ds === null) continue;
+                        Loader.data_load_item (items_map[i], ds, null,
+                                Convert.convertFilterStudyItem, filter, items_map);
+                    }
+                }
+                check = false;
+            }
+        }
+    }
+    // Companies and countries should be loaded for all data sources active
+    else {
+        $.each(Report.getDataSources(), function(index, DS) {
+            if (Loader.check_item (item, filter) === false) {
+                check = false;
+                Loader.data_load_item (item, DS, null, 
+                    Convert.convertFilterStudyItem, filter, null);
+            }
+        });
+    }
+    return check;
+}
+
 Convert.convertFilterStudyItem = function (filter) {
     var item = null;
 
@@ -839,30 +894,15 @@ Convert.convertFilterStudyItem = function (filter) {
 
     if (!item) return;
 
-    // items mapping: all items related are loaded
-    var items_map = [];
-    $.each(Report.getDataSources(), function(index, DS) {
-        var itmap = getRealItem(DS, filter, item);
-        if (itmap !== undefined && itmap !== null) items_map.push(itmap);
-    });
-
-    if (Loader.check_items (items_map, filter) === false) {
-        for (var i=0; i< items_map.length; i++) {
-            if (Loader.check_item (items_map[i], filter) === false) {
-                var ds = getItemDS(items_map[i], filter);
-                if (ds === null) continue;
-                Loader.data_load_item (items_map[i], ds, null, 
-                        Convert.convertFilterStudyItem, filter, items_map);
-            }
-        }
-        return;
-    }
+    if (FilterItemCheck(item, filter) === false) return;
 
     Convert.convertFilterItemSummary(filter, item);
     Convert.convertFilterItemMetricsEvol(filter, item);
     Convert.convertFilterItemTop(filter, item);
 
     Convert.activateHelp();
+
+    // Convert.convertFilterStudyItem.called = true;
 };
 
 Convert.activateHelp = function() {

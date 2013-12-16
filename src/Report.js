@@ -37,7 +37,7 @@ if (Report === undefined) var Report = {};
     var projects_dirs = [default_data_dir];
     var projects_data = {};
     var projects_datasources = {};
-    var repos_map = {};
+    var repos_map;
     var project_file = data_dir + "/project-info.json",
         viz_config_file = data_dir + "/viz_cfg.json",
         markers_file = data_dir + "/markers.json",
@@ -101,10 +101,10 @@ if (Report === undefined) var Report = {};
 
     Report.getReposMap = function() {
         return repos_map;
-    };    
+    };
     Report.setReposMap = function (data) {
         repos_map = data;
-    };    
+    };
     Report.getReposMapFile = function () {
         return repos_map_file;
     };

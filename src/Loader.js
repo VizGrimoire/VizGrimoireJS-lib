@@ -232,6 +232,8 @@ if (Loader === undefined) var Loader = {};
         return check;
     };
 
+    // Check the item in one data source for repos
+    // Check the item for all data sources for countries and companies
     Loader.check_item = function(item, filter) {
         var check = false;
         $.each(Report.getDataSources(), function(index, DS) {
@@ -243,18 +245,18 @@ if (Loader === undefined) var Loader = {};
                 }
             }
             if (filter === "companies") {
-                if (DS.getCompaniesGlobalData()[item] !== undefined &&
-                    DS.getCompaniesMetricsData()[item] !== undefined) {
+                if (DS.getCompaniesGlobalData()[item] === undefined ||
+                    DS.getCompaniesMetricsData()[item] === undefined) {
                     check = false;
                     return false;
-                }
+                } else check = true;
             }
             if (filter === "countries") {
-                if (DS.getCountriesGlobalData()[item] !== undefined &&
-                    DS.getCountriesMetricsData()[item] !== undefined) {
+                if (DS.getCountriesGlobalData()[item] === undefined ||
+                    DS.getCountriesMetricsData()[item] === undefined) {
                     check = false;
                     return false;
-                }
+                } else check = true;
             }
         });
         return check;
@@ -334,6 +336,22 @@ if (Loader === undefined) var Loader = {};
 
     // Load an item JSON data. If in a page, check all items read and cb.
     Loader.data_load_item = function (item, DS, page, cb, filter, items_map) {
+        var ds_not_supported_countries = ['irc','mediawiki','scr'];
+        var ds_not_supported_companies = ['irc','mediawiki'];
+        if (filter === "companies") {
+            if ($.inArray(DS.getName(),ds_not_supported_companies)>-1) {
+                DS.addCompanyMetricsData(item, [], DS);
+                DS.addCompanyGlobalData(item, [], DS);
+                return;
+            }
+        }
+        else if (filter === "countries") {
+            if ($.inArray(DS.getName(),ds_not_supported_countries)>-1) {
+                DS.addCountryMetricsData(item, [], DS);
+                DS.addCountryGlobalData(item, [], DS);
+                return;
+            }
+        }
         var item_uri = encodeURIComponent(item);
         var file = DS.getDataDir()+"/"+item_uri+"-";
         var file_evo = file + DS.getName()+"-evolutionary.json";
@@ -350,13 +368,23 @@ if (Loader === undefined) var Loader = {};
                 DS.addCountryMetricsData(item, evo[0], DS);
                 DS.addCountryGlobalData(item, global[0], DS);
             }
+            // Check all items for a page
             if (page !== null) {
                 if (Loader.check_filters_page (page)) {
                     if (!cb.called) cb(filter);
                     cb.called = true;
                 }
-            } else {
+            } 
+            // Check all items for repositories mapping
+            else if (items_map !== null) {
                 if (Loader.check_items (items_map, filter)) {
+                    if (!cb.called) cb(filter);
+                    cb.called = true;
+                }
+            }
+            // Check just one item
+            else {
+                if (Loader.check_item (item, filter)) {
                     if (!cb.called) cb(filter);
                     cb.called = true;
                 }
@@ -477,7 +505,8 @@ if (Loader === undefined) var Loader = {};
         if (Loader.check_data_loaded()) {
             // Invoke callbacks informing all data needed has been loaded
             for (var j = 0; j < data_callbacks.length; j++) {
-                data_callbacks[j]();
+                if (data_callbacks[j].called !== true) data_callbacks[j]();
+                data_callbacks[j].called = true;
             }
         }
     }
