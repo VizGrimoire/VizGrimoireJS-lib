@@ -860,7 +860,11 @@ function FilterItemCheck(item, filter) {
                 for (var i=0; i< items_map.length; i++) {
                     if (Loader.check_item (items_map[i], filter) === false) {
                         ds = getItemDS(items_map[i], filter);
-                        if (ds === null) continue;
+                        if (ds === null) {
+                            if (window.console) console.log("Can't find " + items_map[i]);
+                            if (window.console) console.log("Check repos-map.json");
+                            continue;
+                        }
                         Loader.data_load_item (items_map[i], ds, null,
                                 Convert.convertFilterStudyItem, filter, items_map);
                     }
