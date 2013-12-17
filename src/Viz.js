@@ -643,7 +643,7 @@ if (Viz === undefined) var Viz = {};
         var project = ds.getProject();
 
         if (all === undefined) all = true;
-        history = ds.getGlobalTopData();
+        var history = ds.getGlobalTopData();
         $.each(history, function(key, value) {
             // ex: commits.all
             var data = key.split(".");
