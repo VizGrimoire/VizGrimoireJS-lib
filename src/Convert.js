@@ -307,6 +307,7 @@ Convert.convertMetricsEvol = function() {
                 config_viz.show_legend = true;
             if ($(this).data('frame-time'))
                 config_viz.frame_time = true;
+            config_viz.graph = $(this).data('graph');
             if ($(this).data('min')) {
                 config_viz.show_legend = false;
                 config_viz.show_labels = false;

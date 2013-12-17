@@ -275,6 +275,9 @@ if (Viz === undefined) var Viz = {};
             if (config_metric.show_mouse === false) {
                 config.mouse.track = false;
             }
+            if (config_metric.graph === "bars") {
+                config.bars = {show : true};
+            }
         }
         graph = Flotr.draw(container, lines_data, config);
     }
@@ -623,7 +626,7 @@ if (Viz === undefined) var Viz = {};
             for (var i=0; i<data.length; i++) {
                 var hours = parseFloat((parseInt(data[i],null)/24).toFixed(2),null);
                 new_history[name].push(hours);
-            }            
+            }
         });
         //  We need and id column
         new_history.id=[];
