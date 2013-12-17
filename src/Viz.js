@@ -189,7 +189,7 @@ if (Viz === undefined) var Viz = {};
             if (data === undefined) return false;
             if (data[metric] === undefined) return false;
 
-            if (start && end) data = DataProcess.filterDates(start, end, data);
+            if (start) data = DataProcess.filterDates(start, end, data);
 
             var cdata = [[], []];
             for (var i=0; i<data.id.length; i++ ) {

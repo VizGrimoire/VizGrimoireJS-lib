@@ -179,8 +179,9 @@ var DataProcess = {};
                 // TODO: week should be id
                 // var id = history.week[i];
                 var id = history.unixtime[i];
-                if (id > start_id && id <= end_id)
-                    history_dates[name].push(value);
+                if (id > start_id)
+                    if (!end_id || (end_id && id <= end_id))
+                        history_dates[name].push(value);
             });
         });
         return history_dates;
