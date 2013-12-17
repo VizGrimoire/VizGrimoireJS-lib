@@ -688,10 +688,11 @@ Convert.convertFilterItemsMetricsEvol = function(filter) {
             if (filter !== $(this).data('filter')) return;
             if (!filter) return;
             var metric = $(this).data('metric');
-            var limit = $(this).data('limit');
-            var order_by = $(this).data('order-by');
             var stacked = false;
             if ($(this).data('stacked')) stacked = true;
+            // In unixtime
+            var start = $(this).data('start');
+            var end = $(this).data('end');
             config_metric.lines = {stacked : stacked};
             if ($('#'+$(this).data('legend-div')).length>0) {
                 config_metric.legend = {
@@ -701,10 +702,10 @@ Convert.convertFilterItemsMetricsEvol = function(filter) {
             div.id = metric+"-"+divlabel;
             if (filter === "companies")
                 DS.displayMetricCompanies(metric,div.id,
-                    config_metric, limit, order_by);
+                    config_metric, start, end);
             if (filter === "repos")
                 DS.displayMetricRepos(metric,div.id,
-                            config_metric, limit, order_by);
+                            config_metric, start, end);
 
         });
     }

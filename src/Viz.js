@@ -179,18 +179,18 @@ if (Viz === undefined) var Viz = {};
         displayDSLines(div_id, history, lines_data, title, config);
 
     }
-    
+
     function displayMetricSubReportLines(div_id, metric, items, title, 
             config, start, end) {
         var lines_data = [];
         var history = {};
-        
+
         $.each(items, function(item, data) {
             if (data === undefined) return false;
             if (data[metric] === undefined) return false;
-            
+
             if (start && end) data = DataProcess.filterDates(start, end, data);
-            
+
             var cdata = [[], []];
             for (var i=0; i<data.id.length; i++ ) {
                 cdata[i] = [data.id[i], data[metric][i]];
@@ -200,12 +200,12 @@ if (Viz === undefined) var Viz = {};
             lines_data.push({label:item, data:cdata});
             history = data;
         });
-        
+
         if (lines_data.length === 0) return;
-        
+
         displayDSLines(div_id, history, lines_data, title, config);
     }
-    
+
     // Lines from the same Data Source
     // TODO: Probably we should also fill history
     function displayDSLines(div_id, history, lines_data, title, config_metric) {

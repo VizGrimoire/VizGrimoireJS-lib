@@ -334,24 +334,12 @@ function DataSource(name, basic_metrics) {
     };
 
     this.displayMetricCompanies = function(metric_id,
-            div_target, config, limit, order_by) {
-        if (order_by === undefined) order_by = metric_id;
+            div_target, config, start, end) {
         var companies_data = this.getCompaniesMetricsData();
-        if (limit) {
-            var sorted_companies = DataProcess.sortCompanies(this, order_by);
-            if (limit > sorted_companies.length) 
-                limit = sorted_companies.length; 
-            var companies_data_limit = {};
-            for (var i=0; i<limit; i++) {
-                var company = sorted_companies[i];
-                companies_data_limit[company] = companies_data[company];
-            }
-            companies_data = companies_data_limit;
-        }
         Viz.displayMetricCompanies(metric_id, companies_data,
-                div_target, config, limit);
+                div_target, config, start, end);
     };
-    
+
     this.displayMetricMyCompanies = function(companies, metric_id,
             div_target, config, start, end) {
         var companies_data = {};
@@ -363,25 +351,12 @@ function DataSource(name, basic_metrics) {
                 div_target, config, start, end);
     };
 
-    
     // TODO: mix with displayMetricCompanies
     this.displayMetricRepos = function(metric_id,
-            div_target, config, limit, order_by) {
-        if (order_by === undefined) order_by = metric_id;
+            div_target, config, start, end) {
         var repos_data = this.getReposMetricsData();
-        if (limit) {
-            var sorted_repos = DataProcess.sortRepos(this, order_by);
-            if (limit > sorted_repos.length) 
-                limit = sorted_repos.length; 
-            var repos_data_limit = {};
-            for (var i=0; i<limit; i++) {
-                var repo = sorted_repos[i];
-                repos_data_limit[repo] = repos_data[repo];
-            }
-            repos_data = repos_data_limit;
-        }
         Viz.displayMetricRepos(metric_id, repos_data,
-                div_target, config, limit);
+                div_target, config, start, end);
     };
 
     // Includes repos mapping for actionable dashboard comparison
