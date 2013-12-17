@@ -397,7 +397,7 @@ Convert.convertLastActivity = function() {
 };
 
 Convert.convertTop = function() {
-    var div_id_top = "Top";        
+    var div_id_top = "Top";
     var divs = $("." + div_id_top);
     var DS, ds;
     if (divs.length > 0) {
@@ -540,8 +540,11 @@ function filterItemsConfig() {
 function getRealItem(ds, filter, item) {
     var map = Report.getReposMap();
 
-    // If repos map is not available returm item
-    if (map === undefined || map.length === 0) return item;
+    // If repos map is not available returm item if exists in ds
+    if (map === undefined || map.length === 0) {
+        if ($.inArray(item, ds.getReposData())>-1) return item;
+        else return null;
+    }
 
     var map_item = null;
     if (filter === "repos") {
@@ -564,33 +567,6 @@ function getRealItem(ds, filter, item) {
 
     return map_item;
 }
-
-// Get the data source for an item
-function getItemDS(item, filter) {
-    var ds = null;
-    $.each(Report.getDataSources(), function(index, DS) {
-        if (filter == "repos") {
-            if ($.inArray(item, DS.getReposData())>-1) {
-                ds = DS;
-                return false;
-            }
-        }
-        if (filter == "companies") {
-            if ($.inArray(item, DS.getCompaniesData())>-1) {
-                ds = DS;
-                return false;
-            }
-        }
-        if (filter == "countries") {
-            if ($.inArray(item, DS.getCountriesData())>-1) {
-                ds = DS;
-                return false;
-            }
-        }
-    });
-    return ds;
-}
-
 
 Convert.convertFilterItemsSummary = function(filter) {
     var divlabel = "FilterItemsSummary";
@@ -834,59 +810,6 @@ Convert.convertFilterItemTop = function(filter, item) {
     }
 };
 
-// TODO: Move this logic to loader
-function FilterItemCheck(item, filter) {
-    var check = true, ds;
-    var map = Report.getReposMap();
-
-    if (filter === "repos") {
-        if (Loader.check_item (item, filter) === false) {
-            ds = getItemDS(item, filter);
-            if (ds === null) {
-                Report.log("Can't find data source for " + item);
-                return true;
-            }
-            Loader.data_load_item (item, ds, null,
-                    Convert.convertFilterStudyItem, filter, null);
-        }
-
-        // Support repositories mapping
-        if (map !== undefined && map.length !== 0) {
-            var items_map = [];
-            $.each(Report.getDataSources(), function(index, DS) {
-                var itmap = getRealItem(DS, filter, item);
-                if (itmap !== undefined && itmap !== null) items_map.push(itmap);
-            });
-            if (Loader.check_items (items_map, filter) === false) {
-                for (var i=0; i< items_map.length; i++) {
-                    if (Loader.check_item (items_map[i], filter) === false) {
-                        ds = getItemDS(items_map[i], filter);
-                        if (ds === null) {
-                            Report.log("Can't find " + items_map[i]);
-                            Report.log("Check repos-map.json");
-                            continue;
-                        }
-                        Loader.data_load_item (items_map[i], ds, null,
-                                Convert.convertFilterStudyItem, filter, items_map);
-                    }
-                }
-                check = false;
-            }
-        }
-    }
-    // Companies and countries should be loaded for all data sources active
-    else {
-        $.each(Report.getDataSources(), function(index, DS) {
-            if (Loader.check_item (item, filter) === false) {
-                check = false;
-                Loader.data_load_item (item, DS, null, 
-                    Convert.convertFilterStudyItem, filter, null);
-            }
-        });
-    }
-    return check;
-}
-
 Convert.convertFilterStudyItem = function (filter) {
 
     if (Convert.convertFilterStudyItem.done === true) return;
@@ -902,7 +825,7 @@ Convert.convertFilterStudyItem = function (filter) {
 
     if (!item) return;
 
-    if (FilterItemCheck(item, filter) === false) return;
+    if (Loader.FilterItemCheck(item, filter) === false) return;
 
     Convert.convertFilterItemSummary(filter, item);
     Convert.convertFilterItemMetricsEvol(filter, item);

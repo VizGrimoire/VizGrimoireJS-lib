@@ -232,6 +232,85 @@ if (Loader === undefined) var Loader = {};
         return check;
     };
 
+    // Get the data source for an item
+    function getItemDS(item, filter) {
+        var ds = null;
+        $.each(Report.getDataSources(), function(index, DS) {
+            if (filter == "repos") {
+                if ($.inArray(item, DS.getReposData())>-1) {
+                    ds = DS;
+                    return false;
+                }
+            }
+            if (filter == "companies") {
+                if ($.inArray(item, DS.getCompaniesData())>-1) {
+                    ds = DS;
+                    return false;
+                }
+            }
+            if (filter == "countries") {
+                if ($.inArray(item, DS.getCountriesData())>-1) {
+                    ds = DS;
+                    return false;
+                }
+            }
+        });
+        return ds;
+    }
+
+    Loader.FilterItemCheck = function(item, filter) {
+        var check = true, ds;
+        var map = Report.getReposMap();
+
+        if (filter === "repos") {
+            if (Loader.check_item (item, filter) === false) {
+                ds = getItemDS(item, filter);
+                if (ds === null) {
+                    Report.log("Can't find data source for " + item);
+                    return true;
+                }
+                Loader.data_load_item (item, ds, null,
+                        Convert.convertFilterStudyItem, filter, null);
+                return false;
+            }
+
+            // Support repositories mapping
+            if (map !== undefined && map.length !== 0) {
+                var items_map = [];
+                $.each(Report.getDataSources(), function(index, DS) {
+                    var itmap = getRealItem(DS, filter, item);
+                    if (itmap !== undefined && itmap !== null) items_map.push(itmap);
+                });
+                if (Loader.check_items (items_map, filter) === false) {
+                    for (var i=0; i< items_map.length; i++) {
+                        if (Loader.check_item (items_map[i], filter) === false) {
+                            ds = getItemDS(items_map[i], filter);
+                            if (ds === null) {
+                                Report.log("Can't find " + items_map[i]);
+                                Report.log("Check repos-map.json");
+                                continue;
+                            }
+                            Loader.data_load_item (items_map[i], ds, null,
+                                    Convert.convertFilterStudyItem, filter, items_map);
+                        }
+                    }
+                    check = false;
+                }
+            }
+        }
+        // Companies and countries should be loaded for all data sources active
+        else {
+            $.each(Report.getDataSources(), function(index, DS) {
+                if (Loader.check_item (item, filter) === false) {
+                    check = false;
+                    Loader.data_load_item (item, DS, null, 
+                        Convert.convertFilterStudyItem, filter, null);
+                }
+            });
+        }
+        return check;
+    };
+
     // Check the item in one data source for repos
     // Check the item for all data sources for countries and companies
     Loader.check_item = function(item, filter) {
