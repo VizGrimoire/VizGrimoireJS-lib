@@ -162,7 +162,6 @@ Convert.convertSummary = function() {
             DS.displayGlobalSummary(div.id);
         });
     }
-    if (Report.getLegacy()) Report.convertSummaryLegacy();
 };
 
 function displayReportData() {
@@ -320,8 +319,6 @@ Convert.convertMetricsEvol = function() {
                     config_viz, $(this).data('convert'));
         });
     }
-
-    if (Report.getLegacy()) Report.convertFlotr2();
 };
 
 Convert.convertMetricsEvolSet = function() {
@@ -345,8 +342,6 @@ Convert.convertMetricsEvolSet = function() {
             DS.displayEnvision(div.id, relative, legend, summary_graph); 
         });
     }
-
-    if (Report.getLegacy()) Report.convertEnvisionLegacy();
 };
 
 
@@ -423,7 +418,6 @@ Convert.convertTop = function() {
                           graph, limit, people_links);
         });
     }
-    if (Report.getLegacy()) Report.convertTopLegacy();
 };
 
 Convert.convertPersonMetrics = function (upeople_id, upeople_identifier) {
@@ -507,8 +501,6 @@ Convert.convertPeople = function(upeople_id, upeople_identifier) {
     Convert.convertPersonData(upeople_id, upeople_identifier);
     Convert.convertPersonSummary(upeople_id, upeople_identifier);
     Convert.convertPersonMetrics(upeople_id, upeople_identifier);
-
-    if (Report.getLegacy()) Report.convertPeopleLegacy(upeople_id, upeople_identifier);
 
     Convert.activateHelp();
 };
@@ -873,12 +865,6 @@ Convert.convertFilterStudy = function(filter) {
     Convert.convertFilterItemsNav(filter, page);
     Convert.convertFilterItemsMetricsEvol(filter);
     Convert.convertFilterItemsMiniCharts(filter, page);
-
-    if (Report.getLegacy()) {
-        if (filter === "repos") Report.convertReposLegacy();
-        if (filter === "countries") Report.convertCountriesLegacy();
-        if (filter === "companies") Report.convertCompaniesLegacy();
-    }
 };
 
 

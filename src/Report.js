@@ -45,8 +45,6 @@ if (Report === undefined) var Report = {};
     var page_size = 10;
     var project_people_identities = {};
 
-    var legacy = false; //  support old divs API
-
     // Public API
     Report.createDataSources = createDataSources;
     Report.getAllMetrics = getAllMetrics;
@@ -60,7 +58,6 @@ if (Report === undefined) var Report = {};
     Report.getProjectData = getProjectData;
     Report.getProjectsData = getProjectsData;
     Report.convertStudies = convertStudies;
-    Report.getLegacy = function() {return legacy;};
     Report.getDataSources = function() {
         // return data_sources.slice(0,3);
         return data_sources;
@@ -409,7 +406,6 @@ if (Report === undefined) var Report = {};
     };
 
     Report.convertGlobal = function() {
-        if (legacy) Report.convertTemplateDivsLegacy();
         // Templates markup divs
         Convert.convertMicrodash();
         Convert.convertMicrodashText();
@@ -449,7 +445,6 @@ if (Report === undefined) var Report = {};
             Convert.convertFilterStudy(study);
             Convert.convertFilterStudyItem (study);
         });
-        if (legacy) ReportLegacy.convertSelectorsLegacy();
     }
 
     var log_on = true;
