@@ -402,7 +402,7 @@ if (Viz === undefined) var Viz = {};
         var bdata = [];
 
         if (DS != DS1) {
-            alert("Metrics for bubbles have different data sources");
+            Report.log("Metrics for bubbles have different data sources");
             return;
         }
         var full_data = [];
@@ -480,7 +480,7 @@ if (Viz === undefined) var Viz = {};
             $.when($.getJSON(file)).done(function(history) {
                 displayDemographicsChart(divid, ds, history, period);
             }).fail(function() {
-                alert("Can't load JSON file: " + file);
+                Report.log("Can't load JSON file: " + file);
             });
         }
     }

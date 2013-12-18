@@ -257,9 +257,6 @@ if (Report === undefined) var Report = {};
             $(".its-menu")[0].className = $(".its-menu")[0].className + " active";
         } else if (page.indexOf('mls') === 0) {
             $(".mls-menu")[0].className = $(".mls-menu")[0].className + " active";
-        } else if (page.indexOf('demographics') === 0) {
-            $(".demographics-menu")[0].className = 
-                $(".demographics-menu")[0].className + " active";
         } else if (page.indexOf('scr') === 0) {
             $(".scr-menu")[0].className = 
                 $(".scr-menu")[0].className + " active";
@@ -420,12 +417,9 @@ if (Report === undefined) var Report = {};
         Convert.convertBasicDivs();
         Convert.convertBasicDivsMisc();
         Convert.convertBasicMetrics();
+        Convert.convertDemographics();
         Convert.convertMetricsEvolSet();
         Convert.convertLastActivity();
-        if (legacy) {
-            Report.convertBasicDivsLegacy();
-            Report.convertIdentity();
-        }
     };
 
     Report.getActiveStudies = function() {
