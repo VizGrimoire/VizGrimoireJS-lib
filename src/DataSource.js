@@ -845,12 +845,16 @@ function DataSource(name, basic_metrics) {
     this.displayTimeToAttention = function(div_id, column, labels, title) {
         labels = true;
         title = "Time to Attention " + column;
-        Viz.displayTimeToAttention(div_id, this.getTimeToAttentionData(), column, labels, title);
+        var data = this.getTimeToAttentionData();
+        if (data instanceof Array) return;
+        Viz.displayTimeToAttention(div_id, data, column, labels, title);
     };
 
     this.displayTimeToFix = function(div_id, column, labels, title) {
         labels = true;
         title = "Time to Fix " + column;
+        var data = this.getTimeToFixData();
+        if (data instanceof Array) return;
         Viz.displayTimeToFix(div_id, this.getTimeToFixData(), column, labels, title);
     };
 
