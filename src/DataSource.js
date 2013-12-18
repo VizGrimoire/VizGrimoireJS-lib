@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2012 Bitergia
+ * Copyright (C) 2012-2013 Bitergia
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 // TODO: Use attributes for getters and setters
 
 function DataSource(name, basic_metrics) {
-    
+
     this.top_data_file = this.data_dir + '/'+this.name+'-top.json';
     this.getTopDataFile = function() {
         return this.top_data_file;
@@ -105,13 +105,12 @@ function DataSource(name, basic_metrics) {
         this.countries_data_file = dataDir+'/'+ this.name +'-countries.json';
         this.time_to_fix_data_file = dataDir+'/'+ this.name +'-quantiles-month-time_to_fix_hour.json';
     };
-    
 
     this.global_data_file = this.data_dir + '/'+this.name+'-static.json';
     this.getGlobalDataFile = function() {
         return this.global_data_file;
     };
-    
+
     this.global_data = null;
     this.getGlobalData = function() {
         return this.global_data;
@@ -160,7 +159,7 @@ function DataSource(name, basic_metrics) {
         if (self === undefined) self = this;
         self.time_to_fix_data = data;
     };
-    
+
     this.time_to_attention_data_file = this.data_dir + '/'+this.name 
             + '-quantiles-month-time_to_attention_hour.json';
     this.getTimeToAttentionDataFile = function() {
@@ -174,7 +173,7 @@ function DataSource(name, basic_metrics) {
         if (self === undefined) self = this;
         self.time_to_attention_data = data;
     };
-        
+
     this.project = null;
     this.getProject = function() {
         return this.project;
@@ -182,7 +181,7 @@ function DataSource(name, basic_metrics) {
     this.setProject = function(project) {
         this.project = project;
     };
-    
+
     // Companies data
     this.companies_data_file = this.data_dir+'/'+ this.name +'-companies.json';
     this.getCompaniesDataFile = function() {
@@ -475,7 +474,7 @@ function DataSource(name, basic_metrics) {
         Viz.displayMetricsPeople(upeople_identifier, metrics, history, div_id, config);
     };
 
-    // TODO: suppport multiproject
+    // TODO: support multiproject
     this.displayMetricsEvol = function(metric_ids, div_target, config, convert) {
         var data = this.getData();
         if (convert) {
@@ -825,7 +824,6 @@ function DataSource(name, basic_metrics) {
         $("#"+divid).append(html);
     };
 
-
     this.displayReposSummary = function(divid, ds) {
         var html = "";
         var data = ds.getGlobalData();
@@ -849,21 +847,17 @@ function DataSource(name, basic_metrics) {
         title = "Time to Attention " + column;
         Viz.displayTimeToAttention(div_id, this.getTimeToAttentionData(), column, labels, title);
     };
-    
+
     this.displayTimeToFix = function(div_id, column, labels, title) {
         labels = true;
         title = "Time to Fix " + column;
         Viz.displayTimeToFix(div_id, this.getTimeToFixData(), column, labels, title);
     };
-    
+
     this.displayTop = function(div, all, show_metric, period, graph, limit, people_links) {
         if (all === undefined) all = true;
         var titles = null;
         Viz.displayTop(div, this, all, show_metric, period, graph, titles, limit, people_links);
-    };
-    
-    this.displayTopBasic = function(div, action, doer, graph) {
-        Viz.displayTopBasic(div, this, action, doer, graph);
     };
 
     this.displayTopCompany = function(company, div, metric, period, titles) {
@@ -879,77 +873,16 @@ function DataSource(name, basic_metrics) {
         var options = Viz.getEnvisionOptions(div_id, history, this.getName(),
                 Report.getVizConfig()[this.getName()+"_hide"], summary_graph);
         options.legend_show = legend_show;
-        
+
         if (relative)
             DataProcess.addRelativeValues(options.data, this.getMainMetric());
-        
+
         new envision.templates.Envision_Report(options, [ this ]);
     };
-    
+
     this.displayEnvision = function(divid, relative, legend_show, summary_graph) {
         var projects_full_data = Report.getProjectsDataSources();
-        
+
         this.envisionEvo(divid, projects_full_data, relative, legend_show, summary_graph);
-    };
-
-    
-    //
-    // Legacy code
-    //
-    
-    this.displayEvo = function(divid, relative, legend_show, summary_graph) {
-        this.displayEnvision (divid, relative, legend_show, summary_graph);
-    };
-    
-    this.displayBasicMetrics = function(metric_ids, div_target, config, convert) {
-        this.displayMetricsEvol(metric_ids, div_target, config, convert);
-    };
-    
-    this.displayBasicMetricHTML = function(metric_id, div_target, config) {
-        var projects = [];
-        var full_data = [];
-        var ds_name = this.getName();
-        $.each(Report.getDataSources(), function (index, ds) {
-           if (ds.getName() === ds_name) {
-               if (ds.getData() instanceof Array) return;
-               full_data.push(ds.getData());
-               projects.push(ds.getProject());
-           } 
-        });
-    
-        Viz.displayBasicMetricHTML(this.basic_metrics[metric_id], full_data,
-                div_target, config, projects);
-    };
-    
-    // TODO: data and projects should be in the same dictionary
-    this.displayBasicHTML = function(div_target, config, title) {
-        var full_data = [];
-        var projects = [];
-        var ds_name = this.getName();
-
-        $.each(Report.getDataSources(), function (index, ds) {
-           if (ds.getName() === ds_name) {
-               if (ds.getData() instanceof Array) return;
-               full_data.push(ds.getData());
-               projects.push(ds.getProject());
-           } 
-        });
-        Viz.displayBasicHTML(full_data, div_target, this.getTitle(), 
-                this.basic_metrics, this.name+'_hide', config, projects);
-    };
-    
-    this.displayBasic = function() {
-        this.basicEvo(this.getData());
-    };
-    
-    this.basicEvo = function(history) {
-        for (var id in this.basic_metrics) {
-            var metric = this.basic_metrics[id];
-            if ($.inArray(metric.column, Report.getVizConfig()[this.getName()+"_hide"]) > -1)
-                continue;
-            if ($('#' + metric.divid).length)
-                Viz.displayBasicLines(metric.divid, history, metric.column,
-                        true, metric.name);
-        }
     };
 }

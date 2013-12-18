@@ -28,7 +28,6 @@ if (Viz === undefined) var Viz = {};
     var bitergiaColor = "#ffa500";
 
     Viz.displayTop = displayTop;
-    Viz.displayTopBasic = displayTopBasic;
     Viz.displayTopCompany = displayTopCompany;
     Viz.displayTopGlobal = displayTopGlobal;
     Viz.displayBasicChart = displayBasicChart;
@@ -463,11 +462,11 @@ if (Viz === undefined) var Viz = {};
             $.extend(config.bubbles, {
                 baseRadius : 1.0
             });
-        
+
         if (radius) {
             $.extend(config.bubbles, {
                 baseRadius : radius
-            });            
+            });
         }
         Flotr.draw(container, bdata, config);
     }
@@ -667,17 +666,6 @@ if (Viz === undefined) var Viz = {};
         });
     }
 
-    // Each file have just the doer and the do
-    // {"authors":["Mark McLoughlin" ... ,"commits":[265 ...
-    function displayTopBasic(div, ds, metric_do, metric_doer, graph, titles) {
-        var top_file = ds.getTopDataFile();
-        $.getJSON(top_file, function(history) {
-            var table = displayTopMetricTable(history, metric_do, metric_doer);
-            if (table === undefined) return;
-            $('#'+div).append(table);
-        });
-    }
-
     function displayTopCompany(company, div, ds, metric_id, period, titles) {
         var project = ds.getProject();
         var metric = ds.getMetrics()[metric_id];
@@ -701,7 +689,7 @@ if (Viz === undefined) var Viz = {};
         data = data_source.getGlobalTopData()[metric_id][period];
         displayTopMetric(div, project, metric, period, data, graph, titles);
     }
-    
+
     // D3
     function displayTreeMap(divid, data_file) {
         $.getJSON(data_file, function(root) {
@@ -754,7 +742,7 @@ if (Viz === undefined) var Viz = {};
            });
         });
     }
-    
+
     // TODO: Remove when mls lists are multiproject
     Viz.getEnvisionOptionsMin = function (div_id, history, hide) {
         var firstMonth = history.id[0],
