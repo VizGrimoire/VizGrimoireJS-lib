@@ -346,8 +346,11 @@ if (Loader === undefined) var Loader = {};
                 }
             }
             if (filter === "companies") {
+                var companies = DS.getCompaniesData();
                 // No data for companies
-                if (DS.getCompaniesData().length === 0) check = true;
+                if (companies.length === 0) check = true;
+                // Company available
+                else if ($.inArray(item, companies) === -1) check = true;
                 // Check item data for all data sources
                 else if (DS.getCompaniesGlobalData()[item] === undefined ||
                     DS.getCompaniesMetricsData()[item] === undefined) {
@@ -357,8 +360,11 @@ if (Loader === undefined) var Loader = {};
                 else check = true;
             }
             if (filter === "countries") {
+                var countries = DS.getCountriesData();
                 // No data for countries
-                if (DS.getCountriesData().length === 0) check = true;
+                if (countries.length === 0) check = true;
+                // Country available
+                else if ($.inArray(item, countries) === -1) check = true;
                 // Check item data for all data sources
                 else if (DS.getCountriesGlobalData()[item] === undefined ||
                     DS.getCountriesMetricsData()[item] === undefined) {
