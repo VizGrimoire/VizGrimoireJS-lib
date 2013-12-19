@@ -97,6 +97,15 @@ if (Loader === undefined) var Loader = {};
         }
     };
 
+    // Load just one file to viz it in a div
+    Loader.get_file_data_div = function (file, cb, div) {
+        $.when($.getJSON(file)).done(function(history) {
+            cb (div, file, history);
+        }).fail(function() {
+            cb (file, null);
+        });
+    };
+
     function data_load_file(file, fn_data_set, self) {
         $.when($.getJSON(file)).done(function(history) {
             fn_data_set(history, self);
@@ -144,7 +153,7 @@ if (Loader === undefined) var Loader = {};
         });
     }
 
- // Just for ITS now
+    // Just for ITS now
     function data_load_time_to_fix() {
         var data_sources = Report.getDataSources();
         $.each(data_sources, function(i, DS) {
