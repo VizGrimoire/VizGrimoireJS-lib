@@ -76,18 +76,27 @@ function DataSource(name, basic_metrics) {
         self.data = nameSpaceMetrics(load_data, self);
     };
 
-    this.demographics_file = this.data_dir + '/'+this.name+'-demographics.json';
-    this.getDemographicsFile = function() {
-        return this.demographics_file;
+    this.demographics_aging_file = this.data_dir + '/'+this.name+'-demographics-aging.json';
+    this.demographics_birth_file = this.data_dir + '/'+this.name+'-demographics-birth.json';
+    this.getDemographicsAgingFile = function() {
+        return this.demographics_aging_file;
+    };
+    this.getDemographicsBirthFile = function() {
+        return this.demographics_birth_file;
     };
 
-    this.demographics_data = null;
+    this.demographics_data = {};
     this.getDemographicsData = function() {
         return this.demographics_data;
     };
-    this.setDemographicsData = function(data, self) {
+    this.setDemographicsAgingData = function(data, self) {
         if (self === undefined) self = this;
-        self.demographics_data = data;
+        self.demographics_data.aging = data;
+    };
+
+    this.setDemographicsBirthData = function(data, self) {
+        if (self === undefined) self = this;
+        self.demographics_data.birth = data;
     };
 
     this.data_dir = 'data/json';
@@ -97,7 +106,8 @@ function DataSource(name, basic_metrics) {
     this.setDataDir = function(dataDir) {
         this.data_dir = dataDir;
         this.data_file = dataDir + '/'+this.name+'-evolutionary.json';
-        this.demographics_file = dataDir + '/'+this.name+'-demographics.json';
+        this.demographics_aging_file = dataDir + '/'+this.name+'-demographics-aging.json';
+        this.demographics_birth_file = dataDir + '/'+this.name+'-demographics-birth.json';
         this.global_data_file = dataDir + '/'+this.name+'-static.json';
         this.top_data_file = dataDir + '/'+this.name+'-top.json';
         this.companies_data_file = dataDir+'/'+ this.name +'-companies.json';
@@ -838,8 +848,8 @@ function DataSource(name, basic_metrics) {
       $("#"+divid).append(html);
     };
 
-    this.displayDemographics = function(divid, file, period) {
-        Viz.displayDemographics(divid, this, file, period);
+    this.displayDemographics = function(divid, period, type) {
+        Viz.displayDemographics(divid, this, period, type);
     };
 
     this.displayTimeToAttention = function(div_id, column, labels, title) {

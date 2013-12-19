@@ -512,11 +512,11 @@ Convert.convertDemographics = function() {
             ds = $(this).data('data-source');
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
-            var file = $(this).data('file');
+            var type = $(this).data('type');
             // period in years
             var period = $(this).data('period');
-            div.id = "Demographics"+"-"+file+"-"+period;
-            DS.displayDemographics(div.id, file, period);
+            div.id = "Demographics"+"-"+ds+"-"+type+"-"+period;
+            DS.displayDemographics(div.id, period, type);
         });
     }
 };

@@ -78,6 +78,7 @@ if (Loader === undefined) var Loader = {};
         data_load_tops('authors');
         data_load_time_to_fix();
         data_load_time_to_attention();
+        data_load_demographics();
 
         if (Report.getConfig() !== null) {
             var active_reports = Report.getConfig().reports;
@@ -169,6 +170,16 @@ if (Loader === undefined) var Loader = {};
             if (DS.getName() === "mls")
                 data_load_file(DS.getTimeToAttentionDataFile(), 
                         DS.setTimeToAttentionData, DS);
+        });
+    }
+
+    function data_load_demographics() {
+        var data_sources = Report.getDataSources();
+        $.each(data_sources, function(i, DS) {
+            data_load_file(DS.getDemographicsAgingFile(),
+                    DS.setDemographicsAgingData, DS);
+            data_load_file(DS.getDemographicsBirthFile(),
+                    DS.setDemographicsBirthData, DS);
         });
     }
 
@@ -550,6 +561,9 @@ if (Loader === undefined) var Loader = {};
             if (DS.getData() === null) {check = false; return false;}
             if (DS.getGlobalData() === null) {check = false; return false;}
             if (DS.getGlobalTopData() === null) {check = false; return false;}
+            if (DS.getDemographicsData().aging === undefined ||
+                DS.getDemographicsData().birth === undefined)
+                {check = false; return false;}
             if (DS.getName() === "its")
                 if (DS.getTimeToFixData() === null) {check = false; return false;}
             if (DS.getName() === "mls")

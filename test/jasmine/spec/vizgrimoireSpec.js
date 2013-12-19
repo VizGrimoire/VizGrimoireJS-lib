@@ -134,7 +134,7 @@ describe( "VizGrimoireJS library", function () {
                                     {
                                         'data-period': '0.25',
                                         'data-data-source': DS.getName(),
-                                        'data-file':'data/json/'+DS.getName()+'-demographics-'+type+'.json',
+                                        'data-type': type,
                                         'style':'position: relative'
                                     });
                     });

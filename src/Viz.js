@@ -471,17 +471,12 @@ if (Viz === undefined) var Viz = {};
         Flotr.draw(container, bdata, config);
     }
 
-    function displayDemographics(divid, ds, file, period) {
-        if (!file) {
-            var data = ds.getDemographicsData();
-            displayDemographicsChart(divid, ds, data, period);
-        } else {
-            $.when($.getJSON(file)).done(function(history) {
-                displayDemographicsChart(divid, ds, history, period);
-            }).fail(function() {
-                Report.log("Can't load JSON file: " + file);
-            });
-        }
+    function displayDemographics(divid, ds, period, type) {
+        var data = ds.getDemographicsData();
+        if (type === "aging")
+            displayDemographicsChart(divid, ds, data.aging, period);
+        if (type === "birth")
+            displayDemographicsChart(divid, ds, data.birth, period);
     }
 
     function displayDemographicsChart(divid, ds, data, period_year) {
@@ -693,6 +688,7 @@ if (Viz === undefined) var Viz = {};
     // D3 based
     function displayTreeMap(divid, data_file, data) {
         if (data === undefined) {
+            if (data_file === undefined) return;
             Loader.get_file_data_div (data_file, Viz.displayTreeMap, divid);
             return;
         } 
