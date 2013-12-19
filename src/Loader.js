@@ -337,6 +337,8 @@ if (Loader === undefined) var Loader = {};
         var check = false;
         $.each(Report.getDataSources(), function(index, DS) {
             if (filter === "repos") {
+                // Check item data. item name is unique in all data sources
+                // Ok if item find in any data source
                 if (DS.getReposGlobalData()[item] !== undefined &&
                     DS.getReposMetricsData()[item] !== undefined) {
                     check = true;
@@ -344,18 +346,26 @@ if (Loader === undefined) var Loader = {};
                 }
             }
             if (filter === "companies") {
-                if (DS.getCompaniesGlobalData()[item] === undefined ||
+                // No data for companies
+                if (DS.getCompaniesData().length === 0) check = true;
+                // Check item data for all data sources
+                else if (DS.getCompaniesGlobalData()[item] === undefined ||
                     DS.getCompaniesMetricsData()[item] === undefined) {
                     check = false;
                     return false;
-                } else check = true;
+                }
+                else check = true;
             }
             if (filter === "countries") {
-                if (DS.getCountriesGlobalData()[item] === undefined ||
+                // No data for countries
+                if (DS.getCountriesData().length === 0) check = true;
+                // Check item data for all data sources
+                else if (DS.getCountriesGlobalData()[item] === undefined ||
                     DS.getCountriesMetricsData()[item] === undefined) {
                     check = false;
                     return false;
-                } else check = true;
+                }
+                else check = true;
             }
         });
         return check;
