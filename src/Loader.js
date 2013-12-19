@@ -278,6 +278,7 @@ if (Loader === undefined) var Loader = {};
         return ds;
     }
 
+    // Check for top data for companies (TODO: add others when supported)
     Loader.FilterItemCheck = function(item, filter) {
         var check = true, ds;
         var map = Report.getReposMap();
@@ -325,6 +326,9 @@ if (Loader === undefined) var Loader = {};
                     check = false;
                     Loader.data_load_item (item, DS, null, 
                         Convert.convertFilterStudyItem, filter, null);
+                    if (filter === "companies")
+                        Loader.data_load_item_top (item, DS, null,
+                            Convert.convertFilterStudyItem, filter);
                 }
             });
         }
@@ -354,6 +358,11 @@ if (Loader === undefined) var Loader = {};
                 // Check item data for all data sources
                 else if (DS.getCompaniesGlobalData()[item] === undefined ||
                     DS.getCompaniesMetricsData()[item] === undefined) {
+                    check = false;
+                    return false;
+                }
+                // Check item data top for all data sources
+                else if (DS.getCompaniesTopData()[item] === undefined) {
                     check = false;
                     return false;
                 }
@@ -446,6 +455,29 @@ if (Loader === undefined) var Loader = {};
             DS.addPeopleMetricsData(upeople_id, [], DS);
             DS.addPeopleGlobalData(upeople_id, [], DS);
             if (Loader.check_people_item(upeople_id)) cb();
+        });
+    };
+
+    // TODO: Only companies supported yet, but ready for all items!
+    Loader.data_load_item_top = function (item, DS, page, cb, filter) {
+        var file_top = DS.getDataDir() + "/"+ item +"-" + DS.getName()+"-top-";
+        if (DS.getName() === "scm") file_top += "authors";
+        if (DS.getName() === "its") file_top += "closers";
+        if (DS.getName() === "mls") file_top += "senders";
+        file_top += ".json";
+        $.when($.getJSON(file_top)).done(function(top) {
+            if (filter === "companies") {
+                DS.addCompanyTopData(item, top);
+            }
+        }).fail(function() {
+            if (filter === "companies") {
+                DS.addCompanyTopData(item, []);
+            }
+        }).always(function() {
+            if (Loader.check_item (item, filter)) {
+                if (!cb.called_item) cb(filter);
+                cb.called_item = true;
+            }
         });
     };
 

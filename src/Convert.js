@@ -825,7 +825,7 @@ Convert.convertFilterStudyItem = function (filter) {
     Convert.convertFilterItemTop(filter, item);
 
     Convert.activateHelp();
-    
+
     Convert.convertFilterStudyItem.done = true;
 };
 
