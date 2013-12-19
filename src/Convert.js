@@ -530,7 +530,7 @@ function filterItemsConfig() {
 }
 
 // Use mapping between repos for locating real item names
-function getRealItem(ds, filter, item) {
+Convert.getRealItem = function(ds, filter, item) {
     var map = Report.getReposMap();
 
     // If repos map is not available returm item if exists in ds
@@ -559,7 +559,7 @@ function getRealItem(ds, filter, item) {
     else map_item = item;
 
     return map_item;
-}
+};
 
 Convert.convertFilterItemsSummary = function(filter) {
     var divlabel = "FilterItemsSummary";
@@ -728,7 +728,7 @@ Convert.convertFilterItemSummary = function(filter, item) {
             if ($(this).data('item')) real_item = $(this).data('item');
             div.id = ds+"-"+divlabel;
             if (filter === "repos") {
-                real_item = getRealItem(DS, filter, real_item);
+                real_item = Convert.getRealItem(DS, filter, real_item);
                 if (real_item) DS.displayRepoSummary(div.id, real_item, DS);
             }
             if (filter === "countries")
@@ -762,7 +762,7 @@ Convert.convertFilterItemMetricsEvol = function(filter, item) {
                 config_metric.frame_time = true;
             div.id = metrics.replace(/,/g,"-")+"-"+divlabel;
             if (filter === "repos") {
-                real_item = getRealItem(DS, filter, real_item);
+                real_item = Convert.getRealItem(DS, filter, real_item);
                 if (real_item)
                     DS.displayMetricsRepo(real_item, metrics.split(","),
                             div.id, config_metric);

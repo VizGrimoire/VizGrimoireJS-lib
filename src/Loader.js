@@ -298,7 +298,7 @@ if (Loader === undefined) var Loader = {};
             if (map !== undefined && map.length !== 0) {
                 var items_map = [];
                 $.each(Report.getDataSources(), function(index, DS) {
-                    var itmap = getRealItem(DS, filter, item);
+                    var itmap = Convert.getRealItem(DS, filter, item);
                     if (itmap !== undefined && itmap !== null) items_map.push(itmap);
                 });
                 if (Loader.check_items (items_map, filter) === false) {
