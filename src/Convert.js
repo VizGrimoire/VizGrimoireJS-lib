@@ -849,6 +849,12 @@ Convert.convertFilterStudyAll = function() {
 Convert.convertFilterStudy = function(filter) {
     var page = Report.getParameterByName("page");
 
+    if (page === undefined) {
+        // If there are items widgets config default page
+        if ($("[class^='FilterItems']").length > 0) page = 1;
+        else return;
+    }
+
     // repositories comes from Automator config
     if (filter === "repositories") filter = "repos";
 
