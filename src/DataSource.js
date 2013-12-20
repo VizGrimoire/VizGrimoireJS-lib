@@ -469,8 +469,9 @@ function DataSource(name, basic_metrics) {
     };
 
     this.displayMetricsCountry = function (country, metrics, div_id, config) {
-        Viz.displayMetricsCountry(country, metrics,
-                this.getCountriesMetricsData()[country], div_id, config);
+        var data = this.getCountriesMetricsData()[country];
+        if (data === undefined) return;
+        Viz.displayMetricsCountry(country, metrics, data, div_id, config);
     };
 
     this.displayMetricsPeople = function (upeople_id, upeople_identifier, metrics, div_id, config) {
