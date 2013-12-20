@@ -241,12 +241,11 @@ function DataSource(name, basic_metrics) {
     };
 
     this.companies_top_data = {};
-    this.addCompanyTopData = function(company, data, self, period) {
-        if (period === undefined) period = "all";
+    this.addCompanyTopData = function(company, data, self) {
         if (self === undefined) self = this;
         if (self.companies_top_data[company] === undefined)
             self.companies_top_data[company] = {};
-        self.companies_top_data[company][period] = data;
+        self.companies_top_data[company] = data;
     };
     this.getCompaniesTopData = function() {
         return this.companies_top_data;
@@ -892,8 +891,12 @@ function DataSource(name, basic_metrics) {
         Viz.displayTop(div, this, all, show_metric, period, graph, titles, limit, people_links);
     };
 
-    this.displayTopCompany = function(company, div, metric, period, titles) {
-        Viz.displayTopCompany(company, div, this, metric, period, titles);
+    this.displayTopCompany = function(company, div, metric_id, period, titles) {
+        var data = this.getCompaniesTopData()[company];
+        if (data === undefined) return;
+        var metric = this.getMetrics()[metric_id];
+
+        Viz.displayTopCompany(company, data, div, metric, period, titles);
     };
 
     this.displayTopGlobal = function(div, metric, period, titles) {

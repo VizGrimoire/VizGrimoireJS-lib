@@ -120,7 +120,7 @@ if (Viz === undefined) var Viz = {};
     }
 
     function displayTopMetric
-    (div_id, project, metric, metric_period, history, graph, titles, limit, people_links) {
+    (div_id, metric, metric_period, history, graph, titles, limit, people_links) {
         var top_metric_id = metric.name;
         if (!history || $.isEmptyObject(history)) return;
         var metric_id = metric.action;
@@ -540,9 +540,9 @@ if (Viz === undefined) var Viz = {};
         var container = document.getElementById(div_id);
         var max = $("#" + div_id).data('max');
         var border=0.2;
-        
+
         if (!(max)) max = 0;
-        
+
         for (var j=0; j<data.length; j++) {
             for (var i=0; i<data[j].data.length; i++) {
                 var value =  data[j].data[i][1];
@@ -605,7 +605,7 @@ if (Viz === undefined) var Viz = {};
             ticks.push([ i, DS[0].getMetrics()[metrics[i]].name ]);
         }
 
-        for (j=0; j<data.length; j++) {            
+        for (j=0; j<data.length; j++) {
             radar_data.push({
                 label : projects[j],
                 data : data[j]
@@ -666,7 +666,6 @@ if (Viz === undefined) var Viz = {};
 
     function displayTop(div, ds, all, show_metric, period, graph, titles, limit, people_links) {
         var basic_metrics = ds.getMetrics();
-        var project = ds.getProject();
 
         if (all === undefined) all = true;
         var history = ds.getGlobalTopData();
@@ -681,7 +680,7 @@ if (Viz === undefined) var Viz = {};
                 if (metric.column == top_metric){
                     //continue with the loop if the period is not the one
                     if (period && period !== top_period) return true;
-                    displayTopMetric(div, project, metric, 
+                    displayTopMetric(div, metric,
                             top_period, history[key], graph, titles, limit, people_links);
                     if (!all) return false;
                     break;
@@ -690,19 +689,9 @@ if (Viz === undefined) var Viz = {};
         });
     }
 
-    function displayTopCompany(company, div, ds, metric_id, period, titles) {
-        var project = ds.getProject();
-        var metric = ds.getMetrics()[metric_id];
+    function displayTopCompany(company, data, div, metric, period, titles) {
         var graph = null;
-        var file_top = ds.getDataDir() + "/"+ company +"-" + ds.getName()+"-top-";
-        if (DS.getName() === "scm") file_top += "authors";
-        if (DS.getName() === "its") file_top += "closers";
-        if (DS.getName() === "mls") file_top += "senders";
-        file_top += ".json";
-        $.getJSON(file_top, function(data) {
-            if (data === undefined) return;
-            displayTopMetric(div, project, metric, period, data, graph, titles);
-        });
+        displayTopMetric(div, metric, period, data, graph, titles);
     }
 
     function displayTopGlobal(div, data_source, metric_id, period, titles) {
