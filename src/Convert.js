@@ -364,6 +364,24 @@ Convert.convertTimeTo = function() {
     }
 };
 
+Convert.convertMarkovTable = function() {
+    var div_id_mt = "MarkovTable";
+    var divs = $("." + div_id_mt);
+    var DS, ds;
+    if (divs.length > 0) {
+        $.each(divs, function(id, div) {
+            ds = $(this).data('data-source');
+            DS = Report.getDataSourceByName(ds);
+            if (DS === null) return;
+            if (DS.getData().length === 0) return;
+            var title = $(this).data('title');
+            div.id = ds + "-markov-table";
+            DS.displayMarkovTable(div.id, title);
+        });
+    }
+};
+
+
 Convert.convertLastActivity = function() {
     var all_metrics = Report.getAllMetrics();
     function activityInfo(div, period, label) {
@@ -886,6 +904,7 @@ Convert.convertBasicDivsMisc = function() {
 Convert.convertBasicMetrics = function(config) {
     Convert.convertMetricsEvol();
     Convert.convertTimeTo();
+    Convert.convertMarkovTable();
 };
 
 })();

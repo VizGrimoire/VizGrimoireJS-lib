@@ -79,6 +79,7 @@ if (Loader === undefined) var Loader = {};
         data_load_time_to_fix();
         data_load_time_to_attention();
         data_load_demographics();
+        data_load_markov_table();
 
         if (Report.getConfig() !== null) {
             var active_reports = Report.getConfig().reports;
@@ -160,6 +161,14 @@ if (Loader === undefined) var Loader = {};
         $.each(data_sources, function(i, DS) {
             if (DS.getName() === "its")
                 data_load_file(DS.getTimeToFixDataFile(), DS.setTimeToFixData, DS);
+        });
+    }
+
+    function data_load_markov_table() {
+        var data_sources = Report.getDataSources();
+        $.each(data_sources, function(i, DS) {
+            if (DS.getName() === "its")
+                data_load_file(DS.getMarkovTableDataFile(), DS.setMarkovTableData, DS);
         });
     }
 

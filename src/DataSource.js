@@ -192,6 +192,19 @@ function DataSource(name, basic_metrics) {
         this.project = project;
     };
 
+    this.markov_table_data_file = this.data_dir + '/' + this.name + '-markov.json';
+    this.getMarkovTableDataFile = function() {
+        return this.markov_table_data_file;
+    };
+    this.markov_table_data = null;
+    this.getMarkovTableData = function() {
+        return this.markov_table_data;
+    };
+    this.setMarkovTableData = function(data, self) {
+        if (self === undefined) self = this;
+        self.markov_table_data = data;
+    };
+
     // Companies data
     this.companies_data_file = this.data_dir+'/'+ this.name +'-companies.json';
     this.getCompaniesDataFile = function() {
@@ -866,6 +879,11 @@ function DataSource(name, basic_metrics) {
         var data = this.getTimeToFixData();
         if (data instanceof Array) return;
         Viz.displayTimeToFix(div_id, this.getTimeToFixData(), column, labels, title);
+    };
+
+    this.displayMarkovTable = function(div_id, title) {
+        var data = this.getMarkovTableData();
+        Viz.displayMarkovTable(div_id, data, title);
     };
 
     this.displayTop = function(div, all, show_metric, period, graph, limit, people_links) {
