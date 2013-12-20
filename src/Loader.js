@@ -526,9 +526,16 @@ if (Loader === undefined) var Loader = {};
             }
             // Check all items for a page
             if (page !== null) {
-                if (Loader.check_filters_page (page)) {
-                    if (!cb.called_page) cb(filter);
-                    cb.called_page = true;
+                if (Loader.check_filter_page (page, filter)) {
+                    if (cb.called_page === undefined) {
+                        cb.called_page = {};
+                        cb.called_page[filter] = true;
+                        cb(filter);
+                    }
+                    else if (!cb.called_page[filter]) {
+                        cb(filter);
+                        cb.called_page[filter] = true;
+                    }
                 }
             } 
             // Check all items for repositories mapping

@@ -883,6 +883,10 @@ function DataSource(name, basic_metrics) {
 
     this.displayMarkovTable = function(div_id, title) {
         var data = this.getMarkovTableData();
+        if (data === undefined) {
+            Report.log ('No Markov data available');
+            return;
+        }
         Viz.displayMarkovTable(div_id, data, title);
     };
 

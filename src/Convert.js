@@ -858,18 +858,19 @@ Convert.activateHelp = function() {
     });
 };
 
-Convert.convertFilterStudyAll = function() {
-    $.each (Report.getActiveStudies(), function(i, study) {
-        Convert.convertFilterStudy(study);
-    });
-};
-
 Convert.convertFilterStudy = function(filter) {
-    var page = Report.getParameterByName("page");
+    var page = Report.getCurrentPage();
+    if (page === null) {
+        page = Report.getParameterByName("page");
+        if (page !== undefined) Report.setCurrentPage(page);
+    }
 
     if (page === undefined) {
         // If there are items widgets config default page
-        if ($("[class^='FilterItems']").length > 0) page = 1;
+        if ($("[class^='FilterItems']").length > 0) {
+            page = 1;
+            Report.setCurrentPage(page);
+        }
         else return;
     }
 
@@ -879,7 +880,7 @@ Convert.convertFilterStudy = function(filter) {
     // If data is not available load them and cb this function
     if (Loader.check_filter_page (page, filter) === false) {
         $.each(Report.getDataSources(), function(index, DS) {
-            Loader.data_load_items_page (DS, page, Convert.convertFilterStudyAll, filter);
+            Loader.data_load_items_page (DS, page, Convert.convertFilterStudy, filter);
         });
         return;
     }

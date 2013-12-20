@@ -42,7 +42,7 @@ if (Report === undefined) var Report = {};
         viz_config_file = data_dir + "/viz_cfg.json",
         markers_file = data_dir + "/markers.json",
         repos_map_file = data_dir + "/repos-map.json";
-    var page_size = 10;
+    var page_size = 10, page = null;
     var project_people_identities = {};
 
     // Public API
@@ -53,6 +53,8 @@ if (Report === undefined) var Report = {};
     Report.getMetricDS = getMetricDS;
     Report.getGridster = getGridster;
     Report.setGridster = setGridster;
+    Report.getCurrentPage = function() {return page;};
+    Report.setCurrentPage = function(current_page) {page = current_page;};
     Report.getPageSize = function() {return page_size;};
     Report.setPageSize = function(size) {page_size = size;};
     Report.getProjectData = getProjectData;

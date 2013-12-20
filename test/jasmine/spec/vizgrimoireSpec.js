@@ -299,40 +299,47 @@ describe( "VizGrimoireJS library", function () {
     }
 
     function checkVizReport(report) {
-        if ($.inArray(report,['repos','companies','countries'])===-1) 
-            return;
-        var total_canvas = 0;
-        var data_sources = Report.getDataSources();
-        $.each(data_sources, function(index, DS) {
-            var ds_name = DS.getName();
-            if (ds_name === "scr") return;
-            if (report === "repos")
-                total_repos = DS.getReposData().length;
-            else if (report === "companies")
-                total_repos = DS.getCompaniesData().length;
-            else if (report === "countries")
-                total_repos = DS.getCountriesData().length;
-            if (total_repos > Report.getPageSize())
-                total_repos = Report.getPageSize();
-            total_canvas += 2*total_repos;
-            var metrics = "";
-            if (ds_name === "scm") metrics = "scm_commits,scm_authors";
-            if (ds_name === "its") metrics = "its_closed,its_closers";
-            if (ds_name === "mls") metrics = "mls_sent,mls_senders"; 
-            buildNode(ds_name+"-"+report+"-MiniCharts",
-                    "FilterItemsMiniCharts",
-                    {
-                        'data-metrics': metrics,
-                        'data-data-source': ds_name,
-                        'data-filter': report
+        var ncanvas = 0, total_canvas = 0;
+        runs(function() {
+            if ($.inArray(report,['repos','companies','countries'])===-1)
+                return;
+            var data_sources = Report.getDataSources();
+            $.each(data_sources, function(index, DS) {
+                var ds_name = DS.getName();
+                if (ds_name === "scr") return;
+                if (report === "repos")
+                    total_repos = DS.getReposData().length;
+                else if (report === "companies")
+                    total_repos = DS.getCompaniesData().length;
+                else if (report === "countries")
+                    total_repos = DS.getCountriesData().length;
+                if (total_repos > Report.getPageSize())
+                    total_repos = Report.getPageSize();
+                total_canvas += 2*total_repos;
+                var metrics = "";
+                if (ds_name === "scm") metrics = "scm_commits,scm_authors";
+                if (ds_name === "its") metrics = "its_closed,its_closers";
+                if (ds_name === "mls") metrics = "mls_sent,mls_senders";
+                buildNode(ds_name+"-"+report+"-MiniCharts",
+                        "FilterItemsMiniCharts",
+                        {
+                            'data-metrics': metrics,
+                            'data-data-source': ds_name,
+                            'data-filter': report
+                });
             });
+            ncanvas = document.getElementsByClassName('flotr-canvas').length;
+            Report.setCurrentPage(1);
+            Convert.convertFilterStudy(report);
         });
-        var ncanvas = document.getElementsByClassName
-            ('flotr-canvas').length;
-        Convert.convertFilterStudy(report);
-        var new_ncanvas = document.getElementsByClassName
-            ('flotr-canvas').length;
-        expect(new_ncanvas-ncanvas).toEqual(total_canvas);
+        waitsFor(function() {
+            return (document.getElementsByClassName('flotr-canvas').length > ncanvas);
+        }, "It took too long to load report items data", 200);
+        runs(function() {
+            var new_ncanvas = document.getElementsByClassName
+                ('flotr-canvas').length;
+            expect(new_ncanvas-ncanvas).toEqual(total_canvas);
+        });
     }
 
     describe("Repositories checking", function() {
