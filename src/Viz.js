@@ -48,8 +48,10 @@ if (Viz === undefined) var Viz = {};
     Viz.displayRadarActivity = displayRadarActivity;
     Viz.displayRadarCommunity = displayRadarCommunity;
     Viz.displayTreeMap = displayTreeMap;
+    Viz.displayMarkovTable = displayMarkovTable;
     Viz.getEnvisionOptions = getEnvisionOptions;
     Viz.checkBasicConfig = checkBasicConfig;
+
 
     function findMetricDoer(history, metric_id) {
         var doer = '';
@@ -60,6 +62,33 @@ if (Viz === undefined) var Viz = {};
             }
         });
         return doer;
+    }
+
+    function displayMarkovTable(div_id, data, title){
+        var html = '<h4>' + title + '</h4>';
+        var table = '<table id="itsmarkovtable" class="table table-striped">';
+        table += '<thead><tr><th>Transition</th><th>Number</th><th>Percent</th></tr></thead><tbody>';
+        $.each(data, function(i, val){
+            subdata = data[i];
+            old_value = "old_value";
+            new_value = "new_value";
+            percent = "f";
+            number = "issue";
+            for(var k = 0; k < subdata[old_value].length; k++){
+                var value_new = subdata[new_value][k];
+                var value_p = subdata[percent][k];
+                value_p = Math.round(value_p*100)/100;
+                var value_num = subdata[number][k];
+                table += '<tr><td>' + i + ' -> ' + value_new + '</td>';
+                table += '<td>' + value_num + '</td>';
+                table += '<td>' + value_p + '</td></tr>';
+            }
+        });
+        table += "</tbody></table>";
+        html += table;
+        div = $("#" + div_id);
+        div.append(html);
+        return;
     }
 
     function displayTopMetricTable(history, metric_id, doer, limit, people_links, title) {
