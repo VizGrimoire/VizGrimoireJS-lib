@@ -529,6 +529,7 @@ if (Loader === undefined) var Loader = {};
                 DS.addCountryMetricsData(item, evo[0], DS);
                 DS.addCountryGlobalData(item, global[0], DS);
             }
+        }).always(function() {
             // Check all items for a page
             if (page !== null) {
                 if (Loader.check_filter_page (page, filter)) {

@@ -412,7 +412,6 @@ describe( "VizGrimoireJS library", function () {
             checkVizItem(item, 'repos', DS);
         });
     });
-// Not working yet    
 //    describe("First company item checking", function() {
 //        it("First Company item viz should work", function() {
 //            var DS = Report.getDataSources()[0];
