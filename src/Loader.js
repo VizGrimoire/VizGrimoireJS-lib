@@ -335,9 +335,12 @@ if (Loader === undefined) var Loader = {};
                     check = false;
                     Loader.data_load_item (item, DS, null, 
                         Convert.convertFilterStudyItem, filter, null);
-                    if (filter === "companies")
-                        Loader.data_load_item_top (item, DS, null,
-                            Convert.convertFilterStudyItem, filter);
+                    if (filter === "companies") {
+                        var ds_not_supported = ['irc','mediawiki'];
+                        if ($.inArray(DS.getName(),ds_not_supported) === -1)
+                            Loader.data_load_item_top (item, DS, null,
+                                    Convert.convertFilterStudyItem, filter);
+                    }
                 }
             });
         }
@@ -471,8 +474,10 @@ if (Loader === undefined) var Loader = {};
     Loader.data_load_item_top = function (item, DS, page, cb, filter) {
         var file_top = DS.getDataDir() + "/"+ item +"-" + DS.getName()+"-top-";
         if (DS.getName() === "scm") file_top += "authors";
-        if (DS.getName() === "its") file_top += "closers";
-        if (DS.getName() === "mls") file_top += "senders";
+        else if (DS.getName() === "its") file_top += "closers";
+        else if (DS.getName() === "mls") file_top += "senders";
+        // scr, irc, mediawiki not supported yet
+        else return;
         file_top += ".json";
         $.when($.getJSON(file_top)).done(function(top) {
             if (filter === "companies") {
@@ -548,7 +553,7 @@ if (Loader === undefined) var Loader = {};
             // Check just one item
             else {
                 if (Loader.check_item (item, filter)) {
-                    if (!cb.called_item) cb(filter);
+                    if (!cb.called_item) cb(filter, item);
                     cb.called_item = true;
                 }
             }
