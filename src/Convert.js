@@ -821,18 +821,18 @@ Convert.convertFilterItemTop = function(filter, item) {
     }
 };
 
-Convert.convertFilterStudyItem = function (filter) {
+Convert.convertFilterStudyItem = function (filter, item) {
 
     if (Convert.convertFilterStudyItem.done === true) return;
-
-    var item = null;
 
     // repositories comes from Automator config
     if (filter === "repositories") filter = "repos";
 
-    if (filter === "repos") item = Report.getParameterByName("repository");
-    if (filter === "countries") item = Report.getParameterByName("country");
-    if (filter === "companies") item = Report.getParameterByName("company");
+    if (item === undefined) {
+        if (filter === "repos") item = Report.getParameterByName("repository");
+        if (filter === "countries") item = Report.getParameterByName("country");
+        if (filter === "companies") item = Report.getParameterByName("company");
+    }
 
     if (!item) return;
 

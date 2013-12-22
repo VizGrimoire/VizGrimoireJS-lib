@@ -366,6 +366,68 @@ describe( "VizGrimoireJS library", function () {
             checkVizReport("countries");
         });
     });
+
+    function checkVizItem(item, report) {
+        if ($.inArray(report,['repos','companies','countries'])===-1) 
+            return;
+        var ncanvas = 0, total_canvas = 0;
+
+        runs(function() {
+            var data_sources = Report.getDataSources();
+            $.each(data_sources, function(index, ds) {
+                var ds_name = ds.getName();
+                if (ds_name === "scm") metrics = "scm_commits,scm_authors";
+                if (ds_name === "its") metrics = "its_closed,its_closers";
+                if (ds_name === "mls") metrics = "mls_sent,mls_senders";
+                if (ds_name === "irc") metrics = "irc_sent,irc_senders";
+                if (ds_name === "scr") metrics = "scr_submitted,scr_merged";
+                if (ds_name === "mediawiki") metrics = "mediawiki_reviews";
+                buildNode(ds_name+"-"+report+"-MetricsEvol",
+                        "FilterItemMetricsEvol",
+                        {
+                            'data-metrics': metrics,
+                            'data-data-source': ds_name,
+                            'data-filter': report,
+                            'data-item': item,
+                            'data-legend': true,
+                });
+            });
+            total_canvas = 1;
+            ncanvas = document.getElementsByClassName('flotr-canvas').length;
+            Convert.convertFilterStudyItem(report, item);
+        });
+        waitsFor(function() {
+            return (document.getElementsByClassName('flotr-canvas').length > ncanvas);
+        }, "It took too long to load report items data", 200);
+        runs(function() {
+            var new_ncanvas = document.getElementsByClassName
+                ('flotr-canvas').length;
+            expect(new_ncanvas-ncanvas).toEqual(total_canvas);
+        });
+    }
+    describe("First repository item checking", function() {
+        it("First Repository item viz should work", function() {
+            var DS = Report.getDataSources()[0];
+            item = DS.getReposData()[0];
+            checkVizItem(item, 'repos', DS);
+        });
+    });
+// Not working yet    
+//    describe("First company item checking", function() {
+//        it("First Company item viz should work", function() {
+//            var DS = Report.getDataSources()[0];
+//            company = DS.getCompaniesData()[0];
+//            checkVizItem(company, "companies", DS);
+//        });
+//    });
+//    describe("First Country item checking", function() {
+//        it("First Country item viz should work", function() {
+//            var DS = Report.getDataSources()[0];
+//            country = DS.getCountriesData()[0];
+//            checkVizItem(country, 'countries', DS);
+//        });
+//    });
+
     describe("People checking", function() {
         var people_id = null; 
         it("Top 1 SCM developer should have Evol and Global metrics", function () {
