@@ -496,6 +496,7 @@ if (Loader === undefined) var Loader = {};
     };
 
     // Load an item JSON data. If in a page, check all items read and cb.
+    // TODO: A bit complex now, we should break it in different functions
     Loader.data_load_item = function (item, DS, page, cb, filter, items_map) {
         var ds_not_supported_countries = ['irc','mediawiki','scr'];
         var ds_not_supported_companies = ['irc','mediawiki'];
@@ -547,15 +548,29 @@ if (Loader === undefined) var Loader = {};
             // Check all items for repositories mapping
             else if (items_map !== null) {
                 if (Loader.check_items (items_map, filter)) {
-                    if (!cb.called_map) cb(filter);
-                    cb.called_map = true;
+                    if (cb.called_map === undefined) {
+                        cb.called_map = {};
+                        cb.called_map[filter] = true;
+                        cb(filter);
+                    }
+                    else if (!cb.called_map[filter]) {
+                        cb(filter);
+                        cb.called_map[filter] = true;
+                    }
                 }
             }
             // Check just one item
             else {
                 if (Loader.check_item (item, filter)) {
-                    if (!cb.called_item) cb(filter, item);
-                    cb.called_item = true;
+                    if (cb.called_item === undefined) {
+                        cb.called_item = {};
+                        cb.called_item[filter] = true;
+                        cb(filter);
+                    }
+                    else if (!cb.called_item[filter]) {
+                        cb(filter);
+                        cb.called_item[filter] = true;
+                    }
                 }
             }
         });

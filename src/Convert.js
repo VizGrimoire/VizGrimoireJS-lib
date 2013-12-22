@@ -744,7 +744,7 @@ Convert.convertFilterItemSummary = function(filter, item) {
             if (filter !== $(this).data('filter')) return;
             if (!filter) return;
             if ($(this).data('item')) real_item = $(this).data('item');
-            div.id = ds+"-"+divlabel;
+            div.id = ds+"-"+filter+"-"+divlabel;
             if (filter === "repos") {
                 real_item = Convert.getRealItem(DS, filter, real_item);
                 if (real_item) DS.displayRepoSummary(div.id, real_item, DS);
@@ -778,7 +778,7 @@ Convert.convertFilterItemMetricsEvol = function(filter, item) {
                 config_metric.show_legend = true;
             if ($(this).data('frame-time')) 
                 config_metric.frame_time = true;
-            div.id = metrics.replace(/,/g,"-")+"-"+divlabel;
+            div.id = metrics.replace(/,/g,"-")+"-"+ds+"-"+filter+"-"+divlabel;
             if (filter === "repos") {
                 real_item = Convert.getRealItem(DS, filter, real_item);
                 if (real_item)
@@ -812,7 +812,7 @@ Convert.convertFilterItemTop = function(filter, item) {
             var metric = $(this).data('metric');
             var period = $(this).data('period');
             var titles = $(this).data('titles');
-            div.id = metric+"-"+period+"-"+divlabel;
+            div.id = metric+"-"+period+"-"+ds+"-"+filter+"-"+divlabel;
             div.className = "";
             // Only for Company yet
             if (filter === "companies")
@@ -822,8 +822,10 @@ Convert.convertFilterItemTop = function(filter, item) {
 };
 
 Convert.convertFilterStudyItem = function (filter, item) {
-
-    if (Convert.convertFilterStudyItem.done === true) return;
+    // Control convert is not called several times per filter
+    var convertfn = Convert.convertFilterStudyItem;
+    if (convertfn.done === undefined) {convertfn.done = {};}
+    else if (convertfn.done[filter] === true) return;
 
     // repositories comes from Automator config
     if (filter === "repositories") filter = "repos";
@@ -844,7 +846,7 @@ Convert.convertFilterStudyItem = function (filter, item) {
 
     Convert.activateHelp();
 
-    Convert.convertFilterStudyItem.done = true;
+    convertfn.done[filter] = true;
 };
 
 Convert.activateHelp = function() {
