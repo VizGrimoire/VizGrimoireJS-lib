@@ -145,7 +145,7 @@ if (Loader === undefined) var Loader = {};
     }
 
     function data_load_countries() {
-        var ds_not_supported = ['irc','mediawiki','scr'];
+        var ds_not_supported = ['irc','mediawiki'];
         var data_sources = Report.getDataSources();
         $.each(data_sources, function(i, DS) {
             if ($.inArray(DS.getName(), ds_not_supported) >-1) 
@@ -498,7 +498,7 @@ if (Loader === undefined) var Loader = {};
     // Load an item JSON data. If in a page, check all items read and cb.
     // TODO: A bit complex now, we should break it in different functions
     Loader.data_load_item = function (item, DS, page, cb, filter, items_map) {
-        var ds_not_supported_countries = ['irc','mediawiki','scr'];
+        var ds_not_supported_countries = ['irc','mediawiki'];
         var ds_not_supported_companies = ['irc','mediawiki'];
         if (filter === "companies") {
             if ($.inArray(DS.getName(),ds_not_supported_companies)>-1) {
