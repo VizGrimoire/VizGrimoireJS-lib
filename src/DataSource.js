@@ -471,19 +471,28 @@ function DataSource(name, basic_metrics) {
     this.displayMetricsCompany = function (
             company, metrics, div_id, config) {
         var data = this.getCompaniesMetricsData()[company];
-        if (data === undefined) return;
+        if (data === undefined) {
+            $("#"+div_id).hide();
+            return;
+        }
         Viz.displayMetricsCompany(company, metrics, data, div_id, config);
     };
 
     this.displayMetricsRepo = function (repo, metrics, div_id, config) {
         var data = this.getReposMetricsData()[repo];
-        if (data === undefined) return;
+        if (data === undefined) {
+            $("#"+div_id).hide();
+            return;
+        }
         Viz.displayMetricsRepo(repo, metrics, data, div_id, config);
     };
 
     this.displayMetricsCountry = function (country, metrics, div_id, config) {
         var data = this.getCountriesMetricsData()[country];
-        if (data === undefined) return;
+        if (data === undefined) {
+            $("#"+div_id).hide();
+            return;
+        }
         Viz.displayMetricsCountry(country, metrics, data, div_id, config);
     };
 
