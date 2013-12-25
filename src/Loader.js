@@ -28,6 +28,7 @@ if (Loader === undefined) var Loader = {};
     var data_global_callbacks = [];
     var data_repos_callbacks = [];
     var check_companies = false, check_repos = false, check_countries = false;
+    var ds_not_supported_company_top = ['scr','irc','mediawiki'];
 
     Loader.data_ready = function(callback) {
         data_callbacks.push(callback);
@@ -336,8 +337,7 @@ if (Loader === undefined) var Loader = {};
                     Loader.data_load_item (item, DS, null, 
                         Convert.convertFilterStudyItem, filter, null);
                     if (filter === "companies") {
-                        var ds_not_supported = ['irc','mediawiki'];
-                        if ($.inArray(DS.getName(),ds_not_supported) === -1)
+                        if ($.inArray(DS.getName(),ds_not_supported_company_top) === -1)
                             Loader.data_load_item_top (item, DS, null,
                                     Convert.convertFilterStudyItem, filter);
                     }
@@ -373,8 +373,9 @@ if (Loader === undefined) var Loader = {};
                     check = false;
                     return false;
                 }
-                // Check item data top for all data sources
-                else if (DS.getCompaniesTopData()[item] === undefined) {
+                // Check item data top for all data sources supported
+                else if ($.inArray(DS.getName(),ds_not_supported_company_top) === -1 &&
+                         DS.getCompaniesTopData()[item] === undefined) {
                     check = false;
                     return false;
                 }
