@@ -44,7 +44,7 @@ Convert.convertMicrodashText = function () {
                 var column = ds.getMetrics()[metric].column;
                 var netvalue = ds.getGlobalData()["diff_net"+column+"_"+period];
                 var percentagevalue = ds.getGlobalData()["percentage_"+column+"_"+period];
-                var value = Report.formatValue(ds.getGlobalData()[metric+"_"+period]);
+                var value = ds.getGlobalData()[metric+"_"+period];
                 if (netvalue === undefined || percentagevalue === undefined) {
                     var value2 = ds.getGlobalData()[metric+"_"+(period*2)];
                     var old_value = value2-value;
@@ -54,20 +54,23 @@ Convert.convertMicrodashText = function () {
 
                 html += '<div class="span3">';
                 if (netvalue > 0) percentagevalue = '+' + percentagevalue;
-                if (netvalue < 0) percentagevalue = '-' + percentagevalue;
+                if (netvalue < 0) percentagevalue = '-' + Math.abs(percentagevalue);
                 if (netvalue === 0) {
                     html += '<i class="icon-circle-arrow-right"></i>';
-                    html += value + '<span class="fppercent">&nbsp;('+percentagevalue+'%)</span>&nbsp;';
+                    html += Report.formatValue(value);
+                    html += '<span class="fppercent">&nbsp;('+percentagevalue+'%)</span>&nbsp;';
                 }
                 else if (netvalue > 0) {
                     html += '<i class="icon-circle-arrow-up"></i>&nbsp;';
                     // TODO: lcanas, dizquierdo why old_value?
                     // html += old_value + '<span class="fppercent">&nbsp;('+percentagevalue+'%)</span>&nbsp;';
-                    html += value + '<span class="fppercent">&nbsp;('+percentagevalue+'%)</span>&nbsp;';
+                    html += Report.formatValue(value);
+                    html += '<span class="fppercent">&nbsp;('+percentagevalue+'%)</span>&nbsp;';
                 } else if (netvalue < 0) {
                     html += '<i class="icon-circle-arrow-down"></i>&nbsp;';
                     // html += old_value + '<span class="fppercent">&nbsp;('+percentagevalue+'%)</span>&nbsp;';
-                    html += value + '<span class="fppercent">&nbsp;('+percentagevalue+'%)</span>&nbsp;';
+                    html += Report.formatValue(value);
+                    html += '<span class="fppercent">&nbsp;('+percentagevalue+'%)</span>&nbsp;';
                 }
                 html += '<br><span class="dayschange">'+period+' Days Change</span>';
                 html += '</div><!--span3-->';
@@ -101,23 +104,23 @@ Convert.convertMicrodash = function () {
                 var column = ds.getMetrics()[metric].column;
                 var netvalue = ds.getGlobalData()["diff_net"+column+"_"+period];
                 var percentagevalue = ds.getGlobalData()["percentage_"+column+"_"+period];
-                var value = Report.formatValue(ds.getGlobalData()[metric+"_"+period]);
+                var value = ds.getGlobalData()[metric+"_"+period];
                 if (netvalue === undefined || percentagevalue === undefined) {
                     var value2 = ds.getGlobalData()[metric+"_"+(period*2)];
                     var old_value = value2-value;
                     percentagevalue = parseInt(((value-old_value)/old_value)*100,null);
                     netvalue = value-old_value;
                 }
-                html += "<em>"+name+"</em>:"+value+"&nbsp;";
+                html += "<em>"+name+"</em>:"+Report.formatValue(value)+"&nbsp;";
                 if (netvalue === 0) {
                     html += '';
                 }
                 else if (netvalue > 0) {
                     html += '<i class="icon-circle-arrow-up"></i>';
-                    html += '<small>('+percentagevalue+'%)</small>&nbsp;';
+                    html += '<small>(+'+percentagevalue+'%)</small>&nbsp;';
                 } else if (netvalue < 0) {
                     html += '<i class="icon-circle-arrow-down"></i>';
-                    html += '<small>('+percentagevalue+'%)</small>&nbsp;';
+                    html += '<small>(-'+Math.abs(percentagevalue)+'%)</small>&nbsp;';
                 }
             });
             html += '</div>';

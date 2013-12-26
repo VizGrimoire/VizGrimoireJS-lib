@@ -200,16 +200,29 @@ if (Report === undefined) var Report = {};
         return label;
     };
 
+    // http://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
+    function strNumberWithThousands(x) {
+        var parts = x.toString().split(".");
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g,",");
+        return parts.join(".");
+    }
+
     // Format: 
     // numbers: 2 decimals, and ,. separators
     // strings: no format
     Report.formatValue = function(number) {
         var value = number;
         try {
-            value = parseFloat(number).toFixed(2).toLocaleString()
-                    .replace(/\.00$/, '');
+            value = parseFloat(number).toFixed(2).toString().replace(/\.00$/, '');
+            value = strNumberWithThousands(value);
+            // If language is spanish exchange , and . Not rock solid logic but simple
+            if (navigator.language === "es") {
+                var parts = value.split(".");
+                parts[0] = parts[0].replace(",",".");
+                value = parts.join(",");
+            }
         } catch(err) {}
-        if (isNaN(value)) value = number;
+        if (typeof(value) === "number" && isNaN(value)) value = str(number);
         return value;
     };
 
