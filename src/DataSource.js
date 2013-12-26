@@ -556,7 +556,7 @@ function DataSource(name, basic_metrics) {
         }
     };
 
-    this.displayItemsNav = function (div_nav, type, sort_metric, page_str) {
+    this.displayItemsNav = function (div_nav, type, page_str) {
         var page = parseInt(page_str, null);
         if (isNaN(page)) page = 1;
         var sorted_items = null;
@@ -644,15 +644,6 @@ function DataSource(name, basic_metrics) {
             if (i++>=limit-1) return false;
         });
         $("#"+div_links).append(links);
-    };
-
-    this.displayCountriesNav = function (div_nav, sort_metric) {
-        var nav = "<span id='nav'></span>";
-        var sorted_countries = DataProcess.sortCountries(this, sort_metric);
-        $.each(sorted_countries, function(id, country) {
-            nav += "<a href='#"+country+"-nav'>"+country + "</a> ";
-        });
-        $("#"+div_nav).append(nav);
     };
 
     this.displayCompaniesList = function (metrics,div_id, 

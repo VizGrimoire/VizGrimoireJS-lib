@@ -649,14 +649,13 @@ Convert.convertFilterItemsNav = function(filter, page) {
             if (filter !== $(this).data('filter')) return;
             if (!filter) return;
             if ($(this).data('page')) page = $(this).data('page');
-            var order_by = $(this).data('order-by');
             div.id = ds+"-"+divlabel;
             if (filter === "repos")
-                DS.displayItemsNav(div.id, filter, order_by, page);
+                DS.displayItemsNav(div.id, filter, page);
             if (filter === "countries")
-                DS.displayCountriesNav(div.id, order_by, page);
+                DS.displayItemsNav(div.id, filter, page);
             if (filter === "companies")
-                DS.displayItemsNav(div.id, filter, order_by, page);
+                DS.displayItemsNav(div.id, filter, page);
         });
     }
 };
