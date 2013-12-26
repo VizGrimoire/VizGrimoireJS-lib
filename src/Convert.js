@@ -44,7 +44,7 @@ Convert.convertMicrodashText = function () {
                 var column = ds.getMetrics()[metric].column;
                 var netvalue = ds.getGlobalData()["diff_net"+column+"_"+period];
                 var percentagevalue = ds.getGlobalData()["percentage_"+column+"_"+period];
-                var value = ds.getGlobalData()[metric+"_"+period];
+                var value = Report.formatValue(ds.getGlobalData()[metric+"_"+period]);
                 if (netvalue === undefined || percentagevalue === undefined) {
                     var value2 = ds.getGlobalData()[metric+"_"+(period*2)];
                     var old_value = value2-value;
@@ -101,7 +101,7 @@ Convert.convertMicrodash = function () {
                 var column = ds.getMetrics()[metric].column;
                 var netvalue = ds.getGlobalData()["diff_net"+column+"_"+period];
                 var percentagevalue = ds.getGlobalData()["percentage_"+column+"_"+period];
-                var value = ds.getGlobalData()[metric+"_"+period];
+                var value = Report.formatValue(ds.getGlobalData()[metric+"_"+period]);
                 if (netvalue === undefined || percentagevalue === undefined) {
                     var value2 = ds.getGlobalData()[metric+"_"+(period*2)];
                     var old_value = value2-value;
@@ -196,7 +196,7 @@ Convert.convertRefcard = function() {
     .done (function(res1, res2) {
         refcard = res1[0];
         projcard = res2[0];
-    
+
         $("#Refcard").html(refcard);
         displayReportData();
         $.each(Report.getProjectsData(), function(prj_name, prj_data) {
@@ -230,7 +230,7 @@ Convert.convertGlobalData = function (){
             if (DS === null) return;
             var data = DS.getGlobalData();
             var key = $(this).data('field');
-            $(this).text(data[key]);
+            $(this).text(Report.formatValue(data[key]));
         });
     }
 };

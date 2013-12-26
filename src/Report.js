@@ -200,6 +200,19 @@ if (Report === undefined) var Report = {};
         return label;
     };
 
+    // Format: 
+    // numbers: 2 decimals, and ,. separators
+    // strings: no format
+    Report.formatValue = function(number) {
+        var value = number;
+        try {
+            value = parseFloat(number).toFixed(2).toLocaleString()
+                    .replace(/\.00$/, '');
+        } catch(err) {}
+        if (isNaN(value)) value = number;
+        return value;
+    };
+
     Report.escapeHtml = function(unsafe) {
         return unsafe
             .replace(/&/g, "&amp;")
