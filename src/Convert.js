@@ -604,6 +604,8 @@ Convert.convertFilterItemsSummary = function(filter) {
                 DS.displayCountriesSummary(div.id, DS);
             if (filter === "companies")
                 DS.displayCompaniesSummary(div.id, DS);
+            if (filter === "domains")
+                DS.displayDomainsSummary(div.id, DS);
         });
     }
 };
@@ -640,6 +642,9 @@ Convert.convertFilterItemsGlobal = function(filter) {
             if (filter === "companies")
                 DS.displayMetricCompaniesStatic(metric,div.id,
                     config_metric, limit, order_by, show_others);
+            if (filter === "domains")
+                DS.displayMetricDomainsStatic(metric,div.id,
+                    config_metric, limit, order_by, show_others);
         });
     }
 };
@@ -662,6 +667,8 @@ Convert.convertFilterItemsNav = function(filter, page) {
             if (filter === "countries")
                 DS.displayItemsNav(div.id, filter, page);
             if (filter === "companies")
+                DS.displayItemsNav(div.id, filter, page);
+            if (filter === "domains")
                 DS.displayItemsNav(div.id, filter, page);
         });
     }
@@ -699,7 +706,9 @@ Convert.convertFilterItemsMetricsEvol = function(filter) {
             if (filter === "repos")
                 DS.displayMetricRepos(metric,div.id,
                             config_metric, start, end);
-
+            if (filter === "domains")
+                DS.displayMetricDomains(metric,div.id,
+                            config_metric, start, end);
         });
     }
 };
@@ -732,6 +741,9 @@ Convert.convertFilterItemsMiniCharts = function(filter, page) {
                     config_metric, order_by, show_links);
             if (filter === "companies")
                 DS.displayCompaniesList(metrics.split(","),div.id,
+                    config_metric, order_by, show_links);
+            if (filter === "domains")
+                DS.displayDomainsList(metrics.split(","),div.id,
                     config_metric, order_by, show_links);
         });
     }
@@ -770,6 +782,8 @@ Convert.convertFilterItemSummary = function(filter, item) {
                 DS.displayCountrySummary(div.id, real_item, DS);
             if (filter === "companies")
                 DS.displayCompanySummary(div.id, real_item, DS);
+            if (filter === "domains")
+                DS.displayDomainSummary(div.id, real_item, DS);
         });
     }
 };
@@ -808,6 +822,9 @@ Convert.convertFilterItemMetricsEvol = function(filter, item) {
                     div.id, config_metric);
             if (filter === "companies")
                 DS.displayMetricsCompany(real_item, metrics.split(","),
+                    div.id, config_metric);
+            if (filter === "domains")
+                DS.displayMetricsDomain(real_item, metrics.split(","),
                     div.id, config_metric);
         });
     }
@@ -851,6 +868,7 @@ Convert.convertFilterStudyItem = function (filter, item) {
         if (filter === "repos") item = Report.getParameterByName("repository");
         if (filter === "countries") item = Report.getParameterByName("country");
         if (filter === "companies") item = Report.getParameterByName("company");
+        if (filter === "domains") item = Report.getParameterByName("domain");
     }
 
     if (!item) return;

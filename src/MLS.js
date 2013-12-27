@@ -69,6 +69,12 @@ function MLS() {
             'name' : "Respositories",
             'desc' : "Number of active respositories"
         },
+        'mls_domains' : {
+            'divid' : 'mls_domains',
+            'column' : "domains",
+            'name' : "Domains",
+            'desc' : "Number of active domains"
+        },
         'mls_people' : {
             'divid' : 'mls_people',
             'column' : "people",

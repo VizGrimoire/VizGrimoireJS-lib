@@ -129,6 +129,12 @@ function SCM() {
             'name' : "Countries",
             'desc' : "Number of active countries"
         },
+        'scm_domains' : {
+            'divid' : 'scm_domains',
+            'column' : "domains",
+            'name' : "Domains",
+            'desc' : "Number of active domains"
+        },
         'scm_people' : {
             'divid' : 'scm_people',
             'column' : "people",

@@ -48,7 +48,10 @@ var DataProcess = {};
     DataProcess.sortRepos = function(ds, metric_id) {
         return sortGlobal(ds, metric_id, "repos");
     };
-    
+
+    DataProcess.sortDomains = function(ds, metric_id) {
+        return sortGlobal(ds, metric_id, "domains");
+    };
     // Sort disabled. Use sort order from R data.
     sortGlobal = function (ds, metric_id, kind) {
         var sort_disabled = true;
@@ -67,6 +70,10 @@ var DataProcess = {};
         else if (kind === "countries") {
             global = ds.getCountriesGlobalData();
             if (ds.getCountriesData().length === 0) return sorted;
+        }
+        else if (kind === "domains") {
+            global = ds.getDomainsGlobalData();
+            if (ds.getDomainsData().length === 0) return sorted;
         }
         $.each(global, function(item, data) {
            metric.push([item, data[metric_id]]);

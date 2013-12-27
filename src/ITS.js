@@ -94,6 +94,12 @@ function ITS() {
             'name' : "Respositories",
             'desc' : "Number of active respositories"
         },
+        'its_domains' : {
+            'divid' : 'its_domains',
+            'column' : "domains",
+            'name' : "Domains",
+            'desc' : "Number of active domains"
+        },
         'its_people' : {
             'divid' : 'its_people',
             'column' : "people",

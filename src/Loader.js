@@ -87,6 +87,7 @@ if (Loader === undefined) var Loader = {};
             if ($.inArray('companies', active_reports) > -1) data_load_companies();
             if ($.inArray('repositories', active_reports) > -1) data_load_repos();
             if ($.inArray('countries', active_reports) > -1) data_load_countries();
+            if ($.inArray('domains', active_reports) > -1) data_load_domains();
             if ($.inArray('people', active_reports) > -1) {
                 data_load_people();
                 data_load_people_identities();
@@ -95,6 +96,7 @@ if (Loader === undefined) var Loader = {};
             data_load_companies();
             data_load_repos();
             data_load_countries();
+            data_load_domains();
             data_load_people();
             data_load_people_identities();
         }
@@ -153,6 +155,17 @@ if (Loader === undefined) var Loader = {};
                 DS.setCountriesData([]);
             else 
                 data_load_file(DS.getCountriesDataFile(), DS.setCountriesData, DS);
+        });
+    }
+
+    function data_load_domains() {
+        var ds_not_supported = ['irc','mediawiki'];
+        var data_sources = Report.getDataSources();
+        $.each(data_sources, function(i, DS) {
+            if ($.inArray(DS.getName(), ds_not_supported) >-1)
+                DS.setDomainsData([]);
+            else
+                data_load_file(DS.getDomainsDataFile(), DS.setDomainsData, DS);
         });
     }
 
@@ -229,6 +242,7 @@ if (Loader === undefined) var Loader = {};
             if (filter === "repos") total = DS.getReposData().length;
             if (filter === "companies") total = DS.getCompaniesData().length;
             if (filter === "countries") total = DS.getCountriesData().length;
+            if (filter === "domains") total = DS.getDomainsData().length;
             if (end>total) end = total;
             for (var i=start;i<end;i++) {
                 var item;
@@ -252,6 +266,14 @@ if (Loader === undefined) var Loader = {};
                     item = DS.getCountriesData()[i];
                     if (DS.getCountriesGlobalData()[item] === undefined ||
                         DS.getCountriesMetricsData()[item] === undefined) {
+                        check = false;
+                        return false;
+                    }
+                }
+                if (filter === "domains") {
+                    item = DS.getDomainsData()[i];
+                    if (DS.getDomainsGlobalData()[item] === undefined ||
+                        DS.getDomainsMetricsData()[item] === undefined) {
                         check = false;
                         return false;
                     }
@@ -280,6 +302,12 @@ if (Loader === undefined) var Loader = {};
             }
             if (filter == "countries") {
                 if ($.inArray(item, DS.getCountriesData())>-1) {
+                    ds = DS;
+                    return false;
+                }
+            }
+            if (filter == "domains") {
+                if ($.inArray(item, DS.getDomainsData())>-1) {
                     ds = DS;
                     return false;
                 }
@@ -329,7 +357,7 @@ if (Loader === undefined) var Loader = {};
                 }
             }
         }
-        // Companies and countries should be loaded for all data sources active
+        // Companies, countries and domains should be loaded for all data sources active
         else {
             $.each(Report.getDataSources(), function(index, DS) {
                 if (Loader.check_item (item, filter) === false) {
@@ -348,7 +376,7 @@ if (Loader === undefined) var Loader = {};
     };
 
     // Check the item in one data source for repos
-    // Check the item for all data sources for countries and companies
+    // Check the item for all data sources for countries, companies and domains
     Loader.check_item = function(item, filter) {
         var check = false;
         $.each(Report.getDataSources(), function(index, DS) {
@@ -395,6 +423,21 @@ if (Loader === undefined) var Loader = {};
                 }
                 else check = true;
             }
+
+            if (filter === "domains") {
+                var domains = DS.getDomainsData();
+                // No data for domains
+                if (domains.length === 0) check = true;
+                // Domain available
+                else if ($.inArray(item, domains) === -1) check = true;
+                // Check item data for all data sources
+                else if (DS.getDomainsGlobalData()[item] === undefined ||
+                    DS.getDomainsMetricsData()[item] === undefined) {
+                    check = false;
+                    return false;
+                }
+                else check = true;
+            }
         });
         return check;
     };
@@ -419,11 +462,14 @@ if (Loader === undefined) var Loader = {};
             if (DS.getCompaniesData() === null) return false;
         if (filter === "countries")
             if (DS.getCountriesData() === null) return false;
+        if (filter === "domains")
+            if (DS.getDomainsData() === null) return false;
         // No data
         var total = 0;
         if (filter === "repos") total = DS.getReposData().length;
         if (filter === "companies") total = DS.getCompaniesData().length;
         if (filter === "countries") total = DS.getCountriesData().length;
+        if (filter === "domains") total = DS.getDomainsData().length;
         if (total === 0) return true;
         // Check if we have the data for the page and if not load
         var start = Report.getPageSize()*(page-1);
@@ -439,6 +485,9 @@ if (Loader === undefined) var Loader = {};
             } else if (filter === "countries") {
                 var country = DS.getCountriesData()[i];
                 Loader.data_load_item (country, DS, page, cb, "countries");
+            } else if (filter === "domains") {
+                var domain = DS.getDomainsData()[i];
+                Loader.data_load_item (domain, DS, page, cb, "domains");
             }
         }
     };
@@ -501,6 +550,8 @@ if (Loader === undefined) var Loader = {};
     Loader.data_load_item = function (item, DS, page, cb, filter, items_map) {
         var ds_not_supported_countries = ['irc','mediawiki'];
         var ds_not_supported_companies = ['irc','mediawiki'];
+        var ds_not_supported_domains = ['irc','mediawiki'];
+
         if (filter === "companies") {
             if ($.inArray(DS.getName(),ds_not_supported_companies)>-1) {
                 DS.addCompanyMetricsData(item, [], DS);
@@ -512,6 +563,13 @@ if (Loader === undefined) var Loader = {};
             if ($.inArray(DS.getName(),ds_not_supported_countries)>-1) {
                 DS.addCountryMetricsData(item, [], DS);
                 DS.addCountryGlobalData(item, [], DS);
+                return;
+            }
+        }
+        else if (filter === "domains") {
+            if ($.inArray(DS.getName(),ds_not_supported_domains)>-1) {
+                DS.addDomainMetricsData(item, [], DS);
+                DS.addDomainGlobalData(item, [], DS);
                 return;
             }
         }
@@ -530,6 +588,9 @@ if (Loader === undefined) var Loader = {};
             } else if (filter === "countries") {
                 DS.addCountryMetricsData(item, evo[0], DS);
                 DS.addCountryGlobalData(item, global[0], DS);
+            } else if (filter === "domains") {
+                DS.addDomainMetricsData(item, evo[0], DS);
+                DS.addDomainGlobalData(item, global[0], DS);
             }
         }).always(function() {
             // Check all items for a page
@@ -619,6 +680,11 @@ if (Loader === undefined) var Loader = {};
         return true;
     }
 
+    function check_domains_loaded(DS) {
+        if (DS.getDomainsData() === null) return false;
+        return true;
+    }
+
     function check_projects_loaded() {
         var projects_loaded = 0;
         var projects_data = Report.getProjectsData();
@@ -664,7 +730,7 @@ if (Loader === undefined) var Loader = {};
         if (!(check_data_loaded_global())) return false;
 
         var data_sources = Report.getDataSources();
-        var active_reports = ['companies','repositories','countries'];
+        var active_reports = ['companies','repositories','countries', 'domains'];
         if (Report.getConfig() !== null)
             active_reports = Report.getConfig().reports;
         $.each(data_sources, function(index, DS) {
@@ -675,6 +741,8 @@ if (Loader === undefined) var Loader = {};
                 if (!check_repos_loaded(DS)) {check = false; return false;}
             if ($.inArray('countries', active_reports) > -1)
                 if (!check_countries_loaded(DS)) {check = false; return false;}
+            if ($.inArray('domains', active_reports) > -1)
+                if (!check_domains_loaded(DS)) {check = false; return false;}
             if (DS instanceof MLS) {
                 if (DS.getListsData() === null) {check = false; return false;}
             }

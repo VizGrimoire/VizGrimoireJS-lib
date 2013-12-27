@@ -34,10 +34,12 @@ if (Viz === undefined) var Viz = {};
     Viz.displayMetricCompanies = displayMetricCompanies;
     Viz.displayMetricSubReportStatic = displayMetricSubReportStatic;
     Viz.displayMetricsCompany = displayMetricsCompany;
+    Viz.displayMetricsDomain = displayMetricsDomain;
     Viz.displayMetricsPeople = displayMetricsPeople;
     Viz.displayMetricsRepo = displayMetricsRepo;
     Viz.displayMetricRepos = displayMetricRepos;
     Viz.displayMetricsCountry = displayMetricsCountry;
+    Viz.displayMetricDomains = displayMetricDomains;
     Viz.displayMetricsEvol = displayMetricsEvol;
     Viz.displayBubbles = displayBubbles;
     Viz.displayDemographics = displayDemographics;
@@ -1010,6 +1012,12 @@ if (Viz === undefined) var Viz = {};
         displayMetricsLines(div_id, metrics, data, title, config);
     }
 
+    function displayMetricsDomain (domain, metrics, data, div_id, config) {
+        config = checkBasicConfig(config);
+        var title = domain;
+        displayMetricsLines(div_id, metrics, data, title, config);
+    }
+
     function displayMetricsPeople (upeople_identifier, metrics, data, div_id, config) {
         config = checkBasicConfig(config);
         var title = upeople_identifier;
@@ -1039,6 +1047,16 @@ if (Viz === undefined) var Viz = {};
             config.show_legend = true;
         var title = metric;
         displayMetricSubReportLines(div_target, metric, data, title, 
+                config, start, end);
+    }
+
+    function displayMetricDomains(metric, data, div_target,
+            config, start, end) {
+        config = checkBasicConfig(config);
+        if (config.show_legend !== false)
+            config.show_legend = true;
+        var title = metric;
+        displayMetricSubReportLines(div_target, metric, data, title,
                 config, start, end);
     }
 
