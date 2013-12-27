@@ -22,7 +22,7 @@
  */
 
 function SCR() {
-    
+
     var self = this;
 
     this.basic_metrics = {
@@ -165,7 +165,7 @@ function SCR() {
             $(div_id + ' .scr_info').hide();
             return;
         }
-        
+
         var url = '';
         if (this.global_data.repositories === 1) {
             url = this.global_data.url;
@@ -200,7 +200,7 @@ function SCR() {
         if (false)    
             Viz.displayBubbles(divid, "scr_opened", "scr_openers", radius);
     };
-        
+
     // http:__lists.webkit.org_pipermail_squirrelfish-dev_
     // <allura-dev.incubator.apache.org>
     SCR.displaySCRListName = function (listinfo) {

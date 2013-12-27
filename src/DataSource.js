@@ -776,7 +776,7 @@ function DataSource(name, basic_metrics) {
 
         if (history === undefined || history instanceof Array) return;
 
-        html = "<h4>" + ds.getName() + "</h4>";
+        html = "<h6>" + ds.getTitle() + "</h6>";
 
         html += "<table class='table-condensed table-hover'>";
         html += "<tr><td>";
@@ -815,8 +815,7 @@ function DataSource(name, basic_metrics) {
 
     this.displaySummary = function(report, divid, item, ds) {
         if (!item) item = "";
-        var label = Report.cleanLabel(item);
-        var html = "<h4>" + label + " (" + ds.getName()+ ")</h4>";
+        var html = "<h6>" + ds.getTitle()+ "</h6>";
         var id_label = this.getSummaryLabels();
         var global_data = null;
         if (report === "companies")

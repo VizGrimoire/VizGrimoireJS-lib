@@ -22,9 +22,9 @@
  */
 
 function MLS() {
-    
+
     var self = this;
-    
+
     this.basic_metrics = {
         'mls_responses' : {
             'divid' : "mls_responses",
@@ -234,9 +234,9 @@ function MLS() {
         }
 
     };
-    
+
     this.getTitle = function() {return "Mailing Lists";};
-    
+
     // TODO: use cache to store mls_file and check it!
     function displayBasicList(div_id, l, mls_file, config_metric) {
         var config = Viz.checkBasicConfig(config_metric);
@@ -271,7 +271,7 @@ function MLS() {
     function getMLSId() {
         return getReportId() + "_mls_lists";
     }
-    
+
     this.displayEvoListsMain = function (id) {
         if (localStorage) {
             if (localStorage.length && localStorage.getItem(getMLSId())) {

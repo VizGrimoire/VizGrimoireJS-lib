@@ -136,7 +136,7 @@ function SCM() {
             'desc' : "Number of active people"
         }
     };
-    
+
     this.getMainMetric = function() {
         return "scm_commits";
     };
@@ -149,7 +149,7 @@ function SCM() {
         return this.its;
     };
 
-    this.getTitle = function() {return "Change sets (commits to source code)";};
+    this.getTitle = function() {return "Source Code Management";};
 
     this.getSummaryLabels = function () {
         var id_label = {

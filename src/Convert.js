@@ -733,6 +733,17 @@ Convert.convertFilterItemsMiniCharts = function(filter, page) {
     }
 };
 
+Convert.convertFilterItemData = function (filter, item) {
+    var divs = $(".FilterItemData");
+    if (divs.length > 0) {
+        $.each(divs, function(id, div) {
+            var label = Report.cleanLabel(item);
+            if (!div.id) div.id = "FilterItemData" + getRandomId();
+            $("#"+div.id).append("<h1><small>"+label + "</small></h1>");
+        });
+    }
+};
+
 Convert.convertFilterItemSummary = function(filter, item) {
     var divlabel = "FilterItemSummary";
     divs = $("."+divlabel);
@@ -842,6 +853,7 @@ Convert.convertFilterStudyItem = function (filter, item) {
 
     if (Loader.FilterItemCheck(item, filter) === false) return;
 
+    Convert.convertFilterItemData(filter, item);
     Convert.convertFilterItemSummary(filter, item);
     Convert.convertFilterItemMetricsEvol(filter, item);
     Convert.convertFilterItemTop(filter, item);

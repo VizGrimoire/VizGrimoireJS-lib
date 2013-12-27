@@ -22,9 +22,9 @@
  */
 
 function IRC() {
-    
+
     var self = this;
-    
+
     this.basic_metrics = {
         'irc_sent' : {
             'divid' : "irc_sent",
@@ -40,7 +40,7 @@ function IRC() {
             'action' : 'sent'
         }
     };
-        
+
     this.getMainMetric = function() {
         return "irc_sent";
     };
@@ -61,7 +61,7 @@ function IRC() {
             $(div_id + ' .irc_info').hide();
             return;
         }
-        
+
         var url = '';
         if (this.global_data.repositories === 1) {
             url = this.global_data.url;
@@ -87,7 +87,7 @@ function IRC() {
         $(div_id + ' #ircLast').text(data.last_date);
         $(div_id + ' #ircSent').text(data.irc_sent);
     };
-    
+
     this.displayBubbles = function(divid, radius) {
         if (false)    
             Viz.displayBubbles(divid, "irc_sent", "irc_senders", radius);

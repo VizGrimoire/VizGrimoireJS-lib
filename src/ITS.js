@@ -99,13 +99,13 @@ function ITS() {
             'column' : "people",
             'name' : "People",
             'desc' : "Number of active people"
-        }  
-    };       
-    
+        }
+    };
+
     this.getMainMetric = function() {
         return "its_opened";
     };
-    
+
     this.setReposData = function(repos_name, self) {
         if (self === undefined) self = this;
         if (!(repos_name instanceof Array)) repos_name=[repos_name];
