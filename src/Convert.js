@@ -36,7 +36,8 @@ Convert.convertMicrodashText = function () {
             var total = ds.getGlobalData()[metric];
             //initial square: total
             var html = '<div class="row-fluid"><div class="span3">';
-            html += '<span class="medium-fp-number">'+total+'</span> '+ds.getMetrics()[metric].name;
+            html += '<span class="medium-fp-number">'+Report.formatValue(total);
+            html += '</span> '+ds.getMetrics()[metric].name;
             html += '</div><!--span3-->';
 
             $.each({7:'week',30:'month',365:'year'}, function(period, name) {
@@ -93,7 +94,8 @@ Convert.convertMicrodash = function () {
             var total = ds.getGlobalData()[metric];
             var html = '<div>';
             html += '<div style="float:left">';
-            html += '<span class="medium-fp-number">'+total+'</span> '+ds.getMetrics()[metric].name;
+            html += '<span class="medium-fp-number">'+Report.formatValue(total);
+            html += '</span> '+ds.getMetrics()[metric].name;
             html += '</div>';
             html += '<div id="Microdash" '+
                     'class="MetricsEvol" data-data-source="'+ds.getName()+'" data-metrics="'+
