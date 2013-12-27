@@ -46,6 +46,7 @@ Convert.convertMicrodashText = function () {
                 var netvalue = ds.getGlobalData()["diff_net"+column+"_"+period];
                 var percentagevalue = ds.getGlobalData()["percentage_"+column+"_"+period];
                 var value = ds.getGlobalData()[metric+"_"+period];
+                if (value === undefined) return;
                 if (netvalue === undefined || percentagevalue === undefined) {
                     var value2 = ds.getGlobalData()[metric+"_"+(period*2)];
                     var old_value = value2-value;
@@ -107,6 +108,7 @@ Convert.convertMicrodash = function () {
                 var netvalue = ds.getGlobalData()["diff_net"+column+"_"+period];
                 var percentagevalue = ds.getGlobalData()["percentage_"+column+"_"+period];
                 var value = ds.getGlobalData()[metric+"_"+period];
+                if (value === undefined) return;
                 if (netvalue === undefined || percentagevalue === undefined) {
                     var value2 = ds.getGlobalData()[metric+"_"+(period*2)];
                     var old_value = value2-value;
@@ -235,7 +237,7 @@ Convert.convertGlobalData = function (){
             if (DS === null) return;
             var data = DS.getGlobalData();
             var key = $(this).data('field');
-            $(this).text(Report.formatValue(data[key]));
+            $(this).text(Report.formatValue(data[key], key));
         });
     }
 };

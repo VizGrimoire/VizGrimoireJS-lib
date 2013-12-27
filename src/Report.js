@@ -210,7 +210,9 @@ if (Report === undefined) var Report = {};
     // Format: 
     // numbers: 2 decimals, and ,. separators
     // strings: no format
-    Report.formatValue = function(number) {
+    Report.formatValue = function(number, field) {
+        if (number === undefined) return '-';
+        var date_fields = ['last_date','first_date'];
         var value = number;
         try {
             value = parseFloat(number).toFixed(2).toString().replace(/\.00$/, '');
@@ -222,7 +224,10 @@ if (Report === undefined) var Report = {};
                 value = parts.join(",");
             }
         } catch(err) {}
-        if (typeof(value) === "number" && isNaN(value)) value = str(number);
+        if (typeof(value) === "number" && isNaN(value)) value = number.toString();
+        // Don't convert date number (2012)
+        if (field !== undefined && $.inArray(field, date_fields)>-1)
+            value = number.toString();
         return value;
     };
 
