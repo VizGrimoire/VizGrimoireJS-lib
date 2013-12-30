@@ -63,6 +63,18 @@ function SCR() {
             "name" : "Reviews abandoned",
             "desc" : "Reviews abandoned"
         },
+        "scr_pending" : {
+            "divid" : "scr_pending",
+            "column" : "pending",
+            "name" : "Reviews pending",
+            "desc" : "Reviews pending to be attended"
+        },
+        "scr_review_time_days_avg" : {
+            "divid" : "scr_review_time_days_avg",
+            "column" : "review_time_days_avg",
+            "name" : "Average review time",
+            "desc" : "Average review time in days"
+        },
         "scr_verified" : {
             "divid" : "scr_verified",
             "column" : "verified",
