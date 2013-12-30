@@ -71,7 +71,7 @@ function MediaWiki() {
         if (this.global_data.repositories === 1) {
             url = this.global_data.url;
         } else {
-            url = Report.getProjectData().mls_url;
+            url = Report.getProjectData().mediawiki_url;
         }
 
         if (this.global_data.type)

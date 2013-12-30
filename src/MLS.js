@@ -116,7 +116,7 @@ function MLS() {
         var str = this.global_data.url;
         if (!str || str.length === 0) {
             $(div_id + ' .mls_info').hide();
-            return;
+            // return;
         }
 
         var url = '';
