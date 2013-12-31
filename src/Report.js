@@ -220,7 +220,7 @@ if (Report === undefined) var Report = {};
             // If language is spanish exchange , and . Not rock solid logic but simple
             if (navigator.language === "es") {
                 var parts = value.split(".");
-                parts[0] = parts[0].replace(",",".");
+                parts[0] = parts[0].replace(/,/g,".");
                 value = parts.join(",");
             }
         } catch(err) {}

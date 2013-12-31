@@ -41,18 +41,11 @@ Convert.convertMicrodashText = function () {
             html += '</div><!--span3-->';
 
             $.each({7:'week',30:'month',365:'year'}, function(period, name) {
-                // Try to read values from JSON. If not available, compute them
                 var column = ds.getMetrics()[metric].column;
                 var netvalue = ds.getGlobalData()["diff_net"+column+"_"+period];
                 var percentagevalue = ds.getGlobalData()["percentage_"+column+"_"+period];
                 var value = ds.getGlobalData()[metric+"_"+period];
                 if (value === undefined) return;
-                if (netvalue === undefined || percentagevalue === undefined) {
-                    var value2 = ds.getGlobalData()[metric+"_"+(period*2)];
-                    var old_value = value2-value;
-                    percentagevalue = parseInt(((value-old_value)/old_value)*100,null);
-                    netvalue = value-old_value;
-                }
 
                 html += '<div class="span3">';
                 if (netvalue > 0) percentagevalue = '+' + percentagevalue;
@@ -103,18 +96,11 @@ Convert.convertMicrodash = function () {
                     metric+'" data-min=true style="margin-left:10px; float:left;width:100px; height:25px;"></div>';
             html += '<div style="clear:both"></div><div>';
             $.each({7:'week',30:'month',365:'year'}, function(period, name) {
-                // Try to read values from JSON. If not available, compute them
                 var column = ds.getMetrics()[metric].column;
                 var netvalue = ds.getGlobalData()["diff_net"+column+"_"+period];
                 var percentagevalue = ds.getGlobalData()["percentage_"+column+"_"+period];
                 var value = ds.getGlobalData()[metric+"_"+period];
                 if (value === undefined) return;
-                if (netvalue === undefined || percentagevalue === undefined) {
-                    var value2 = ds.getGlobalData()[metric+"_"+(period*2)];
-                    var old_value = value2-value;
-                    percentagevalue = parseInt(((value-old_value)/old_value)*100,null);
-                    netvalue = value-old_value;
-                }
                 html += "<em>"+name+"</em>:"+Report.formatValue(value)+"&nbsp;";
                 if (netvalue === 0) {
                     html += '';
