@@ -507,7 +507,9 @@ Loader.data_ready(function() {
 });
 
 $(document).ready(function() {
-    var filename = Report.getDataDir()+'/config.json'; 
+    // var filename = Report.getDataDir()+'/config.json';
+    // Config file loaded from root dir
+    var filename = './config.json';
     $.getJSON(filename, function(data) {
         Report.setConfig(data);
     }).fail(function() {
