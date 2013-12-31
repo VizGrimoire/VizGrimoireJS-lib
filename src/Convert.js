@@ -40,7 +40,8 @@ Convert.convertMicrodashText = function () {
             html += '</span> '+ds.getMetrics()[metric].name;
             html += '</div><!--span3-->';
 
-            $.each({7:'week',30:'month',365:'year'}, function(period, name) {
+            // $.each({7:'week',30:'month',365:'year'}, function(period, name) {
+            $.each([365,30,7], function(index, period) {
                 var column = ds.getMetrics()[metric].column;
                 var netvalue = ds.getGlobalData()["diff_net"+column+"_"+period];
                 var percentagevalue = ds.getGlobalData()["percentage_"+column+"_"+period];
@@ -57,13 +58,10 @@ Convert.convertMicrodashText = function () {
                 }
                 else if (netvalue > 0) {
                     html += '<i class="icon-circle-arrow-up"></i>&nbsp;';
-                    // TODO: lcanas, dizquierdo why old_value?
-                    // html += old_value + '<span class="fppercent">&nbsp;('+percentagevalue+'%)</span>&nbsp;';
                     html += Report.formatValue(value);
                     html += '<span class="fppercent">&nbsp;('+percentagevalue+'%)</span>&nbsp;';
                 } else if (netvalue < 0) {
                     html += '<i class="icon-circle-arrow-down"></i>&nbsp;';
-                    // html += old_value + '<span class="fppercent">&nbsp;('+percentagevalue+'%)</span>&nbsp;';
                     html += Report.formatValue(value);
                     html += '<span class="fppercent">&nbsp;('+percentagevalue+'%)</span>&nbsp;';
                 }
@@ -95,7 +93,8 @@ Convert.convertMicrodash = function () {
                     'class="MetricsEvol" data-data-source="'+ds.getName()+'" data-metrics="'+
                     metric+'" data-min=true style="margin-left:10px; float:left;width:100px; height:25px;"></div>';
             html += '<div style="clear:both"></div><div>';
-            $.each({7:'week',30:'month',365:'year'}, function(period, name) {
+            // $.each({7:'week',30:'month',365:'year'}, function(period, name) {
+            $.each([365,30,7], function(index, period) {
                 var column = ds.getMetrics()[metric].column;
                 var netvalue = ds.getGlobalData()["diff_net"+column+"_"+period];
                 var percentagevalue = ds.getGlobalData()["percentage_"+column+"_"+period];
