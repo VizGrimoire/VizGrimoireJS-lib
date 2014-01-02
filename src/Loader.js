@@ -521,9 +521,27 @@ if (Loader === undefined) var Loader = {};
         });
     };
 
+    function getFilterSuffix(filter) {
+        var filter_suffix = '';
+        if (filter === "repos") {
+            filter_suffix = 'rep';
+        }
+        else if (filter === "companies") {
+            filter_suffix = 'com';
+        }
+        else if (filter === "countries") {
+            filter_suffix = 'cou';
+        }
+        else if (filter === "domains") {
+            filter_suffix = 'dom';
+        }
+        return filter_suffix;
+    }
+
     // TODO: Only companies supported yet, but ready for all items!
     Loader.data_load_item_top = function (item, DS, page, cb, filter) {
-        var file_top = DS.getDataDir() + "/"+ item +"-" + DS.getName()+"-top-";
+        var file_top = DS.getDataDir() + "/"+ item +"-" + DS.getName();
+        file_top += getFilterSuffix(filter) + "-top-";
         if (DS.getName() === "scm") file_top += "authors";
         else if (DS.getName() === "its") file_top += "closers";
         else if (DS.getName() === "mls") file_top += "senders";
@@ -552,8 +570,16 @@ if (Loader === undefined) var Loader = {};
         var ds_not_supported_countries = ['irc','mediawiki'];
         var ds_not_supported_companies = ['irc','mediawiki'];
         var ds_not_supported_domains = ['irc','mediawiki'];
+        var ds_not_supported_repos = ['mediawiki'];
 
-        if (filter === "companies") {
+        if (filter === "repos") {
+            if ($.inArray(DS.getName(),ds_not_supported_repos)>-1) {
+                DS.addRepoMetricsData(item, [], DS);
+                DS.addRepoGlobalData(item, [], DS);
+                return;
+            }
+        }
+        else if (filter === "companies") {
             if ($.inArray(DS.getName(),ds_not_supported_companies)>-1) {
                 DS.addCompanyMetricsData(item, [], DS);
                 DS.addCompanyGlobalData(item, [], DS);
@@ -574,10 +600,12 @@ if (Loader === undefined) var Loader = {};
                 return;
             }
         }
+        else return;
         var item_uri = encodeURIComponent(item);
         var file = DS.getDataDir()+"/"+item_uri+"-";
-        var file_evo = file + DS.getName()+"-evolutionary.json";
-        var file_static = file + DS.getName()+"-static.json";
+        file += DS.getName() + "-" + getFilterSuffix(filter);
+        var file_evo = file +"-evolutionary.json";
+        var file_static = file +"-static.json";
         $.when($.getJSON(file_evo),$.getJSON(file_static)
                 ).done(function(evo, global) {
             if (filter === "repos") {
