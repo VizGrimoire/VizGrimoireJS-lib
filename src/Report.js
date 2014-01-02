@@ -331,7 +331,8 @@ if (Report === undefined) var Report = {};
         var scm, its, mls, scr, irc, mediawiki;
 
         $.each(projects_dirs, function (i, project) {
-            if (Report.getConfig() === null) {
+            if (Report.getConfig() === null ||
+                Report.getConfig()['data-sources'] === undefined) {
                 its = new ITS();
                 Report.registerDataSource(its);
                 mls = new MLS();

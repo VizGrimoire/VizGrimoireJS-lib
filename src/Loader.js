@@ -49,7 +49,8 @@ if (Loader === undefined) var Loader = {};
 
     Loader.data_load = function() {
         // If we have a config file just load what is configured
-        if (Report.getConfig() !== null) {
+        if (Report.getConfig() !== null &&
+            Report.getConfig().project_info !== undefined) {
             Report.setProjectData(Report.getConfig().project_info);
             if (Report.getConfig().markers)
                 data_load_file(Report.getMarkersFile(),
@@ -82,7 +83,7 @@ if (Loader === undefined) var Loader = {};
         data_load_demographics();
         data_load_markov_table();
 
-        if (Report.getConfig() !== null) {
+        if (Report.getConfig() !== null && Report.getConfig().reports !== undefined) {
             var active_reports = Report.getConfig().reports;
             if ($.inArray('companies', active_reports) > -1) data_load_companies();
             if ($.inArray('repositories', active_reports) > -1) data_load_repos();
@@ -731,7 +732,7 @@ if (Loader === undefined) var Loader = {};
 
         var data_sources = Report.getDataSources();
         var active_reports = ['companies','repositories','countries', 'domains'];
-        if (Report.getConfig() !== null)
+        if (Report.getConfig() !== null && Report.getConfig().reports !== undefined)
             active_reports = Report.getConfig().reports;
         $.each(data_sources, function(index, DS) {
             if (DS.getPeopleData() === null) {check = false; return false;}
