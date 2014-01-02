@@ -709,31 +709,31 @@ function DataSource(name, basic_metrics) {
     };
 
     this.displayCompaniesList = function (metrics,div_id, 
-            config_metric, sort_metric, show_links) {
+            config_metric, sort_metric, show_links, start, end) {
         this.displaySubReportList("companies",metrics,div_id, 
-                config_metric, sort_metric, undefined, show_links);
+                config_metric, sort_metric, undefined, show_links, start, end);
     };
 
     this.displayReposList = function (metrics,div_id, 
-            config_metric, sort_metric, page, show_links) {
+            config_metric, sort_metric, page, show_links, start, end) {
         this.displaySubReportList("repos",metrics,div_id, 
-                config_metric, sort_metric, page, show_links);
+                config_metric, sort_metric, page, show_links, start, end);
     };
 
     this.displayCountriesList = function (metrics,div_id, 
-            config_metric, sort_metric, show_links) {
+            config_metric, sort_metric, show_links, start, end) {
         this.displaySubReportList("countries",metrics,div_id, 
-                config_metric, sort_metric, undefined, show_links);
+                config_metric, sort_metric, undefined, show_links, start, end);
     };
 
     this.displayDomainsList = function (metrics,div_id,
-            config_metric, sort_metric, show_links) {
+            config_metric, sort_metric, show_links, start, end) {
         this.displaySubReportList("domains",metrics,div_id,
-                config_metric, sort_metric, undefined, show_links);
+                config_metric, sort_metric, undefined, show_links, start, end);
     };
 
     this.displaySubReportList = function (report, metrics,div_id, 
-            config_metric, sort_metric, page_str, show_links) {
+            config_metric, sort_metric, page_str, show_links, start, end) {
 
         var page = parseInt(page_str, null);
         if (isNaN(page)) page = 1;
@@ -826,7 +826,8 @@ function DataSource(name, basic_metrics) {
                 var items = {};
                 items[item] = item_data;
                 var title = '';
-                Viz.displayMetricSubReportLines(div_id, metric, items, title);
+                Viz.displayMetricSubReportLines(div_id, metric, items, title, 
+                        config_metric, start, end);
             });
         });
     };

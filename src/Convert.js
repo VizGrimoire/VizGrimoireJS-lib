@@ -717,19 +717,22 @@ Convert.convertFilterItemsMiniCharts = function(filter, page) {
             var show_links = true;
             if ($(this).data('show_links') !== undefined)
                 show_links = $(this).data('show_links');
+            // In unixtime
+            var start = $(this).data('start');
+            var end = $(this).data('end');
             div.id = metrics.replace(/,/g,"-")+"-"+divlabel;
             if (filter === "repos")
                 DS.displayReposList(metrics.split(","),div.id,
-                    config_metric, order_by, page, show_links);
+                    config_metric, order_by, page, show_links, start, end);
             if (filter === "countries")
                 DS.displayCountriesList(metrics.split(","),div.id,
-                    config_metric, order_by, show_links);
+                    config_metric, order_by, show_links, start, end);
             if (filter === "companies")
                 DS.displayCompaniesList(metrics.split(","),div.id,
-                    config_metric, order_by, show_links);
+                    config_metric, order_by, show_links, start, end);
             if (filter === "domains")
                 DS.displayDomainsList(metrics.split(","),div.id,
-                    config_metric, order_by, show_links);
+                    config_metric, order_by, show_links, start, end);
         });
     }
 };
