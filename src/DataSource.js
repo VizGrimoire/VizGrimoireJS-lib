@@ -643,7 +643,7 @@ function DataSource(name, basic_metrics) {
         var psize = Report.getPageSize();
         if (page) {
             nav += "<div class='pagination'>";
-            var number_pages = Math.floor(total/psize);
+            var number_pages = Math.ceil(total/psize);
             // number to compose the text message (from_item - to_item / total)
             var from_item = ((page-1) * psize) + 1;
             var to_item = page * psize;
