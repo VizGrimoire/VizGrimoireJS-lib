@@ -306,7 +306,6 @@ describe( "VizGrimoireJS library", function () {
             var data_sources = Report.getDataSources();
             $.each(data_sources, function(index, DS) {
                 var ds_name = DS.getName();
-                if (ds_name === "scr") return;
                 if (report === "repos")
                     total_repos = DS.getReposData().length;
                 else if (report === "companies")
@@ -320,6 +319,8 @@ describe( "VizGrimoireJS library", function () {
                 if (ds_name === "scm") metrics = "scm_commits,scm_authors";
                 if (ds_name === "its") metrics = "its_closed,its_closers";
                 if (ds_name === "mls") metrics = "mls_sent,mls_senders";
+                if (ds_name === "irc") metrics = "irc_sent,irc_senders";
+                if (ds_name === "scr") metrics = "scr_submitted,scr_merged";
                 buildNode(ds_name+"-"+report+"-MiniCharts",
                         "FilterItemsMiniCharts",
                         {
@@ -328,6 +329,12 @@ describe( "VizGrimoireJS library", function () {
                             'data-filter': report
                 });
             });
+            // TODO: Hack!
+            if (report === "companies") {
+                // gerrit sample company does not have commits (merges are not counted)
+                total_canvas = total_canvas-1;
+            }
+
             ncanvas = document.getElementsByClassName('flotr-canvas').length;
             Report.setCurrentPage(1);
             Convert.convertFilterStudy(report);
@@ -440,20 +447,20 @@ describe( "VizGrimoireJS library", function () {
                 var data_sources = Report.getDataSources();
                 var max_people_index = 0;
                 var metrics = null;
-                // Find developer with ITS, MLS and SCM activity
+                // Find developer with ITS, MLS, SCM and SCR activity
                 $.each(data_sources, function(index, DS) {
-                    if (DS.getName() === 'scr' || DS.getName() === 'irc' || DS.getName() === "mediawiki") 
+                    if (DS.getName() === 'irc' || DS.getName() === "mediawiki")
                         return;
-                    var np = DS.getPeopleData().id.length;
+                    var np = DS.getPeopleData().length;
                     if (np > max_people_index) max_people_index = np;
                     nds++;
                 });
                 for (var i=0; i<max_people_index; i++) {
                     var dev_found = true;
                     $.each(data_sources, function(index, DS) { 
-                        if (DS.getName() === 'scr'|| DS.getName() === 'irc' || DS.getName() === "mediawiki") 
+                        if (DS.getName() === 'irc' || DS.getName() === "mediawiki")
                             return;
-                        if ($.inArray(i,DS.getPeopleData().id)===-1) {
+                        if ($.inArray(i,DS.getPeopleData())===-1) {
                             dev_found = false;
                             return false;
                         }
@@ -461,17 +468,15 @@ describe( "VizGrimoireJS library", function () {
                     if (dev_found) {people_id = i; break;}
                 }
                 $.each(data_sources, function(index, DS) {
-                    if (DS.getName() === 'scr' || DS.getName() === 'irc' || DS.getName() === "mediawiki") 
+                    if (DS.getName() === 'irc' || DS.getName() === "mediawiki")
                         return;
-                    if (DS.getName() === 'scm') {
-                        metrics = 'scm_commits';
-                    }
-                    else if (DS.getName() === 'its') {
-                        metrics = 'its_closed';
-                    }
-                    else if (DS.getName() === 'mls') {
-                        metrics = 'mls_sent';
-                    }
+                    if (DS.getName() === 'scm') metrics = 'scm_commits';
+                    else if (DS.getName() === 'its') metrics = 'its_closed';
+                    else if (DS.getName() === 'mls') metrics = 'mls_sent';
+                    else if (DS.getName() === 'scr') metrics = 'scr_closed';
+                    else if (DS.getName() === 'irc') metrics = 'irc_sent';
+                    else if (DS.getName() === 'mediawiki') metrics = 'revisions';
+
                     buildNode(DS.getName()+"-people-metrics",
                             "PersonMetrics",
                           {
