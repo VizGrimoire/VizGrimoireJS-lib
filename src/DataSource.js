@@ -709,9 +709,9 @@ function DataSource(name, basic_metrics) {
     };
 
     this.displayCompaniesList = function (metrics,div_id, 
-            config_metric, sort_metric, show_links, start, end) {
+            config_metric, sort_metric, page, show_links, start, end) {
         this.displaySubReportList("companies",metrics,div_id, 
-                config_metric, sort_metric, undefined, show_links, start, end);
+                config_metric, sort_metric, page, show_links, start, end);
     };
 
     this.displayReposList = function (metrics,div_id, 
@@ -721,15 +721,15 @@ function DataSource(name, basic_metrics) {
     };
 
     this.displayCountriesList = function (metrics,div_id, 
-            config_metric, sort_metric, show_links, start, end) {
+            config_metric, sort_metric, page, show_links, start, end) {
         this.displaySubReportList("countries",metrics,div_id, 
-                config_metric, sort_metric, undefined, show_links, start, end);
+                config_metric, sort_metric, page, show_links, start, end);
     };
 
     this.displayDomainsList = function (metrics,div_id,
-            config_metric, sort_metric, show_links, start, end) {
+            config_metric, sort_metric, page, show_links, start, end) {
         this.displaySubReportList("domains",metrics,div_id,
-                config_metric, sort_metric, undefined, show_links, start, end);
+                config_metric, sort_metric, page, show_links, start, end);
     };
 
     this.displaySubReportList = function (report, metrics,div_id, 
