@@ -267,7 +267,7 @@ describe( "VizGrimoireJS library", function () {
     });
 
     function checkDataReport(report) {
-        if ($.inArray(report,['repos','companies','countries'])===-1) 
+        if ($.inArray(report,['repos','companies','countries', 'domains'])===-1)
             return;
         var data_sources = Report.getDataSources();
         var repos = 0, repos_global = {}, repos_metrics = {};
@@ -287,6 +287,11 @@ describe( "VizGrimoireJS library", function () {
                 repos_global = DS.getReposGlobalData();
                 repos_metrics = DS.getReposMetricsData();
             }
+            else if (report === "domains") {
+                repos = DS.getDomainsData();
+                repos_global = DS.getDomainsGlobalData();
+                repos_metrics = DS.getDomainsMetricsData();
+            }
             if (repos.length === 0) return;
             for (var i=0; i<repos.length; i++) {
                 for (field in repos_metrics[repos[i]]) {
@@ -301,7 +306,7 @@ describe( "VizGrimoireJS library", function () {
     function checkVizReport(report) {
         var ncanvas = 0, total_canvas = 0;
         runs(function() {
-            if ($.inArray(report,['repos','companies','countries'])===-1)
+            if ($.inArray(report,['repos','companies','countries', 'domains'])===-1)
                 return;
             var data_sources = Report.getDataSources();
             $.each(data_sources, function(index, DS) {
@@ -312,6 +317,8 @@ describe( "VizGrimoireJS library", function () {
                     total_repos = DS.getCompaniesData().length;
                 else if (report === "countries")
                     total_repos = DS.getCountriesData().length;
+                else if (report === "domains")
+                    total_repos = DS.getDomainsData().length;
                 if (total_repos > Report.getPageSize())
                     total_repos = Report.getPageSize();
                 total_canvas += 2*total_repos;
@@ -330,8 +337,8 @@ describe( "VizGrimoireJS library", function () {
                 });
             });
             // TODO: Hack!
-            if (report === "companies") {
-                // gerrit sample company does not have commits (merges are not counted)
+            if (report === "companies" || report === "domains") {
+                // gerrit sample company/domain does not have commits (merges are not counted)
                 total_canvas = total_canvas-1;
             }
 
@@ -373,9 +380,17 @@ describe( "VizGrimoireJS library", function () {
             checkVizReport("countries");
         });
     });
+    describe("Domains checking", function() {
+        it("All domains should have Evol and Global metrics", function () {
+            checkDataReport('domains');
+        });
+        it("Domains basic viz should work", function() {
+            checkVizReport("domains");
+        });
+    });
 
     function checkVizItem(item, report) {
-        if ($.inArray(report,['repos','companies','countries'])===-1) 
+        if ($.inArray(report,['repos','companies','countries', 'domains'])===-1)
             return;
         var ncanvas = 0, total_canvas = 0;
 
@@ -436,6 +451,13 @@ describe( "VizGrimoireJS library", function () {
             var DS = Report.getDataSources()[0];
             country = DS.getCountriesData()[0];
             checkVizItem(country, 'countries', DS);
+        });
+    });
+    describe("First domain item checking", function() {
+        it("First domain item viz should work", function() {
+            var DS = Report.getDataSources()[0];
+            domain = DS.getDomainsData()[0];
+            checkVizItem(domain, 'domains', DS);
         });
     });
 
