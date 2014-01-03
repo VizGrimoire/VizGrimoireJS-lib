@@ -810,7 +810,8 @@ function DataSource(name, basic_metrics) {
             //list += "<br><a href='#nav'>^</a>";
             list += "</td>";
             $.each(metrics, function(id, metric) {
-                list += "<td class='span5'><div id='"+item+"-"+metric+"'";
+                list += "<td class='span5'>";
+                list += "<div id='"+report+"-"+item+"-"+metric+"'";
                 list +=" class='subreport-list-item'>";
             });
             list += "</td></tr>";
@@ -822,7 +823,7 @@ function DataSource(name, basic_metrics) {
             $.each(metrics, function(id, metric) {
                 var item_data = data[item];
                 if (item_data[metric] === undefined) return;
-                var div_id = item+"-"+metric;
+                var div_id = report+"-"+item+"-"+metric;
                 var items = {};
                 items[item] = item_data;
                 var title = '';
