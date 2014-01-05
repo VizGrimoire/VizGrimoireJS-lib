@@ -462,7 +462,8 @@ Convert.convertPersonData = function (upeople_id, upeople_identifier) {
     var divs = $(".PersonData"), name, email;
     if (divs.length > 0) {
         $.each(divs, function(id, div) {
-            if (!div.id) div.id = "PersonSummay" + getRandomId();
+            if ($(this).data('person_id')) upeople_id = $(this).data('person_id');
+            if (!div.id) div.id = "PersonData" + "-" + upeople_id + "-" + getRandomId();
             var data = Report.getPeopleIdentities()[upeople_id];
             if (data) {
                 name = DataProcess.selectPersonName(data);
