@@ -835,7 +835,7 @@ Convert.convertFilterItemTop = function(filter, item) {
             var metric = $(this).data('metric');
             var period = $(this).data('period');
             var titles = $(this).data('titles');
-            div.id = metric+"-"+period+"-"+ds+"-"+filter+"-"+divlabel;
+            div.id = metric+"-"+ds+"-"+filter+"-"+divlabel+"-"+getRandomId();
             div.className = "";
             // Only for Company yet
             if (filter === "companies")

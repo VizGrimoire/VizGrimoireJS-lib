@@ -541,7 +541,7 @@ if (Loader === undefined) var Loader = {};
     // TODO: Only companies supported yet, but ready for all items!
     Loader.data_load_item_top = function (item, DS, page, cb, filter) {
         var file_top = DS.getDataDir() + "/"+ item +"-" + DS.getName();
-        file_top += getFilterSuffix(filter) + "-top-";
+        file_top += "-" + getFilterSuffix(filter) + "-top-";
         if (DS.getName() === "scm") file_top += "authors";
         else if (DS.getName() === "its") file_top += "closers";
         else if (DS.getName() === "mls") file_top += "senders";
@@ -656,10 +656,10 @@ if (Loader === undefined) var Loader = {};
                     if (cb.called_item === undefined) {
                         cb.called_item = {};
                         cb.called_item[filter] = true;
-                        cb(filter);
+                        cb(filter, item);
                     }
                     else if (!cb.called_item[filter]) {
-                        cb(filter);
+                        cb(filter, item);
                         cb.called_item[filter] = true;
                     }
                 }
