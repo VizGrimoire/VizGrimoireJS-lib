@@ -291,6 +291,7 @@ if (Report === undefined) var Report = {};
             $(".scr-menu")[0].className = 
                 $(".scr-menu")[0].className + " active";
         } else if (page.indexOf('index') === 0 || page === '') {
+            if ($(".summary-menu").length === 0) return;
             $(".summary-menu")[0].className = 
                 $(".summary-menu")[0].className + " active";
         } else {
