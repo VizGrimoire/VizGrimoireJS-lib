@@ -643,7 +643,7 @@ function DataSource(name, basic_metrics) {
         var psize = Report.getPageSize();
         if (page) {
             nav += "<div class='pagination'>";
-            var number_pages = Math.floor(total/psize);
+            var number_pages = Math.ceil(total/psize);
             // number to compose the text message (from_item - to_item / total)
             var from_item = ((page-1) * psize) + 1;
             var to_item = page * psize;
@@ -709,9 +709,9 @@ function DataSource(name, basic_metrics) {
     };
 
     this.displayCompaniesList = function (metrics,div_id, 
-            config_metric, sort_metric, show_links, start, end) {
+            config_metric, sort_metric, page, show_links, start, end) {
         this.displaySubReportList("companies",metrics,div_id, 
-                config_metric, sort_metric, undefined, show_links, start, end);
+                config_metric, sort_metric, page, show_links, start, end);
     };
 
     this.displayReposList = function (metrics,div_id, 
@@ -721,15 +721,15 @@ function DataSource(name, basic_metrics) {
     };
 
     this.displayCountriesList = function (metrics,div_id, 
-            config_metric, sort_metric, show_links, start, end) {
+            config_metric, sort_metric, page, show_links, start, end) {
         this.displaySubReportList("countries",metrics,div_id, 
-                config_metric, sort_metric, undefined, show_links, start, end);
+                config_metric, sort_metric, page, show_links, start, end);
     };
 
     this.displayDomainsList = function (metrics,div_id,
-            config_metric, sort_metric, show_links, start, end) {
+            config_metric, sort_metric, page, show_links, start, end) {
         this.displaySubReportList("domains",metrics,div_id,
-                config_metric, sort_metric, undefined, show_links, start, end);
+                config_metric, sort_metric, page, show_links, start, end);
     };
 
     this.displaySubReportList = function (report, metrics,div_id, 
@@ -810,7 +810,8 @@ function DataSource(name, basic_metrics) {
             //list += "<br><a href='#nav'>^</a>";
             list += "</td>";
             $.each(metrics, function(id, metric) {
-                list += "<td class='span5'><div id='"+item+"-"+metric+"'";
+                list += "<td class='span5'>";
+                list += "<div id='"+report+"-"+item+"-"+metric+"'";
                 list +=" class='subreport-list-item'>";
             });
             list += "</td></tr>";
@@ -822,7 +823,7 @@ function DataSource(name, basic_metrics) {
             $.each(metrics, function(id, metric) {
                 var item_data = data[item];
                 if (item_data[metric] === undefined) return;
-                var div_id = item+"-"+metric;
+                var div_id = report+"-"+item+"-"+metric;
                 var items = {};
                 items[item] = item_data;
                 var title = '';

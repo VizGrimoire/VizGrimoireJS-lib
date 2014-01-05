@@ -727,13 +727,13 @@ Convert.convertFilterItemsMiniCharts = function(filter, page) {
                     config_metric, order_by, page, show_links, start, end);
             if (filter === "countries")
                 DS.displayCountriesList(metrics.split(","),div.id,
-                    config_metric, order_by, show_links, start, end);
+                    config_metric, order_by, page, show_links, start, end);
             if (filter === "companies")
                 DS.displayCompaniesList(metrics.split(","),div.id,
-                    config_metric, order_by, show_links, start, end);
+                    config_metric, order_by, page, show_links, start, end);
             if (filter === "domains")
                 DS.displayDomainsList(metrics.split(","),div.id,
-                    config_metric, order_by, show_links, start, end);
+                    config_metric, order_by, page, show_links, start, end);
         });
     }
 };
