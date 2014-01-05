@@ -742,6 +742,7 @@ Convert.convertFilterItemData = function (filter, item) {
     var divs = $(".FilterItemData");
     if (divs.length > 0) {
         $.each(divs, function(id, div) {
+            $(this).empty();
             var label = Report.cleanLabel(item);
             if (!div.id) div.id = "FilterItemData" + getRandomId();
             $("#"+div.id).append("<h1><small>"+label + "</small></h1>");
