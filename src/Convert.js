@@ -100,7 +100,7 @@ Convert.convertMicrodash = function () {
                 var percentagevalue = ds.getGlobalData()["percentage_"+column+"_"+period];
                 var value = ds.getGlobalData()[metric+"_"+period];
                 if (value === undefined) return;
-                html += "<em>"+name+"</em>:"+Report.formatValue(value)+"&nbsp;";
+                html += "<span class='dayschange'>"+period+" Days Change</span>:"+Report.formatValue(value)+"&nbsp;";
                 if (netvalue === 0) {
                     html += '';
                 }
