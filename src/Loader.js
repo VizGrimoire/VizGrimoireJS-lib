@@ -513,11 +513,11 @@ if (Loader === undefined) var Loader = {};
             ).done(function(evo, global) {
             DS.addPeopleMetricsData(upeople_id, evo[0], DS);
             DS.addPeopleGlobalData(upeople_id, global[0], DS);
-            if (Loader.check_people_item(upeople_id)) cb();
+            if (Loader.check_people_item(upeople_id)) cb(upeople_id);
         }).fail(function() {
             DS.addPeopleMetricsData(upeople_id, [], DS);
             DS.addPeopleGlobalData(upeople_id, [], DS);
-            if (Loader.check_people_item(upeople_id)) cb();
+            if (Loader.check_people_item(upeople_id)) cb(upeople_id);
         });
     };
 
