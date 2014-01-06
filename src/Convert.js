@@ -30,6 +30,7 @@ Convert.convertMicrodashText = function () {
     var divs = $(".MicrodashText");
     if (divs.length > 0) {
         $.each(divs, function(id, div) {
+            $(this).empty();
             var metric = $(this).data('metric');
             var ds = Report.getMetricDS(metric)[0];
             if (ds === undefined) return;
@@ -79,6 +80,7 @@ Convert.convertMicrodash = function () {
     var divs = $(".Microdash");
     if (divs.length > 0) {
         $.each(divs, function(id, div) {
+            $(this).empty();
             var metric = $(this).data('metric');
             // Microdash text or graphical
             var text = $(this).data('text');
@@ -147,6 +149,7 @@ Convert.convertSummary = function() {
     var divs = $("." + div_param);
     if (divs.length > 0) {
         $.each(divs, function(id, div) {
+            $(this).empty();
             var ds = $(this).data('data-source');
             var DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
@@ -230,20 +233,39 @@ Convert.convertGlobalData = function (){
 Convert.convertRadarActivity = function() {
     var div_param = "RadarActivity";
     var divs = $("#" + div_param);
-    if (divs.length > 0)
+    if (divs.length > 0) {
+        $.each(divs, function(id, div) {
+            $(this).empty();
+        });
+        //  TODO: In which div is displayed?
         Viz.displayRadarActivity(div_param);
+    }
 };
 
 Convert.convertRadarCommunity = function() {
     var div_param = "RadarCommunity";
     var divs = $("#" + div_param);
-    if (divs.length > 0)
+    if (divs.length > 0) {
+        $.each(divs, function(id, div) {
+            $(this).empty();
+        });
+        //  TODO: In which div is displayed?
         Viz.displayRadarCommunity('RadarCommunity');
+    }
 };
 
 Convert.convertTreemap = function() {
-    var file = $('#Treemap').data('file');
-    Viz.displayTreeMap('Treemap', file);
+    var div_param = "Treemap";
+    var divs = $("#" + div_param);
+    if (divs.length > 0) {
+        $.each(divs, function(id, div) {
+            $(this).empty();
+        });
+        //  TODO: Just one treemap supported
+        var file = $('#Treemap').data('file');
+        $('#Treemap').empty();
+        Viz.displayTreeMap('Treemap', file);
+    }
 };
 
 Convert.convertBubbles = function() {
@@ -251,6 +273,7 @@ Convert.convertBubbles = function() {
     var divs = $("." + div_param);
     if (divs.length > 0) {
         $.each(divs, function(id, div) {
+            $(this).empty();
             var ds = $(this).data('data-source');
             var DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
@@ -285,7 +308,7 @@ Convert.convertMetricsEvol = function() {
             $.each(config_metric, function(key, value) {
                 config_viz[key] = value;
             });
-
+            $(this).empty();
             var metrics = $(this).data('metrics');
             var ds = $(this).data('data-source');
             var DS = Report.getDataSourceByName(ds);
@@ -318,6 +341,7 @@ Convert.convertMetricsEvolSet = function() {
     var divs = $("." + div_param);
     if (divs.length > 0) {
         $.each(divs, function(id, div) {
+            $(this).empty();
             var all = $(this).data('all');
             var relative = $(this).data('relative');
             var summary_graph = $(this).data('summary-graph');
@@ -342,6 +366,7 @@ Convert.convertTimeTo = function() {
     divs = $("."+div_tt); 
     if (divs.length > 0) {
         $.each(divs, function(id, div) {
+            $(this).empty();
             var ds = $(this).data('data-source');
             var DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
@@ -362,6 +387,7 @@ Convert.convertMarkovTable = function() {
     var DS, ds;
     if (divs.length > 0) {
         $.each(divs, function(id, div) {
+            $(this).empty();
             ds = $(this).data('data-source');
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
@@ -409,6 +435,7 @@ Convert.convertTop = function() {
     if (divs.length > 0) {
         var unique = 0;
         $.each(divs, function(id, div) {
+            $(this).empty();
             ds = $(this).data('data-source');
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
@@ -439,6 +466,7 @@ Convert.convertPersonMetrics = function (upeople_id, upeople_identifier) {
     divs = $(".PersonMetrics");
     if (divs.length) {
         $.each(divs, function(id, div) {
+            $(this).empty();
             ds = $(this).data('data-source');
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
@@ -462,6 +490,7 @@ Convert.convertPersonData = function (upeople_id, upeople_identifier) {
     var divs = $(".PersonData"), name, email;
     if (divs.length > 0) {
         $.each(divs, function(id, div) {
+            $(this).empty();
             if ($(this).data('person_id')) upeople_id = $(this).data('person_id');
             if (!div.id) div.id = "PersonData" + "-" + upeople_id + "-" + getRandomId();
             var data = Report.getPeopleIdentities()[upeople_id];
@@ -482,6 +511,7 @@ Convert.convertPersonSummary = function (upeople_id, upeople_identifier) {
     var divs = $(".PersonSummary");
     if (divs.length > 0) {
         $.each(divs, function(id, div) {
+            $(this).empty();
             ds = $(this).data('data-source');
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
@@ -520,6 +550,7 @@ Convert.convertDemographics = function() {
     var divs = $(".Demographics");
     if (divs.length > 0) {
         $.each(divs, function(id, div) {
+            $(this).empty();
             ds = $(this).data('data-source');
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
@@ -584,6 +615,7 @@ Convert.convertFilterItemsSummary = function(filter) {
             if (filter !== $(this).data('filter')) return;            
             if (!filter) return;
             div.id = ds+"-"+divlabel;
+            $(this).empty();
             if (filter === "repos")
                 DS.displayReposSummary(div.id, DS);
             if (filter === "countries")
@@ -619,6 +651,7 @@ Convert.convertFilterItemsGlobal = function(filter) {
             } else config_metric.legend = {container: null};
             config_metric.graph = $(this).data('graph');
             div.id = metric+"-"+divlabel;
+            $(this).empty();
             if (filter === "repos")
                 DS.displayMetricReposStatic(metric,div.id,
                     config_metric, limit, order_by, show_others);
@@ -648,13 +681,14 @@ Convert.convertFilterItemsNav = function(filter, page) {
             if (!filter) return;
             if ($(this).data('page')) page = $(this).data('page');
             div.id = ds+"-"+divlabel;
+            $(this).empty();
             if (filter === "repos")
                 DS.displayItemsNav(div.id, filter, page);
-            if (filter === "countries")
+            else if (filter === "countries")
                 DS.displayItemsNav(div.id, filter, page);
-            if (filter === "companies")
+            else if (filter === "companies")
                 DS.displayItemsNav(div.id, filter, page);
-            if (filter === "domains")
+            else if (filter === "domains")
                 DS.displayItemsNav(div.id, filter, page);
         });
     }
@@ -686,13 +720,14 @@ Convert.convertFilterItemsMetricsEvol = function(filter) {
             } else config_metric.legend = {container: null};
             config_metric.show_legend = $(this).data('legend');
             div.id = metric+"-"+divlabel;
+            $(this).empty();
             if (filter === "companies")
                 DS.displayMetricCompanies(metric,div.id,
                     config_metric, start, end);
-            if (filter === "repos")
+            else if (filter === "repos")
                 DS.displayMetricRepos(metric,div.id,
                             config_metric, start, end);
-            if (filter === "domains")
+            else if (filter === "domains")
                 DS.displayMetricDomains(metric,div.id,
                             config_metric, start, end);
         });
@@ -721,17 +756,18 @@ Convert.convertFilterItemsMiniCharts = function(filter, page) {
             // In unixtime
             var start = $(this).data('start');
             var end = $(this).data('end');
-            div.id = metrics.replace(/,/g,"-")+"-"+divlabel;
+            div.id = metrics.replace(/,/g,"-")+"-"+filter+"-"+divlabel;
+            $(this).empty();
             if (filter === "repos")
                 DS.displayReposList(metrics.split(","),div.id,
                     config_metric, order_by, page, show_links, start, end);
-            if (filter === "countries")
+            else if (filter === "countries")
                 DS.displayCountriesList(metrics.split(","),div.id,
                     config_metric, order_by, page, show_links, start, end);
-            if (filter === "companies")
+            else if (filter === "companies")
                 DS.displayCompaniesList(metrics.split(","),div.id,
                     config_metric, order_by, page, show_links, start, end);
-            if (filter === "domains")
+            else if (filter === "domains")
                 DS.displayDomainsList(metrics.split(","),div.id,
                     config_metric, order_by, page, show_links, start, end);
         });
@@ -764,15 +800,16 @@ Convert.convertFilterItemSummary = function(filter, item) {
             if (!filter) return;
             if ($(this).data('item')) real_item = $(this).data('item');
             div.id = ds+"-"+filter+"-"+divlabel;
+            $(this).empty();
             if (filter === "repos") {
                 real_item = Convert.getRealItem(DS, filter, real_item);
                 if (real_item) DS.displayRepoSummary(div.id, real_item, DS);
             }
-            if (filter === "countries")
+            else if (filter === "countries")
                 DS.displayCountrySummary(div.id, real_item, DS);
-            if (filter === "companies")
+            else if (filter === "companies")
                 DS.displayCompanySummary(div.id, real_item, DS);
-            if (filter === "domains")
+            else if (filter === "domains")
                 DS.displayDomainSummary(div.id, real_item, DS);
         });
     }
@@ -799,23 +836,29 @@ Convert.convertFilterItemMetricsEvol = function(filter, item) {
                 config_metric.show_legend = true;
             if ($(this).data('frame-time')) 
                 config_metric.frame_time = true;
-            div.id = metrics.replace(/,/g,"-")+"-"+ds+"-"+filter+"-"+divlabel;
+            div.id = Report.cleanLabel(item).replace(/ /g,"_")+"-";
+            div.id += metrics.replace(/,/g,"-")+"-"+ds+"-"+filter+"-"+divlabel;
+            $(this).empty();
             if (filter === "repos") {
                 real_item = Convert.getRealItem(DS, filter, real_item);
-                if (real_item)
+                if (real_item) {
                     DS.displayMetricsRepo(real_item, metrics.split(","),
                             div.id, config_metric);
+                }
                 else $(this).hide();
             }
-            if (filter === "countries")
+            else if (filter === "countries") {
                 DS.displayMetricsCountry(real_item, metrics.split(","),
                     div.id, config_metric);
-            if (filter === "companies")
+            }
+            else if (filter === "companies") {
                 DS.displayMetricsCompany(real_item, metrics.split(","),
                     div.id, config_metric);
-            if (filter === "domains")
+            }
+            else if (filter === "domains") {
                 DS.displayMetricsDomain(real_item, metrics.split(","),
                     div.id, config_metric);
+            }
         });
     }
 };
@@ -837,6 +880,7 @@ Convert.convertFilterItemTop = function(filter, item) {
             var period = $(this).data('period');
             var titles = $(this).data('titles');
             div.id = metric+"-"+ds+"-"+filter+"-"+divlabel+"-"+getRandomId();
+            $(this).empty();
             div.className = "";
             // Only for Company yet
             if (filter === "companies")
