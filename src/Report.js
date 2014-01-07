@@ -525,8 +525,8 @@ $(document).ready(function() {
 });
 
 function resizedw(){
-    // Report.convertGlobal();
-    // Report.convertStudies();
+     Report.convertGlobal();
+     Report.convertStudies();
 }
 var resized;
 $(window).resize(function () {

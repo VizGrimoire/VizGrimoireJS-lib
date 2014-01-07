@@ -187,6 +187,9 @@ if (Viz === undefined) var Viz = {};
         }
         help += 'data-content="'+content+'" data-html="true">'; 
         help += '<img src="qm_15.png"></a>';
+        // Remove previous "?" so we don't duplicate
+        var old_help =$('#'+div_id).prev()[0];
+        if (old_help && old_help.className === "help") $('#'+div_id).prev().empty();
         $('#'+div_id).before(help);
     }
 
