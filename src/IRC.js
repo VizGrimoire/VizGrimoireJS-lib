@@ -38,6 +38,12 @@ function IRC() {
             'name' : "Senders",
             'desc' : "Messages senders",
             'action' : 'sent'
+        },
+        'irc_repositories' : {
+            'divid' : "irc_repositories",
+            'column' : "repositories",
+            'name' : "Repositories",
+            'desc' : "Number of active repositories",
         }
     };
 
@@ -80,12 +86,14 @@ function IRC() {
             $(div_id + ' #irc_type').text(Report.getProjectData().irc_type);
         }
 
-
         var data = this.getGlobalData();
 
         $(div_id + ' #ircFirst').text(data.first_date);
         $(div_id + ' #ircLast').text(data.last_date);
         $(div_id + ' #ircSent').text(data.irc_sent);
+        $(div_id + ' #ircRepositories').text(data.irc_repositories);
+        if (data.repositories === 1)
+            $(div_id + ' #ircRepositories').hide();
     };
 
     this.displayBubbles = function(divid, radius) {
