@@ -258,12 +258,14 @@ if (Viz === undefined) var Viz = {};
             }
             dots.push([last-1, lines_data[0].data[last-1][1]]);
             var dot_graph = {'data':dots,'label':lines_data[0].label};
-            dot_graph.points = { show : true, radius:4, lineWidth: 1, fillColor: '#000000' };
+            dot_graph.points = {show : true, radius:3, lineWidth: 1, fillColor: null, shadowSize : 0};
             lines_data.push(dot_graph);
 
             // Remove last data line
             lines_data[0].data[last-1][1] = undefined;
         }
+        // Add an extra entry for adding space for the circle point
+        lines_data[0].data.push([last, undefined]);
 
         return lines_data;
     }
@@ -393,7 +395,6 @@ if (Viz === undefined) var Viz = {};
             xaxis : {
                 showLabels : false,
                 min : 0
-                
             },
             yaxis : {
                 showLabels : false,
