@@ -239,6 +239,35 @@ if (Viz === undefined) var Viz = {};
         displayDSLines(div_id, history, lines_data, title, config);
     }
 
+    // Last value is incomplete. Change it to a point.
+    function lastLineValueToPoint(lines_data) {
+        if (lines_data.length === 0) return lines_data;
+        // Not supported yet
+        if (lines_data[0].data[0][0] !== 0) return lines_data;
+        var last = lines_data[0].data.length;
+        // If there are several lines, just remove last value
+        if (lines_data.length>1) {
+            for (var j=0; j<lines_data.length; j++) {
+                lines_data[j].data[last-1][1] = undefined;
+            }
+        }
+        else {
+            var dots = [];
+            for (var i=0; i<last-1; i++) {
+                dots.push([i,undefined]);
+            }
+            dots.push([last-1, lines_data[0].data[last-1][1]]);
+            var dot_graph = {'data':dots,'label':lines_data[0].label};
+            dot_graph.points = { show : true, radius:4, lineWidth: 1, fillColor: '#000000' };
+            lines_data.push(dot_graph);
+
+            // Remove last data line
+            lines_data[0].data[last-1][1] = undefined;
+        }
+
+        return lines_data;
+    }
+
     // Lines from the same Data Source
     // TODO: Probably we should also fill history
     function displayDSLines(div_id, history, lines_data, title, config_metric) {
@@ -281,9 +310,11 @@ if (Viz === undefined) var Viz = {};
                     var label = history.date[parseInt(o.index, 10)] + "<br>";
 
                     for (var i=0; i<lines_data.length; i++) {
+                        var value = lines_data[i].data[o.index][1];
+                        if (value === undefined) continue;
                         if (lines_data.length > 1)
                             label += lines_data[i].label +":";
-                        label += lines_data[i].data[o.index][1]+"<br>";
+                        label += value +"<br>";
                     }
                     return label;
                 }
@@ -312,6 +343,11 @@ if (Viz === undefined) var Viz = {};
                 config.bars = {show : true};
             }
         }
+
+        // Show last time series as a point, not a line/bar. It is incomplete
+        if (!(config_metric.lines && config_metric.lines.stacked))
+            lines_data = lastLineValueToPoint(lines_data);
+
         graph = Flotr.draw(container, lines_data, config);
     }
 
@@ -1095,7 +1131,7 @@ if (Viz === undefined) var Viz = {};
                 });
             });
             DataProcess.addRelativeValues(options.data, main_metric);
-        }                
+        }
         new envision.templates.Envision_Report(options);
     }
 })();
