@@ -354,7 +354,8 @@ if (Viz === undefined) var Viz = {};
     }
 
     function displayBasicChart
-        (divid, labels, data, graph, title, config_metric, rotate, fixColor) {
+        (divid, labels, data, graph, title, config_metric, rotate, fixColor,
+                yformatter) {
 
         var horizontal = false;
         if (rotate)
@@ -438,7 +439,7 @@ if (Viz === undefined) var Viz = {};
             if (config_metric && config_metric.show_legend !== false)
                 config.legend = {show:true, position: 'ne', 
                     container: legend_div};
-            
+
             // TODO: Color management should be defined
             //var defaults_colors = [ '#ffa500', '#ffff00', '#00ff00', '#4DA74D',
             //                        '#9440ED' ];
@@ -451,6 +452,11 @@ if (Viz === undefined) var Viz = {};
                 config.xaxis = {
                         showLabels : config_metric.xaxis, min:0
                 };
+            if (yformatter) {
+                config.yaxis = {
+                        showLabels : true, min:0, tickFormatter : yformatter
+                };
+            }
         }
         if (graph === "pie") {
             config.pie = {show : true};
@@ -573,9 +579,16 @@ if (Viz === undefined) var Viz = {};
             labels[i] = label_months;
         }
 
+        yticks = function (val, axisOpts){
+            var period = period_year;
+            var unit = "years";
+            val = val*period_year;
+            return val +' ' + unit;
+        };
+
         if (data)
             displayBasicChart(divid, labels, period_data,
-                    "bars", "", config, true, bitergiaColor);
+                    "bars", "", config, true, bitergiaColor, yticks);
     }
 
     function displayRadarChart(div_id, ticks, data) {
@@ -594,7 +607,7 @@ if (Viz === undefined) var Viz = {};
                 }
             }
         }
-        
+
         // TODO: Hack to have vars visible in track/tickFormatter
         (function() {var x = [data, ticks];})();
 
