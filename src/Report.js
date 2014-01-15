@@ -193,6 +193,9 @@ if (Report === undefined) var Report = {};
             label = aux.pop();
             if (label === '') label = aux.pop();
             label = label.replace('buglist.cgi?product=','');
+            // gmane case:
+            // http%3A__dir.gmane.org_gmane.comp.sysutils.puppet.user
+            label = label.replace('gmane.comp.sysutils.', '');
         }
         else if (item.lastIndexOf("<") === 0)
             label = MLS.displayMLSListName(item);

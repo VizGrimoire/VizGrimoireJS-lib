@@ -184,7 +184,8 @@ function SCM() {
             $(div_id + ' .scm-info').hide();
             return;
         }
-        $(div_id + ' #scm_type').text(this.global_data.type);
+        var repo_str =  this.global_data.type.charAt(0).toUpperCase() + this.global_data.type.slice(1);
+        $(div_id + ' #scm_type').text(repo_str);
         var url = '';
         if (this.global_data.repositories === 1) {
             url = this.global_data.url;
@@ -194,7 +195,7 @@ function SCM() {
         if (this.global_data.type === "git")
             if (url) url = url.replace("git://","http://");
         $(div_id + ' #scm_url').attr("href", url);
-        $(div_id + ' #scm_name').text(this.global_data.type);
+        $(div_id + ' #scm_name').text(repo_str);
 
         var data = this.getGlobalData();
         $(div_id + ' #scmFirst').text(data.first_date);

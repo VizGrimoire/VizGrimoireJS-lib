@@ -155,7 +155,8 @@ function ITS() {
             url = url.replace("repos/","");
         }
         $(div_id + ' #its_url').attr("href", url);
-        $(div_id + ' #its_name').text("Tickets " + this.global_data.type);
+        var tracker_str = this.global_data.type.charAt(0).toUpperCase() + this.global_data.type.slice(1);
+        $(div_id + ' #its_name').text(tracker_str + " Tickets");
 
         var data = this.getGlobalData();
 
