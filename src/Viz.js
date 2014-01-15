@@ -42,7 +42,7 @@ if (Viz === undefined) var Viz = {};
     Viz.displayMetricDomains = displayMetricDomains;
     Viz.displayMetricsEvol = displayMetricsEvol;
     Viz.displayBubbles = displayBubbles;
-    Viz.displayDemographics = displayDemographics;
+    Viz.displayDemographicsChart = displayDemographicsChart;
     Viz.displayEnvisionAll = displayEnvisionAll;
     Viz.displayTimeToFix = displayTimeToFix;
     Viz.displayTimeToAttention = displayTimeToAttention;
@@ -467,6 +467,131 @@ if (Viz === undefined) var Viz = {};
         graph = Flotr.draw(container, chart_data, config);
     }
 
+    // labels: label for each column series
+    // data: values for each column series, Two series now.
+    function displayMultiColumnChart
+        (divid, labels, data, title, config_metric, rotate,
+         yformatter, period_year) {
+
+        var bar_width = 0.4; // 1 total per group of bars
+        var lseries = data[0].length;
+        if (data[1].length > lseries) lseries = data[1].length;
+
+        var horizontal = false;
+        if (rotate)
+            horizontal = true;
+
+        var container = document.getElementById(divid);
+        var legend_div = null;
+        if (config_metric && config_metric.legend && config_metric.legend.container)
+            legend_div = $('#'+config_metric.legend.container);
+        var serie1 = [], i, serie2=[], data_viz = [];
+
+        for (i = 0; i < lseries; i++) {
+            var val1, val2;
+            if (data[0].length>i) val1 = data[0][i];
+            else val1 = undefined;
+            if (data[1].length>i) val2 = data[1][i];
+            else val2 = undefined;
+            if (!horizontal) {
+                serie1.push([i-bar_width/2, val1]);
+                serie2.push([i+bar_width/2, val2]);
+            } else {
+                serie1.push([val1, i-bar_width/2]);
+                serie2.push([val2, i+bar_width/2 ]);
+            }
+        }
+
+        data_viz = [{data:serie1,label:labels[0]},
+                    {data:serie2,label:labels[1]}];
+
+        var config = {
+            title : title,
+            bars: {
+                show : true,
+                horizontal : horizontal,
+                barWidth : bar_width
+            },
+            grid : {
+                verticalLines : false,
+                horizontalLines : false,
+                outlineWidth : 0
+            },
+            xaxis : {
+                showLabels : false,
+                min : 0
+            },
+            yaxis : {
+                showLabels : true,
+                min : 0
+            },
+            mouse : {
+                container: legend_div,
+                track : true,
+                trackFormatter : function(o) {
+                    var index;
+                    var i = 'x';
+                    if (horizontal) i = 'y';
+                    var point = parseFloat(o[i],1);
+                    // point+0.2 serie2, point-0.2 serie1
+                    // Strange maths ... round to avoid x.9999
+                    var point_down = Math.round((point-0.2)*10)/10;
+                    var point_up = Math.round((point+0.2)*10)/10;
+                    if (point_down === parseInt(point,10))
+                        index = point_down;
+                    else index = point_up;
+                    var years = index;
+                    if (period_year) years = index * period_year;
+                    var label = years + " years: ";
+                    var val1, val2;
+                    if (serie1[index] === undefined) val1 = 0;
+                    else val1 = parseInt(serie1[index][0],10);
+                    if (isNaN(val1)) val1 = 0;
+                    if (serie2[index] === undefined) val2 = 0;
+                    else val2 = parseInt(serie2[index][0],10);
+                    if (isNaN(val2)) val2 = 0;
+                    label += val1 + " " + labels[0];
+                    label += " , ";
+                    label += val2 + " " + labels[1];
+                    label += " (" + parseInt((val1/val2)*100,10)+"% )";
+                    return label;
+                }
+            },
+            legend : {
+                show : true,
+                position : 'ne',
+                backgroundColor : '#D2E8FF',
+                container: legend_div
+            }
+        };
+
+        if (config_metric) {
+            if (!config_metric.show_title) config.title = '';
+            if (config_metric.show_legend) config.legend.show = true;
+        }
+
+        if (config_metric && config_metric.show_legend !== false)
+            config.legend = {show:true, position: 'ne',
+                container: legend_div};
+
+        config.grid.horizontalLines = true;
+        config.yaxis = {
+            showLabels : true, min:0
+        };
+        if (yformatter) {
+            config.yaxis = {
+                    showLabels : true, min:0, tickFormatter : yformatter
+            };
+        }
+
+        if (config_metric && config_metric.xaxis)
+            config.xaxis = {
+                    showLabels : config_metric.xaxis, min:0
+            };
+        graph = Flotr.draw(container, data_viz, config);
+    }
+
+
     // The two metrics should be from the same data source
     function displayBubbles(divid, metric1, metric2, radius) {
 
@@ -548,36 +673,36 @@ if (Viz === undefined) var Viz = {};
         Flotr.draw(container, bdata, config);
     }
 
-    function displayDemographics(divid, ds, period, type) {
-        var data = ds.getDemographicsData();
-        if (type === "aging")
-            displayDemographicsChart(divid, ds, data.aging, period);
-        if (type === "birth")
-            displayDemographicsChart(divid, ds, data.birth, period);
-    }
-
     function displayDemographicsChart(divid, ds, data, period_year) {
         if (!data) return;
         if (!period_year) period_year = 0.25;
         else period = 365*period_year;
 
         // var data = ds.getDemographicsData();
-        var period_data = [];
+        var period_data_aging = [];
+        var period_data_birth = [];
         var labels = [], i;
         var config = {show_legend:false};
+        var age, index;
 
-        for (i = 0; i < data.persons.age.length; i++) {
-            var age = data.persons.age[i];
-            var index = parseInt(age / period, 10);
-            if (!period_data[index])
-                period_data[index] = 0;
-            period_data[index] += 1;
+        // Aging
+        for (i = 0; i < data.aging.persons.age.length; i++) {
+            age = data.aging.persons.age[i];
+            index = parseInt(age / period, 10);
+            if (!period_data_aging[index])
+                period_data_aging[index] = 0;
+            period_data_aging[index] += 1;
+        }
+        // Birth
+        for (i = 0; i < data.birth.persons.age.length; i++) {
+            age = data.birth.persons.age[i];
+            index = parseInt(age / period, 10);
+            if (!period_data_birth[index])
+                period_data_birth[index] = 0;
+            period_data_birth[index] += 1;
         }
 
-        for (i = 0; i < period_data.length; i++) {
-            var label_months = "" + parseInt(i * (period/30), 10) +" months";
-            labels[i] = label_months;
-        }
+        labels = ["aging","birth"];
 
         yticks = function (val, axisOpts){
             var period = period_year;
@@ -586,9 +711,10 @@ if (Viz === undefined) var Viz = {};
             return val +' ' + unit;
         };
 
+        var period_data = [period_data_aging, period_data_birth];
+
         if (data)
-            displayBasicChart(divid, labels, period_data,
-                    "bars", "", config, true, bitergiaColor, yticks);
+            displayMultiColumnChart(divid, labels, period_data, "", config, true, yticks, period_year);
     }
 
     function displayRadarChart(div_id, ticks, data) {

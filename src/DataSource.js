@@ -952,8 +952,9 @@ function DataSource(name, basic_metrics) {
         $("#"+divid).append(html);
     };
 
-    this.displayDemographics = function(divid, period, type) {
-        Viz.displayDemographics(divid, this, period, type);
+    this.displayDemographics = function(divid, period) {
+        var data = this.getDemographicsData();
+        Viz.displayDemographicsChart(divid, this, data, period);
     };
 
     this.displayTimeToAttention = function(div_id, column, labels, title) {
