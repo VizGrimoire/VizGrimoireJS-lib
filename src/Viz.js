@@ -682,7 +682,7 @@ if (Viz === undefined) var Viz = {};
         var period_data_aging = [];
         var period_data_birth = [];
         var labels = [], i;
-        var config = {show_legend:false};
+        var config = {show_legend:false, xaxis:true};
         var age, index;
 
         // Aging
