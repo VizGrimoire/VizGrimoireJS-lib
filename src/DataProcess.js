@@ -58,32 +58,38 @@ var DataProcess = {};
         if (metric_id === undefined) metric_id = "scm_commits";
         var metric = [];
         var sorted = [];
-        var global = null;
+        var global = null, list_ordered = null;
         if (kind === "companies") {
             global = ds.getCompaniesGlobalData();
-            if (ds.getCompaniesData().length === 0) return sorted;
+            list_ordered = ds.getCompaniesData();
         } 
         else if (kind === "repos") {
             global = ds.getReposGlobalData();
-            if (ds.getReposData().length === 0) return sorted;
+            list_ordered = ds.getReposData();
         }
         else if (kind === "countries") {
             global = ds.getCountriesGlobalData();
-            if (ds.getCountriesData().length === 0) return sorted;
+            list_ordered = ds.getCountriesData();
         }
         else if (kind === "domains") {
             global = ds.getDomainsGlobalData();
-            if (ds.getDomainsData().length === 0) return sorted;
+            list_ordered = ds.getDomainsData();
         }
-        $.each(global, function(item, data) {
-           metric.push([item, data[metric_id]]);
+
+        if (list_ordered === null) return sorted;
+
+        $.each(list_ordered, function(index, item) {
+            // Just available needed items for page
+            if (global[item])
+                metric.push([item, global[item][metric_id]]);
         });
+
         // Sort disabled but we should return a matrix
         if (sort_disabled === false) 
             metric.sort(function(a, b) {return b[1] - a[1];});
         $.each(metric, function(id, value) {
             sorted.push(value[0]);
-        });        
+        });
         return sorted;
     };
 
