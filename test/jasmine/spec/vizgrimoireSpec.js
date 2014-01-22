@@ -134,15 +134,13 @@ describe( "VizGrimoireJS library", function () {
                                     {
                                         'data-period': '0.25',
                                         'data-data-source': DS.getName(),
-                                        'data-type': type,
                                         'style':'position: relative'
                                     });
                     });
                 }
                 var ncanvas = 0;
                 runs(function() {
-                    buildNodesDemographic('aging');
-                    buildNodesDemographic('birth');
+                    buildNodesDemographic();
                     ncanvas = document.getElementsByClassName
                         ('flotr-canvas').length;
                     Convert.convertDemographics();
@@ -154,7 +152,7 @@ describe( "VizGrimoireJS library", function () {
                 runs(function() {
                     var new_ncanvas = document.getElementsByClassName
                         ('flotr-titles').length;
-                    expect(new_ncanvas-ncanvas).toEqual(6);
+                    expect(new_ncanvas-ncanvas).toEqual(3);
                 });
             });
 //            it("html selectors should be displayed", function () {
