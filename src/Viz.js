@@ -268,6 +268,7 @@ if (Viz === undefined) var Viz = {};
         }
         // Add an extra entry for adding space for the circle point
         lines_data[0].data.push([last, undefined]);
+        lines_data[1].data.push([last, undefined]);
 
         return lines_data;
     }
