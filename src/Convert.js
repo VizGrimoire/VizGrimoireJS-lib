@@ -329,6 +329,12 @@ Convert.convertMetricsEvol = function() {
                 // config_viz.show_mouse = false;
                 config_viz.help = false;
             }
+            // In unixtime
+            var start = $(this).data('start');
+            if (start) config_viz.start_time = start;
+            var end = $(this).data('end');
+            if (end) config_viz.end_time = end;
+
             div.id = metrics.replace(/,/g,"-")+"-"+ds+"-metrics-evol-"+this.id;
             DS.displayMetricsEvol(metrics.split(","),div.id,
                     config_viz, $(this).data('convert'));

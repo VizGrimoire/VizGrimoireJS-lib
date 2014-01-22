@@ -200,6 +200,8 @@ if (Viz === undefined) var Viz = {};
         $.each(metrics, function(id, metric) {
             if (!history[metric]) return;
             if (config.frame_time) history = DataProcess.frameTime(history, metrics);
+            if (config.start_time) history =
+                DataProcess.filterDates(config.start_time, config.end_time, history);
             var mdata = [[],[]];
             $.each(history[metric], function (i, value) {
                 mdata[i] = [history.id[i], history[metric][i]];
