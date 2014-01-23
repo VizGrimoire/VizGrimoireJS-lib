@@ -244,13 +244,14 @@ if (Viz === undefined) var Viz = {};
     // Last value is incomplete. Change it to a point.
     function lastLineValueToPoint(lines_data) {
         if (lines_data.length === 0) return lines_data;
-        // Not supported yet
+        // Not supported if time serie does not start from zero
         if (lines_data[0].data[0][0] !== 0) return lines_data;
         var last = lines_data[0].data.length;
-        // If there are several lines, just remove last value
         if (lines_data.length>1) {
+            // If there are several lines, just remove last value
+            // Removed because not useful if last data is not fresh
             for (var j=0; j<lines_data.length; j++) {
-                lines_data[j].data[last-1][1] = undefined;
+                // lines_data[j].data[last-1][1] = undefined;
             }
         }
         else {
@@ -266,10 +267,6 @@ if (Viz === undefined) var Viz = {};
             // Remove last data line
             lines_data[0].data[last-1][1] = undefined;
         }
-        // Add an extra entry for adding space for the circle point
-        lines_data[0].data.push([last, undefined]);
-        lines_data[1].data.push([last, undefined]);
-
         return lines_data;
     }
 
@@ -313,7 +310,6 @@ if (Viz === undefined) var Viz = {};
                 trackY : false,
                 trackFormatter : function(o) {
                     var label = history.date[parseInt(o.index, 10)] + "<br>";
-
                     for (var i=0; i<lines_data.length; i++) {
                         var value = lines_data[i].data[o.index][1];
                         if (value === undefined) continue;
@@ -350,9 +346,19 @@ if (Viz === undefined) var Viz = {};
         }
 
         // Show last time series as a point, not a line. The data is incomplete
-        if (!(config_metric.lines && config_metric.lines.stacked) &&
-            config_metric.graph !== "bars")
+        if (!(config_metric.lines !== undefined && config_metric.lines.stacked) &&
+            !(config_metric.graph !== undefined && config_metric.graph === "bars")) {
             lines_data = lastLineValueToPoint(lines_data);
+            // Add extra point in single lines (+ dot graph). Ugly hack!
+            if (lines_data.length === 2) {
+                // Add an extra entry for adding space for the circle point
+                var last = lines_data[0].data.length;
+                lines_data[0].data.push([last, undefined]);
+                lines_data[1].data.push([last, undefined]);
+                history.date.push('');
+                history.id.push(history.id.length);
+            }
+        }
 
         graph = Flotr.draw(container, lines_data, config);
     }
