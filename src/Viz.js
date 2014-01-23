@@ -349,8 +349,9 @@ if (Viz === undefined) var Viz = {};
             }
         }
 
-        // Show last time series as a point, not a line/bar. It is incomplete
-        if (!(config_metric.lines && config_metric.lines.stacked))
+        // Show last time series as a point, not a line. The data is incomplete
+        if (!(config_metric.lines && config_metric.lines.stacked) &&
+            config_metric.graph !== "bars")
             lines_data = lastLineValueToPoint(lines_data);
 
         graph = Flotr.draw(container, lines_data, config);
