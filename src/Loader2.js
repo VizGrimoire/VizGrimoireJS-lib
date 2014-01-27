@@ -34,6 +34,8 @@ if (Loader2 === undefined) var Loader2 = {};
         // Read scm_commits from API REST
         var file = api_rest_url + "/var/scm/ts_commits1"+url_callback;
         data_load_file_fake(file, set_tsCommits, self);
+        file = api_rest_url + "/var/scm/ncommits1"+url_callback;
+        data_load_file_fake(file, set_tsCommits, self);
     };
 
     function set_tsCommits(data, DS) {
@@ -52,7 +54,8 @@ if (Loader2 === undefined) var Loader2 = {};
     }
 
     function data_load_file_fake(file, fn_data_set, self) {
-        history = {
+        if (file.indexOf("ts_")>-1) {
+            history = {
                 "id": "scm/ts_commits",
                 "type": "ts of int",
                 "desc": "Time serie of number of commits in SCM repo(s)",
@@ -63,7 +66,15 @@ if (Loader2 === undefined) var Loader2 = {};
                     "values": [23, 23, 56, 34],
                     "period_id": ["Dec 25 2013", "Jan 1 2014", "Jan 8 2014", "Jan 15 2014"]
                 }
-        };
+            };
+        } else {
+            history =  {
+                "id": "scm/ncommits",
+                "type": "int",
+                "desc": "Number of commits in SCM repositories",
+                "value": 2245
+            };
+        }
         fn_data_set(history, self);
     }
 
