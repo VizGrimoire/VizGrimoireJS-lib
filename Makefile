@@ -28,6 +28,7 @@ vizgrimoire.deps.js: \
 vizgrimoire.core.js: \
     src/Envision_Report.js \
     src/Loader.js \
+    src/Loader2.js \
     src/DataProcess.js \
     src/Convert.js \
     src/Report.js \

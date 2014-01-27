@@ -515,6 +515,11 @@ Loader.data_ready(function() {
     Convert.activateHelp();
 });
 
+// New Loader for getting the data from the new REST API
+Loader2.data_ready(function() {
+    Report.log("Data from API REST loaded");
+});
+
 $(document).ready(function() {
     // var filename = Report.getDataDir()+'/config.json';
     // Config file loaded from root dir
@@ -527,6 +532,7 @@ $(document).ready(function() {
     }).always(function (data) {
         Report.createDataSources();
         Loader.data_load();
+        Loader2.data_load();
         $("body").css("cursor", "progress");
     });
 });
