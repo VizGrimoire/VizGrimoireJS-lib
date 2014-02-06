@@ -529,6 +529,7 @@ $(document).ready(function() {
 
 function resizedw(){
      Report.convertGlobal();
+     Report.convertStudiesGlobal();
      Report.convertStudies();
 }
 var resized;
