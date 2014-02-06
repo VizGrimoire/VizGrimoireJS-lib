@@ -260,7 +260,7 @@ if (Viz === undefined) var Viz = {};
                 dots.push([i,undefined]);
             }
             dots.push([last-1, lines_data[0].data[last-1][1]]);
-            var dot_graph = {'data':dots,'label':lines_data[0].label};
+            var dot_graph = {'data':dots};
             dot_graph.points = {show : true, radius:3, lineWidth: 1, fillColor: null, shadowSize : 0};
             lines_data.push(dot_graph);
 
