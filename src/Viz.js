@@ -313,8 +313,10 @@ if (Viz === undefined) var Viz = {};
                     for (var i=0; i<lines_data.length; i++) {
                         var value = lines_data[i].data[o.index][1];
                         if (value === undefined) continue;
-                        if (lines_data.length > 1)
-                            label += lines_data[i].label +":";
+                        if (lines_data.length > 1) {
+                            if (lines_data[i].label !== undefined)
+                                label += lines_data[i].label +":";
+                        }
                         label += value +"<br>";
                     }
                     return label;
