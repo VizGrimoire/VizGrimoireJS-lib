@@ -35,11 +35,15 @@ if (Loader2 === undefined) var Loader2 = {};
         var file = api_rest_url + "/var/scm/ts_commits1"+url_callback;
         data_load_file_fake(file, set_tsCommits, self);
         file = api_rest_url + "/var/scm/ncommits1"+url_callback;
-        data_load_file_fake(file, set_tsCommits, self);
+        data_load_file_fake(file, set_nCommits, self);
     };
 
     function set_tsCommits(data, DS) {
         Report.log("Read ts_commits data " + data.value);
+    }
+
+    function set_nCommits(data, DS) {
+        Report.log("Read ncommits data " + data.value);
     }
 
     function data_load_file(file, fn_data_set, self) {
