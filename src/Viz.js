@@ -348,8 +348,12 @@ if (Viz === undefined) var Viz = {};
         }
 
         // Show last time series as a point, not a line. The data is incomplete
+        var showLastPoint = false;
         if (!(config_metric.lines !== undefined && config_metric.lines.stacked) &&
             !(config_metric.graph !== undefined && config_metric.graph === "bars")) {
+            showLastPoint = true;
+        }
+        if (showLastPoint) {
             lines_data = lastLineValueToPoint(lines_data);
             // Add extra point in single lines (+ dot graph). Ugly hack!
             if (lines_data.length === 2) {
@@ -363,6 +367,12 @@ if (Viz === undefined) var Viz = {};
         }
 
         graph = Flotr.draw(container, lines_data, config);
+
+        // Clean added point. Data is a reference to the original!
+        if (showLastPoint) {
+            history.date.pop();
+            history.id.pop();
+        }
     }
 
     function displayBasicChart
