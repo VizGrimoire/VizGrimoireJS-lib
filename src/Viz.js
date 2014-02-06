@@ -370,8 +370,8 @@ if (Viz === undefined) var Viz = {};
 
         // Clean added point. Data is a reference to the original!
         if (showLastPoint) {
-            history.date.pop();
-            history.id.pop();
+            if (history.date) history.date.pop();
+            if (history.id) history.id.pop();
         }
     }
 
