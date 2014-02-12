@@ -358,11 +358,12 @@ if (Viz === undefined) var Viz = {};
             // Add extra point in single lines (+ dot graph). Ugly hack!
             if (lines_data.length === 2) {
                 // Add an extra entry for adding space for the circle point
-                var last = lines_data[0].data.length;
-                lines_data[0].data.push([last, undefined]);
-                lines_data[1].data.push([last, undefined]);
+                // var last = lines_data[0].data.length;
+                var next_id = history.id[history.id.length-1]++;
+                lines_data[0].data.push([next_id, undefined]);
+                lines_data[1].data.push([next_id, undefined]);
                 history.date.push('');
-                history.id.push(history.id.length);
+                history.id.push(next_id);
             }
         }
 

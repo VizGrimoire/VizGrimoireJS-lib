@@ -874,6 +874,7 @@ Convert.convertFilterItemTop = function(filter, item) {
     if (divs.length > 0) {
         $.each(divs, function(id, div) {
             var real_item = item;
+            $(this).empty();
             ds = $(this).data('data-source');
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
