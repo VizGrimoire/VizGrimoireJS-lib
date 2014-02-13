@@ -646,7 +646,6 @@ Convert.convertFilterItemsGlobal = function(filter) {
             if (filter !== $(this).data('filter')) return;
             if (!filter) return;
             var metric = $(this).data('metric');
-            var limit = $(this).data('limit');
             var show_others = $(this).data('show-others');
             var order_by = $(this).data('order-by');
             config_metric.show_legend = $(this).data('legend');
@@ -659,16 +658,16 @@ Convert.convertFilterItemsGlobal = function(filter) {
             $(this).empty();
             if (filter === "repos")
                 DS.displayMetricReposStatic(metric,div.id,
-                    config_metric, limit, order_by, show_others);
+                    config_metric, order_by, show_others);
             if (filter === "countries")
                 DS.displayMetricCountriesStatic(metric,div.id,
-                    config_metric, limit, order_by, show_others);
+                    config_metric, order_by, show_others);
             if (filter === "companies")
                 DS.displayMetricCompaniesStatic(metric,div.id,
-                    config_metric, limit, order_by, show_others);
+                    config_metric, order_by, show_others);
             if (filter === "domains")
                 DS.displayMetricDomainsStatic(metric,div.id,
-                    config_metric, limit, order_by, show_others);
+                    config_metric, order_by, show_others);
         });
     }
 };
@@ -685,7 +684,7 @@ Convert.convertFilterItemsNav = function(filter, page) {
             if (filter !== $(this).data('filter')) return;
             if (!filter) return;
             if ($(this).data('page')) page = $(this).data('page');
-            order_by = $(this).data('order_by');
+            order_by = $(this).data('order-by');
             div.id = ds+"-"+divlabel;
             $(this).empty();
             if (filter === "repos")

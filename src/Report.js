@@ -480,6 +480,10 @@ if (Report === undefined) var Report = {};
 
     function convertStudies() {
         $.each (Report.getActiveStudies(), function(i, study) {
+            // Before loading items data, order to load the correct ones
+            var filter = study;
+            if (study === "repositories") filter = "repos";
+            DataProcess.orderItems(filter);
             Convert.convertFilterStudy(study);
             Convert.convertFilterStudyItem (study);
         });

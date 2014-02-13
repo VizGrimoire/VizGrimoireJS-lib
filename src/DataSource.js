@@ -458,27 +458,27 @@ function DataSource(name, basic_metrics) {
     };
 
     this.displayMetricCompaniesStatic = function (metric_id,
-            div_target, config, limit, order_by, show_others) {
+            div_target, config, order_by, show_others) {
         this.displayMetricSubReportStatic ("companies",metric_id,
-                div_target, config, limit, order_by, show_others);
+                div_target, config, order_by, show_others);
     };
 
     this.displayMetricReposStatic = function (metric_id,
-            div_target, config, limit, order_by, show_others) {
+            div_target, config, order_by, show_others) {
         this.displayMetricSubReportStatic ("repos", metric_id,
-                div_target, config, limit, order_by, show_others);
+                div_target, config, order_by, show_others);
     };
 
     this.displayMetricCountriesStatic = function (metric_id,
-          div_target, config, limit, order_by, show_others) {
+          div_target, config, order_by, show_others) {
         this.displayMetricSubReportStatic ("countries", metric_id,
-            div_target, config, limit, order_by, show_others);
+            div_target, config, order_by, show_others);
     };
 
     this.displayMetricDomainsStatic = function (metric_id,
-            div_target, config, limit, order_by, show_others) {
+            div_target, config, order_by, show_others) {
         this.displayMetricSubReportStatic ("domains",metric_id,
-                div_target, config, limit, order_by, show_others);
+                div_target, config, order_by, show_others);
     };
 
     this.displayMetricSubReportStatic = function (report, metric_id,
@@ -497,36 +497,17 @@ function DataSource(name, basic_metrics) {
 
         if ($.isEmptyObject(data)) return;
 
-        if (limit) {
-            var sorted = null;
-            var item = null;
-            if (report=="companies")
-                sorted = DataProcess.sortCompanies(this, order_by);
-            else if (report=="repos")
-                sorted = DataProcess.sortRepos(this, order_by);
-            else if (report=="countries")
-              sorted = DataProcess.sortCountries(this, order_by);
-            else if (report=="domains")
-                sorted = DataProcess.sortDomains(this, order_by);
-            if (limit > sorted.length) limit = sorted.length; 
-            var data_limit = {};
-            for (var i=0; i<limit; i++) {
-                item = sorted[i];
-                data_limit[item] = data[item];
-            }
-
-            // Add a final companies_data for the sum of other values
-            if (show_others) {
-                var others = 0;
-                for (var j=limit; j<sorted.length; j++) {
-                    item = sorted[j];
-                    others += data[item][metric_id];
-                }
-                data_limit.others = {};
-                data_limit.others[metric_id] = others;
-            }
-            data = data_limit;
-        }
+        var sorted = null;
+        if (report=="companies")
+            sorted = DataProcess.sortCompanies(this, order_by);
+        else if (report=="repos")
+            sorted = DataProcess.sortRepos(this, order_by);
+        else if (report=="countries")
+          sorted = DataProcess.sortCountries(this, order_by);
+        else if (report=="domains")
+            sorted = DataProcess.sortDomains(this, order_by);
+        sorted = DataProcess.paginate(sorted, Report.getCurrentPage());
+ 
         Viz.displayMetricSubReportStatic(metric_id, data,
             div_target, config, limit);
     };
@@ -759,7 +740,6 @@ function DataSource(name, basic_metrics) {
         else if (report === "repos") {
             data = this.getReposMetricsData();
             sorted = DataProcess.sortRepos(this, sort_metric);
-            // sorted = DataProcess.paginate(sorted, page);
         }
         else if (report === "countries") {
             data = this.getCountriesMetricsData();
@@ -770,6 +750,8 @@ function DataSource(name, basic_metrics) {
             sorted = DataProcess.sortDomains(this, sort_metric);
         }
         else return;
+
+        sorted = DataProcess.paginate(sorted, page);
 
         list += '<table class="table table-hover table-repositories">';
         list += '<tr><th></th>';

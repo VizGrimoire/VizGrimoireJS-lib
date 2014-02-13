@@ -53,44 +53,65 @@ var DataProcess = {};
         return sortGlobal(ds, metric_id, "domains");
     };
     // Sort disabled. Use sort order from R/Python data.
+    // SCR repos enabled now
     sortGlobal = function (ds, metric_id, kind) {
         var sort_disabled = true;
         if (metric_id === undefined) metric_id = "scm_commits";
         var metric = [];
-        var sorted = [];
-        var global = null, list_ordered = null;
+        var data = [], sorted = [];
         if (kind === "companies") {
-            global = ds.getCompaniesGlobalData();
-            list_ordered = ds.getCompaniesData();
+            data = ds.getCompaniesData();
         } 
         else if (kind === "repos") {
-            global = ds.getReposGlobalData();
-            list_ordered = ds.getReposData();
+            data = ds.getReposData();
         }
         else if (kind === "countries") {
-            global = ds.getCountriesGlobalData();
-            list_ordered = ds.getCountriesData();
+            data = ds.getCountriesData();
         }
         else if (kind === "domains") {
-            global = ds.getDomainsGlobalData();
-            list_ordered = ds.getDomainsData();
+            data = ds.getDomainsData();
         }
+        if (data  === null) return [];
 
-        if (list_ordered === null) return sorted;
+        // TODO: Only support for reports now
+        if (kind !== "repos") return data;
 
-        $.each(list_ordered, function(index, item) {
-            // Data available only for items in current page
-            if (global[item])
-                metric.push([item, global[item][metric_id]]);
-        });
+        // Change the order using the new metric
+        metrics_data = ds.getReposDataFull();
+        if (metrics_data instanceof Array  || metric_id in metrics_data === false) 
+            return data;
 
-        // Sort disabled but we should return a matrix
-        if (sort_disabled === false) 
-            metric.sort(function(a, b) {return b[1] - a[1];});
+        for (var i=0; i<metrics_data[metric_id].length; i++ ) {
+            metric.push([metrics_data.name[i],metrics_data[metric_id][i]]);
+        }
+        metric.sort(function(a, b) {return b[1] - a[1];});
         $.each(metric, function(id, value) {
             sorted.push(value[0]);
         });
         return sorted;
+    };
+
+    // Order items in data sources according widgets params
+    DataProcess.orderItems = function (filter_order) {
+        $.each($("[class^='FilterItems']"), function (id, div) {
+            order_by = $(this).data('order-by');
+            if (order_by !==undefined) {
+                ds = $(this).data('data-source');
+                DS = Report.getDataSourceByName(ds);
+                if (DS === null) return;
+                var filter = $(this).data('filter');
+                if (filter === undefined) return;
+                if (filter !== filter_order) return;
+                Report.log("Ordering with " + order_by + " " + ds + " for " + filter);
+                var data = sortGlobal (DS, order_by, filter);
+
+                if (filter === 'companies') DS.setCompaniesData(data);
+                if (filter === 'repositories') DS.setReposData(data);
+                if (filter === 'countries') DS.setReposData(data);
+                if (filter === 'domains') DS.setReposData(data);
+
+            }
+        });
     };
 
     DataProcess.mergeConfig = function (config1, config2) {
