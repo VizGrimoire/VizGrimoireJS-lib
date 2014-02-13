@@ -264,12 +264,21 @@ function DataSource(name, basic_metrics) {
     };
 
     this.repos = null;
-    this.getReposData = function() {
+    this.getReposDataFull = function() {
         return this.repos;
+    };
+    this.getReposData = function() {
+        var items = this.repos;
+        if (this.getName() === "scr") {
+            if  (items instanceof Array === false)
+                // New format with names and metrics
+                items = this.repos.name;
+        }
+        return items;
     };
     this.setReposData = function(repos, self) {
         if (self === undefined) self = this;
-        if (!(repos instanceof Array)) repos=[repos];
+        // if (!(repos instanceof Array)) repos=[repos];
         self.repos = repos;
     };
 
@@ -616,10 +625,9 @@ function DataSource(name, basic_metrics) {
         }
     };
 
-    this.displayItemsNav = function (div_nav, type, page_str) {
+    this.displayItemsNav = function (div_nav, type, page_str, order_by) {
         var page = parseInt(page_str, null);
         if (isNaN(page)) page = 1;
-        var sorted_items = null;
         var items = null;
         var title = "";
         var total = 0;
@@ -629,6 +637,8 @@ function DataSource(name, basic_metrics) {
             title = "List of companies";
         } else if (type === "repos") {
             items = this.getReposData();
+            if (order_by) 
+                items = DataProcess.sortRepos(this, order_by);
         } else if (type === "countries") {
             items = this.getCountriesData();
         } else if (type === "domains") {
@@ -636,9 +646,9 @@ function DataSource(name, basic_metrics) {
         } else {
             return;
         }
-        $.each(items, function(id, item) {
-            total = total+1;
-        });
+
+        total = items.length;
+
         var nav = '';
         var psize = Report.getPageSize();
         if (page) {
@@ -657,7 +667,7 @@ function DataSource(name, basic_metrics) {
                 nav += "<li><a href='?page="+(page-1)+"'>&laquo;</a></li>";
             }
             else{
-                nav += "<li class='disabled'><a href='?page="+(page-1)+"'>&laquo;</a></li>";
+                nav += "<li class='disabled'><a href='?page="+(page)+"'>&laquo;</a></li>";
             }
 
             for (var j=0; j*Report.getPageSize()<total; j++) {
@@ -687,7 +697,7 @@ function DataSource(name, basic_metrics) {
         //nav += "<span id='nav'></span>";
         // Show only the items navbar when there are more than 10 items
         if (Report.getPageSize()>10)
-            $.each(sorted_items, function(id, item) {
+            $.each(items, function(id, item) {
                 var label = Report.cleanLabel(item);
                 nav += "<a href='#"+item+"-nav'>"+label + "</a> ";
             });
@@ -821,6 +831,7 @@ function DataSource(name, basic_metrics) {
         // Draw the graphs
         $.each(sorted, function(id, item) {
             $.each(metrics, function(id, metric) {
+                if (item in data === false) return;
                 var item_data = data[item];
                 if (item_data[metric] === undefined) return;
                 var div_id = report+"-"+item+"-"+metric;

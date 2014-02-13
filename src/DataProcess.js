@@ -40,11 +40,11 @@ var DataProcess = {};
     DataProcess.sortCompanies = function(ds, metric_id) {
         return sortGlobal(ds, metric_id, "companies");
     };
-    
+
     DataProcess.sortCountries = function(ds, metric_id) {
         return sortGlobal(ds, metric_id, "countries");
     };
-    
+
     DataProcess.sortRepos = function(ds, metric_id) {
         return sortGlobal(ds, metric_id, "repos");
     };
@@ -52,7 +52,7 @@ var DataProcess = {};
     DataProcess.sortDomains = function(ds, metric_id) {
         return sortGlobal(ds, metric_id, "domains");
     };
-    // Sort disabled. Use sort order from R data.
+    // Sort disabled. Use sort order from R/Python data.
     sortGlobal = function (ds, metric_id, kind) {
         var sort_disabled = true;
         if (metric_id === undefined) metric_id = "scm_commits";
@@ -79,7 +79,7 @@ var DataProcess = {};
         if (list_ordered === null) return sorted;
 
         $.each(list_ordered, function(index, item) {
-            // Just available needed items for page
+            // Data available only for items in current page
             if (global[item])
                 metric.push([item, global[item][metric_id]]);
         });

@@ -685,10 +685,11 @@ Convert.convertFilterItemsNav = function(filter, page) {
             if (filter !== $(this).data('filter')) return;
             if (!filter) return;
             if ($(this).data('page')) page = $(this).data('page');
+            order_by = $(this).data('order_by');
             div.id = ds+"-"+divlabel;
             $(this).empty();
             if (filter === "repos")
-                DS.displayItemsNav(div.id, filter, page);
+                DS.displayItemsNav(div.id, filter, page, order_by);
             else if (filter === "countries")
                 DS.displayItemsNav(div.id, filter, page);
             else if (filter === "companies")
