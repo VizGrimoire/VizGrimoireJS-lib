@@ -130,6 +130,10 @@ function DataSource(name, basic_metrics) {
         if (self === undefined) self = this;
         self.global_data = nameSpaceMetrics(data, self);
     };
+    this.setGlobalDataItem = function(item, value, self) {
+        if (self === undefined) self = this;
+        self.global_data[item] = value;
+    };
 
     this.global_top_data = null;
     this.getGlobalTopData = function() {

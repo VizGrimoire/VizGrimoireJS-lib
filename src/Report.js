@@ -500,12 +500,19 @@ if (Report === undefined) var Report = {};
 })();
 
 Loader.data_ready_global(function() {
-    Report.configDataSources();
-    Report.convertGlobal();
-    Report.convertStudiesGlobal();
 });
 
 Loader.data_ready(function() {
+    // Second loader after the first one load all data
+    Loader2.data_load();
+});
+
+// New Loader for getting the data from the new REST API
+Loader2.data_ready(function() {
+    Report.log("Data from API REST loaded");
+    Report.configDataSources();
+    Report.convertGlobal();
+    Report.convertStudiesGlobal();
     Report.convertStudies();
     $("body").css("cursor", "auto");
     // Popover help system
@@ -513,11 +520,7 @@ Loader.data_ready(function() {
         $('.help').popover('hide');
     });
     Convert.activateHelp();
-});
 
-// New Loader for getting the data from the new REST API
-Loader2.data_ready(function() {
-    Report.log("Data from API REST loaded");
 });
 
 $(document).ready(function() {
@@ -532,7 +535,6 @@ $(document).ready(function() {
     }).always(function (data) {
         Report.createDataSources();
         Loader.data_load();
-        Loader2.data_load();
         $("body").css("cursor", "progress");
     });
 });

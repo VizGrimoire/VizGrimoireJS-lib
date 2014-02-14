@@ -28,7 +28,7 @@ if (Loader2 === undefined) var Loader2 = {};
     var api_rest_url = "http://vizgrimoireapi.apiary.io";
     // JSONP support
     var url_callback = "?callback=?";
-    var ts_commits = null;
+    var ts_commits = null, ncommits = null;
 
     Loader2.data_load = function() {
         // Read scm_commits from API REST
@@ -39,11 +39,14 @@ if (Loader2 === undefined) var Loader2 = {};
     };
 
     function set_tsCommits(data, DS) {
+        ts_commits = data.value; 
         Report.log("Read ts_commits data " + data.value);
     }
 
     function set_nCommits(data, DS) {
+        ncommits = data.value;
         Report.log("Read ncommits data " + data.value);
+        DS.setGlobalDataItem("ncommits", data.value);
     }
 
     function data_load_file(file, fn_data_set, self) {
@@ -79,7 +82,8 @@ if (Loader2 === undefined) var Loader2 = {};
                 "value": 2245
             };
         }
-        fn_data_set(history, self);
+        fn_data_set(history, Report.getDataSourceByName("scm"));
+        end_data_load();
     }
 
     Loader2.data_ready = function(callback) {
@@ -87,14 +91,14 @@ if (Loader2 === undefined) var Loader2 = {};
     };
 
     function check_data_loaded() {
-        if (ts_commits !== null) return true;
+        if (ts_commits !== null && ncommits !== null) return true;
         else return false;
     }
 
     function end_data_load()  {
-        if (check_data_loaded()) {    
-            for (var i = 0; i < data_global_callbacks.length; i++) {
-                data_global_callbacks[i]();
+        if (check_data_loaded()) {
+            for (var i = 0; i < data_callbacks.length; i++) {
+                data_callbacks[i]();
             }
         }
     }
