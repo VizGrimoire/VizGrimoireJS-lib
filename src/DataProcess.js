@@ -55,7 +55,6 @@ var DataProcess = {};
     // Sort disabled. Use sort order from R/Python data.
     // SCR repos enabled now
     sortGlobal = function (ds, metric_id, kind) {
-        var sort_disabled = true;
         if (metric_id === undefined) metric_id = "scm_commits";
         var metric = [];
         var data = [], sorted = [];
@@ -82,7 +81,9 @@ var DataProcess = {};
             return data;
 
         for (var i=0; i<metrics_data[metric_id].length; i++ ) {
-            metric.push([metrics_data.name[i],metrics_data[metric_id][i]]);
+            var value = metrics_data[metric_id][i];
+            if (value === "NA") value = 0; // Easy to filter
+            metric.push([metrics_data.name[i],value]);
         }
         metric.sort(function(a, b) {return b[1] - a[1];});
         $.each(metric, function(id, value) {
@@ -106,7 +107,7 @@ var DataProcess = {};
                 var data = sortGlobal (DS, order_by, filter);
 
                 if (filter === 'companies') DS.setCompaniesData(data);
-                if (filter === 'repositories') DS.setReposData(data);
+                if (filter === 'repos') DS.setReposData(data);
                 if (filter === 'countries') DS.setReposData(data);
                 if (filter === 'domains') DS.setReposData(data);
 
