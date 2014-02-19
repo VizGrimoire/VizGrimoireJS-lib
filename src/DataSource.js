@@ -76,6 +76,11 @@ function DataSource(name, basic_metrics) {
         self.data = nameSpaceMetrics(load_data, self);
     };
 
+    this.setDataItem = function(item, data, self) {
+        if (self === undefined) self = this;
+        self.data[item] = data;
+    };
+
     this.demographics_aging_file = this.data_dir + '/'+this.name+'-demographics-aging.json';
     this.demographics_birth_file = this.data_dir + '/'+this.name+'-demographics-birth.json';
     this.getDemographicsAgingFile = function() {

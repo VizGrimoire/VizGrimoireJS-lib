@@ -28,6 +28,7 @@ if (Loader2 === undefined) var Loader2 = {};
     var api_rest_url = "http://vizgrimoireapi.apiary.io";
     // JSONP support
     var url_callback = "?callback=?";
+
     var ts_commits = null, ncommits = null;
 
     Loader2.data_load = function() {
@@ -39,8 +40,9 @@ if (Loader2 === undefined) var Loader2 = {};
     };
 
     function set_tsCommits(data, DS) {
-        ts_commits = data.value; 
+        ts_commits = data.value;
         Report.log("Read ts_commits data " + data.value);
+        DS.setDataItem("ts_commits", data.value.values);
     }
 
     function set_nCommits(data, DS) {
@@ -62,18 +64,31 @@ if (Loader2 === undefined) var Loader2 = {};
 
     function data_load_file_fake(file, fn_data_set, self) {
         if (file.indexOf("ts_")>-1) {
+            var first_date = "2010-01-01";
+            var last_date = "2014-02-01";
+            var period = "months";
+            var months = 50;
+            var months_label = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             history = {
                 "id": "scm/ts_commits",
                 "type": "ts of int",
                 "desc": "Time serie of number of commits in SCM repo(s)",
                 "value": {
-                    "period": "weeks",
-                    "first_date": "2013-12-25",
-                    "last_date": "2014-01-15",
-                    "values": [23, 23, 56, 34],
-                    "period_id": ["Dec 25 2013", "Jan 1 2014", "Jan 8 2014", "Jan 15 2014"]
+                    "period": period,
+                    "first_date": first_date,
+                    "last_date": last_date
                 }
             };
+            var i = 0;
+            history.value.values = [];
+            for (i=0; i<months; i++) {
+                history.value.values.push(Math.random()*100);
+            }
+            history.value.period_id = [];
+            for (i=0; i<months; i++) {
+                var month_label = months_label[i%12]+" 1 "+ (2010+parseInt(i/12,10));
+                history.value.period_id.push(month_label);
+            }
         } else {
             history =  {
                 "id": "scm/ncommits",
@@ -82,6 +97,7 @@ if (Loader2 === undefined) var Loader2 = {};
                 "value": 2245
             };
         }
+
         fn_data_set(history, Report.getDataSourceByName("scm"));
         end_data_load();
     }

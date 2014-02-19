@@ -523,6 +523,11 @@ Loader2.data_ready(function() {
 
 });
 
+// New Loader for getting the data from the new REST API
+Loader2.data_ready(function() {
+    Report.log("Data from API REST loaded");
+});
+
 $(document).ready(function() {
     // var filename = Report.getDataDir()+'/config.json';
     // Config file loaded from root dir
