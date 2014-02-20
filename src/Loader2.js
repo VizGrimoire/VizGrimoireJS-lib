@@ -62,6 +62,8 @@ if (Loader2 === undefined) var Loader2 = {};
         });
     }
 
+    // function data_load_file_fake(metric) {
+    // add new metric commits identifiers - jgb will add it
     function data_load_file_fake(file, fn_data_set, self) {
         if (file.indexOf("ts_")>-1) {
             var first_date = "2010-01-01";
