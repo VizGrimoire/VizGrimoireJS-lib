@@ -360,7 +360,7 @@ Convert.convertMetricsEvolSet = function() {
             }
             var ds = $(this).data('data-source');
             var DS = Report.getDataSourceByName(ds);
-            if (DS === null) return;                
+            if (DS === null) return;
             DS.displayEnvision(div.id, relative, legend, summary_graph); 
         });
     }
@@ -761,20 +761,21 @@ Convert.convertFilterItemsMiniCharts = function(filter, page) {
             // In unixtime
             var start = $(this).data('start');
             var end = $(this).data('end');
+            var convert = $(this).data('convert');
             div.id = metrics.replace(/,/g,"-")+"-"+filter+"-"+divlabel;
             $(this).empty();
             if (filter === "repos")
                 DS.displayReposList(metrics.split(","),div.id,
-                    config_metric, order_by, page, show_links, start, end);
+                    config_metric, order_by, page, show_links, start, end, convert);
             else if (filter === "countries")
                 DS.displayCountriesList(metrics.split(","),div.id,
-                    config_metric, order_by, page, show_links, start, end);
+                    config_metric, order_by, page, show_links, start, end, convert);
             else if (filter === "companies")
                 DS.displayCompaniesList(metrics.split(","),div.id,
-                    config_metric, order_by, page, show_links, start, end);
+                    config_metric, order_by, page, show_links, start, end, convert);
             else if (filter === "domains")
                 DS.displayDomainsList(metrics.split(","),div.id,
-                    config_metric, order_by, page, show_links, start, end);
+                    config_metric, order_by, page, show_links, start, end, convert);
         });
     }
 };

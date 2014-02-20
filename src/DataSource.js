@@ -559,23 +559,7 @@ function DataSource(name, basic_metrics) {
     // TODO: support multiproject
     this.displayMetricsEvol = function(metric_ids, div_target, config, convert) {
         var data = this.getData();
-        if (convert) {
-            if (convert === "aggregate")
-                data = DataProcess.aggregate(data, metric_ids);
-            if (convert === "substract") {
-                data = DataProcess.substract(data, metric_ids[0], metric_ids[1]);
-                metric_ids = ['substract'];
-            }
-            if (convert === "substract-aggregate") {
-                data = DataProcess.substract(data, metric_ids[0], metric_ids[1]);
-                metric_ids = ['substract'];
-                data = DataProcess.aggregate(data, metric_ids);
-            }
-            if (convert === "divide") {
-                data = DataProcess.divide(data, metric_ids[0], metric_ids[1]);
-                metric_ids = ['divide'];
-            }
-        }
+        if (convert) data = DataProcess.convert(data, convert, metric_ids);
         Viz.displayMetricsEvol(metric_ids, data, div_target, config);
     };
 
@@ -700,31 +684,31 @@ function DataSource(name, basic_metrics) {
     };
 
     this.displayCompaniesList = function (metrics,div_id, 
-            config_metric, sort_metric, page, show_links, start, end) {
+            config_metric, sort_metric, page, show_links, start, end, convert) {
         this.displaySubReportList("companies",metrics,div_id, 
-                config_metric, sort_metric, page, show_links, start, end);
+                config_metric, sort_metric, page, show_links, start, end, convert);
     };
 
     this.displayReposList = function (metrics,div_id, 
-            config_metric, sort_metric, page, show_links, start, end) {
+            config_metric, sort_metric, page, show_links, start, end, convert) {
         this.displaySubReportList("repos",metrics,div_id, 
-                config_metric, sort_metric, page, show_links, start, end);
+                config_metric, sort_metric, page, show_links, start, end, convert);
     };
 
     this.displayCountriesList = function (metrics,div_id, 
-            config_metric, sort_metric, page, show_links, start, end) {
+            config_metric, sort_metric, page, show_links, start, end, convert) {
         this.displaySubReportList("countries",metrics,div_id, 
-                config_metric, sort_metric, page, show_links, start, end);
+                config_metric, sort_metric, page, show_links, start, end, convert);
     };
 
     this.displayDomainsList = function (metrics,div_id,
-            config_metric, sort_metric, page, show_links, start, end) {
+            config_metric, sort_metric, page, show_links, start, end, convert) {
         this.displaySubReportList("domains",metrics,div_id,
-                config_metric, sort_metric, page, show_links, start, end);
+                config_metric, sort_metric, page, show_links, start, end, convert);
     };
 
     this.displaySubReportList = function (report, metrics,div_id, 
-            config_metric, sort_metric, page_str, show_links, start, end) {
+            config_metric, sort_metric, page_str, show_links, start, end, convert) {
 
         var page = parseInt(page_str, null);
         if (isNaN(page)) page = 1;
@@ -811,8 +795,17 @@ function DataSource(name, basic_metrics) {
         list += "</table>";
         $("#"+div_id).append(list);
         // Draw the graphs
+        var start_items = null, end_items = null, convert_items = null;
+        if (start) start_items = start.split(",");
+        if (end) end_items = end.split(",");
+        if (convert) convert_items = convert.split(",");
         $.each(sorted, function(id, item) {
+            var i = 0;
             $.each(metrics, function(id, metric) {
+                var mstart = null, mend = null, mconvert = null;
+                if (start_items) mstart = start_items[i];
+                if (end_items) mend = end_items[i];
+                if (convert_items) mconvert = convert_items[i];
                 if (item in data === false) return;
                 var item_data = data[item];
                 if (item_data[metric] === undefined) return;
@@ -821,7 +814,8 @@ function DataSource(name, basic_metrics) {
                 items[item] = item_data;
                 var title = '';
                 Viz.displayMetricSubReportLines(div_id, metric, items, title, 
-                        config_metric, start, end);
+                        config_metric, mstart , mend, mconvert); 
+                i++;
             });
         });
     };

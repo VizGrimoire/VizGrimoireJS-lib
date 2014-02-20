@@ -37,6 +37,26 @@ var DataProcess = {};
         return page_items;
     };
 
+    DataProcess.convert = function(data, convert, metric_ids) {
+        if (convert === "aggregate") {
+            data = DataProcess.aggregate(data, metric_ids);
+        }
+        else if (convert === "substract") {
+            data = DataProcess.substract(data, metric_ids[0], metric_ids[1]);
+            metric_ids = ['substract'];
+        }
+        else if (convert === "substract-aggregate") {
+            data = DataProcess.substract(data, metric_ids[0], metric_ids[1]);
+            metric_ids = ['substract'];
+            data = DataProcess.aggregate(data, metric_ids);
+        }
+        else if (convert === "divide") {
+            data = DataProcess.divide(data, metric_ids[0], metric_ids[1]);
+            metric_ids = ['divide'];
+        }
+        return data;
+    };
+
     DataProcess.sortCompanies = function(ds, metric_id) {
         return sortGlobal(ds, metric_id, "companies");
     };
@@ -60,7 +80,7 @@ var DataProcess = {};
         var data = [], sorted = [];
         if (kind === "companies") {
             data = ds.getCompaniesData();
-        } 
+        }
         else if (kind === "repos") {
             data = ds.getReposData();
         }

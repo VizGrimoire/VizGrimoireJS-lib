@@ -216,14 +216,16 @@ if (Viz === undefined) var Viz = {};
     }
 
     function displayMetricSubReportLines(div_id, metric, items, title, 
-            config, start, end) {
+            config, start, end, convert) {
         var lines_data = [];
         var history = {};
 
+        // TODO: move this data logic to Data Source
         $.each(items, function(item, data) {
             if (data === undefined) return false;
             if (data[metric] === undefined) return false;
 
+            if (convert) data = DataProcess.convert(data, convert, metric);
             if (start) data = DataProcess.filterDates(start, end, data);
 
             var cdata = [[], []];
