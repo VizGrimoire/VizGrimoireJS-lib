@@ -576,7 +576,7 @@ function DataSource(name, basic_metrics) {
                 metric_ids = ['divide'];
             }
         }
-        Viz.displayMetricsEvol(metric_ids, data, div_target, config);
+        Viz.displayMetricsEvol(this, metric_ids, data, div_target, config);
     };
 
     this.isPageDisplayed = function (visited, linked, total, displayed) {

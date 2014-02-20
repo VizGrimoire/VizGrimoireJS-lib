@@ -290,7 +290,7 @@ Convert.convertMetricsEvol = function() {
     var config_metric = {};
 
     config_metric.show_desc = false;
-    config_metric.show_title = false;
+    config_metric.show_title = true;
     config_metric.show_labels = true;
 
     var config = Report.getVizConfig();
@@ -324,8 +324,8 @@ Convert.convertMetricsEvol = function() {
             config_viz.graph = $(this).data('graph');
             if ($(this).data('min')) {
                 config_viz.show_legend = false;
-                config_viz.show_labels = false;
-                config_viz.show_grid = false;
+                config_viz.show_labels = true;
+                config_viz.show_grid = true;
                 // config_viz.show_mouse = false;
                 config_viz.help = false;
             }
