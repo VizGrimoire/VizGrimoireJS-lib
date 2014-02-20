@@ -27,47 +27,55 @@ var Convert = {};
 
 // TODO: share logic between three periods duration
 Convert.convertMicrodashText = function () {
+    /* composes the HTML for trends with number about diff and percentages*/
     var divs = $(".MicrodashText");
     if (divs.length > 0) {
         $.each(divs, function(id, div) {
             $(this).empty();
             var metric = $(this).data('metric');
+            var show_name = $(this).data('name');
             var ds = Report.getMetricDS(metric)[0];
             if (ds === undefined) return;
             var total = ds.getGlobalData()[metric];
-            //initial square: total
-            var html = '<div class="row-fluid"><div class="span3">';
-            html += '<span class="medium-fp-number">'+Report.formatValue(total);
-            html += '</span> '+ds.getMetrics()[metric].name;
-            html += '</div><!--span3-->';
+            var html = '<div class="row-fluid">';
+
+            if(show_name){ //if name is shown we'll have four columns
+                html += '<div class="span3">';
+                html += '<span class="dayschange">' + ds.basic_metrics[metric].name + '</span>';
+                html += '</div>';
+            }
 
             // $.each({7:'week',30:'month',365:'year'}, function(period, name) {
             $.each([365,30,7], function(index, period) {
                 var column = ds.getMetrics()[metric].column;
+                // value -> items for this period
+                // netvalue -> change with previous period
+                // percentagevalue -> % changed with previous
+                var value = ds.getGlobalData()[metric+"_"+period];
                 var netvalue = ds.getGlobalData()["diff_net"+column+"_"+period];
                 var percentagevalue = ds.getGlobalData()["percentage_"+column+"_"+period];
-                var value = ds.getGlobalData()[metric+"_"+period];
+                percentagevalue = Math.round(percentagevalue*10)/10;  // round "original" to 1 decimal
                 if (value === undefined) return;
+                var str_percentagevalue = '';
+                if (netvalue > 0) str_percentagevalue = '+' + percentagevalue;
+                if (netvalue < 0) str_percentagevalue = '-' + Math.abs(percentagevalue);
 
-                html += '<div class="span3">';
-                if (netvalue > 0) percentagevalue = '+' + percentagevalue;
-                if (netvalue < 0) percentagevalue = '-' + Math.abs(percentagevalue);
+                if(show_name){
+                    html += '<div class="span3">';
+                }else{
+                    html += '<div class="span4">';
+                }
+
+                html += '<span class="dayschange">Last '+period+' days:</span>';
+                html += ' '+Report.formatValue(value) + '<br>';
                 if (netvalue === 0) {
-                    html += '<i class="icon-circle-arrow-right"></i>';
-                    html += Report.formatValue(value);
-                    html += '<span class="fppercent">&nbsp;('+percentagevalue+'%)</span>&nbsp;';
-                }
-                else if (netvalue > 0) {
-                    html += '<i class="icon-circle-arrow-up"></i>&nbsp;';
-                    html += Report.formatValue(value);
-                    html += '<span class="fppercent">&nbsp;('+percentagevalue+'%)</span>&nbsp;';
+                    html += '<i class="fa fa-arrow-circle-right"></i> <span class="zeropercent">&nbsp;'+str_percentagevalue+'%</span>&nbsp;';
+                } else if (netvalue > 0) {
+                    html += '<i class="fa fa-arrow-circle-up"></i> <span class="pospercent">&nbsp;'+str_percentagevalue+'%</span>&nbsp;';
                 } else if (netvalue < 0) {
-                    html += '<i class="icon-circle-arrow-down"></i>&nbsp;';
-                    html += Report.formatValue(value);
-                    html += '<span class="fppercent">&nbsp;('+percentagevalue+'%)</span>&nbsp;';
+                    html += '<i class="fa fa-arrow-circle-down"></i> <span class="negpercent">&nbsp;'+str_percentagevalue+'%</span>&nbsp;';
                 }
-                html += '<br><span class="dayschange">'+period+' Days Change</span>';
-                html += '</div><!--span3-->';
+                html += '</div><!--span4-->';
             });
 
             html += '</div><!--row-fluid-->';
