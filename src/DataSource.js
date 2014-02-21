@@ -560,7 +560,7 @@ function DataSource(name, basic_metrics) {
     this.displayMetricsEvol = function(metric_ids, div_target, config, convert) {
         var data = this.getData();
         if (convert) data = DataProcess.convert(data, convert, metric_ids);
-        Viz.displayMetricsEvol(metric_ids, data, div_target, config);
+        Viz.displayMetricsEvol(this, metric_ids, data, div_target, config);
     };
 
     this.isPageDisplayed = function (visited, linked, total, displayed) {

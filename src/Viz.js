@@ -281,7 +281,7 @@ if (Viz === undefined) var Viz = {};
             legend_div = $('#'+config_metric.legend.container);
 
         var config = {
-            title : title,
+            subtitle : title,
             legend: {
               show: false,
               container: legend_div
@@ -298,13 +298,15 @@ if (Viz === undefined) var Viz = {};
                 }
             },
             yaxis : {
-                minorTickFreq : 1000,
-                tickFormatter : function(y) {
-                    return parseInt(y, 10) + "";
-                }
+                min: null,
+                noTicks: 2,
+                autoscale: false
             },
             grid : {
-                show : false
+                verticalLines: false,
+                color: '#ccc',
+                outlineWidth: 1,
+                outline: 's'
             },
             mouse : {
                 container: legend_div,
@@ -1197,9 +1199,19 @@ if (Viz === undefined) var Viz = {};
         return config;
     }
 
-    function displayMetricsEvol(metrics, data, div_target, config) {
+    function displayMetricsEvol(ds, metrics, data, div_target, config) {
+        /* gets readeable title for metrics + conf and calls displayMetricsLines*/
         config = checkBasicConfig(config);
-        var title = metrics.join(",");
+        var desc_metrics = ds.getMetrics();
+        var title = '';
+        var first = true;
+        for (var i in metrics){
+            if (!first){
+                title += ' vs. ';
+            }
+            title += desc_metrics[metrics[i]].name;
+            first = false;
+        }
         if (!config.show_title) title = '';
         displayMetricsLines(div_target, metrics, data, title, config);
     }
