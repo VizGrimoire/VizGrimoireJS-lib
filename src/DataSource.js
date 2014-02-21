@@ -906,11 +906,11 @@ function DataSource(name, basic_metrics) {
             html += "<tr><td>";
             // if (id_label[id] === undefined) return;
             if (self.getMetrics()[id]) {
-                html += self.getMetrics()[id].name + "</td><td>" + value;
+                html += self.getMetrics()[id].name + "</td><td>" + Report.formatValue(value);
             } else if (id_label[id]) { 
-                html += id_label[id] + "</td><td>" + value;
+                html += id_label[id] + "</td><td>" + Report.formatValue(value);
             } else {
-                if (report) html += id + "</td><td>" + value;
+                if (report) html += id + "</td><td>" + Report.formatValue(value);
             }
             html += "</td></tr>";
         });
