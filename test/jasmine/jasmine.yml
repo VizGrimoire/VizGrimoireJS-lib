@@ -12,6 +12,7 @@ src_files:
   - "src/MLS.js"
   - "src/SCM.js"
   - "src/SCR.js"
+  - "src/People.js"
   - "src/Loader.js"
   - "src/Convert.js"
   - "src/Report.js"
