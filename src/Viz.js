@@ -313,7 +313,9 @@ if (Viz === undefined) var Viz = {};
                 track : true,
                 trackY : false,
                 trackFormatter : function(o) {
-                    var label = history.date[parseInt(o.index, 10)] + "<br>";
+                    var label = history.date[parseInt(o.index, 10)];
+                    if (label === undefined) label = "";
+                    else label += "<br>";
                     for (var i=0; i<lines_data.length; i++) {
                         var value = lines_data[i].data[o.index][1];
                         if (value === undefined) continue;
@@ -352,23 +354,23 @@ if (Viz === undefined) var Viz = {};
         }
 
         // Show last time series as a point, not a line. The data is incomplete
+        // Only show for single lines when time series is complete
         var showLastPoint = false;
-        if (!(config_metric.lines !== undefined && config_metric.lines.stacked) &&
-            !(config_metric.graph !== undefined && config_metric.graph === "bars")) {
+        if (config_metric.graph !== "bars" &&
+            lines_data.length === 1 &&
+            lines_data[0].data[0][0] === 0) {
             showLastPoint = true;
         }
         if (showLastPoint) {
             lines_data = lastLineValueToPoint(lines_data);
-            // Add extra point in single lines (+ dot graph). Ugly hack!
-            if (lines_data.length === 2) {
-                // Add an extra entry for adding space for the circle point
-                // var last = lines_data[0].data.length;
-                var next_id = history.id[history.id.length-1]++;
-                lines_data[0].data.push([next_id, undefined]);
-                lines_data[1].data.push([next_id, undefined]);
-                history.date.push('');
-                history.id.push(next_id);
-            }
+            // Add an extra entry for adding space for the circle point. Ugly hack!
+            // var last = lines_data[0].data.length;
+            var next_id = history.id[history.id.length-1]+1;
+            lines_data[0].data.push([next_id, undefined]);
+            lines_data[1].data.push([next_id, undefined]);
+            history.date.push('');
+            history.id.push(next_id);
+
         }
 
         graph = Flotr.draw(container, lines_data, config);
@@ -1029,10 +1031,10 @@ if (Viz === undefined) var Viz = {};
 
         return options;
     };
-    
+
     function getEnvisionOptions(div_id, projects_data, ds_name, hide, summary_graph) {
 
-        var basic_metrics, main_metric="", summary_data = [[],[]];
+        var basic_metrics = null, main_metric="", summary_data = [[],[]];
 
         if (ds_name) {
             $.each(Report.getDataSources(), function(i, DS) {
@@ -1043,7 +1045,7 @@ if (Viz === undefined) var Viz = {};
             });
         }
         else basic_metrics = Report.getAllMetrics();
-        
+
         $.each(Report.getDataSources(), function(i, DS) {
             main_metric = DS.getMainMetric();
             if ((ds_name === null && DS.getName() === "scm") ||
@@ -1054,10 +1056,10 @@ if (Viz === undefined) var Viz = {};
                 return false;
             }
         });
-        
+
         // [ids, values] Complete timeline for all the data
         var dates = [[],[]];
-        
+
         $.each(projects_data, function(project, data) {
             $.each(data, function(index, DS) {
                 if (ds_name && ds_name !== DS.getName()) return;
@@ -1065,7 +1067,7 @@ if (Viz === undefined) var Viz = {};
                         [DS.getData().id, DS.getData().date]);
             });
         });
-        
+
         var firstMonth = dates[0][0],
                 container = document.getElementById(div_id), options;
         var markers = Report.getMarkers();
@@ -1090,8 +1092,8 @@ if (Viz === undefined) var Viz = {};
                     }
                 }
             }
-        };        
-        
+        };
+
         options.data = {
             summary : DataProcess.fillHistory(dates[0], summary_data),
             markers : markers,
@@ -1121,20 +1123,20 @@ if (Viz === undefined) var Viz = {};
             } else {
                 //options.data[metric].push({label:"", data:full_data});
                 options.data[metric].push({label:project, data:full_data});
-            }                
+            }
         };
-        
+
         var buildProjectsInfo = function(name, pdata) {
             project = name;
             $.each(pdata, buildProjectInfo);
         };
 
-        for (var metric in basic_metrics) {            
+        for (var metric in basic_metrics) {
             $.each(projects_data, buildProjectsInfo);
         }
-        
+
         options.trackFormatter = function(o) {
-            var sdata = o.series.data, index = sdata[o.index][0] - firstMonth;            
+            var sdata = o.series.data, index = sdata[o.index][0] - firstMonth;
             var project_metrics = {};
             var projects = Report.getProjectsList();
             for (var j=0;j<projects.length; j++) {
@@ -1145,16 +1147,16 @@ if (Viz === undefined) var Viz = {};
 
             for (var metric in basic_metrics) {
                 if (options.data[metric] === undefined) continue;
-                if ($.inArray(metric,options.data.envision_hide) > -1) continue;                                                
+                if ($.inArray(metric,options.data.envision_hide) > -1) continue;
                 for (j=0;j<projects.length; j++) {
                     if (options.data[metric][j] === undefined) continue;
                     var project_name = options.data[metric][j].label;
                     var pdata = options.data[metric][j].data;
                     value = pdata[1][index];
                     project_metrics[project_name][metric] = value;
-                }                                    
+                }
             }
-            
+
             value  = "<table><tr><td align='right'>"+dates[1][index]+"</td></tr>";
             value += "<tr>";
             if (projects.length>1) value +="<td></td>";
