@@ -266,7 +266,7 @@ if (Viz === undefined) var Viz = {};
             dot_graph.points = {show : true, radius:3, lineWidth: 1, fillColor: null, shadowSize : 0};
             lines_data.push(dot_graph);
 
-            // Remove last data line
+            // Remove last data line because covered by dot graph
             lines_data[0].data[last-1][1] = undefined;
         }
         return lines_data;
@@ -1204,13 +1204,13 @@ if (Viz === undefined) var Viz = {};
         config = checkBasicConfig(config);
         var desc_metrics = ds.getMetrics();
         var title = '';
-        var first = true;
-        for (var i in metrics){
-            if (!first){
+        for (var i=0; i<metrics.length; i++) {
+            if (i !== 0){
                 title += ' vs. ';
             }
-            title += desc_metrics[metrics[i]].name;
-            first = false;
+            if (metrics[i] in desc_metrics)
+                title += desc_metrics[metrics[i]].name;
+            else title += metrics[i];
         }
         if (!config.show_title) title = '';
         displayMetricsLines(div_target, metrics, data, title, config);
