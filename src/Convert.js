@@ -341,6 +341,9 @@ Convert.convertMetricsEvol = function() {
             if ($(this).data('light-style')){
                 config_viz.light_style = true;
             }
+            if ($(this).data('custom-title')){
+                config_viz.custom_title = $(this).data('custom-title');
+            }
             // In unixtime
             var start = $(this).data('start');
             if (start) config_viz.start_time = start;
