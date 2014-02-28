@@ -283,7 +283,7 @@ if (Viz === undefined) var Viz = {};
         var config = {
             subtitle : title,
             legend: {
-              show: false,
+              show: true,
               container: legend_div
             },
             xaxis : {
@@ -304,7 +304,7 @@ if (Viz === undefined) var Viz = {};
             },
             grid : {
                 verticalLines: false,
-                color: '#ccc',
+                color: '#000000',
                 outlineWidth: 1,
                 outline: 's'
             },
@@ -350,6 +350,10 @@ if (Viz === undefined) var Viz = {};
             }
             if (config_metric.graph === "bars") {
                 config.bars = {show : true};
+            }
+            if (config_metric.light_style === true) {
+                config.grid.color = '#ccc';
+                config.legend.show = false;
             }
         }
 

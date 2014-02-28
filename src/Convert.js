@@ -337,6 +337,10 @@ Convert.convertMetricsEvol = function() {
                 // config_viz.show_mouse = false;
                 config_viz.help = false;
             }
+            config_viz.ligth_style = false;
+            if ($(this).data('light-style')){
+                config_viz.light_style = true;
+            }
             // In unixtime
             var start = $(this).data('start');
             if (start) config_viz.start_time = start;
