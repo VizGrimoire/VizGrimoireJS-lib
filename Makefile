@@ -10,7 +10,7 @@ all: \
 	jshint \
 	vizgrimoire.min.js \
 	vizgrimoire.css
-	
+
 .INTERMEDIATE vizgrimoire.js: \
 	vizgrimoire.deps.js \
 	vizgrimoire.core.js
@@ -39,12 +39,13 @@ vizgrimoire.core.js: \
     src/MLS.js \
     src/SCM.js \
     src/SCR.js \
+    src/People.js \
     src/Identity.js
-    
+
 vizgrimoire.deps.css: \
     src/envision.min.css \
     src/jquery.gridster.css
-        
+
 vizgrimoire.core.css: \
     src/newreport.css \
     src/report.css \
@@ -52,17 +53,17 @@ vizgrimoire.core.css: \
 
 %.min.js: %.js Makefile
 	@rm -f $@
-	# $(JS_UGLIFY) -o $@ -c -m $<
+        # $(JS_UGLIFY) -o $@ -c -m $<
 	$(JS_UGLIFY) -o $@ $<  
 
 vizgrimoire%js: Makefile
 	echo $@
 	@rm -f $@
 	@cat $(filter %.js,$^) > $@
-	# @cat $(filter %.js,$^) > $@.tmp
-	# $(JS_UGLIFY) -o $@  $@.tmp
-	# @rm $@.tmp
-	# @chmod a-w $@
+        # @cat $(filter %.js,$^) > $@.tmp
+        # $(JS_UGLIFY) -o $@  $@.tmp
+        # @rm $@.tmp
+        # @chmod a-w $@
 
 version: vizgrimoire.core.js
 	@echo "\\n" >> $<
@@ -74,7 +75,7 @@ version: vizgrimoire.core.js
 jshint: vizgrimoire.core.js
 	@echo "JSHINT Checking ..."
 	@$(JSHINT) $(filter %.js,$^)
-	
+
 test: all
 	cd test/jasmine; jasmine-headless-webkit -j jasmine.yml -c
 	cd ../..
@@ -86,6 +87,6 @@ testci: all
 vizgrimoire%css: Makefile
 	@rm -f $@
 	@cat $(filter %.css,$^) > $@
-	
+
 clean:
 	rm -f vizgrimoire*.js vizgrimoire*.css

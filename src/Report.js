@@ -349,6 +349,8 @@ if (Report === undefined) var Report = {};
                 Report.registerDataSource(irc);
                 mediawiki = new MediaWiki();
                 Report.registerDataSource(mediawiki);
+                people = new People();
+                Report.registerDataSource(people);
             }
             else {
                 // "scm","mediawiki","its","irc","gerrit","mlstats"
@@ -378,6 +380,10 @@ if (Report === undefined) var Report = {};
                         mediawiki = new MediaWiki();
                         Report.registerDataSource(mediawiki);
                     }
+                    else if (name === "people") {
+                        people = new People();
+                        Report.registerDataSource(people);
+                    }
                     else Report.log ("Not support data source " + name);
                 });
             }
@@ -387,6 +393,7 @@ if (Report === undefined) var Report = {};
             if (scr) scr.setDataDir(project);
             if (irc) irc.setDataDir(project);
             if (mediawiki) mediawiki.setDataDir(project);
+            if (people) people.setDataDir(project);
             if (scm && its) scm.setITS(its);
         });
 
