@@ -332,7 +332,10 @@ if (Viz === undefined) var Viz = {};
 
         if (config_metric) {
             if (!config_metric.show_title) config.title = '';
-            if (config_metric.show_legend) config.legend.show = true;
+            if ("show_legend" in config_metric) {
+                if (config_metric.show_legend === true) config.legend.show = true;
+                else config.legend.show = false;
+            }
             if (config_metric.lines && config_metric.lines.stacked)
                 config.lines =
                     {stacked:true, fill:true, fillOpacity: 1, fillBorder:true, lineWidth:0.01};
