@@ -588,6 +588,7 @@ function filterItemsConfig() {
     config_metric.show_desc = false;
     config_metric.show_title = false;
     config_metric.show_labels = true;
+    config_metric.show_legend = false;
     return config_metric;
 }
 
