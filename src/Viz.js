@@ -358,6 +358,9 @@ if (Viz === undefined) var Viz = {};
                 config.grid.color = '#ccc';
                 config.legend.show = false;
             }
+            if (config_metric.custom_title){
+                config.subtitle = config_metric.custom_title;
+            }
         }
 
         // Show last time series as a point, not a line. The data is incomplete
