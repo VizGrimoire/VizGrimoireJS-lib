@@ -542,6 +542,7 @@ function resizedw(){
      Report.convertGlobal();
      Report.convertStudiesGlobal();
      Report.convertStudies();
+     Convert.activateHelp();
 }
 var resized;
 $(window).resize(function () {
