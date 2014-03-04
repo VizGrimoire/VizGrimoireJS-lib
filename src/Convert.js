@@ -344,6 +344,11 @@ Convert.convertMetricsEvol = function() {
             if ($(this).data('custom-title')){
                 config_viz.custom_title = $(this).data('custom-title');
             }
+            if (config_viz.help && $(this).data('custom-help')){
+                config_viz.custom_help = $(this).data('custom-help');
+            } else {
+                config_viz.custom_help = "";
+            }
             // In unixtime
             var start = $(this).data('start');
             if (start) config_viz.start_time = start;

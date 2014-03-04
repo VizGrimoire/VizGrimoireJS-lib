@@ -172,19 +172,25 @@ if (Viz === undefined) var Viz = {};
         }
     }
 
-    function showHelp(div_id, metrics) {
+    function showHelp(div_id, metrics, custom_help) {
         var all_metrics = Report.getAllMetrics();
         var help ='<a href="#" class="help"';
         var content = "";
-        var addContent = function (id, value) {
-            if (metrics[i] === id) {
-                content += "<strong>"+value.name +"</strong>: "+ value.desc + "<br>";
-                return false;
+
+        if (custom_help === "") {
+            var addContent = function (id, value) {
+                if (metrics[i] === id) {
+                    content += "<strong>"+value.name +"</strong>: "+ value.desc + "<br>";
+                    return false;
+                }
+            };
+            for (var i=0; i<metrics.length; i++) {
+                $.each (all_metrics, addContent);
             }
-        };
-        for (var i=0; i<metrics.length; i++) {
-            $.each (all_metrics, addContent);
+        } else {
+            content = "<strong>Description</strong>: " + custom_help;
         }
+
         help += 'data-content="'+content+'" data-html="true">'; 
         help += '<img src="qm_15.png"></a>';
         // Remove previous "?" so we don't duplicate
@@ -194,7 +200,7 @@ if (Viz === undefined) var Viz = {};
     }
 
     function displayMetricsLines(div_id, metrics, history, title, config) {
-        if (!(config && config.help === false)) showHelp(div_id, metrics);
+        if (!(config && config.help === false)) showHelp(div_id, metrics, config.custom_help);
 
         var lines_data = [];
         $.each(metrics, function(id, metric) {
