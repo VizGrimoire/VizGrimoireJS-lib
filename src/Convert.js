@@ -351,6 +351,7 @@ Convert.convertMetricsEvol = function() {
             if (end) config_viz.end_time = end;
 
             div.id = metrics.replace(/,/g,"-")+"-"+ds+"-metrics-evol-"+this.id;
+            div.id = div.id.replace(/\n|\s/g, "");
             DS.displayMetricsEvol(metrics.split(","),div.id,
                     config_viz, $(this).data('convert'));
         });
