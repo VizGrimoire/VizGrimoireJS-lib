@@ -218,7 +218,8 @@ if (Report === undefined) var Report = {};
         var date_fields = ['last_date','first_date'];
         var value = number;
         try {
-            value = parseFloat(number).toFixed(2).toString().replace(/\.00$/, '');
+            // value = parseFloat(number).toFixed(2).toString().replace(/\.00$/, '');
+            value = parseFloat(number).toFixed(1).toString().replace(/\.0$/, '');
             value = strNumberWithThousands(value);
             // If language is spanish exchange , and . Not rock solid logic but simple
             if (navigator.language === "es") {

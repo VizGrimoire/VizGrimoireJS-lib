@@ -329,7 +329,7 @@ if (Viz === undefined) var Viz = {};
                             if (lines_data[i].label !== undefined)
                                 label += lines_data[i].label +":";
                         }
-                        label += value +"<br>";
+                        label += Report.formatValue(value) +"<br>";
                     }
                     return label;
                 }
