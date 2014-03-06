@@ -411,13 +411,13 @@ width: 100%;
 }
 .thin-border{
      border-bottom: 1px solid;
-     text-align:left;
+     text-align: center;
 }
 
 .grey-border{
      border-bottom: 3px solid #E3E3E3;
      text-align:center;
-     padding:12px 0px 0px 0px;
+     padding:6px 0px 0px 0px;
 }
 
 .big-fp-number{
@@ -428,8 +428,14 @@ width: 100%;
 
 .medium-fp-number{
      font-size:1.5em;
+     text-align:center;
      padding:5px 0px 0px 0px;
 }
+
+.medium-text{ 
+     font-size: 0.8em;
+}
+
 
 /* from gb*/
 
