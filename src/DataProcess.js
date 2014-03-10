@@ -408,4 +408,15 @@ var DataProcess = {};
         new_data.divide = divide;
         return new_data;
     };
+
+    DataProcess.revomeLastPoint = function(data) {
+        var new_data = {};
+        $.each(data, function(key, value) {
+            new_data[key] = [];
+            for (var i=0; i < data[key].length-1; i++) {
+                new_data[key].push(data[key][i]);
+            }
+        });
+        return new_data;
+    };
 })();
