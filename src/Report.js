@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2012-2013 Bitergia
+ * Copyright (C) 2012-2014 Bitergia
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
  * Authors:
  *   Alvaro del Castillo San Felix <acs@bitergia.com>
  *   Daniel Izquierdo Cortazar <dizquierdo@bitergia.com>
- *   Luis Cañas <lcanas@bitergia.com>
+ *   Luis Cañas Díaz <lcanas@bitergia.com>
  *
  */
 
@@ -330,6 +330,7 @@ if (Report === undefined) var Report = {};
     }
 
     function createDataSources() {
+        /* Initialize/Register data sources based on getConfig()*/
         checkDynamicConfig();
 
         var projects_dirs = Report.getProjectsDirs();
@@ -352,6 +353,8 @@ if (Report === undefined) var Report = {};
                 Report.registerDataSource(mediawiki);
                 people = new People();
                 Report.registerDataSource(people);
+                downloads = new Downloads();
+                Report.registerDataSource(downloads);
             }
             else {
                 // "scm","mediawiki","its","irc","gerrit","mlstats"
@@ -385,6 +388,10 @@ if (Report === undefined) var Report = {};
                         people = new People();
                         Report.registerDataSource(people);
                     }
+                    else if (name === "downloads") {
+                        downloads = new Downloads();
+                        Report.registerDataSource(downloads);
+                    }
                     else Report.log ("Not support data source " + name);
                 });
             }
@@ -395,6 +402,7 @@ if (Report === undefined) var Report = {};
             if (irc) irc.setDataDir(project);
             if (mediawiki) mediawiki.setDataDir(project);
             if (people) people.setDataDir(project);
+            if (downloads) downloads.setDataDir(project);
             if (scm && its) scm.setITS(its);
         });
 

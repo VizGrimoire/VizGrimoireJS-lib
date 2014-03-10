@@ -40,6 +40,7 @@ vizgrimoire.core.js: \
     src/SCM.js \
     src/SCR.js \
     src/People.js \
+    src/Downloads.js \
     src/Identity.js
 
 vizgrimoire.deps.css: \
