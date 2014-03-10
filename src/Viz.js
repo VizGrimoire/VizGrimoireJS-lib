@@ -203,11 +203,16 @@ if (Viz === undefined) var Viz = {};
         if (!(config && config.help === false)) showHelp(div_id, metrics, config.custom_help);
 
         var lines_data = [];
+
+        if (config.remove_last_point) history =
+            DataProcess.revomeLastPoint(history);
+        if (config.frame_time) history =
+            DataProcess.frameTime(history, metrics);
+        if (config.start_time) history =
+            DataProcess.filterDates(config.start_time, config.end_time, history);
+
         $.each(metrics, function(id, metric) {
             if (!history[metric]) return;
-            if (config.frame_time) history = DataProcess.frameTime(history, metrics);
-            if (config.start_time) history =
-                DataProcess.filterDates(config.start_time, config.end_time, history);
             var mdata = [[],[]];
             $.each(history[metric], function (i, value) {
                 mdata[i] = [history.id[i], history[metric][i]];
