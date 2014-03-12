@@ -227,7 +227,7 @@ if (Viz === undefined) var Viz = {};
     }
 
     function displayMetricSubReportLines(div_id, metric, items, title, 
-            config, start, end, convert) {
+            config, start, end, convert, order) {
         var lines_data = [];
         var history = {};
 
@@ -250,6 +250,19 @@ if (Viz === undefined) var Viz = {};
         });
 
         if (lines_data.length === 0) return;
+
+        if (order) {
+            var order_lines_data = [];
+            $.each(order, function(i, value_order) {
+                $.each(lines_data, function(j, value) {
+                    if (value_order === value.label) {
+                        order_lines_data.push(value);
+                        return false;
+                    }
+                });
+            });
+            lines_data = order_lines_data;
+        }
 
         displayDSLines(div_id, history, lines_data, title, config);
     }
@@ -1280,13 +1293,13 @@ if (Viz === undefined) var Viz = {};
     }
 
     function displayMetricCompanies(metric, data, div_target, 
-            config, start, end) {
+            config, start, end, order) {
         config = checkBasicConfig(config);
         if (config.show_legend !== false)
             config.show_legend = true;
         var title = metric;
         displayMetricSubReportLines(div_target, metric, data, title, 
-                config, start, end);
+                config, start, end, null, order);
     }
 
     function displayMetricDomains(metric, data, div_target,
