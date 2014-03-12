@@ -482,7 +482,7 @@ function DataSource(name, basic_metrics) {
     };
 
     this.displayMetricSubReportStatic = function (report, metric_id,
-            div_target, config, limit, order_by, show_others) {
+            div_target, config, order_by, show_others) {
         if (order_by === undefined) order_by = metric_id;
         var data = null;
         if (report=="companies")
@@ -497,19 +497,19 @@ function DataSource(name, basic_metrics) {
 
         if ($.isEmptyObject(data)) return;
 
-        var sorted = null;
+        var order = null;
         if (report=="companies")
-            sorted = DataProcess.sortCompanies(this, order_by);
+            order = DataProcess.sortCompanies(this, order_by);
         else if (report=="repos")
-            sorted = DataProcess.sortRepos(this, order_by);
+            order = DataProcess.sortRepos(this, order_by);
         else if (report=="countries")
-          sorted = DataProcess.sortCountries(this, order_by);
+          order = DataProcess.sortCountries(this, order_by);
         else if (report=="domains")
-            sorted = DataProcess.sortDomains(this, order_by);
-        sorted = DataProcess.paginate(sorted, Report.getCurrentPage());
- 
-        Viz.displayMetricSubReportStatic(metric_id, data,
-            div_target, config, limit);
+            order = DataProcess.sortDomains(this, order_by);
+        order = DataProcess.paginate(order, Report.getCurrentPage());
+
+        Viz.displayMetricSubReportStatic(metric_id, data, order,
+            div_target, config);
     };
 
     this.displayMetricsCompany = function (

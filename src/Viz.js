@@ -1299,7 +1299,7 @@ if (Viz === undefined) var Viz = {};
                 config, start, end);
     }
 
-    function displayMetricSubReportStatic(metric, data,
+    function displayMetricSubReportStatic(metric, data, order,
             div_id, config) {
         config = checkBasicConfig(config);
         var title = metric;
@@ -1309,10 +1309,10 @@ if (Viz === undefined) var Viz = {};
         var graph = 'bars';
         if (config.graph) graph = config.graph;
 
-        $.each(data, function(item, data) {
-            var label = Report.cleanLabel(item);
+        $.each(order, function(i, name) {
+            var label = Report.cleanLabel(name);
             labels.push(label);
-            metric_data.push(data[metric]);
+            metric_data.push(data[name][metric]);
         });
         displayBasicChart(div_id, labels, metric_data, graph, title, config);
     }
