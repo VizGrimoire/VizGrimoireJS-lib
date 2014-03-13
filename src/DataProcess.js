@@ -148,7 +148,7 @@ var DataProcess = {};
 
     DataProcess.hideEmail = function(email) {
         var clean = email;
-        if (email.indexOf("@") > -1) {
+        if ( (typeof email == "string") &&  (email.indexOf("@") > -1) ) {
             clean = email.split('@')[0];
         }
         return clean;
