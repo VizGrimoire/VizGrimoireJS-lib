@@ -355,6 +355,9 @@ Convert.convertMetricsEvol = function() {
             var end = $(this).data('end');
             if (end) config_viz.end_time = end;
 
+            var remove_last_point = $(this).data('remove-last-point');
+            if (remove_last_point) config_viz.remove_last_point = true;
+
             div.id = metrics.replace(/,/g,"-")+"-"+ds+"-metrics-evol-"+this.id;
             div.id = div.id.replace(/\n|\s/g, "");
             DS.displayMetricsEvol(metrics.split(","),div.id,
@@ -746,6 +749,10 @@ Convert.convertFilterItemsMetricsEvol = function(filter) {
                 container: $(this).data('legend-div')};
             } else config_metric.legend = {container: null};
             config_metric.show_legend = $(this).data('legend');
+
+            var remove_last_point = $(this).data('remove-last-point');
+            if (remove_last_point) config_metric.remove_last_point = true;
+
             div.id = metric+"-"+divlabel;
             $(this).empty();
             if (filter === "companies")
@@ -784,6 +791,10 @@ Convert.convertFilterItemsMiniCharts = function(filter, page) {
             var start = $(this).data('start');
             var end = $(this).data('end');
             var convert = $(this).data('convert');
+
+            var remove_last_point = $(this).data('remove-last-point');
+            if (remove_last_point) config_metric.remove_last_point = true;
+
             div.id = metrics.replace(/,/g,"-")+"-"+filter+"-"+divlabel;
             $(this).empty();
             if (filter === "repos")

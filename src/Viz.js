@@ -239,6 +239,9 @@ if (Viz === undefined) var Viz = {};
             if (convert) data = DataProcess.convert(data, convert, metric);
             if (start) data = DataProcess.filterDates(start, end, data);
 
+            if (config.remove_last_point) data =
+                DataProcess.revomeLastPoint(data);
+
             var cdata = [[], []];
             for (var i=0; i<data.id.length; i++ ) {
                 cdata[i] = [data.id[i], data[metric][i]];
