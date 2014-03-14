@@ -30,6 +30,7 @@ if (Viz === undefined) var Viz = {};
     Viz.displayTop = displayTop;
     Viz.displayTopCompany = displayTopCompany;
     Viz.displayTopGlobal = displayTopGlobal;
+    Viz.displayTopThreads = displayTopThreads;
     Viz.displayBasicChart = displayBasicChart;
     Viz.displayMetricCompanies = displayMetricCompanies;
     Viz.displayMetricSubReportStatic = displayMetricSubReportStatic;
@@ -91,6 +92,39 @@ if (Viz === undefined) var Viz = {};
         div = $("#" + div_id);
         div.append(html);
         return;
+    }
+
+    function translate(labels, l){
+        if(labels.hasOwnProperty(l)){
+            return labels[l];
+        }else{
+            return l;
+        }
+    }
+
+    function displayTopTableThreads(threads_data, labels, limit, people_links, period_str) {
+        /* display table for MLS threads using threads_data and metric_group to get the
+           translation*/
+        var metric = "length";
+        if (people_links === undefined) people_links = true;
+        if (threads_data[metric] === undefined) return;
+        /* vars expected inside threads_data:
+           initiator_id, initiator_name, length, links, message_id, subject*/
+        var title = "Top";
+        var table = '<table class="table table-striped"><tbody>';
+        table += "<tr><th colspan=2> Top " + translate(labels, 'name') + " "+ period_str + "</th>";
+        table += "<th>"+ translate(labels, 'initiator_name') + "</th>";
+        table += "<th>"+ translate(labels, 'length') + "</th></tr>";
+        for (var i = 0; i < threads_data[metric].length; i++){
+            table += "<tr>";
+            table += "<td>#" + (i+1) + "</td>";
+            table += "<td>" + threads_data.subject[i] + "</td>";
+            table += "<td>" + threads_data.initiator_name[i] + "</td>";
+            table += "<td>" + threads_data.length[i] + "</td>";
+            table += "</tr>";
+        }
+        table += "</tbody></table>";
+        return table;
     }
 
     function displayTopMetricTable(history, metric_id, doer, limit, people_links, title) {
@@ -171,6 +205,17 @@ if (Viz === undefined) var Viz = {};
             displayBasicChart(div_graph, labels, data, graph);
         }
     }
+
+    function displayTopMetricThread(div_id, labels, metric, metric_period, data, limit,
+                                    people_links) {
+        if (!data || $.isEmptyObject(data)) return;
+        var table = displayTopTableThreads(data, labels, limit, people_links, metric_period);
+        var div = null;
+        if (table === undefined) return;
+        div = $("#" + div_id);
+        div.append(table);
+    }
+
 
     function showHelp(div_id, metrics, custom_help) {
         var all_metrics = Report.getAllMetrics();
@@ -906,6 +951,24 @@ if (Viz === undefined) var Viz = {};
         }
         var config = {show_legend: true, show_labels: true};
         displayMetricsLines(div_id, metrics, new_history, column, config);
+    }
+
+    function displayTopThreads(div, ds, all, show_metric, period, limit, people_links) {
+        // This is a temporary function to test whether avoiding use basic_metrics improves the
+        // code
+        var aux = ds.getMetrics();
+        var labels = aux.mls_threads;
+        var data = ds.getGlobalTopData();
+        $.each(data, function(key, value){
+            // ex: threads.last month
+            var aux = key.split(".");
+            var aux_metric = aux[0];
+            var aux_period = aux[1];
+            if ( (show_metric == aux_metric) && (aux_metric == "threads") && (period == aux_period) ){
+                displayTopMetricThread(div, labels, show_metric, period, data[key],
+                                       limit, people_links);
+            }
+        });
     }
 
     // Each metric can have several top: metric.period
