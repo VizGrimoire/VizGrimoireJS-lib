@@ -322,7 +322,8 @@ if (Viz === undefined) var Viz = {};
                 }
             },
             yaxis : {
-                min: null,
+                // min: null,
+                min: 0,
                 noTicks: 2,
                 autoscale: false
             },
