@@ -25,7 +25,59 @@ function People() {
 
     /* if not initialized breaks function nameSpaceMetrics in DataSource.js*/
     this.basic_metrics = {
+        'people_members' : {
+            'column' : "members", //only for testing purposes
+            'name' : "Members",
+            'desc' : "Community Members"
+        }
     }; 
+
+    this.getMainMetric = function() {
+        /*only for testing purposes*/
+        return "people_members";
+    };
+
+    this.displayData = function(divid) {
+        /*Fake function to avoid crash in unit tests*/
+        var div_id = "#" + divid;
+
+        var str = this.global_data.url;
+        if (!str || str.length === 0) {
+            $(div_id + ' .mediawiki_info').hide();
+            return;
+        }
+
+        var url = '';
+        if (this.global_data.repositories === 1) {
+            url = this.global_data.url;
+        } else {
+            url = Report.getProjectData().mediawiki_url;
+        }
+
+        if (this.global_data.type)
+            $(div_id + ' #mediawiki_type').text(this.global_data.type);
+        if (this.global_data.url && this.global_data.url !== "." && this.global_data.type !== undefined)  {
+            $(div_id + ' #mediawiki_url').attr("href", url);
+            $(div_id + ' #mediawiki_name').text("MediaWiki " + this.global_data.type);
+        } else {
+            $(div_id + ' #mediawiki_url').attr("href", Report.getProjectData().mediawiki_url);
+            $(div_id + ' #mediawiki_name').text(Report.getProjectData().mediawiki_name);
+            $(div_id + ' #mediawiki_type').text(Report.getProjectData().mediawiki_type);
+        }
+
+        var data = this.getGlobalData();
+
+        $(div_id + ' #mediawikiFirst').text(data.first_date);
+        $(div_id + ' #mediawikiLast').text(data.last_date);
+        $(div_id + ' #mediawikiSent').text(data.mediawiki_reviews);
+    };
+
+    this.displayBubbles = function(divid, radius) {
+        /* only for testing purposes */
+        if (false)    
+            Viz.displayBubbles(divid, "mediawiki_reviews", "mediawiki_authors", radius);
+    };
+
 
     this.getTitle = function() {return "Community Members";};
 }

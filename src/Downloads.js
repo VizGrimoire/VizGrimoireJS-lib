@@ -33,7 +33,8 @@ function Downloads() {
     */
     this.basic_metrics = {
         'downloads_downloads':{
-            'name' : "Total downloads"
+            'name' : "Total downloads",
+            'column' : "downloads" //only for testing purposes
         },
         'downloads_packages' : {
             'divid' : "",
@@ -50,6 +51,12 @@ function Downloads() {
             'action' : "downloads"
         }
     };
+
+    this.getMainMetric = function() {
+        /*only for testing purposes*/
+        return "downloads_downloads"; 
+    };
+
 
     this.displayData = function(divid) {
         // FIXME this is a total fake function pasted here to avoid the crash. It seems useless
@@ -88,6 +95,13 @@ function Downloads() {
         if (data.repositories === 1)
             $(div_id + ' #ircRepositories').hide();
     };
+
+    this.displayBubbles = function(divid, radius) {
+        /* only for testing purposes */
+        if (false)    
+            Viz.displayBubbles(divid, "mediawiki_reviews", "mediawiki_authors", radius);
+    };
+
 
     this.getTitle = function() {return "Downloads";};    
 }
