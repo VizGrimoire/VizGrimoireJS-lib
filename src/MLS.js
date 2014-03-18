@@ -47,6 +47,7 @@ function MLS() {
         },
         'mls_threads' : {
             'divid' : "mls_threads",
+            'column' : "threads",
             'name' : "Threads",
             'desc' : "Number of messages threads"
         },
