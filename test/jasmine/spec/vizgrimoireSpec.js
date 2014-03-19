@@ -120,8 +120,8 @@ describe( "VizGrimoireJS library", function () {
                     Convert.convertBubbles();
                     var new_ncanvas = document.getElementsByClassName
                         ('flotr-canvas').length;
-                    // scr and irc and mediawiki does not support bubbles yet
-                    var bubbles_ds = Report.getDataSources().length - 3;
+                    // scr, irc, mediawiki, people and download do not support bubbles yet
+                    var bubbles_ds = Report.getDataSources().length - 5;
                     expect(new_ncanvas-ncanvas).toEqual(bubbles_ds);
                 });        
             });
