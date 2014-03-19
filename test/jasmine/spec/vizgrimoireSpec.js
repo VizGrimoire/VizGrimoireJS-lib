@@ -128,7 +128,9 @@ describe( "VizGrimoireJS library", function () {
             it("html demographics should be displayed", function () {
                 function buildNodesDemographic(type) {
                     $.each(Report.getDataSources(), function(index, DS) {
-                        if (DS.getName() !== "scr" && DS.getName() !== "irc" && DS.getName() !== "mediawiki")
+                        if (DS.getName() !== "scr" && DS.getName() !== "irc" && 
+                            DS.getName() !== "mediawiki" && DS.getName() !== "people" &&
+                            DS.getName() !== "downloads")
                             buildNode(DS.getName()+"-demographics-"+type,
                                       'Demographics',
                                     {
