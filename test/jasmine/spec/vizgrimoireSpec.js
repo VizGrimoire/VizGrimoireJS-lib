@@ -10,7 +10,7 @@ describe( "VizGrimoireJS library", function () {
         it("data files should be loaded", function () {
             waitsFor(function() {
                 return Loader.check_data_loaded();
-            }, "It took too long to load data", 100);
+            }, "It took too long to load data", 1000);
             runs(function() {
                 expect(Loader.check_data_loaded()).toBeTruthy();
             });
@@ -97,7 +97,8 @@ describe( "VizGrimoireJS library", function () {
                 runs(function() {
                     var unique = 0;
                     $.each(Report.getDataSources(), function(index, DS) {
-                        if (DS.getName() === "scr") return;
+                        if (DS.getName() === "scr" || DS.getName() === "people" ||  
+                            DS.getName() === "downloads") return;
                         expect(document.getElementById(DS.getName()+"-Top" + (unique++))
                                 .childNodes.length).toBeGreaterThan(0);
                         expect(document.getElementById(DS.getName()+"-Top" + (unique++) + "-pie")
@@ -120,15 +121,17 @@ describe( "VizGrimoireJS library", function () {
                     Convert.convertBubbles();
                     var new_ncanvas = document.getElementsByClassName
                         ('flotr-canvas').length;
-                    // scr and irc and mediawiki does not support bubbles yet
-                    var bubbles_ds = Report.getDataSources().length - 3;
+                    // scr, irc, mediawiki, people and download do not support bubbles yet
+                    var bubbles_ds = Report.getDataSources().length - 5;
                     expect(new_ncanvas-ncanvas).toEqual(bubbles_ds);
                 });        
             });
             it("html demographics should be displayed", function () {
                 function buildNodesDemographic(type) {
                     $.each(Report.getDataSources(), function(index, DS) {
-                        if (DS.getName() !== "scr" && DS.getName() !== "irc" && DS.getName() !== "mediawiki")
+                        if (DS.getName() !== "scr" && DS.getName() !== "irc" && 
+                            DS.getName() !== "mediawiki" && DS.getName() !== "people" &&
+                            DS.getName() !== "downloads")
                             buildNode(DS.getName()+"-demographics-"+type,
                                       'Demographics',
                                     {
@@ -235,7 +238,7 @@ describe( "VizGrimoireJS library", function () {
             $.each(data_sources, function(index, DS) {
                 var global = DS.getGlobalData();
                 var evol = DS.getData();
-                for (field in evol) {
+                for (var field in evol) {
                     if (DS.getMetrics()[field]) {
                         expect(global[field]).toBeDefined();
                     }
@@ -249,7 +252,7 @@ describe( "VizGrimoireJS library", function () {
             $.each(data_sources, function(index, DS) {
                 var global = DS.getGlobalData();
                 var evol = DS.getData();
-                for (field in evol) {
+                for (var field in evol) {
                     if (DS.getMetrics()[field]) {
                         if ($.inArray(field,summable_metrics)===-1) continue;
                         var metric_evol = evol[field];
@@ -292,7 +295,7 @@ describe( "VizGrimoireJS library", function () {
             }
             if (repos.length === 0) return;
             for (var i=0; i<repos.length; i++) {
-                for (field in repos_metrics[repos[i]]) {
+                for (var field in repos_metrics[repos[i]]) {
                     if (DS.getMetrics()[field]) {
                         expect(repos_global[repos[i]][field]).toBeDefined();
                     }
@@ -469,7 +472,8 @@ describe( "VizGrimoireJS library", function () {
                 var metrics = null;
                 // Find developer with ITS, MLS, SCM and SCR activity
                 $.each(data_sources, function(index, DS) {
-                    if (DS.getName() === 'irc' || DS.getName() === "mediawiki")
+                    if (DS.getName() === 'irc' || DS.getName() === "mediawiki" || 
+                        DS.getName() === "people" || DS.getName() === "downloads")
                         return;
                     var np = DS.getPeopleData().length;
                     if (np > max_people_index) max_people_index = np;
@@ -478,7 +482,8 @@ describe( "VizGrimoireJS library", function () {
                 for (var i=0; i<max_people_index; i++) {
                     var dev_found = true;
                     $.each(data_sources, function(index, DS) { 
-                        if (DS.getName() === 'irc' || DS.getName() === "mediawiki")
+                        if (DS.getName() === 'irc' || DS.getName() === "mediawiki" || 
+                            DS.getName() === "people" || DS.getName() === "downloads")
                             return;
                         if ($.inArray(i,DS.getPeopleData())===-1) {
                             dev_found = false;
@@ -488,7 +493,8 @@ describe( "VizGrimoireJS library", function () {
                     if (dev_found) {people_id = i; break;}
                 }
                 $.each(data_sources, function(index, DS) {
-                    if (DS.getName() === 'irc' || DS.getName() === "mediawiki")
+                    if (DS.getName() === 'irc' || DS.getName() === "mediawiki" ||
+                       DS.getName() === "people" || DS.getName() === "downloads")
                         return;
                     if (DS.getName() === 'scm') metrics = 'scm_commits';
                     else if (DS.getName() === 'its') metrics = 'its_closed';
