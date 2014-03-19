@@ -97,7 +97,8 @@ describe( "VizGrimoireJS library", function () {
                 runs(function() {
                     var unique = 0;
                     $.each(Report.getDataSources(), function(index, DS) {
-                        if (DS.getName() === "scr") return;
+                        if (DS.getName() === "scr" || DS.getName() === "people" ||  
+                            DS.getName() === "downloads") return;
                         expect(document.getElementById(DS.getName()+"-Top" + (unique++))
                                 .childNodes.length).toBeGreaterThan(0);
                         expect(document.getElementById(DS.getName()+"-Top" + (unique++) + "-pie")
