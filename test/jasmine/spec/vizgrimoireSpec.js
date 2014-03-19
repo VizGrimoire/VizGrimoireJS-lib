@@ -10,7 +10,7 @@ describe( "VizGrimoireJS library", function () {
         it("data files should be loaded", function () {
             waitsFor(function() {
                 return Loader.check_data_loaded();
-            }, "It took too long to load data", 100);
+            }, "It took too long to load data", 1000);
             runs(function() {
                 expect(Loader.check_data_loaded()).toBeTruthy();
             });
@@ -469,7 +469,8 @@ describe( "VizGrimoireJS library", function () {
                 var metrics = null;
                 // Find developer with ITS, MLS, SCM and SCR activity
                 $.each(data_sources, function(index, DS) {
-                    if (DS.getName() === 'irc' || DS.getName() === "mediawiki")
+                    if (DS.getName() === 'irc' || DS.getName() === "mediawiki" || 
+                        DS.getName() === "people" || DS.getName() === "downloads")
                         return;
                     var np = DS.getPeopleData().length;
                     if (np > max_people_index) max_people_index = np;
@@ -478,7 +479,8 @@ describe( "VizGrimoireJS library", function () {
                 for (var i=0; i<max_people_index; i++) {
                     var dev_found = true;
                     $.each(data_sources, function(index, DS) { 
-                        if (DS.getName() === 'irc' || DS.getName() === "mediawiki")
+                        if (DS.getName() === 'irc' || DS.getName() === "mediawiki" || 
+                            DS.getName() === "people" || DS.getName() === "downloads")
                             return;
                         if ($.inArray(i,DS.getPeopleData())===-1) {
                             dev_found = false;
@@ -488,7 +490,8 @@ describe( "VizGrimoireJS library", function () {
                     if (dev_found) {people_id = i; break;}
                 }
                 $.each(data_sources, function(index, DS) {
-                    if (DS.getName() === 'irc' || DS.getName() === "mediawiki")
+                    if (DS.getName() === 'irc' || DS.getName() === "mediawiki" ||
+                       DS.getName() === "people" || DS.getName() === "downloads")
                         return;
                     if (DS.getName() === 'scm') metrics = 'scm_commits';
                     else if (DS.getName() === 'its') metrics = 'its_closed';
