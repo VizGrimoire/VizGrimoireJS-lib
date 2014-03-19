@@ -235,7 +235,7 @@ describe( "VizGrimoireJS library", function () {
             $.each(data_sources, function(index, DS) {
                 var global = DS.getGlobalData();
                 var evol = DS.getData();
-                for (field in evol) {
+                for (var field in evol) {
                     if (DS.getMetrics()[field]) {
                         expect(global[field]).toBeDefined();
                     }
@@ -249,7 +249,7 @@ describe( "VizGrimoireJS library", function () {
             $.each(data_sources, function(index, DS) {
                 var global = DS.getGlobalData();
                 var evol = DS.getData();
-                for (field in evol) {
+                for (var field in evol) {
                     if (DS.getMetrics()[field]) {
                         if ($.inArray(field,summable_metrics)===-1) continue;
                         var metric_evol = evol[field];
@@ -292,7 +292,7 @@ describe( "VizGrimoireJS library", function () {
             }
             if (repos.length === 0) return;
             for (var i=0; i<repos.length; i++) {
-                for (field in repos_metrics[repos[i]]) {
+                for (var field in repos_metrics[repos[i]]) {
                     if (DS.getMetrics()[field]) {
                         expect(repos_global[repos[i]][field]).toBeDefined();
                     }
