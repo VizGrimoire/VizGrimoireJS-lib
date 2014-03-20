@@ -102,11 +102,12 @@ if (Viz === undefined) var Viz = {};
         }
     }
 
-    function displayTopTableThreads(threads_data, labels, limit, people_links, period_str) {
+    function displayTopTableThreads(threads_data, labels, limit, people_links, threads_links, period_str) {
         /* display table for MLS threads using threads_data and metric_group to get the
            translation*/
         var metric = "length";
         if (people_links === undefined) people_links = true;
+        if (threads_links === undefined) threads_links = true;
         if (threads_data[metric] === undefined) return;
         /* vars expected inside threads_data:
            initiator_id, initiator_name, length, links, message_id, subject*/
@@ -118,7 +119,16 @@ if (Viz === undefined) var Viz = {};
         for (var i = 0; i < threads_data[metric].length; i++){
             table += "<tr>";
             table += "<td>#" + (i+1) + "</td>";
-            table += "<td>" + threads_data.subject[i] + "</td>";
+            if (threads_links === true){
+                var url = "http://www.google.com/search?output=search&q=X&btnI=1";
+                url = url.replace(/X/g, threads_data.subject[i]);
+                table += "<td>";
+                table += "<a href=\""+url+ "\">";
+                table += threads_data.subject[i] + "</a>";
+                table += "&nbsp;<i class=\"fa fa-external-link\"></i></td>";
+            }else{
+                table += "<td>" + threads_data.subject[i] + "</td>";
+            }
             table += "<td>" + threads_data.initiator_name[i] + "</td>";
             table += "<td>" + threads_data.length[i] + "</td>";
             table += "</tr>";
@@ -207,9 +217,10 @@ if (Viz === undefined) var Viz = {};
     }
 
     function displayTopMetricThread(div_id, labels, metric, metric_period, data, limit,
-                                    people_links) {
+                                    people_links, threads_links) {
         if (!data || $.isEmptyObject(data)) return;
-        var table = displayTopTableThreads(data, labels, limit, people_links, metric_period);
+        var table = displayTopTableThreads(data, labels, limit, people_links,
+                                           threads_links, metric_period);
         var div = null;
         if (table === undefined) return;
         div = $("#" + div_id);
@@ -953,7 +964,7 @@ if (Viz === undefined) var Viz = {};
         displayMetricsLines(div_id, metrics, new_history, column, config);
     }
 
-    function displayTopThreads(div, ds, all, show_metric, period, limit, people_links) {
+    function displayTopThreads(div, ds, all, show_metric, period, limit, people_links, threads_links) {
         // This is a temporary function to test whether avoiding use basic_metrics improves the
         // code
         var aux = ds.getMetrics();
@@ -966,7 +977,7 @@ if (Viz === undefined) var Viz = {};
             var aux_period = aux[1];
             if ( (show_metric == aux_metric) && (aux_metric == "threads") && (period == aux_period) ){
                 displayTopMetricThread(div, labels, show_metric, period, data[key],
-                                       limit, people_links);
+                                       limit, people_links, threads_links);
             }
         });
     }

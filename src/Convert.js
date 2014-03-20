@@ -476,13 +476,14 @@ Convert.convertTop = function() {
             var limit = $(this).data('limit');
             var graph = $(this).data('graph');
             var people_links = $(this).data('people_links');
+            var threads_links = $(this).data('threads_links');
             var period = $(this).data('period');
             div.id = ds + "-" + div_id_top + (unique++);
             if (graph){
                 div.id += "-"+graph;
             }
             DS.displayTop(div.id, show_all, top_metric, period,
-                          graph, limit, people_links);
+                          graph, limit, people_links, threads_links);
         });
     }
 };
