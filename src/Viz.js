@@ -825,7 +825,7 @@ if (Viz === undefined) var Viz = {};
             period_data_birth[index] += 1;
         }
 
-        labels = ["aging","birth"];
+        labels = ["Retention","Attraction"];
 
         yticks = function (val, axisOpts){
             var period = period_year;
