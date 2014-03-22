@@ -969,13 +969,13 @@ function DataSource(name, basic_metrics) {
         Viz.displayMarkovTable(div_id, data, title);
     };
 
-    this.displayTop = function(div, all, show_metric, period, graph, limit, people_links, threads_links) {
+    this.displayTop = function(div, all, show_metric, period, period_all, graph, limit, people_links, threads_links) {
         if (all === undefined) all = true;
         var titles = null;
         if ( (this.getName() == "mls") && (show_metric == "threads") ){
-            Viz.displayTopThreads(div, this, all, show_metric, period, limit, people_links, threads_links);
+            Viz.displayTopThreads(div, this, all, show_metric, period, period_all, limit, people_links, threads_links);
         }else{
-            Viz.displayTop(div, this, all, show_metric, period, graph, titles, limit, people_links);
+            Viz.displayTop(div, this, all, show_metric, period, period_all, graph, titles, limit, people_links);
         }
     };
 
