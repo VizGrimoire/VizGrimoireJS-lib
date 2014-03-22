@@ -117,6 +117,7 @@ if (Viz === undefined) var Viz = {};
         table += "<th>"+ translate(labels, 'initiator_name') + "</th>";
         table += "<th>"+ translate(labels, 'length') + "</th></tr>";
         for (var i = 0; i < threads_data[metric].length; i++){
+            if (limit && limit <= i) break;
             table += "<tr>";
             table += "<td>#" + (i+1) + "</td>";
             if (threads_links === true){
@@ -1045,7 +1046,7 @@ if (Viz === undefined) var Viz = {};
         displayMetricsLines(div_id, metrics, new_history, column, config);
     }
 
-    function displayTopThreads(div, ds, all, show_metric, period, limit, people_links, threads_links) {
+    function displayTopThreads(div, ds, all, show_metric, period, period_all, limit, people_links, threads_links) {
         // This is a temporary function to test whether avoiding use basic_metrics improves the
         // code
         var aux = ds.getMetrics();
