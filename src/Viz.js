@@ -166,85 +166,225 @@ if (Viz === undefined) var Viz = {};
         return table;
     }
 
-    function getTopVarsFromMetric(metric){
-        //FIXME this function should be private
+    function getTopVarsFromMetric(metric, ds_name){
+        //maps the JSON vars with the metric name
+        //FIXME this function should be private        
         var var_names = {};
         var_names.id = "id";
-        if (metric === "senders"){
+        if (metric === "senders" && (ds_name === "mls" || ds_name === "irc")){
             var_names.name = "senders";
             var_names.action = "sent";
-            return var_names;
+        } 
+        if (metric === "authors" && ds_name === "scm"){
+            var_names.name = "authors";
+            var_names.action = "commits";
         }
+        if (metric === "closers" && ds_name === "its"){
+            var_names.name = "closers";
+            var_names.action = "closed";            
+        }
+        if (ds_name === "scr"){
+            if (metric === "mergers"){
+                var_names.name = "mergers";
+                var_names.action = "merged";
+            }
+            if (metric === "openers"){
+                var_names.name = "openers";
+                var_names.action = "opened";
+            }
+            if (metric === "reviewers"){
+                var_names.name = "reviewers";
+                var_names.action = "reviews";
+            }
+        }
+        if (ds_name === "downloads"){
+            if (metric === "ips"){
+                var_names.name = "ips";
+                var_names.action = "downloads";
+            }
+            if (metric === "packages"){
+                var_names.name = "packages";
+                var_names.action = "downloads";
+            }
+        }
+        if (ds_name === "mediawiki"){
+            if (metric === "authors"){
+                var_names.name = "authors";
+                var_names.action = "reviews";
+            }
+        }
+        return var_names;
     }
 
-    function displayTopMetric_new(div_id, data, metric, limit, people_links){
-        /* This function will replace displayTopMetric + displayTopMetricTable */
-        var tabs = "";
-        var tables = '';
-        tabs += '<ul id="myTab" class="nav nav-tabs">';
+    function getSortedPeriods(){
+        return ['last month','last year',''];
+    }
+    
+    function composeTopRowsDownloads(dl_data, limit, var_names){
+        var rows_html = "";
+        for (var j = 0; j < dl_data[var_names.name].length; j++) {
+            if (limit && limit <= j) break;
+            var metric_value = dl_data[var_names.action][j];
+            rows_html += "<tr><td>#" + (j+1) + "</td>";
+            rows_html += "<td>";
+            rows_html += dl_data[var_names.name][j];
+            rows_html += "</td>";
+            rows_html += "<td>"+ metric_value + '</td></tr>';
+        }
+        return(rows_html);
+    }
+
+    
+    function composeTopRowsThreads(threads_data, limit, threads_links){
+        var rows_html = "";
+        for (var i = 0; i < threads_data.subject.length; i++) {
+            if (limit && limit <= i) break;
+            rows_html += "<tr><td>#" + (i+1) + "</td>";
+            rows_html += "<td>";
+            if (threads_links === true){
+                var url = "http://www.google.com/search?output=search&q=X&btnI=1";
+                url = url.replace(/X/g, threads_data.subject[i]);
+                rows_html += "<td>";
+                rows_html += "<a href=\""+url+ "\">";
+                rows_html += threads_data.subject[i] + "</a>";
+                rows_html += "&nbsp;<i class=\"fa fa-external-link\"></i></td>";
+            }else{
+                rows_html += "<td>" + threads_data.subject[i] + "</td>";
+            }
+            rows_html += "<td>" + threads_data.initiator_name[i] + "</td>";
+            rows_html += "<td>" + threads_data.length[i] + "</td>";
+            rows_html += "</tr>";
+        }
+        return(rows_html);
+    }
+
+    function composeTopRowsPeople(people_data, limit, people_links, var_names){
+        var rows_html = "";
+        for (var j = 0; j < people_data[var_names.id].length; j++) {
+            if (limit && limit <= j) break;
+            var metric_value = people_data[var_names.action][j];
+            rows_html += "<tr><td>#" + (j+1) + "</td>";
+            rows_html += "<td>";
+            if (people_links){
+                rows_html += '<a href="people.html?id=' +people_data[var_names.id][j]+ '">';
+                rows_html += people_data[var_names.name][j] +"</a>";
+            }else{
+                rows_html += people_data[var_names.name][j];
+            }
+            rows_html += "</td>";
+            rows_html += "<td>"+ metric_value + '</td></tr>';
+        }
+        return(rows_html);
+    }
+
+    function composeTopTabs(periods, metric, data, ds_name){
+        var tabs_html = "";
         var first = true;
-        $.each(data, function(key, value) {
-            var aux = key.split(".");
-            var data_period = aux[1];
-            if (data_period === ""){
-                data_period = "all";
+        tabs_html += '<ul id="myTab" class="nav nav-tabs">';          
+        for (var i=0; i< periods.length; i++){
+            var mykey = metric + '.' + periods[i];
+            if (data[mykey]){
+                var data_period = periods[i];
+                var data_period_formatted = data_period;
+                if (data_period === ""){
+                    data_period = "all";
+                    data_period_formatted = "complete history";
+                }
+                var data_period_nows = data_period.replace(/\ /g, '');
+                var html = '';
+                if (first === true){
+                    html = ' class="active"';
+                    first = false;
+                }
+                //FIXME this should be a counter, now it can crash
+                tabs_html += '<li'+ html + '><a href="#' + ds_name + metric + data_period_nows +'"data-toogle="tab">';
+                tabs_html += data_period_formatted+'</a></li>';
             }
-            var data_period_nows = data_period.replace(/\ /g, '');
-            var html = '';
-            if (first === true){
-                html = ' class="active"';
-                first = false;
-            }
-            tabs += '<li'+ html + '><a href="#' + data_period_nows +'"data-toogle="tab">';
-            tabs += data_period+'</a></li>';
-        });
-        tabs += '</ul>';
+        }
+        tabs_html += '</ul>';
+        return(tabs_html);
+    }
+
+    function displayTopMetric_new(div_id, data, metric, limit, people_links, threads_links, selected_period){
+        /* This function will replace displayTopMetric + displayTopMetricTable */
+        // if selected_period is given it doesn't generate tabs
+        var tabs = "";
+        var tables = "";
+        var title = "";
+        var gen_tabs = true;
+        var div = $("#" + div_id);
+        var ds_name = div.attr('data-data-source'); //we need it to map the vars
+
+        // instead of iterating the data, we use the sorted periods
+        periods = getSortedPeriods();
+
+        if (selected_period !== undefined){
+            gen_tabs = false;
+        }
+
+        if (gen_tabs === true){
+            title += '<span class="TabTitle">Top ' + metric+ '</span>';
+        }else{
+            title += '<span class="TabTitle">Top ' + metric+ ' ' + selected_period+ '</span>';
+        }
+        if (gen_tabs === true){
+            // prints tabs
+            tabs += composeTopTabs(periods, metric, data, ds_name);
+        }
 
         tables += '<div class="tab-content">';
-        first = true;
-        // first we get the var names for that metric to identify the field who and what
-        var var_names = getTopVarsFromMetric(metric);
-        $.each(data, function(key, value) {
-            var aux = key.split(".");
-            var data_metric = aux[0];
-            var data_period = aux[1];
-            if (data_period === ""){
-                data_period = "all";
-            }
-            var data_period_nows = data_period.replace(/\ /g, '');
-            var html = '';
-            if (first === true){
-                html = ' active in';
-                first = false;
-            }
-            tables += '<div class="tab-pane fade'+ html  +'" id="' + data_period_nows + '">';
-            tables += '<table class="table table-striped"><tbody>';
-            var title = "Top " + metric + " " + data_period;
-            tables += '<tr><th colspan=2>' + title + '</th><th>' + var_names.action + '</th></tr>';
-            for (var i = 0; i < data[key][metric].length; i++) {
-                if (limit && limit <= i) break;
-                var metric_value = data[key][var_names.action][i];
-                tables += "<tr><td>#" + (i+1) + "</td>";
-                tables += "<td>";
-                if (people_links){
-                    tables += '<a href="people.html?id=' +data[key][var_names.id][i]+ '">';
-                    tables += data[key][var_names.name][i] +"</a>";
-                }else{
-                    tables += data[key][var_names.name][i];
+
+        var var_names = getTopVarsFromMetric(metric, ds_name);
+        if (gen_tabs === true){
+            var first = true;
+            // first we get the var names for that metric to identify the field who and what
+            $.each(data, function(key, value) {
+                var aux = key.split(".");
+                var data_metric = aux[0];
+                var data_period = aux[1];
+                if (data_period === ""){
+                    data_period = "all";
                 }
-                tables += "</td>";
-                tables += "<td>"+ metric_value + '</td></tr>';
+                var data_period_nows = data_period.replace(/\ /g, '');
+                var html = '';
+                if (first === true){
+                    html = ' active in';
+                    first = false;
+                }
+                tables += '<div class="tab-pane fade'+ html  +'" id="' + ds_name + metric + data_period_nows + '">';
+                tables += '<table class="table table-striped"><tbody>';
+                if (metric === "threads"){                
+                    tables += composeTopRowsThreads(data[key], limit, threads_links);
+                }else if (metric === "packages" || metric === "ips"){
+                    tables += composeTopRowsDownloads(data[key], limit, var_names);
+                }else{
+                    tables += composeTopRowsPeople(data[key], limit, people_links, var_names);
+                }
+                tables += "</tbody></table>";
+                tables += '</div>';
+            });
+        }else{
+            //tables += '<div class="tab-pane fade'+ html  +'" id="' + metric + data_period_nows + '">';
+            tables += '<table class="table table-striped"><tbody>';
+            if (metric === "threads"){                
+                tables += composeTopRowsThreads(data, limit, threads_links);
+            }else if (metric === "packages" || metric === "ips"){
+                tables += composeTopRowsDownloads(data, limit, var_names);
+            }else{
+                tables += composeTopRowsPeople(data, limit, people_links, var_names);
             }
             tables += "</tbody></table>";
-            tables += '</div>';
-        });
+            //tables += '</div>';
+        }
         tables += '</div>'; // this closes div tab-content
-        div = $("#" + div_id);
+
+        div.append(title);
         div.append(tabs);
         div.append(tables);
-        //FIXME if we have more tabs we'll need to generate more #myTab identifiers
-        script = "<script>$('#myTab a').click(function (e) {e.preventDefault();$(this).tab('show');});</script>";
-        div.append(script);
+        if (gen_tabs === true){
+            script = "<script>$('#myTab a').click(function (e) {e.preventDefault();$(this).tab('show');});</script>";
+            div.append(script);
+        }
     }
 
     function displayTopMetric
@@ -1068,7 +1208,7 @@ if (Viz === undefined) var Viz = {};
     // For example: "committers.all":{"commits":[5310, ...],"name":["Brion
     // Vibber",..]}
 
-    function displayTop(div, ds, all, selected_metric, period, period_all, graph, titles, limit, people_links) {
+    function displayTop(div, ds, all, selected_metric, period, period_all, graph, titles, limit, people_links, threads_links) {
         var basic_metrics = ds.getMetrics();
 
         if (all === undefined) all = true;
@@ -1087,11 +1227,21 @@ if (Viz === undefined) var Viz = {};
                     filtered_history[key] = history[key];
                 }
             });
-            displayTopMetric_new(div, filtered_history, selected_metric, limit, people_links);
+            displayTopMetric_new(div, filtered_history, selected_metric, limit, people_links, threads_links);
         }else{
             $.each(history, function(key, value) {
                 // ex: commits.all
-                var data = key.split(".");
+                var aux = key.split(".");
+                var data_metric = aux[0]; //metric with no period from JSON
+                var data_period = aux[1];
+                if (selected_metric && selected_metric !== data_metric) return true;
+                if ((period !== undefined) && (period !== data_period)) return true;
+                // at this point the key is the one we're looking for, time to draw it
+                displayTopMetric_new(div, history[key], selected_metric, limit, people_links, threads_links, period);
+
+                //if (history)
+
+   /*             var data = key.split(".");
                 var top_metric = data[0];
                 if (selected_metric && selected_metric !== top_metric) return true;
                 var top_period = data[1];
@@ -1100,12 +1250,14 @@ if (Viz === undefined) var Viz = {};
                     if (metric.column == top_metric){
                         //continue with the loop if the period is not the one
                         if (period && period !== top_period) return true;
-                        displayTopMetric(div, metric,
+                        //displayTopMetric(div, metric,
+                        //                 top_period, history[key], graph, titles, limit, people_links);
+                        displayTopMetric(div, history[key], metric,
                                          top_period, history[key], graph, titles, limit, people_links);
                         if (!all) return false;
                         break;
                     }
-                }
+                }*/
             });
         }
     }

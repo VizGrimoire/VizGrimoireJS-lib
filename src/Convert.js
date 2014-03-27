@@ -483,6 +483,12 @@ Convert.convertTop = function() {
             if (graph){
                 div.id += "-"+graph;
             }
+            if (period === undefined && period_all === undefined){
+                period_all = true;
+            }
+            if (limit === undefined){
+                limit = 10;
+            }
             DS.displayTop(div.id, show_all, top_metric, period, period_all,
                           graph, limit, people_links, threads_links);
         });

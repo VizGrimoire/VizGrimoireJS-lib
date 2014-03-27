@@ -972,11 +972,13 @@ function DataSource(name, basic_metrics) {
     this.displayTop = function(div, all, show_metric, period, period_all, graph, limit, people_links, threads_links) {
         if (all === undefined) all = true;
         var titles = null;
+        Viz.displayTop(div, this, all, show_metric, period, period_all, null, null, limit, people_links, threads_links);
+/*
         if ( (this.getName() == "mls") && (show_metric == "threads") ){
             Viz.displayTopThreads(div, this, all, show_metric, period, period_all, limit, people_links, threads_links);
         }else{
             Viz.displayTop(div, this, all, show_metric, period, period_all, graph, titles, limit, people_links);
-        }
+        }*/
     };
 
     this.displayTopCompany = function(company, div, metric_id, period, titles) {
