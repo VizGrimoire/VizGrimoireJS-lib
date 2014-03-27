@@ -492,3 +492,9 @@ width: 100%;
 .text-big{ 
   font-size: 1.1em;
  }
+
+/* Bootstrap tabs */
+
+.nav{ 
+  margin-bottom: 2px !important;
+}
