@@ -19,6 +19,7 @@
  *
  * Authors:
  *   Alvaro del Castillo San Felix <acs@bitergia.com>
+ *   Luis Cañas-Díaz <lcanas@bitergia.com>
  */
 
 
