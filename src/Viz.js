@@ -288,35 +288,37 @@ if (Viz === undefined) var Viz = {};
 
         tables += '<div class="tab-content">';
 
+        // first we get the var names for that metric to identify the field who and what
         var var_names = getTopVarsFromMetric(metric, ds_name);
         if (gen_tabs === true){
             var first = true;
-            // first we get the var names for that metric to identify the field who and what
-            $.each(data, function(key, value) {
-                var aux = key.split(".");
-                var data_metric = aux[0];
-                var data_period = aux[1];
-                if (data_period === ""){
-                    data_period = "all";
+            var html = "";
+            for (var k=0; k< periods.length; k++){
+                html = "";
+                var key = metric + '.' + periods[k];
+                if (data[key]){
+                    var data_period = periods[k];
+                    if (data_period === ""){
+                        data_period = "all";
+                    }
+                    var data_period_nows = data_period.replace(/\ /g, '');
+                    if (first === true){
+                        html = " active in";
+                        first = false;
+                    }
+                    tables += '<div class="tab-pane fade'+ html  +'" id="' + ds_name + metric + data_period_nows + '">';
+                    tables += '<table class="table table-striped"><tbody>';
+                    if (metric === "threads"){
+                        tables += composeTopRowsThreads(data[key], limit, threads_links);
+                    }else if (metric === "packages" || metric === "ips"){
+                        tables += composeTopRowsDownloads(data[key], limit, var_names);
+                    }else{
+                        tables += composeTopRowsPeople(data[key], limit, people_links, var_names);
+                    }
+                    tables += "</tbody></table>";
+                    tables += '</div>';
                 }
-                var data_period_nows = data_period.replace(/\ /g, '');
-                var html = '';
-                if (first === true){
-                    html = ' active in';
-                    first = false;
-                }
-                tables += '<div class="tab-pane fade'+ html  +'" id="' + ds_name + metric + data_period_nows + '">';
-                tables += '<table class="table table-striped"><tbody>';
-                if (metric === "threads"){                
-                    tables += composeTopRowsThreads(data[key], limit, threads_links);
-                }else if (metric === "packages" || metric === "ips"){
-                    tables += composeTopRowsDownloads(data[key], limit, var_names);
-                }else{
-                    tables += composeTopRowsPeople(data[key], limit, people_links, var_names);
-                }
-                tables += "</tbody></table>";
-                tables += '</div>';
-            });
+            }
         }else{
             //tables += '<div class="tab-pane fade'+ html  +'" id="' + metric + data_period_nows + '">';
             tables += '<table class="table table-striped"><tbody>';
