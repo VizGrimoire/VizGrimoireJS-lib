@@ -241,7 +241,28 @@ if (Viz === undefined) var Viz = {};
         return(tabs_html);
     }
 
-    function displayTopMetric_new(div_id, data, metric, limit, people_links, threads_links, selected_period){
+    function composeTitle(metric, ds_name, tabs, desc_metrics, selected_period){
+        // use the description desc_metrics to compose the title
+        // selected_period: optional
+
+        var key = ds_name + '_' + metric;
+        var desc = "";
+        var title = "";
+
+        if ( key in desc_metrics){
+            desc = desc_metrics[key].desc;
+            desc = desc.toLowerCase();
+        }
+
+        if (tabs === true){
+            title += '<span class="TabTitle">Top ' + desc + '</span>';
+        }else{
+            title += '<span class="TabTitle">Top ' + desc + ' ' + selected_period+ '</span>';
+        }
+        return title;
+    }
+
+    function displayTopMetric_new(div_id, data, metric, limit, desc_metrics, people_links, threads_links, selected_period){
         /* This function will replace displayTopMetric + displayTopMetricTable */
         // if selected_period is given it doesn't generate tabs
         var tabs = "";
@@ -258,11 +279,8 @@ if (Viz === undefined) var Viz = {};
             gen_tabs = false;
         }
 
-        if (gen_tabs === true){
-            title += '<span class="TabTitle">Top ' + metric+ '</span>';
-        }else{
-            title += '<span class="TabTitle">Top ' + metric+ ' ' + selected_period+ '</span>';
-        }
+        title += composeTitle(metric, ds_name, gen_tabs, desc_metrics, selected_period);
+        
         if (gen_tabs === true){
             // prints tabs
             tabs += composeTopTabs(periods, metric, data, ds_name);
@@ -1118,7 +1136,7 @@ if (Viz === undefined) var Viz = {};
     // Vibber",..]}
 
     function displayTop(div, ds, all, selected_metric, period, period_all, graph, titles, limit, people_links, threads_links) {
-        var basic_metrics = ds.getMetrics();
+        var desc_metrics = ds.getMetrics();
 
         if (all === undefined) all = true;
         var history = ds.getGlobalTopData();
@@ -1136,7 +1154,7 @@ if (Viz === undefined) var Viz = {};
                     filtered_history[key] = history[key];
                 }
             });
-            displayTopMetric_new(div, filtered_history, selected_metric, limit, people_links, threads_links);
+            displayTopMetric_new(div, filtered_history, selected_metric, limit, desc_metrics, people_links, threads_links);
         }else{
             $.each(history, function(key, value) {
                 // ex: commits.all
@@ -1146,7 +1164,7 @@ if (Viz === undefined) var Viz = {};
                 if (selected_metric && selected_metric !== data_metric) return true;
                 if ((period !== undefined) && (period !== data_period)) return true;
                 // at this point the key is the one we're looking for, time to draw it
-                displayTopMetric_new(div, history[key], selected_metric, limit, people_links, threads_links, period);
+                displayTopMetric_new(div, history[key], selected_metric, limit, desc_metrics, people_links, threads_links, period);
             });
         }
     }
