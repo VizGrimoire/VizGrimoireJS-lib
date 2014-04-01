@@ -30,7 +30,6 @@ if (Viz === undefined) var Viz = {};
     Viz.displayTop = displayTop;
     Viz.displayTopCompany = displayTopCompany;
     Viz.displayTopGlobal = displayTopGlobal;
-    Viz.displayTopThreads = displayTopThreads;
     Viz.displayBasicChart = displayBasicChart;
     Viz.displayMetricCompanies = displayMetricCompanies;
     Viz.displayMetricSubReportStatic = displayMetricSubReportStatic;
@@ -100,70 +99,6 @@ if (Viz === undefined) var Viz = {};
         }else{
             return l;
         }
-    }
-
-    function displayTopTableThreads(threads_data, labels, limit, people_links, threads_links, period_str) {
-        /* display table for MLS threads using threads_data and metric_group to get the
-           translation*/
-        var metric = "length";
-        if (people_links === undefined) people_links = true;
-        if (threads_links === undefined) threads_links = true;
-        if (threads_data[metric] === undefined) return;
-        /* vars expected inside threads_data:
-           initiator_id, initiator_name, length, links, message_id, subject*/
-        var title = "Top";
-        var table = '<table class="table table-striped"><tbody>';
-        table += "<tr><th colspan=2> Top " + translate(labels, 'name') + " "+ period_str + "</th>";
-        table += "<th>"+ translate(labels, 'initiator_name') + "</th>";
-        table += "<th>"+ translate(labels, 'length') + "</th></tr>";
-        for (var i = 0; i < threads_data[metric].length; i++){
-            if (limit && limit <= i) break;
-            table += "<tr>";
-            table += "<td>#" + (i+1) + "</td>";
-            if (threads_links === true){
-                var url = "http://www.google.com/search?output=search&q=X&btnI=1";
-                url = url.replace(/X/g, threads_data.subject[i]);
-                table += "<td>";
-                table += "<a href=\""+url+ "\">";
-                table += threads_data.subject[i] + "</a>";
-                table += "&nbsp;<i class=\"fa fa-external-link\"></i></td>";
-            }else{
-                table += "<td>" + threads_data.subject[i] + "</td>";
-            }
-            table += "<td>" + threads_data.initiator_name[i] + "</td>";
-            table += "<td>" + threads_data.length[i] + "</td>";
-            table += "</tr>";
-        }
-        table += "</tbody></table>";
-        return table;
-    }
-
-    function displayTopMetricTable(history, metric_id, doer, limit, people_links, title) {
-        var table = '<table class="table table-striped"><tbody>';
-        table += "<tr><th colspan=2>" + title + "</th><th>" + metric_id + "</th></tr>";
-        if (people_links === undefined) people_links = true;
-        if (history[metric_id] === undefined) return;
-        if (!(history[metric_id] instanceof Array)) {
-            history[metric_id] = [history[metric_id]];
-            history[doer] = [history[doer]];
-        }
-        for (var i = 0; i < history[metric_id].length; i++) {
-            if (limit && limit <= i) break;
-            var metric_value = history[metric_id][i];
-            var doer_value = history[doer][i];
-            var doer_id = null;
-            if (history.id) doer_id = history.id[i];
-            table += "<tr><td>#" + (i+1) + "</td><td>";
-            if (doer_id && people_links)
-                table += "<a href='people.html?id="+doer_id+"&name="+doer_value+"'>";
-            table += DataProcess.hideEmail(doer_value);
-            if (doer_id && people_links) table += "</a>";
-            table += "</td><td>";
-            table += metric_value + "</td></tr>";
-        }
-        table += "</tbody></table>";
-
-        return table;
     }
 
     function getTopVarsFromMetric(metric, ds_name){
@@ -389,6 +324,9 @@ if (Viz === undefined) var Viz = {};
 
     function displayTopMetric
     (div_id, metric, metric_period, history, graph, titles, limit, people_links) {
+        // 
+        // this function is being replaced
+        // 
         var top_metric_id = metric.name;
         if (!history || $.isEmptyObject(history)) return;
         var metric_id = metric.action;
@@ -437,18 +375,6 @@ if (Viz === undefined) var Viz = {};
             displayBasicChart(div_graph, labels, data, graph);
         }
     }
-
-    function displayTopMetricThread(div_id, labels, metric, metric_period, data, limit,
-                                    people_links, threads_links) {
-        if (!data || $.isEmptyObject(data)) return;
-        var table = displayTopTableThreads(data, labels, limit, people_links,
-                                           threads_links, metric_period);
-        var div = null;
-        if (table === undefined) return;
-        div = $("#" + div_id);
-        div.append(table);
-    }
-
 
     function showHelp(div_id, metrics, custom_help) {
         var all_metrics = Report.getAllMetrics();
@@ -1186,24 +1112,6 @@ if (Viz === undefined) var Viz = {};
         displayMetricsLines(div_id, metrics, new_history, column, config);
     }
 
-    function displayTopThreads(div, ds, all, show_metric, period, period_all, limit, people_links, threads_links) {
-        // This is a temporary function to test whether avoiding use basic_metrics improves the
-        // code
-        var aux = ds.getMetrics();
-        var labels = aux.mls_threads;
-        var data = ds.getGlobalTopData();
-        $.each(data, function(key, value){
-            // ex: threads.last month
-            var aux = key.split(".");
-            var aux_metric = aux[0];
-            var aux_period = aux[1];
-            if ( (show_metric == aux_metric) && (aux_metric == "threads") && (period == aux_period) ){
-                displayTopMetricThread(div, labels, show_metric, period, data[key],
-                                       limit, people_links, threads_links);
-            }
-        });
-    }
-
     // Each metric can have several top: metric.period
     // For example: "committers.all":{"commits":[5310, ...],"name":["Brion
     // Vibber",..]}
@@ -1238,26 +1146,6 @@ if (Viz === undefined) var Viz = {};
                 if ((period !== undefined) && (period !== data_period)) return true;
                 // at this point the key is the one we're looking for, time to draw it
                 displayTopMetric_new(div, history[key], selected_metric, limit, people_links, threads_links, period);
-
-                //if (history)
-
-   /*             var data = key.split(".");
-                var top_metric = data[0];
-                if (selected_metric && selected_metric !== top_metric) return true;
-                var top_period = data[1];
-                for (var id in basic_metrics) {
-                    var metric = basic_metrics[id];
-                    if (metric.column == top_metric){
-                        //continue with the loop if the period is not the one
-                        if (period && period !== top_period) return true;
-                        //displayTopMetric(div, metric,
-                        //                 top_period, history[key], graph, titles, limit, people_links);
-                        displayTopMetric(div, history[key], metric,
-                                         top_period, history[key], graph, titles, limit, people_links);
-                        if (!all) return false;
-                        break;
-                    }
-                }*/
             });
         }
     }
