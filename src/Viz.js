@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2012-2013 Bitergia
+ * Copyright (C) 2012-2014 Bitergia
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,6 +41,7 @@ if (Viz === undefined) var Viz = {};
     Viz.displayMetricRepos = displayMetricRepos;
     Viz.displayMetricsCountry = displayMetricsCountry;
     Viz.displayMetricDomains = displayMetricDomains;
+    Viz.displayMetricProjects = displayMetricProjects;
     Viz.displayMetricsEvol = displayMetricsEvol;
     Viz.displayBubbles = displayBubbles;
     Viz.displayDemographicsChart = displayDemographicsChart;
@@ -1541,6 +1542,16 @@ if (Viz === undefined) var Viz = {};
     }
 
     function displayMetricDomains(metric, data, div_target,
+            config, start, end) {
+        config = checkBasicConfig(config);
+        if (config.show_legend !== false)
+            config.show_legend = true;
+        var title = metric;
+        displayMetricSubReportLines(div_target, metric, data, title,
+                config, start, end);
+    }
+
+    function displayMetricProjects(metric, data, div_target,
             config, start, end) {
         config = checkBasicConfig(config);
         if (config.show_legend !== false)

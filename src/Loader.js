@@ -89,6 +89,7 @@ if (Loader === undefined) var Loader = {};
             if ($.inArray('repositories', active_reports) > -1) data_load_repos();
             if ($.inArray('countries', active_reports) > -1) data_load_countries();
             if ($.inArray('domains', active_reports) > -1) data_load_domains();
+            if ($.inArray('projects', active_reports) > -1) data_load_projects();
             if ($.inArray('people', active_reports) > -1) {
                 data_load_people();
                 data_load_people_identities();
@@ -98,6 +99,7 @@ if (Loader === undefined) var Loader = {};
             data_load_repos();
             data_load_countries();
             data_load_domains();
+            data_load_projects();
             data_load_people();
             data_load_people_identities();
         }
@@ -167,6 +169,17 @@ if (Loader === undefined) var Loader = {};
                 DS.setDomainsData([]);
             else
                 data_load_file(DS.getDomainsDataFile(), DS.setDomainsData, DS);
+        });
+    }
+
+    function data_load_projects() {
+        var ds_not_supported = ['irc','mediawiki','scm','its','mls'];
+        var data_sources = Report.getDataSources();
+        $.each(data_sources, function(i, DS) {
+            if ($.inArray(DS.getName(), ds_not_supported) >-1)
+                DS.setProjectsData([]);
+            else
+                data_load_file(DS.getProjectsDataFile(), DS.setProjectsData, DS);
         });
     }
 
@@ -244,6 +257,7 @@ if (Loader === undefined) var Loader = {};
             if (filter === "companies") total = DS.getCompaniesData().length;
             if (filter === "countries") total = DS.getCountriesData().length;
             if (filter === "domains") total = DS.getDomainsData().length;
+            if (filter === "projects") total = DS.getProjectsData().length;
             if (end>total) end = total;
             for (var i=start;i<end;i++) {
                 var item;
@@ -279,6 +293,14 @@ if (Loader === undefined) var Loader = {};
                         return false;
                     }
                 }
+                if (filter === "projects") {
+                    item = DS.getProjectsData()[i];
+                    if (DS.getProjectsGlobalData()[item] === undefined ||
+                        DS.getProjectsMetricsData()[item] === undefined) {
+                        check = false;
+                        return false;
+                    }
+                }
             }
             end = start + Report.getPageSize();
         });
@@ -309,6 +331,12 @@ if (Loader === undefined) var Loader = {};
             }
             if (filter == "domains") {
                 if ($.inArray(item, DS.getDomainsData())>-1) {
+                    ds = DS;
+                    return false;
+                }
+            }
+            if (filter == "projects") {
+                if ($.inArray(item, DS.getProjectsData())>-1) {
                     ds = DS;
                     return false;
                 }
@@ -358,7 +386,7 @@ if (Loader === undefined) var Loader = {};
                 }
             }
         }
-        // Companies, countries and domains should be loaded for all data sources active
+        // Companies, countries, domains and projects should be loaded for all data sources active
         else {
             $.each(Report.getDataSources(), function(index, DS) {
                 if (Loader.check_item (item, filter) === false) {
@@ -377,7 +405,7 @@ if (Loader === undefined) var Loader = {};
     };
 
     // Check the item in one data source for repos
-    // Check the item for all data sources for countries, companies and domains
+    // Check the item for all data sources for countries, companies, domains and projects
     Loader.check_item = function(item, filter) {
         var check = false;
         $.each(Report.getDataSources(), function(index, DS) {
@@ -390,7 +418,7 @@ if (Loader === undefined) var Loader = {};
                     return false;
                 }
             }
-            if (filter === "companies") {
+            else if (filter === "companies") {
                 var companies = DS.getCompaniesData();
                 // No data for companies
                 if (companies.length === 0) check = true;
@@ -410,7 +438,7 @@ if (Loader === undefined) var Loader = {};
                 }
                 else check = true;
             }
-            if (filter === "countries") {
+            else if (filter === "countries") {
                 var countries = DS.getCountriesData();
                 // No data for countries
                 if (countries.length === 0) check = true;
@@ -425,7 +453,7 @@ if (Loader === undefined) var Loader = {};
                 else check = true;
             }
 
-            if (filter === "domains") {
+            else if (filter === "domains") {
                 var domains = DS.getDomainsData();
                 // No data for domains
                 if (domains.length === 0) check = true;
@@ -434,6 +462,21 @@ if (Loader === undefined) var Loader = {};
                 // Check item data for all data sources
                 else if (DS.getDomainsGlobalData()[item] === undefined ||
                     DS.getDomainsMetricsData()[item] === undefined) {
+                    check = false;
+                    return false;
+                }
+                else check = true;
+            }
+
+            else if (filter === "projects") {
+                var projects = DS.getProjectsData();
+                // No data for projects
+                if (projects.length === 0) check = true;
+                // Projects available
+                else if ($.inArray(item, projects) === -1) check = true;
+                // Check item data for all data sources
+                else if (DS.getProjectsGlobalData()[item] === undefined ||
+                    DS.getProjectsMetricsData()[item] === undefined) {
                     check = false;
                     return false;
                 }
@@ -465,12 +508,15 @@ if (Loader === undefined) var Loader = {};
             if (DS.getCountriesData() === null) return false;
         if (filter === "domains")
             if (DS.getDomainsData() === null) return false;
+        if (filter === "projects")
+            if (DS.getProjectsData() === null) return false;
         // No data
         var total = 0;
         if (filter === "repos") total = DS.getReposData().length;
         if (filter === "companies") total = DS.getCompaniesData().length;
         if (filter === "countries") total = DS.getCountriesData().length;
         if (filter === "domains") total = DS.getDomainsData().length;
+        if (filter === "projects") total = DS.getProjectsData().length;
         if (total === 0) return true;
         // Check if we have the data for the page and if not load
         var start = Report.getPageSize()*(page-1);
@@ -489,6 +535,9 @@ if (Loader === undefined) var Loader = {};
             } else if (filter === "domains") {
                 var domain = DS.getDomainsData()[i];
                 Loader.data_load_item (domain, DS, page, cb, "domains");
+            } else if (filter === "projects") {
+                var project = DS.getProjectsData()[i];
+                Loader.data_load_item (project, DS, page, cb, "projects");
             }
         }
     };
@@ -535,6 +584,9 @@ if (Loader === undefined) var Loader = {};
         else if (filter === "domains") {
             filter_suffix = 'dom';
         }
+        else if (filter === "projects") {
+            filter_suffix = 'prj';
+        }
         return filter_suffix;
     }
 
@@ -571,6 +623,7 @@ if (Loader === undefined) var Loader = {};
         var ds_not_supported_companies = ['irc','mediawiki'];
         var ds_not_supported_domains = ['irc','mediawiki'];
         var ds_not_supported_repos = ['mediawiki'];
+        var ds_not_supported_projects = ['irc','mediawiki','src','its','mls'];
 
         if (filter === "repos") {
             if ($.inArray(DS.getName(),ds_not_supported_repos)>-1) {
@@ -600,6 +653,13 @@ if (Loader === undefined) var Loader = {};
                 return;
             }
         }
+        else if (filter === "projects") {
+            if ($.inArray(DS.getName(),ds_not_supported_projects)>-1) {
+                DS.addDomainMetricsData(item, [], DS);
+                DS.addDomainGlobalData(item, [], DS);
+                return;
+            }
+        }
         else return;
         var item_uri = encodeURIComponent(item);
         var file = DS.getDataDir()+"/"+item_uri+"-";
@@ -620,7 +680,11 @@ if (Loader === undefined) var Loader = {};
             } else if (filter === "domains") {
                 DS.addDomainMetricsData(item, evo[0], DS);
                 DS.addDomainGlobalData(item, global[0], DS);
+            } else if (filter === "projects") {
+                DS.addProjectMetricsData(item, evo[0], DS);
+                DS.addProjectGlobalData(item, global[0], DS);
             }
+
         }).always(function() {
             // Check all items for a page
             if (page !== null) {
@@ -714,7 +778,13 @@ if (Loader === undefined) var Loader = {};
         return true;
     }
 
-    function check_projects_loaded() {
+    function check_projects_loaded(DS) {
+        if (DS.getProjectsData() === null) return false;
+        return true;
+    }
+
+    // These are global projects, not projects inside a single report
+    function check_meta_projects_loaded() {
         var projects_loaded = 0;
         var projects_data = Report.getProjectsData();
         var projects_dirs = Report.getProjectsDirs();
@@ -735,7 +805,7 @@ if (Loader === undefined) var Loader = {};
 
         // Multiproject not support in config.json report
         if (Report.getConfig() === null)
-            if (!(check_projects_loaded())) return false;
+            if (!(check_meta_projects_loaded())) return false;
 
         var data_sources = Report.getDataSources();
         $.each(data_sources, function(index, DS) {
@@ -759,7 +829,7 @@ if (Loader === undefined) var Loader = {};
         if (!(check_data_loaded_global())) return false;
 
         var data_sources = Report.getDataSources();
-        var active_reports = ['companies','repositories','countries', 'domains'];
+        var active_reports = ['companies','repositories','countries', 'domains', 'projects'];
         if (Report.getConfig() !== null && Report.getConfig().reports !== undefined)
             active_reports = Report.getConfig().reports;
         $.each(data_sources, function(index, DS) {
@@ -772,6 +842,8 @@ if (Loader === undefined) var Loader = {};
                 if (!check_countries_loaded(DS)) {check = false; return false;}
             if ($.inArray('domains', active_reports) > -1)
                 if (!check_domains_loaded(DS)) {check = false; return false;}
+            if ($.inArray('projects', active_reports) > -1)
+                if (!check_projects_loaded(DS)) {check = false; return false;}
             if (DS instanceof MLS) {
                 if (DS.getListsData() === null) {check = false; return false;}
             }

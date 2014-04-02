@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2013 Bitergia
+ * Copyright (C) 2013-2014 Bitergia
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -662,6 +662,8 @@ Convert.convertFilterItemsSummary = function(filter) {
                 DS.displayCompaniesSummary(div.id, DS);
             if (filter === "domains")
                 DS.displayDomainsSummary(div.id, DS);
+            if (filter === "projects")
+                DS.displayProjectsSummary(div.id, DS);
         });
     }
 };
@@ -701,6 +703,10 @@ Convert.convertFilterItemsGlobal = function(filter) {
             if (filter === "domains")
                 DS.displayMetricDomainsStatic(metric,div.id,
                     config_metric, order_by, show_others);
+            if (filter === "projects")
+                DS.displayMetricProjectsStatic(metric,div.id,
+                        config_metric, order_by, show_others);
+
         });
     }
 };
@@ -727,6 +733,8 @@ Convert.convertFilterItemsNav = function(filter, page) {
             else if (filter === "companies")
                 DS.displayItemsNav(div.id, filter, page);
             else if (filter === "domains")
+                DS.displayItemsNav(div.id, filter, page);
+            else if (filter === "projects")
                 DS.displayItemsNav(div.id, filter, page);
         });
     }
@@ -771,6 +779,9 @@ Convert.convertFilterItemsMetricsEvol = function(filter) {
                             config_metric, start, end);
             else if (filter === "domains")
                 DS.displayMetricDomains(metric,div.id,
+                            config_metric, start, end);
+            else if (filter === "projects")
+                DS.displayMetricProjects(metric,div.id,
                             config_metric, start, end);
         });
     }
@@ -817,6 +828,9 @@ Convert.convertFilterItemsMiniCharts = function(filter, page) {
             else if (filter === "domains")
                 DS.displayDomainsList(metrics.split(","),div.id,
                     config_metric, order_by, page, show_links, start, end, convert);
+            else if (filter === "projects")
+                DS.displayProjectsList(metrics.split(","),div.id,
+                    config_metric, order_by, page, show_links, start, end, convert);
         });
     }
 };
@@ -858,6 +872,8 @@ Convert.convertFilterItemSummary = function(filter, item) {
                 DS.displayCompanySummary(div.id, real_item, DS);
             else if (filter === "domains")
                 DS.displayDomainSummary(div.id, real_item, DS);
+            else if (filter === "projects")
+                DS.displayProjectSummary(div.id, real_item, DS);
         });
     }
 };
@@ -906,6 +922,10 @@ Convert.convertFilterItemMetricsEvol = function(filter, item) {
                 DS.displayMetricsDomain(real_item, metrics.split(","),
                     div.id, config_metric);
             }
+            else if (filter === "projects") {
+                DS.displayMetricsProject(real_item, metrics.split(","),
+                    div.id, config_metric);
+            }
         });
     }
 };
@@ -951,6 +971,7 @@ Convert.convertFilterStudyItem = function (filter, item) {
         if (filter === "countries") item = Report.getParameterByName("country");
         if (filter === "companies") item = Report.getParameterByName("company");
         if (filter === "domains") item = Report.getParameterByName("domain");
+        if (filter === "projects") item = Report.getParameterByName("project");
     }
 
     if (!item) return;

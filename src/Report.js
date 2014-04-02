@@ -476,7 +476,7 @@ if (Report === undefined) var Report = {};
         var activeStudies = [];
         var reports;
         // TODO: people is not yet an study
-        var reports_study = ['repositories','countries','companies','domains'];
+        var reports_study = ['repositories','countries','companies','domains','projects'];
         if (Report.getConfig() !== null)
             reports = Report.getConfig().reports;
         else

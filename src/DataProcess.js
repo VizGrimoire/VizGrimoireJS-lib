@@ -57,24 +57,7 @@ var DataProcess = {};
         return data;
     };
 
-    DataProcess.sortCompanies = function(ds, metric_id) {
-        return sortGlobal(ds, metric_id, "companies");
-    };
-
-    DataProcess.sortCountries = function(ds, metric_id) {
-        return sortGlobal(ds, metric_id, "countries");
-    };
-
-    DataProcess.sortRepos = function(ds, metric_id) {
-        return sortGlobal(ds, metric_id, "repos");
-    };
-
-    DataProcess.sortDomains = function(ds, metric_id) {
-        return sortGlobal(ds, metric_id, "domains");
-    };
-    // Sort disabled. Use sort order from R/Python data.
-    // SCR repos enabled now
-    sortGlobal = function (ds, metric_id, kind) {
+    DataProcess.sortGlobal = function (ds, metric_id, kind) {
         if (metric_id === undefined) metric_id = "scm_commits";
         var metric = [];
         var data = [], sorted = [];
@@ -90,6 +73,10 @@ var DataProcess = {};
         else if (kind === "domains") {
             data = ds.getDomainsData();
         }
+        else if (kind === "projects") {
+            data = ds.getProjectsData();
+        }
+
         if (data  === null) return [];
 
         // TODO: Only support for reports now
@@ -124,7 +111,7 @@ var DataProcess = {};
                 if (filter === undefined) return;
                 if (filter !== filter_order) return;
                 Report.log("Ordering with " + order_by + " " + ds + " for " + filter);
-                var data = sortGlobal (DS, order_by, filter);
+                var data = DataProcess.sortGlobal (DS, order_by, filter);
 
                 if (filter === 'companies') DS.setCompaniesData(data);
                 if (filter === 'repos') DS.setReposData(data);
