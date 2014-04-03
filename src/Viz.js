@@ -36,6 +36,7 @@ if (Viz === undefined) var Viz = {};
     Viz.displayMetricSubReportStatic = displayMetricSubReportStatic;
     Viz.displayMetricsCompany = displayMetricsCompany;
     Viz.displayMetricsDomain = displayMetricsDomain;
+    Viz.displayMetricsProject = displayMetricsProject;
     Viz.displayMetricsPeople = displayMetricsPeople;
     Viz.displayMetricsRepo = displayMetricsRepo;
     Viz.displayMetricRepos = displayMetricRepos;
@@ -1506,6 +1507,12 @@ if (Viz === undefined) var Viz = {};
     function displayMetricsDomain (domain, metrics, data, div_id, config) {
         config = checkBasicConfig(config);
         var title = domain;
+        displayMetricsLines(div_id, metrics, data, title, config);
+    }
+
+    function displayMetricsProject (project, metrics, data, div_id, config) {
+        config = checkBasicConfig(config);
+        var title = project;
         displayMetricsLines(div_id, metrics, data, title, config);
     }
 
