@@ -149,6 +149,13 @@ if (Viz === undefined) var Viz = {};
                 var_names.action = "reviews";
             }
         }
+        if (ds_name === "qaforums"){
+            if (metric === "senders" || metric === "asenders" || metric === "qsenders"){
+                // the same as in mls and irc
+                var_names.name = "senders";
+                var_names.action = "sent";
+           }          
+        }       
         return var_names;
     }
 
