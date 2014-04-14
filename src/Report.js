@@ -292,12 +292,20 @@ if (Report === undefined) var Report = {};
         } else if (page.indexOf('mls') === 0) {
             $(".mls-menu")[0].className = $(".mls-menu")[0].className + " active";
         } else if (page.indexOf('scr') === 0) {
-            $(".scr-menu")[0].className = 
-                $(".scr-menu")[0].className + " active";
+            $(".scr-menu")[0].className = $(".scr-menu")[0].className + " active";
+        } else if (page.indexOf('irc') === 0) {
+            $(".irc-menu")[0].className = $(".irc-menu")[0].className + " active";
+        } else if (page.indexOf('qaforum') === 0) {
+            $(".qaforum-menu")[0].className = $(".qaforum-menu")[0].className + " active";
+        } else if (page.indexOf('studies') === 0) {
+            $(".studies-menu")[0].className = $(".studies-menu")[0].className + " active";
+        } else if (page.indexOf('wiki') === 0) {
+            $(".wiki-menu")[0].className = $(".wiki-menu")[0].className + " active";
+        } else if (page.indexOf('downloads') === 0) {
+            $(".downloads-menu")[0].className = $(".downloads-menu")[0].className + " active";
         } else if (page.indexOf('index') === 0 || page === '') {
             if ($(".summary-menu").length === 0) return;
-            $(".summary-menu")[0].className = 
-                $(".summary-menu")[0].className + " active";
+            $(".summary-menu")[0].className =  $(".summary-menu")[0].className + " active";
         } else {
             if ($(".experimental-menu")[0])
                 $(".experimental-menu")[0].className = 
