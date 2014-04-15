@@ -54,6 +54,7 @@ if (Viz === undefined) var Viz = {};
     Viz.displayRadarCommunity = displayRadarCommunity;
     Viz.displayTreeMap = displayTreeMap;
     Viz.displayMarkovTable = displayMarkovTable;
+    Viz.displayDataSourcesTable = displayDataSourcesTable;
     Viz.getEnvisionOptions = getEnvisionOptions;
     Viz.checkBasicConfig = checkBasicConfig;
 
@@ -397,6 +398,38 @@ if (Viz === undefined) var Viz = {};
             }
             displayBasicChart(div_graph, labels, data, graph);
         }
+    }
+
+    function displayDataSourcesTable(div){        
+        dsources = Report.getDataSources();
+        html = '<table class="table table-striped">';
+        html += '<thead><th>Data Source</th><th>From</th>';
+        html += '<th>To <small>(Updated on)</small></th></thead><tbody>';
+        $.each(dsources, function(key,ds) {
+            if (ds.getName() === 'people') return;
+            var gdata = ds.getGlobalData();
+            var ds_name = ds.getTitle();
+            if (ds_name === undefined){
+                ds_name = '-';}
+            var last_date = gdata.last_date;
+            if (last_date === undefined){
+                last_date = '-';}
+            var first_date = gdata.first_date;
+            if (first_date === undefined){
+                first_date = '-';}
+            var type = gdata.type;
+            html += '<tr><td>' + ds_name;
+            if (type !== undefined){
+                type = type.toLowerCase();
+                type = type.charAt(0).toUpperCase() + type.slice(1);
+                html += ' (' + type + ')';
+            }
+            html += '</td>';
+            html += '<td>' + first_date+ '</td>';
+            html += '<td>' + last_date + '</td></tr>';
+            });
+        html += '</tbody></table>';
+        $(div).append(html);      
     }
 
     function showHelp(div_id, metrics, custom_help) {

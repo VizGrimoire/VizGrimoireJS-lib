@@ -194,6 +194,7 @@ function displayReportData() {
 
 
 Convert.convertRefcard = function() {
+    /* Deprecated function. See convertDSTable*/
     $.when($.get(Report.getHtmlDir()+"refcard.html"),
             $.get(Report.getHtmlDir()+"project-card.html"))
     .done (function(res1, res2) {
@@ -1033,11 +1034,26 @@ Convert.convertFilterStudy = function(filter) {
     Convert.convertFilterItemsMiniCharts(filter, page);
 };
 
+Convert.convertDSTable = function() {
+    // Converts the div DataSourceTable into a table
+    var dst = "DataSourcesTable";
+    var divs = $("." + dst);
+    var DS, ds;
+    if (divs.length > 0) {
+        var unique = 0;
+        $.each(divs, function(id, div) {
+            $(this).empty();
+            div.id = dst + (unique++);
+            Viz.displayDataSourcesTable(div);
+        });
+    }
+};
 
 Convert.convertBasicDivs = function() {
     Convert.convertNavbar();
     Convert.convertFooter(); 
-    Convert.convertRefcard();
+    //Convert.convertRefcard(); //deprecated
+    Convert.convertDSTable();
     Convert.convertGlobalData();
     Convert.convertSummary();
 };
