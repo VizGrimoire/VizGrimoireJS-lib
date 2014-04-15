@@ -258,9 +258,11 @@ if (Viz === undefined) var Viz = {};
         }
 
         if (tabs === true){
-            title += '<span class="TabTitle">Top ' + desc + '</span>';
+            //title += '<span class="TabTitle">Top ' + desc + '</span>';
+            title += '<h6>Top ' + desc + '</h6>';
         }else{
-            title += '<span class="TabTitle">Top ' + desc + ' ' + selected_period+ '</span>';
+            //title += '<span class="TabTitle">Top ' + desc + ' ' + selected_period+ '</span>';
+            title += '<h6>Top ' + desc + ' ' + selected_period+ '</h6>';
         }
         return title;
     }
