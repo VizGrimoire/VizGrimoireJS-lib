@@ -326,8 +326,6 @@ Convert.convertMetricsEvol = function() {
             var help = $(this).data('help');
             if (help !== undefined) config_viz.help = help;
             config_viz.show_legend = false;
-            if ($(this).data('legend'))
-                config_viz.show_legend = true;
             if ($(this).data('frame-time'))
                 config_viz.frame_time = true;
             config_viz.graph = $(this).data('graph');
@@ -338,6 +336,8 @@ Convert.convertMetricsEvol = function() {
                 // config_viz.show_mouse = false;
                 config_viz.help = false;
             }
+            if ($(this).data('legend'))
+                config_viz.show_legend = true;
             config_viz.ligth_style = false;
             if ($(this).data('light-style')){
                 config_viz.light_style = true;
