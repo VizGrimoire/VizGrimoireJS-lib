@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2013 Bitergia
+ * Copyright (C) 2013-2014 Bitergia
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -194,6 +194,7 @@ function displayReportData() {
 
 
 Convert.convertRefcard = function() {
+    /* Deprecated function. See convertDSTable*/
     $.when($.get(Report.getHtmlDir()+"refcard.html"),
             $.get(Report.getHtmlDir()+"project-card.html"))
     .done (function(res1, res2) {
@@ -325,8 +326,6 @@ Convert.convertMetricsEvol = function() {
             var help = $(this).data('help');
             if (help !== undefined) config_viz.help = help;
             config_viz.show_legend = false;
-            if ($(this).data('legend'))
-                config_viz.show_legend = true;
             if ($(this).data('frame-time'))
                 config_viz.frame_time = true;
             config_viz.graph = $(this).data('graph');
@@ -337,6 +336,8 @@ Convert.convertMetricsEvol = function() {
                 // config_viz.show_mouse = false;
                 config_viz.help = false;
             }
+            if ($(this).data('legend'))
+                config_viz.show_legend = true;
             config_viz.ligth_style = false;
             if ($(this).data('light-style')){
                 config_viz.light_style = true;
@@ -662,6 +663,8 @@ Convert.convertFilterItemsSummary = function(filter) {
                 DS.displayCompaniesSummary(div.id, DS);
             if (filter === "domains")
                 DS.displayDomainsSummary(div.id, DS);
+            if (filter === "projects")
+                DS.displayProjectsSummary(div.id, DS);
         });
     }
 };
@@ -701,6 +704,10 @@ Convert.convertFilterItemsGlobal = function(filter) {
             if (filter === "domains")
                 DS.displayMetricDomainsStatic(metric,div.id,
                     config_metric, order_by, show_others);
+            if (filter === "projects")
+                DS.displayMetricProjectsStatic(metric,div.id,
+                        config_metric, order_by, show_others);
+
         });
     }
 };
@@ -727,6 +734,8 @@ Convert.convertFilterItemsNav = function(filter, page) {
             else if (filter === "companies")
                 DS.displayItemsNav(div.id, filter, page);
             else if (filter === "domains")
+                DS.displayItemsNav(div.id, filter, page);
+            else if (filter === "projects")
                 DS.displayItemsNav(div.id, filter, page);
         });
     }
@@ -771,6 +780,9 @@ Convert.convertFilterItemsMetricsEvol = function(filter) {
                             config_metric, start, end);
             else if (filter === "domains")
                 DS.displayMetricDomains(metric,div.id,
+                            config_metric, start, end);
+            else if (filter === "projects")
+                DS.displayMetricProjects(metric,div.id,
                             config_metric, start, end);
         });
     }
@@ -817,6 +829,9 @@ Convert.convertFilterItemsMiniCharts = function(filter, page) {
             else if (filter === "domains")
                 DS.displayDomainsList(metrics.split(","),div.id,
                     config_metric, order_by, page, show_links, start, end, convert);
+            else if (filter === "projects")
+                DS.displayProjectsList(metrics.split(","),div.id,
+                    config_metric, order_by, page, show_links, start, end, convert);
         });
     }
 };
@@ -858,6 +873,8 @@ Convert.convertFilterItemSummary = function(filter, item) {
                 DS.displayCompanySummary(div.id, real_item, DS);
             else if (filter === "domains")
                 DS.displayDomainSummary(div.id, real_item, DS);
+            else if (filter === "projects")
+                DS.displayProjectSummary(div.id, real_item, DS);
         });
     }
 };
@@ -906,6 +923,10 @@ Convert.convertFilterItemMetricsEvol = function(filter, item) {
                 DS.displayMetricsDomain(real_item, metrics.split(","),
                     div.id, config_metric);
             }
+            else if (filter === "projects") {
+                DS.displayMetricsProject(real_item, metrics.split(","),
+                    div.id, config_metric);
+            }
         });
     }
 };
@@ -951,6 +972,7 @@ Convert.convertFilterStudyItem = function (filter, item) {
         if (filter === "countries") item = Report.getParameterByName("country");
         if (filter === "companies") item = Report.getParameterByName("company");
         if (filter === "domains") item = Report.getParameterByName("domain");
+        if (filter === "projects") item = Report.getParameterByName("project");
     }
 
     if (!item) return;
@@ -1012,11 +1034,26 @@ Convert.convertFilterStudy = function(filter) {
     Convert.convertFilterItemsMiniCharts(filter, page);
 };
 
+Convert.convertDSTable = function() {
+    // Converts the div DataSourceTable into a table
+    var dst = "DataSourcesTable";
+    var divs = $("." + dst);
+    var DS, ds;
+    if (divs.length > 0) {
+        var unique = 0;
+        $.each(divs, function(id, div) {
+            $(this).empty();
+            div.id = dst + (unique++);
+            Viz.displayDataSourcesTable(div);
+        });
+    }
+};
 
 Convert.convertBasicDivs = function() {
     Convert.convertNavbar();
     Convert.convertFooter(); 
-    Convert.convertRefcard();
+    //Convert.convertRefcard(); //deprecated
+    Convert.convertDSTable();
     Convert.convertGlobalData();
     Convert.convertSummary();
 };

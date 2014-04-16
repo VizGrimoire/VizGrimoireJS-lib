@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2012-2013 Bitergia
+ * Copyright (C) 2012-2014 Bitergia
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,11 +36,13 @@ if (Viz === undefined) var Viz = {};
     Viz.displayMetricSubReportStatic = displayMetricSubReportStatic;
     Viz.displayMetricsCompany = displayMetricsCompany;
     Viz.displayMetricsDomain = displayMetricsDomain;
+    Viz.displayMetricsProject = displayMetricsProject;
     Viz.displayMetricsPeople = displayMetricsPeople;
     Viz.displayMetricsRepo = displayMetricsRepo;
     Viz.displayMetricRepos = displayMetricRepos;
     Viz.displayMetricsCountry = displayMetricsCountry;
     Viz.displayMetricDomains = displayMetricDomains;
+    Viz.displayMetricProjects = displayMetricProjects;
     Viz.displayMetricsEvol = displayMetricsEvol;
     Viz.displayBubbles = displayBubbles;
     Viz.displayDemographicsChart = displayDemographicsChart;
@@ -52,6 +54,7 @@ if (Viz === undefined) var Viz = {};
     Viz.displayRadarCommunity = displayRadarCommunity;
     Viz.displayTreeMap = displayTreeMap;
     Viz.displayMarkovTable = displayMarkovTable;
+    Viz.displayDataSourcesTable = displayDataSourcesTable;
     Viz.getEnvisionOptions = getEnvisionOptions;
     Viz.checkBasicConfig = checkBasicConfig;
 
@@ -262,9 +265,11 @@ if (Viz === undefined) var Viz = {};
         }
 
         if (tabs === true){
-            title += '<span class="TabTitle">Top ' + desc + '</span>';
+            //title += '<span class="TabTitle">Top ' + desc + '</span>';
+            title += '<h6>Top ' + desc + '</h6>';
         }else{
-            title += '<span class="TabTitle">Top ' + desc + ' ' + selected_period+ '</span>';
+            //title += '<span class="TabTitle">Top ' + desc + ' ' + selected_period+ '</span>';
+            title += '<h6>Top ' + desc + ' ' + selected_period+ '</h6>';
         }
         return title;
     }
@@ -402,6 +407,38 @@ if (Viz === undefined) var Viz = {};
             }
             displayBasicChart(div_graph, labels, data, graph);
         }
+    }
+
+    function displayDataSourcesTable(div){        
+        dsources = Report.getDataSources();
+        html = '<table class="table table-striped">';
+        html += '<thead><th>Data Source</th><th>From</th>';
+        html += '<th>To <small>(Updated on)</small></th></thead><tbody>';
+        $.each(dsources, function(key,ds) {
+            if (ds.getName() === 'people') return;
+            var gdata = ds.getGlobalData();
+            var ds_name = ds.getTitle();
+            if (ds_name === undefined){
+                ds_name = '-';}
+            var last_date = gdata.last_date;
+            if (last_date === undefined){
+                last_date = '-';}
+            var first_date = gdata.first_date;
+            if (first_date === undefined){
+                first_date = '-';}
+            var type = gdata.type;
+            html += '<tr><td>' + ds_name;
+            if (type !== undefined){
+                type = type.toLowerCase();
+                type = type.charAt(0).toUpperCase() + type.slice(1);
+                html += ' (' + type + ')';
+            }
+            html += '</td>';
+            html += '<td>' + first_date+ '</td>';
+            html += '<td>' + last_date + '</td></tr>';
+            });
+        html += '</tbody></table>';
+        $(div).append(html);      
     }
 
     function showHelp(div_id, metrics, custom_help) {
@@ -1515,6 +1552,12 @@ if (Viz === undefined) var Viz = {};
         displayMetricsLines(div_id, metrics, data, title, config);
     }
 
+    function displayMetricsProject (project, metrics, data, div_id, config) {
+        config = checkBasicConfig(config);
+        var title = project;
+        displayMetricsLines(div_id, metrics, data, title, config);
+    }
+
     function displayMetricsPeople (upeople_identifier, metrics, data, div_id, config) {
         config = checkBasicConfig(config);
         var title = upeople_identifier;
@@ -1548,6 +1591,16 @@ if (Viz === undefined) var Viz = {};
     }
 
     function displayMetricDomains(metric, data, div_target,
+            config, start, end) {
+        config = checkBasicConfig(config);
+        if (config.show_legend !== false)
+            config.show_legend = true;
+        var title = metric;
+        displayMetricSubReportLines(div_target, metric, data, title,
+                config, start, end);
+    }
+
+    function displayMetricProjects(metric, data, div_target,
             config, start, end) {
         config = checkBasicConfig(config);
         if (config.show_legend !== false)
