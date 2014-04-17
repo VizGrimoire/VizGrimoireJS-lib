@@ -422,10 +422,12 @@ if (Viz === undefined) var Viz = {};
                 ds_name = '-';}
             var last_date = gdata.last_date;
             if (last_date === undefined){
-                last_date = '-';}
+                return;
+            }
             var first_date = gdata.first_date;
             if (first_date === undefined){
-                first_date = '-';}
+                first_date = '-'; // shouldn't reach this point
+            }
             var type = gdata.type;
             html += '<tr><td>' + ds_name;
             if (type !== undefined){
