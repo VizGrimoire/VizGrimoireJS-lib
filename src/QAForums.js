@@ -105,4 +105,4 @@ function QAForums() {
 
     this.getTitle = function() {return "QAForums";};
 }
-Downloads.prototype = new DataSource("qaforums");
+QAForums.prototype = new DataSource("qaforums");

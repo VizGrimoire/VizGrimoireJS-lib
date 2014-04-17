@@ -363,6 +363,8 @@ if (Report === undefined) var Report = {};
                 Report.registerDataSource(people);
                 downloads = new Downloads();
                 Report.registerDataSource(downloads);
+                qaforums = new QAForums();
+                Report.registerDataSource(qaforums);
             }
             else {
                 // "scm","mediawiki","its","irc","gerrit","mlstats"
@@ -400,6 +402,10 @@ if (Report === undefined) var Report = {};
                         downloads = new Downloads();
                         Report.registerDataSource(downloads);
                     }
+                    else if (name === "qaforums") {
+                        qaforums = new QAForums();
+                        Report.registerDataSource(qaforums);
+                    }
                     else Report.log ("Not support data source " + name);
                 });
             }
@@ -411,6 +417,7 @@ if (Report === undefined) var Report = {};
             if (mediawiki) mediawiki.setDataDir(project);
             if (people) people.setDataDir(project);
             if (downloads) downloads.setDataDir(project);
+            if (qaforums) qaforums.setDataDir(project);
             if (scm && its) scm.setITS(its);
         });
 
