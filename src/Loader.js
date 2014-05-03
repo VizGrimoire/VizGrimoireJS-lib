@@ -173,7 +173,7 @@ if (Loader === undefined) var Loader = {};
     }
 
     function data_load_projects() {
-        var ds_not_supported = ['irc','mediawiki','mls'];
+        var ds_not_supported = ['irc','mediawiki'];
         var data_sources = Report.getDataSources();
         $.each(data_sources, function(i, DS) {
             if ($.inArray(DS.getName(), ds_not_supported) >-1)
@@ -623,7 +623,7 @@ if (Loader === undefined) var Loader = {};
         var ds_not_supported_companies = ['irc','mediawiki'];
         var ds_not_supported_domains = ['irc','mediawiki'];
         var ds_not_supported_repos = ['mediawiki'];
-        var ds_not_supported_projects = ['irc','mediawiki','mls'];
+        var ds_not_supported_projects = ['irc','mediawiki'];
 
         if (filter === "repos") {
             if ($.inArray(DS.getName(),ds_not_supported_repos)>-1) {
