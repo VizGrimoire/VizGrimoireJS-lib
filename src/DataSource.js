@@ -1001,7 +1001,7 @@ function DataSource(name, basic_metrics) {
     this.displayCountriesSummary = function(divid, ds) {
       var html = "";
       var data = ds.getGlobalData();
-      html += "Total countries: " + data.countries +"<br>";
+      html += "Total countries: " + data[ds.getName()+"_countries"] +"<br>";
       $("#"+divid).append(html);
     };
 
