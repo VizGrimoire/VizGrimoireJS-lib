@@ -4,7 +4,7 @@ describe( "VizGrimoireJS library", function () {
         Report.setLog(false);
         waitsFor(function() {
             return Loader.check_data_loaded();
-        }, "It took too long to load data", 100);
+        }, "It took too long to load data", 500);
       });
     describe( "Report", function () {
         it("data files should be loaded", function () {
@@ -76,7 +76,7 @@ describe( "VizGrimoireJS library", function () {
             it("html top should be displayed", function () {
                 runs(function() {
                     $.each(Report.getDataSources(), function(index, DS) {
-                        if (DS.getName() === "scr") return;
+                        //if (DS.getName() === "scr") return;
                         buildNode(DS.getName()+"-Top", 'Top',
                             {
                                 'data-data-source': DS.getName(),
@@ -98,7 +98,10 @@ describe( "VizGrimoireJS library", function () {
                     var unique = 0;
                     $.each(Report.getDataSources(), function(index, DS) {
                         if (DS.getName() === "scr" || DS.getName() === "people" ||  
-                            DS.getName() === "downloads") return;
+                            DS.getName() === "downloads") {
+                            unique = unique + 3;
+                            return;
+                        }
                         expect(document.getElementById(DS.getName()+"-Top" + (unique++))
                                 .childNodes.length).toBeGreaterThan(0);
                         expect(document.getElementById(DS.getName()+"-Top" + (unique++) + "-pie")
@@ -121,8 +124,8 @@ describe( "VizGrimoireJS library", function () {
                     Convert.convertBubbles();
                     var new_ncanvas = document.getElementsByClassName
                         ('flotr-canvas').length;
-                    // scr, irc, mediawiki, people and download do not support bubbles yet
-                    var bubbles_ds = Report.getDataSources().length - 5;
+                    // scr, irc, mediawiki, people, downloads and qaforums do not support bubbles
+                    var bubbles_ds = Report.getDataSources().length - 6;
                     expect(new_ncanvas-ncanvas).toEqual(bubbles_ds);
                 });        
             });
@@ -131,7 +134,7 @@ describe( "VizGrimoireJS library", function () {
                     $.each(Report.getDataSources(), function(index, DS) {
                         if (DS.getName() !== "scr" && DS.getName() !== "irc" && 
                             DS.getName() !== "mediawiki" && DS.getName() !== "people" &&
-                            DS.getName() !== "downloads")
+                            DS.getName() !== "downloads" && DS.getName() !== "qaforums")
                             buildNode(DS.getName()+"-demographics-"+type,
                                       'Demographics',
                                     {
@@ -473,7 +476,8 @@ describe( "VizGrimoireJS library", function () {
                 // Find developer with ITS, MLS, SCM and SCR activity
                 $.each(data_sources, function(index, DS) {
                     if (DS.getName() === 'irc' || DS.getName() === "mediawiki" || 
-                        DS.getName() === "people" || DS.getName() === "downloads")
+                        DS.getName() === "people" || DS.getName() === "downloads"
+                       || DS.getName() === "qaforums")
                         return;
                     var np = DS.getPeopleData().length;
                     if (np > max_people_index) max_people_index = np;
@@ -483,7 +487,8 @@ describe( "VizGrimoireJS library", function () {
                     var dev_found = true;
                     $.each(data_sources, function(index, DS) { 
                         if (DS.getName() === 'irc' || DS.getName() === "mediawiki" || 
-                            DS.getName() === "people" || DS.getName() === "downloads")
+                            DS.getName() === "people" || DS.getName() === "downloads"
+                            || DS.getName() === "qaforums")
                             return;
                         if ($.inArray(i,DS.getPeopleData())===-1) {
                             dev_found = false;
@@ -494,7 +499,8 @@ describe( "VizGrimoireJS library", function () {
                 }
                 $.each(data_sources, function(index, DS) {
                     if (DS.getName() === 'irc' || DS.getName() === "mediawiki" ||
-                       DS.getName() === "people" || DS.getName() === "downloads")
+                       DS.getName() === "people" || DS.getName() === "downloads"
+                       || DS.getName() === "qaforums")
                         return;
                     if (DS.getName() === 'scm') metrics = 'scm_commits';
                     else if (DS.getName() === 'its') metrics = 'its_closed';
