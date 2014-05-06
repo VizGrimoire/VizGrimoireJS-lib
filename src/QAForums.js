@@ -31,30 +31,18 @@ function QAForums() {
        the div when using it.
        
     */
-/*    this.basic_metrics = {
-        'downloads_downloads':{
-            'name' : "Total downloads",
-            'column' : "downloads" //only for testing purposes
-        },
-        'downloads_packages' : {
-            'divid' : "",
-            'column' : "packages",
-            'name' : "Packages downloaded",
-            'desc' : "",
-            'action' : "downloads"
-        },
-        'downloads_ips' : {
-            'divid' : "",
-            'column' : "ips",
-            'name' : "IP addresses",
-            'desc' : "",
-            'action' : "downloads"
+
+    this.basic_metrics = {
+        "qaforums_qsent" : {
+            "name" : "Questions posted",
+            "desc" : "Number of questions posted to Q&A forums(s)",
+            "column": "qsent"
         }
-    };*/
+    };
 
     this.getMainMetric = function() {
         /*only for testing purposes*/
-        return "qaforums_qaforums";
+        return "qaforums_qsent";
     };
 
 
