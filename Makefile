@@ -41,6 +41,7 @@ vizgrimoire.core.js: \
     src/SCR.js \
     src/People.js \
     src/Downloads.js \
+    src/QAForums.js \
     src/Identity.js
 
 vizgrimoire.deps.css: \

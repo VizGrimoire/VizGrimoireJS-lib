@@ -15,6 +15,7 @@ src_files:
   - "src/SCR.js"
   - "src/People.js"
   - "src/Downloads.js"
+  - "src/QAForums.js"
   - "src/Loader.js"
   - "src/Convert.js"
   - "src/Report.js"

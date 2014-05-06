@@ -152,6 +152,13 @@ if (Viz === undefined) var Viz = {};
                 var_names.action = "reviews";
             }
         }
+        if (ds_name === "qaforums"){
+            if (metric === "senders" || metric === "asenders" || metric === "qsenders"){
+                // the same as in mls and irc
+                var_names.name = "senders";
+                var_names.action = "sent";
+           }          
+        }       
         return var_names;
     }
 
@@ -415,10 +422,12 @@ if (Viz === undefined) var Viz = {};
                 ds_name = '-';}
             var last_date = gdata.last_date;
             if (last_date === undefined){
-                last_date = '-';}
+                return;
+            }
             var first_date = gdata.first_date;
             if (first_date === undefined){
-                first_date = '-';}
+                first_date = '-'; // shouldn't reach this point
+            }
             var type = gdata.type;
             html += '<tr><td>' + ds_name;
             if (type !== undefined){
