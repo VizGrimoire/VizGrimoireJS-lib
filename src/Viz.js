@@ -541,38 +541,191 @@ if (Viz === undefined) var Viz = {};
         displayDSLines(div_id, history, lines_data, title, config);
     }
 
-    // Last value is incomplete. Change it to a point.
-    function lastLineValueToPoint(lines_data) {
-        if (lines_data.length === 0) return lines_data;
-        // Not supported if time serie does not start from zero
-        if (lines_data[0].data[0][0] !== 0) return lines_data;
-        var last = lines_data[0].data.length;
-        if (lines_data.length>1) {
-            // If there are several lines, just remove last value
-            // Removed because not useful if last data is not fresh
-            for (var j=0; j<lines_data.length; j++) {
-                // lines_data[j].data[last-1][1] = undefined;
-            }
-        }
-        else {
-            var dots = [];
-            for (var i=0; i<last-1; i++) {
-                dots.push([i,undefined]);
-            }
-            dots.push([last-1, lines_data[0].data[last-1][1]]);
-            var dot_graph = {'data':dots};
-            dot_graph.points = {show : true, radius:3, lineWidth: 1, fillColor: null, shadowSize : 0};
-            lines_data.push(dot_graph);
+    function getConfLinesChart(title, legend_div, history, lines_data){
+        // simply returns this basic configuration for a lines chart
+        var config = {
+            subtitle : title,
+            legend: {
+              show: true,
+              container: legend_div
+            },
+            xaxis : {
+                minorTickFreq : 4,
+                mode: 'time',
+                timeUnit: 'second',
+                timeFormat: '%b %y',
+                margin: true
+            },
+            yaxis : {
+                // min: null,
+                min: null,
+                noTicks: 2,
+                autoscale: true
+            },
+            grid : {
+                verticalLines: false,
+                color: '#000000',
+                outlineWidth: 1,
+                outline: 's'
+            },
+            mouse : {
+                container: legend_div,
+                track : true,
+                trackY : false,
+                relative: true,
+                position: 'ne',
+                trackFormatter : function(o) {
+                    var label = history.date[parseInt(o.index, 10)];
+                    if (label === undefined) label = "";
+                    else label += "<br>";
+                    for (var i=0; i<lines_data.length; i++) {
+                        var value = lines_data[i].data[o.index][1];
+                        if (value === undefined) continue;
+                        if (lines_data.length > 1) {
+                            if (lines_data[i].label !== undefined)
+                                label += lines_data[i].label +":";
+                        }
+                        label += "<strong>"+Report.formatValue(value) +"</strong><br>";
+                    }
+                    return label;
+                }
+            },
+            selection: {
+                mode: 'x',
+                fps: 10
+            },
+            shadowSize: 4
+        };
+        return config;
 
-            // Remove last data line because covered by dot graph
-            lines_data[0].data[last-1][1] = undefined;
+
+    }
+
+    function dropLastLineValue(history, lines_data){
+        // If there are several lines, just remove last value
+        // Removed because not useful if last data is not fresh        
+        if (lines_data.length === 0) return lines_data;
+        if (lines_data.length>1) {
+            for (var j=0; j<lines_data.length; j++) {
+                var last = lines_data[j].data.length - 1;
+                lines_data[j].data[last][1] = undefined;
+            }
+        }        
+    }
+
+    // Last value is incomplete. Change it to a point.
+    function lastLineValueToPoint(history, lines_data) {
+        
+        if (lines_data.length !== 1) return lines_data;
+        var last = lines_data[0].data.length;
+
+        var dots = [];
+        var utime = 0;
+        for (var i=0; i<last-1; i++) {
+            utime = parseInt(history.unixtime[i]);
+            dots.push([utime,undefined]);
+        }
+        utime = parseInt(history.unixtime[last-1]);
+        dots.push([utime, lines_data[0].data[last-1][1]]);
+        var dot_graph = {'data':dots};
+        dot_graph.points = {show : true, radius:3, lineWidth: 1, fillColor: null, shadowSize : 0};
+        lines_data.push(dot_graph);
+        
+        // Remove last data line because covered by dot graph
+        lines_data[0].data[last-1][1] = undefined;
+
+        // Copy the label for displaying the legend
+        lines_data[1].label= lines_data[0].label;
+
+        return lines_data;
+    }
+
+    
+    function composeRangeText(former_title,starting_utime, end_utime){
+        //compose text to be appended to title on charts when zooming in/out
+        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+        // watchout! javascript uses miliseconds
+        var date = new Date(parseInt(starting_utime)*1000);
+        var starting_date = months[date.getMonth()] + ' ' + date.getFullYear();
+        date = new Date(parseInt(end_utime)*1000);
+        var end_date = months[date.getMonth()] + ' ' + date.getFullYear();
+        return former_title + ' ( ' + starting_date + ' - ' + end_date + ' )';
+    }
+
+    function sortBiArray(bi_array){
+        bi_array.sort(function(a, b) { 
+            return (a[1] > b[1] || b[1] === undefined)?1:-1;
+        });
+        return bi_array;
+    }
+
+    function getMax(multiple_array, from_unixstamp, to_unixstamp){
+        // get max value of multiple array object
+        from_unixstamp = Math.round(from_unixstamp);
+        to_unixstamp = Math.round(to_unixstamp);
+        
+        // first, we have to filter the arrays
+        var narrays = multiple_array.length;
+        var aux_array = [];
+        for (var i = 0; i < narrays; i++) {
+            //for (var z = 0; z < multiple_array[i].data.length; z++) {
+            for (var z = multiple_array[i].data.length - 1; z > 0 ; z--) {
+                var aux_value = multiple_array[i].data[z][0];
+                var cond = aux_value < from_unixstamp || aux_value > to_unixstamp;
+                //if(aux_value < from_unixstamp || aux_value > to_unixstamp){
+                if(cond){
+                    multiple_array[i].data.splice(z,1);
+                    //multiple_array[i].data.pop([z]);
+                }
+            }
+        }        
+
+        var res = [];
+        for (i = 0; i < narrays; i++) {
+            aux_array = multiple_array[i].data;
+            aux_array = sortBiArray(aux_array);        
+            res.push(aux_array[aux_array.length-1][1]);
+        }        
+        res.sort(function(a,b){return a-b;});
+        return res[res.length-1];
+    }    
+
+    function addEmptyValue(lines_data){
+        // add empty value at the end to avoid drawing an incomplete point
+        
+        var step = lines_data[0].data[1][0] - lines_data[0].data[0][0];
+        var narrays = lines_data.length;
+        var last_date = 0;
+        for (var i = 0; i < narrays; i++) {
+            var mylength = lines_data[i].data.length;
+            last_date = lines_data[i].data[mylength-1][0];
+            lines_data[i].data.push([last_date + step, undefined]);
         }
         return lines_data;
     }
 
     // Lines from the same Data Source
-    // TODO: Probably we should also fill history
+
     function displayDSLines(div_id, history, lines_data, title, config_metric) {
+        // This is a huge workaround to have both zoom feature and avoid breaking
+        //the compatibility with line charts with the stacked flag.
+        // Why a problem? Using the timestamp in the X axis breaks the stacked charts
+        var use_stacked = false;
+        if (config_metric) {
+            if (config_metric.lines && config_metric.lines.stacked){
+                use_stacked = true;
+            }
+        }
+        if (use_stacked){
+            displayDSLinesStacked(div_id, history, lines_data, title, config_metric);
+        }else{
+            displayDSLinesZoom(div_id, history, lines_data, title, config_metric);
+        }
+    }
+
+    function displayDSLinesStacked(div_id, history, lines_data, title, config_metric) {
+        /// this is the former displayDSLines function that is being used to draw the stacked
         var container = document.getElementById(div_id);
         var legend_div = null;
         if (config_metric && config_metric.legend && config_metric.legend.container)
@@ -689,6 +842,130 @@ if (Viz === undefined) var Viz = {};
             if (history.date) history.date.pop();
             if (history.id) history.id.pop();
         }
+    }
+
+
+    function displayDSLinesZoom(div_id, history, lines_data, title, config_metric) {
+        // evolution of the displayDSLines function with zoom in/out feature
+        var container = document.getElementById(div_id);
+        var legend_div = null;
+        if (config_metric && config_metric.legend && config_metric.legend.container)
+            legend_div = $('#'+config_metric.legend.container);
+
+        var config = getConfLinesChart(title, legend_div, history, lines_data);
+        
+        if (config_metric) {
+            // depending on the configuration we enable/disable options
+            if (!config_metric.show_title) config.title = '';
+            if ("show_legend" in config_metric) {
+                if (config_metric.show_legend === true) config.legend.show = true;
+                else config.legend.show = false;
+            }
+            if (config_metric.lines && config_metric.lines.stacked){
+                config.lines =
+                    {stacked:true, fill:true, fillOpacity: 1, fillBorder:true, lineWidth:0.01};
+            }
+            if (!config_metric.show_labels) {
+                config.xaxis.showLabels = false;
+                config.yaxis.showLabels = false;
+            }
+            if (config_metric.show_grid === false) {
+                config.grid.verticalLines = false;
+                config.grid.horizontalLines = false;
+                config.grid.outlineWidth = 0;
+            }
+            if (config_metric.show_mouse === false) {
+                config.mouse.track = false;
+            }
+            if (config_metric.graph === "bars") {
+                config.bars = {show : true};
+            }
+            if (config_metric.light_style === true) {
+                config.grid.color = '#ccc';
+                config.legend.show = false;
+            }
+            if (config_metric.custom_title){
+                config.subtitle = config_metric.custom_title;
+            }
+        }
+
+        var number_lines = lines_data.length;
+        var data_length = lines_data[0].data.length;
+        for (z = 0; z < number_lines; z++){
+            for (i = 0; i < data_length; i++) {
+                lines_data[z].data[i][0] = parseInt(history.unixtime[i]);
+            }
+        }
+
+        // Show last time series as a point, not a line. The data is incomplete
+        // Only show for single lines when time series is complete
+        var showLastPoint = false;
+
+        if (config_metric.graph !== "bars" && lines_data.length === 1) {
+            showLastPoint = true;
+        }
+
+        if (showLastPoint) {
+            lines_data = lastLineValueToPoint(history, lines_data);
+            // Add an extra entry for adding space for the circle point.
+            addEmptyValue(lines_data);
+        }else if(!showLastPoint && lines_data.length > 1){
+            // we drop it to avoid showing not complete periods without points
+            dropLastLineValue(history, lines_data);
+        }
+
+        /*graph = Flotr.draw(container, lines_data, config);*/
+        function drawGraph(opts) {
+            // Clone the options, so the 'options' variable always keeps intact.
+            var o = Flotr._.extend(Flotr._.clone(config), opts || {});
+            // Return a new graph.
+            return Flotr.draw(container, lines_data, o);
+        }
+
+        // Actually draw the graph.
+        graph = drawGraph();        
+        
+        // Hook into the 'flotr:select' event to draw the chart after zoom in
+        Flotr.EventAdapter.observe(container, 'flotr:select', function(area) {
+            // Draw graph with new area
+            var zoom_options = {
+                xaxis: {
+                    minorTickFreq : 4,
+                    mode: 'time',
+                    timeUnit: 'second',
+                    timeFormat: '%b %y',
+                    min: area.x1,
+                    max: area.x2
+                },
+                yaxis: {
+                    min: area.y1,
+                    autoscale: true
+                },
+                grid : {
+                    verticalLines: true,
+                    color: '#000000',
+                    outlineWidth: 1,
+                    outline: 's'
+                }
+            };
+            
+            zoom_options.subtitle = composeRangeText(config.subtitle, area.xfirst, area.xsecond);
+
+            //we don't want our object data to be modified so ..
+            var new_lines_data_object = JSON.parse(JSON.stringify(lines_data));
+            var max_value = getMax(new_lines_data_object, area.x1, area.x2);
+
+            zoom_options.yaxis.max = max_value + max_value * 0.2; //we do Y axis a bit higher than max
+
+            
+            graph = drawGraph(zoom_options);
+        });
+        
+        // When graph is clicked, draw the graph with default area.
+        Flotr.EventAdapter.observe(container, 'flotr:click', function() {
+            drawGraph();
+        });
+
     }
 
     function displayBasicChart
