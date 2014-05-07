@@ -697,8 +697,147 @@ if (Viz === undefined) var Viz = {};
     }
 
     // Lines from the same Data Source
-    // TODO: Probably we should also fill history
+
     function displayDSLines(div_id, history, lines_data, title, config_metric) {
+        // This is a huge workaround to have both zoom feature and avoid breaking
+        //the compatibility with line charts with the stacked flag.
+        // Why a problem? Using the timestamp in the X axis breaks the stacked charts
+        var use_stacked = false;
+        if (config_metric) {
+            if (config_metric.lines && config_metric.lines.stacked){
+                use_stacked = true;
+            }
+        }
+        if (use_stacked){
+            displayDSLinesStacked(div_id, history, lines_data, title, config_metric);
+        }else{
+            displayDSLinesZoom(div_id, history, lines_data, title, config_metric);
+        }
+    }
+
+    function displayDSLinesStacked(div_id, history, lines_data, title, config_metric) {
+        /// this is the former displayDSLines function that is being used to draw the stacked
+        var container = document.getElementById(div_id);
+        var legend_div = null;
+        if (config_metric && config_metric.legend && config_metric.legend.container)
+            legend_div = $('#'+config_metric.legend.container);
+
+        var config = {
+            subtitle : title,
+            legend: {
+              show: true,
+              container: legend_div
+            },
+            xaxis : {
+                minorTickFreq : 4,
+                tickFormatter : function(x) {
+                    var index = null;
+                    for ( var i = 0; i < history.id.length; i++) {
+                        if (parseInt(x, null)===history.id[i]) {
+                            index = i; break;}
+                    }
+                    return history.date[index];
+                }
+            },
+            yaxis : {
+                // min: null,
+                min: 0,
+                noTicks: 2,
+                autoscale: false
+            },
+            grid : {
+                verticalLines: false,
+                color: '#000000',
+                outlineWidth: 1,
+                outline: 's'
+            },
+            mouse : {
+                container: legend_div,
+                track : true,
+                trackY : false,
+                trackFormatter : function(o) {
+                    var label = history.date[parseInt(o.index, 10)];
+                    if (label === undefined) label = "";
+                    else label += "<br>";
+                    for (var i=0; i<lines_data.length; i++) {
+                        var value = lines_data[i].data[o.index][1];
+                        if (value === undefined) continue;
+                        if (lines_data.length > 1) {
+                            if (lines_data[i].label !== undefined)
+                                label += lines_data[i].label +":";
+                        }
+                        label += Report.formatValue(value) +"<br>";
+                    }
+                    return label;
+                }
+            }
+        };
+
+        if (config_metric) {
+            if (!config_metric.show_title) config.title = '';
+            if ("show_legend" in config_metric) {
+                if (config_metric.show_legend === true) config.legend.show = true;
+                else config.legend.show = false;
+            }
+            if (config_metric.lines && config_metric.lines.stacked)
+                config.lines =
+                    {stacked:true, fill:true, fillOpacity: 1, fillBorder:true, lineWidth:0.01};
+            if (!config_metric.show_labels) {
+                config.xaxis.showLabels = false;
+                config.yaxis.showLabels = false;
+            }
+            if (config_metric.show_grid === false) {
+                config.grid.verticalLines = false;
+                config.grid.horizontalLines = false;
+                config.grid.outlineWidth = 0;
+            }
+            if (config_metric.show_mouse === false) {
+                config.mouse.track = false;
+            }
+            if (config_metric.graph === "bars") {
+                config.bars = {show : true};
+            }
+            if (config_metric.light_style === true) {
+                config.grid.color = '#ccc';
+                config.legend.show = false;
+            }
+            if (config_metric.custom_title){
+                config.subtitle = config_metric.custom_title;
+            }
+        }
+
+        // Show last time series as a point, not a line. The data is incomplete
+        // Only show for single lines when time series is complete
+        var showLastPoint = false;
+        if (config_metric.graph !== "bars" &&
+            lines_data.length === 1 &&
+            lines_data[0].data[0][0] === 0) {
+            showLastPoint = true;
+        }
+        if (showLastPoint) {
+            lines_data = lastLineValueToPoint(lines_data);
+            // Add an extra entry for adding space for the circle point. Ugly hack!
+            // var last = lines_data[0].data.length;
+            var next_id = history.id[history.id.length-1]+1;
+            lines_data[0].data.push([next_id, undefined]);
+            lines_data[1].data.push([next_id, undefined]);
+            history.date.push('');
+            history.id.push(next_id);
+
+        }
+
+        graph = Flotr.draw(container, lines_data, config);
+
+        // Clean added point. Data is a reference to the original!
+        if (showLastPoint) {
+            if (history.date) history.date.pop();
+            if (history.id) history.id.pop();
+        }
+    }
+
+
+    function displayDSLinesZoom(div_id, history, lines_data, title, config_metric) {
+        // evolution of the displayDSLines function with zoom in/out feature
         var container = document.getElementById(div_id);
         var legend_div = null;
         if (config_metric && config_metric.legend && config_metric.legend.container)
@@ -713,9 +852,10 @@ if (Viz === undefined) var Viz = {};
                 if (config_metric.show_legend === true) config.legend.show = true;
                 else config.legend.show = false;
             }
-            if (config_metric.lines && config_metric.lines.stacked)
+            if (config_metric.lines && config_metric.lines.stacked){
                 config.lines =
-                    {stacked:true, fill:true, fillOpacity: 1, fillBorder:true, lineWidth:0.01};            
+                    {stacked:true, fill:true, fillOpacity: 1, fillBorder:true, lineWidth:0.01};
+            }
             if (!config_metric.show_labels) {
                 config.xaxis.showLabels = false;
                 config.yaxis.showLabels = false;
