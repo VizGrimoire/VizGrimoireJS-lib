@@ -134,13 +134,13 @@ function SCR() {
             "column" : "repositories",
             "name" : "Respositories",
             "desc" : "Number of active respositories"
-        },
+        },/*
         "scr_people" : {
             "divid" : "scr_people",
             "column" : "people",
             "name" : "People",
             "desc" : "Number of active people"
-        },
+        },*/
         "scr_closers" : {
             "divid" : "scr_closers",
             "column" : "closers",

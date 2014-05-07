@@ -99,13 +99,13 @@ function ITS() {
             'column' : "domains",
             'name' : "Domains",
             'desc' : "Number of active domains"
-        },
+        }/*,
         'its_people' : {
             'divid' : 'its_people',
             'column' : "people",
             'name' : "People",
             'desc' : "Number of active people"
-        }
+        }*/ //not used, breaks the tests
     };
 
     this.getMainMetric = function() {

@@ -74,13 +74,13 @@ function MLS() {
             'column' : "domains",
             'name' : "Domains",
             'desc' : "Number of active domains"
-        },
+        }/*,
         'mls_people' : {
             'divid' : 'mls_people',
             'column' : "people",
             'name' : "People",
             'desc' : "Number of active people"
-        }
+        }*/
     };
 
     this.data_lists_file = this.data_dir + '/mls-lists.json';

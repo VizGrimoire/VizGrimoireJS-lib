@@ -53,7 +53,7 @@ function SCM() {
             'envision' : {
                 gtype : 'whiskers'
             }
-        },
+        }/*,
         'scm_authors_rev' : {
             'divid' : "scm_authors-rev",
             'column' : "authors_rev",
@@ -83,7 +83,7 @@ function SCM() {
             'envision' : {
                 gtype : 'whiskers'
             }
-        },
+        }*/,
         'scm_branches' : {
             'divid' : "scm_branches",
             'column' : "branches",
@@ -134,13 +134,13 @@ function SCM() {
             'column' : "domains",
             'name' : "Domains",
             'desc' : "Number of active domains"
-        },
+        }/*,
         'scm_people' : {
             'divid' : 'scm_people',
             'column' : "people",
             'name' : "People",
             'desc' : "Number of active people"
-        }
+        }*/
     };
 
     this.getMainMetric = function() {
