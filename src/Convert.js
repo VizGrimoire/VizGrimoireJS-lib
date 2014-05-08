@@ -867,6 +867,41 @@ Convert.convertFilterItemData = function (filter, item) {
     }
 };
 
+
+function composeProjectBreadcrumbs(project_id){
+    //project id could be eclipe or eclipse.whatever
+    var html = '<ul class="breadcrumb">';
+    var aux = '';
+    var tokens = [];
+    var first = true;
+    tokens = project_id.split('.');
+    html += '<li><a href="/">Summary</a> <span class="divider">/</span></li>';
+    html += '<li><a href="projects.html">List of projects</a> <span class="divider">/</span></li>';
+    $.each(tokens, function(key,value){
+        if (first){
+            aux += value;
+            first = false;
+        }else{
+            aux += '.' + value;}
+        html += '<li><a href="project.html?project=' + aux +' ">' + value + '</a> <span class="divider">/</span></li>';
+    });
+    html += '</ul>';
+    return html;
+}
+
+Convert.convertProjectBreadcrumbs = function (filter, item) {
+    //based on FilterItemData
+    var divs = $(".ProjectBreadcrumbs");
+    if (divs.length > 0) {
+        $.each(divs, function(id, div) {
+            $(this).empty();
+            var label = Report.cleanLabel(item);
+            if (!div.id) div.id = "ProjectBreadcrumbs" + getRandomId();
+            $("#"+div.id).append(composeProjectBreadcrumbs(label));
+        });
+    }
+};
+
 Convert.convertFilterItemSummary = function(filter, item) {
     var divlabel = "FilterItemSummary";
     divs = $("."+divlabel);
@@ -996,6 +1031,7 @@ Convert.convertFilterStudyItem = function (filter, item) {
     if (Loader.FilterItemCheck(item, filter) === false) return;
 
     Convert.convertFilterItemData(filter, item);
+    Convert.convertProjectBreadcrumbs(filter, item);
     Convert.convertFilterItemSummary(filter, item);
     Convert.convertFilterItemMetricsEvol(filter, item);
     Convert.convertFilterItemTop(filter, item);
