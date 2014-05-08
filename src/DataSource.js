@@ -593,7 +593,7 @@ function DataSource(name, basic_metrics) {
     this.displayMetricsProject = function (project, metrics, div_id, config) {
         var data = this.getProjectsMetricsData()[project];
         if (data === undefined) return;
-        Viz.displayMetricsProject(project, metrics, data, div_id, config);
+        Viz.displayMetricsProject(this, project, metrics, data, div_id, config);
     };
 
     this.displayMetricsPeople = function (upeople_id, upeople_identifier, metrics, div_id, config) {
@@ -603,7 +603,7 @@ function DataSource(name, basic_metrics) {
             $("#"+div_id).hide();
             return;
         }
-        Viz.displayMetricsPeople(upeople_identifier, metrics, history, div_id, config);
+        Viz.displayMetricsPeople(this, upeople_identifier, metrics, history, div_id, config);
     };
 
     // TODO: support multiproject
