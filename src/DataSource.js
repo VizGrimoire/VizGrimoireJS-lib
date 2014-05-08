@@ -863,15 +863,27 @@ function DataSource(name, basic_metrics) {
         $("#"+div_id).append(list);
         // Draw the graphs
         var start_items = null, end_items = null, convert_items = null;
-        if (start) start_items = start.split(",");
-        if (end) end_items = end.split(",");
+        if (start) {
+            if (typeof start === "number") start_items = [start.toString()];
+            else start_items = start.split(",");
+        }
+        if (end) {
+            if (typeof end === "number") end_items = [end.toString()];
+            else end_items = end.split(",");
+        }
         if (convert) convert_items = convert.split(",");
         $.each(sorted, function(id, item) {
             var i = 0;
             $.each(metrics, function(id, metric) {
                 var mstart = null, mend = null, mconvert = null;
-                if (start_items) mstart = start_items[i];
-                if (end_items) mend = end_items[i];
+                if (start_items) {
+                    if (start_items.length == 1) mstart = start_items[0];
+                    else mstart = start_items[i];
+                }
+                if (end_items) {
+                    if (end_items.length == 1) mend = end_items[0];
+                    else mend = end_items[i];
+                }
                 if (convert_items) mconvert = convert_items[i];
                 if (item in data === false) return;
                 var item_data = data[item];
