@@ -870,20 +870,25 @@ Convert.convertFilterItemData = function (filter, item) {
 
 function composeProjectBreadcrumbs(project_id){
     //project id could be eclipe or eclipse.whatever
-    var html = '<ul class="breadcrumb">';
+    var html = '<ul class="breadcrumb"> Project:&nbsp;&nbsp;';
     var aux = '';
     var tokens = [];
-    var first = true;
+    var lentokens = 0;
     tokens = project_id.split('.');
-    html += '<li><a href="/">Summary</a> <span class="divider">/</span></li>';
-    html += '<li><a href="projects.html">List of projects</a> <span class="divider">/</span></li>';
+    lentokens = tokens.length;
+    /*html += '<li><a href="/">Summary</a> <span class="divider">/</span></li>';
+    html += '<li><a href="projects.html">List of projects</a> <span class="divider">/</span></li>';*/
     $.each(tokens, function(key,value){
-        if (first){
+        if (key === 0){ //first
             aux += value;
-            first = false;
         }else{
             aux += '.' + value;}
-        html += '<li><a href="project.html?project=' + aux +' ">' + value + '</a> <span class="divider">/</span></li>';
+
+        if (key === lentokens - 1 ) { //if last
+            html += '<li class="active">' + value + '</li>';
+        }else{
+            html += '<li><a href="project.html?project=' + aux +' ">' + value + '</a> <span class="divider">/</span></li>';
+        }
     });
     html += '</ul>';
     return html;
