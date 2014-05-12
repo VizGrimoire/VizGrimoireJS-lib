@@ -112,17 +112,6 @@ function ITS() {
         return "its_opened";
     };
 
-    this.setReposData = function(repos_name, self) {
-        if (self === undefined) self = this;
-        if (!(repos_name instanceof Array)) repos_name=[repos_name];
-        var repos = [];
-        // convert http://issues.liferay.com/browse/AUI, change "/" by "_"
-        for (var i=0; i<repos_name.length; i++) {
-            repos.push(repos_name[i].replace(/\//g,"_"));
-        }
-        self.repos = repos;
-    };
-
     this.getSummaryLabels = function () {
         var labels = {
                 first_date : "Start",

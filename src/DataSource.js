@@ -215,11 +215,15 @@ function DataSource(name, basic_metrics) {
 
     this.companies = null;
     this.getCompaniesData = function() {
-        return this.companies;
+        var items = this.companies;
+        if  (items instanceof Array === false) {
+            // New format with names and metrics
+            items = this.companies.name;
+        }
+        return items;
     };
     this.setCompaniesData = function(companies, self) {
         if (companies === null) companies = [];
-        if (!(companies instanceof Array)) companies=[companies];
         if (self === undefined) self = this;
         self.companies = companies;
     };
@@ -270,17 +274,29 @@ function DataSource(name, basic_metrics) {
     };
     this.getReposData = function() {
         var items = this.repos;
-        if (this.getName() === "scr") {
-            if  (items instanceof Array === false)
-                // New format with names and metrics
-                items = this.repos.name;
+        if  (items instanceof Array === false) {
+            // New format with names and metrics
+            items = this.repos.name;
         }
         return items;
     };
     this.setReposData = function(repos, self) {
         if (self === undefined) self = this;
-        // if (!(repos instanceof Array)) repos=[repos];
         self.repos = repos;
+        if (self.getName() !== "its") return;
+
+        repos_names = [];
+        if  (repos instanceof Array === true) {
+            self.repos = {};
+            self.repos.name = repos;
+        }
+
+        var filtered_repos = [];
+        // convert http://issues.liferay.com/browse/AUI, change "/" by "_"
+        for (var i=0; i<self.repos.name.length; i++) {
+            filtered_repos.push(self.repos.name[i].replace(/\//g,"_"));
+        }
+        self.repos.name = filtered_repos;
     };
 
     this.repos_metrics_data = {};
@@ -344,11 +360,15 @@ function DataSource(name, basic_metrics) {
 
     this.domains = null;
     this.getDomainsData = function() {
-        return this.domains;
+        var items = this.domains;
+        if  (items instanceof Array === false) {
+            // New format with names and metrics
+            items = this.domains.name;
+        }
+        return items;
     };
     this.setDomainsData = function(domains, self) {
         if (domains === null) domains = [];
-        if (!(domains instanceof Array)) domains=[domains];
         if (self === undefined) self = this;
         self.domains = domains;
     };
