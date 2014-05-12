@@ -294,6 +294,52 @@ Convert.convertBubbles = function() {
     }
 };
 
+
+function loadHTMLEvolParameters(htmldiv, config_viz){
+    /*var metrics = $(htmldiv).data('metrics');
+    var ds = $(htmldiv).data('data-source');
+    var DS = Report.getDataSourceByName(ds);
+    if (DS === null) return;*/
+    config_viz.help = true;
+    var help = $(htmldiv).data('help');
+    if (help !== undefined) config_viz.help = help;
+    config_viz.show_legend = false;
+    if ($(htmldiv).data('frame-time'))
+        config_viz.frame_time = true;
+    config_viz.graph = $(htmldiv).data('graph');
+    if ($(htmldiv).data('min')) {
+        config_viz.show_legend = false;
+        config_viz.show_labels = true;
+        config_viz.show_grid = true;
+        // config_viz.show_mouse = false;
+        config_viz.help = false;
+    }
+    if ($(htmldiv).data('legend'))
+        config_viz.show_legend = true;
+    config_viz.ligth_style = false;
+    if ($(htmldiv).data('light-style')){
+        config_viz.light_style = true;
+    }
+    if ($(htmldiv).data('custom-title')){
+        config_viz.custom_title = $(htmldiv).data('custom-title');
+    }
+    if (config_viz.help && $(htmldiv).data('custom-help')){
+        config_viz.custom_help = $(htmldiv).data('custom-help');
+    } else {
+        config_viz.custom_help = "";
+    }
+    // In unixtime
+    var start = $(htmldiv).data('start');
+    if (start) config_viz.start_time = start;
+    var end = $(htmldiv).data('end');
+    if (end) config_viz.end_time = end;
+    
+    var remove_last_point = $(htmldiv).data('remove-last-point');
+    if (remove_last_point) config_viz.remove_last_point = true;    
+
+    return config_viz;    
+}
+
 Convert.convertMetricsEvol = function() {
     // General config for metrics viz
     var config_metric = {};
@@ -322,42 +368,8 @@ Convert.convertMetricsEvol = function() {
             var ds = $(this).data('data-source');
             var DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
-            config_viz.help = true;
-            var help = $(this).data('help');
-            if (help !== undefined) config_viz.help = help;
-            config_viz.show_legend = false;
-            if ($(this).data('frame-time'))
-                config_viz.frame_time = true;
-            config_viz.graph = $(this).data('graph');
-            if ($(this).data('min')) {
-                config_viz.show_legend = false;
-                config_viz.show_labels = true;
-                config_viz.show_grid = true;
-                // config_viz.show_mouse = false;
-                config_viz.help = false;
-            }
-            if ($(this).data('legend'))
-                config_viz.show_legend = true;
-            config_viz.ligth_style = false;
-            if ($(this).data('light-style')){
-                config_viz.light_style = true;
-            }
-            if ($(this).data('custom-title')){
-                config_viz.custom_title = $(this).data('custom-title');
-            }
-            if (config_viz.help && $(this).data('custom-help')){
-                config_viz.custom_help = $(this).data('custom-help');
-            } else {
-                config_viz.custom_help = "";
-            }
-            // In unixtime
-            var start = $(this).data('start');
-            if (start) config_viz.start_time = start;
-            var end = $(this).data('end');
-            if (end) config_viz.end_time = end;
 
-            var remove_last_point = $(this).data('remove-last-point');
-            if (remove_last_point) config_viz.remove_last_point = true;
+            config_viz = loadHTMLEvolParameters(div, config_viz);
 
             div.id = metrics.replace(/,/g,"-")+"-"+ds+"-metrics-evol-"+this.id;
             div.id = div.id.replace(/\n|\s/g, "");
@@ -757,6 +769,13 @@ Convert.convertFilterItemsMetricsEvol = function(filter) {
             var metric = $(this).data('metric');
             var stacked = false;
             if ($(this).data('stacked')) stacked = true;
+            if ($(this).data('min')) {
+                config_viz.show_legend = false;
+                config_viz.show_labels = true;
+                config_viz.show_grid = true;
+                // config_viz.show_mouse = false;
+                config_viz.help = false;
+            }
             // In unixtime
             var start = $(this).data('start');
             var end = $(this).data('end');
@@ -848,6 +867,46 @@ Convert.convertFilterItemData = function (filter, item) {
     }
 };
 
+
+function composeProjectBreadcrumbs(project_id){
+    //project id could be eclipe or eclipse.whatever
+    var html = '<ul class="breadcrumb"> Project:&nbsp;&nbsp;';
+    var aux = '';
+    var tokens = [];
+    var lentokens = 0;
+    tokens = project_id.split('.');
+    lentokens = tokens.length;
+    /*html += '<li><a href="/">Summary</a> <span class="divider">/</span></li>';
+    html += '<li><a href="projects.html">List of projects</a> <span class="divider">/</span></li>';*/
+    $.each(tokens, function(key,value){
+        if (key === 0){ //first
+            aux += value;
+        }else{
+            aux += '.' + value;}
+
+        if (key === lentokens - 1 ) { //if last
+            html += '<li class="active">' + value + '</li>';
+        }else{
+            html += '<li><a href="project.html?project=' + aux +' ">' + value + '</a> <span class="divider">/</span></li>';
+        }
+    });
+    html += '</ul>';
+    return html;
+}
+
+Convert.convertProjectBreadcrumbs = function (filter, item) {
+    //based on FilterItemData
+    var divs = $(".ProjectBreadcrumbs");
+    if (divs.length > 0) {
+        $.each(divs, function(id, div) {
+            $(this).empty();
+            var label = Report.cleanLabel(item);
+            if (!div.id) div.id = "ProjectBreadcrumbs" + getRandomId();
+            $("#"+div.id).append(composeProjectBreadcrumbs(label));
+        });
+    }
+};
+
 Convert.convertFilterItemSummary = function(filter, item) {
     var divlabel = "FilterItemSummary";
     divs = $("."+divlabel);
@@ -886,6 +945,7 @@ Convert.convertFilterItemMetricsEvol = function(filter, item) {
     if (item !== null && divs.length > 0) {
         $.each(divs, function(id, div) {
             var real_item = item;
+            var metrics = $(this).data('metrics');
             ds = $(this).data('data-source');
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
@@ -893,13 +953,9 @@ Convert.convertFilterItemMetricsEvol = function(filter, item) {
             if (filter !== $(this).data('filter')) return;
             if (!filter) return;
             if ($(this).data('item')) real_item = $(this).data('item');
-            var metrics = $(this).data('metrics');
-            config_metric.show_legend = false;
-            config_metric.frame_time = false;
-            if ($(this).data('legend')) 
-                config_metric.show_legend = true;
-            if ($(this).data('frame-time')) 
-                config_metric.frame_time = true;
+
+            config_metric = loadHTMLEvolParameters(div, config_metric);
+
             div.id = Report.cleanLabel(item).replace(/ /g,"_")+"-";
             div.id += metrics.replace(/,/g,"-")+"-"+ds+"-"+filter+"-"+divlabel;
             $(this).empty();
@@ -980,6 +1036,7 @@ Convert.convertFilterStudyItem = function (filter, item) {
     if (Loader.FilterItemCheck(item, filter) === false) return;
 
     Convert.convertFilterItemData(filter, item);
+    Convert.convertProjectBreadcrumbs(filter, item);
     Convert.convertFilterItemSummary(filter, item);
     Convert.convertFilterItemMetricsEvol(filter, item);
     Convert.convertFilterItemTop(filter, item);

@@ -510,8 +510,8 @@ if (Viz === undefined) var Viz = {};
             if (convert) data = DataProcess.convert(data, convert, metric);
             if (start) data = DataProcess.filterDates(start, end, data);
 
-            if (config.remove_last_point) data =
-                DataProcess.revomeLastPoint(data);
+            /*if (config.remove_last_point) data =
+                DataProcess.revomeLastPoint(data);*/
 
             var cdata = [[], []];
             for (var i=0; i<data.id.length; i++ ) {
@@ -1796,9 +1796,7 @@ if (Viz === undefined) var Viz = {};
         return config;
     }
 
-    function displayMetricsEvol(ds, metrics, data, div_target, config) {
-        /* gets readeable title for metrics + conf and calls displayMetricsLines*/
-        config = checkBasicConfig(config);
+    function getMetricFriendlyName(ds, metrics ){
         var desc_metrics = ds.getMetrics();
         var title = '';
         for (var i=0; i<metrics.length; i++) {
@@ -1809,7 +1807,16 @@ if (Viz === undefined) var Viz = {};
                 title += desc_metrics[metrics[i]].name;
             else title += metrics[i];
         }
-        if (!config.show_title) title = '';
+        return title;
+    }
+
+    function displayMetricsEvol(ds, metrics, data, div_target, config) {
+        /* gets readeable title for metrics + conf and calls displayMetricsLines*/
+        config = checkBasicConfig(config);
+        var title = '';
+        if (config.show_title){
+            title = getMetricFriendlyName(ds, metrics);
+        }        
         displayMetricsLines(div_target, metrics, data, title, config);
     }
 
@@ -1831,15 +1838,17 @@ if (Viz === undefined) var Viz = {};
         displayMetricsLines(div_id, metrics, data, title, config);
     }
 
-    function displayMetricsProject (project, metrics, data, div_id, config) {
+    function displayMetricsProject (ds, project, metrics, data, div_id, config) {
         config = checkBasicConfig(config);
-        var title = project;
+        //var title = project;
+        var title = getMetricFriendlyName(ds, metrics);
         displayMetricsLines(div_id, metrics, data, title, config);
     }
 
-    function displayMetricsPeople (upeople_identifier, metrics, data, div_id, config) {
+    function displayMetricsPeople (ds, upeople_identifier, metrics, data, div_id, config) {
         config = checkBasicConfig(config);
-        var title = upeople_identifier;
+        //var title = upeople_identifier;
+        var title = getMetricFriendlyName(ds, metrics);
         displayMetricsLines(div_id, metrics, data, title, config);
     }
 
