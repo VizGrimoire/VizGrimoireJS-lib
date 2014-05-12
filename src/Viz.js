@@ -622,10 +622,10 @@ if (Viz === undefined) var Viz = {};
         var dots = [];
         var utime = 0;
         for (var i=0; i<last-1; i++) {
-            utime = parseInt(history.unixtime[i]);
+            utime = parseInt(history.unixtime[i],10);
             dots.push([utime,undefined]);
         }
-        utime = parseInt(history.unixtime[last-1]);
+        utime = parseInt(history.unixtime[last-1],10);
         dots.push([utime, lines_data[0].data[last-1][1]]);
         var dot_graph = {'data':dots};
         dot_graph.points = {show : true, radius:3, lineWidth: 1, fillColor: null, shadowSize : 0};
@@ -646,9 +646,9 @@ if (Viz === undefined) var Viz = {};
         var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
         // watchout! javascript uses miliseconds
-        var date = new Date(parseInt(starting_utime)*1000);
+        var date = new Date(parseInt(starting_utime,10)*1000);
         var starting_date = months[date.getMonth()] + ' ' + date.getFullYear();
-        date = new Date(parseInt(end_utime)*1000);
+        date = new Date(parseInt(end_utime,10)*1000);
         var end_date = months[date.getMonth()] + ' ' + date.getFullYear();
         return former_title + ' ( ' + starting_date + ' - ' + end_date + ' )';
     }
@@ -742,7 +742,7 @@ if (Viz === undefined) var Viz = {};
                 tickFormatter : function(x) {
                     var index = null;
                     for ( var i = 0; i < history.id.length; i++) {
-                        if (parseInt(x, null)===history.id[i]) {
+                        if (parseInt(x, null)===history.id[i],10) {
                             index = i; break;}
                     }
                     return history.date[index];
@@ -893,7 +893,7 @@ if (Viz === undefined) var Viz = {};
         var data_length = lines_data[0].data.length;
         for (z = 0; z < number_lines; z++){
             for (i = 0; i < data_length; i++) {
-                lines_data[z].data[i][0] = parseInt(history.unixtime[i]);
+                lines_data[z].data[i][0] = parseInt(history.unixtime[i],10);
             }
         }
 
@@ -1344,7 +1344,7 @@ if (Viz === undefined) var Viz = {};
                 var value =  data[j].data[i][1];
                 if (value>max) {
                     max = value;
-                    max = parseInt(max * (1+border),null);
+                    max = parseInt(max * (1+border),10);
                 }
             }
         }
@@ -1443,7 +1443,7 @@ if (Viz === undefined) var Viz = {};
             if ($.inArray(name, metrics) === -1) return;
             new_history[name] = [];
             for (var i=0; i<data.length; i++) {
-                var hours = parseFloat((parseInt(data[i],null)/24).toFixed(2),null);
+                var hours = parseFloat((parseInt(data[i],null)/24).toFixed(2),10);
                 new_history[name].push(hours);
             }
         });
