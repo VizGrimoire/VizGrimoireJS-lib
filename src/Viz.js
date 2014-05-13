@@ -849,6 +849,7 @@ if (Viz === undefined) var Viz = {};
 
 
     function displayDSLinesZoom(div_id, history, lines_data, title, config_metric) {
+        if (lines_data.length === 0) return;
         // evolution of the displayDSLines function with zoom in/out feature
         var container = document.getElementById(div_id);
         var legend_div = null;
@@ -856,7 +857,7 @@ if (Viz === undefined) var Viz = {};
             legend_div = $('#'+config_metric.legend.container);
 
         var config = getConfLinesChart(title, legend_div, history, lines_data);
-        
+
         if (config_metric) {
             // depending on the configuration we enable/disable options
             if (!config_metric.show_title) config.title = '';
