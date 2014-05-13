@@ -60,30 +60,33 @@ var DataProcess = {};
     DataProcess.sortGlobal = function (ds, metric_id, kind) {
         if (metric_id === undefined) metric_id = "scm_commits";
         var metric = [];
-        var data = [], sorted = [];
+        var data = [], sorted = {};
+        sorted.name = [];
+        sorted[metric_id] = [];
+        var metrics_data = null;
         if (kind === "companies") {
             data = ds.getCompaniesData();
+            metrics_data = ds.getCompaniesDataFull();
         }
         else if (kind === "repos") {
             data = ds.getReposData();
+            metrics_data = ds.getReposDataFull();
         }
         else if (kind === "countries") {
             data = ds.getCountriesData();
         }
         else if (kind === "domains") {
             data = ds.getDomainsData();
+            metrics_data = ds.getDomainsDataFull();
         }
         else if (kind === "projects") {
             data = ds.getProjectsData();
         }
 
         if (data  === null) return [];
-
-        // TODO: Only support for reports now
-        if (kind !== "repos") return data;
+        if (metrics_data === null) return data;
 
         // Change the order using the new metric
-        metrics_data = ds.getReposDataFull();
         if (metrics_data instanceof Array  || metric_id in metrics_data === false) 
             return data;
 
@@ -94,16 +97,17 @@ var DataProcess = {};
         }
         metric.sort(function(a, b) {return b[1] - a[1];});
         $.each(metric, function(id, value) {
-            sorted.push(value[0]);
+            sorted.name.push(value[0]);
+            sorted[metric_id].push(value[1]);
         });
-        return sorted;
+        return sorted.name;
     };
 
     // Order items in data sources according widgets params
     DataProcess.orderItems = function (filter_order) {
         $.each($("[class^='FilterItems']"), function (id, div) {
             order_by = $(this).data('order-by');
-            if (order_by !==undefined) {
+            if (order_by !== undefined) {
                 ds = $(this).data('data-source');
                 DS = Report.getDataSourceByName(ds);
                 if (DS === null) return;
@@ -115,9 +119,9 @@ var DataProcess = {};
 
                 if (filter === 'companies') DS.setCompaniesData(data);
                 if (filter === 'repos') DS.setReposData(data);
-                if (filter === 'countries') DS.setReposData(data);
-                if (filter === 'domains') DS.setReposData(data);
-
+                if (filter === 'countries') DS.setCountriesData(data);
+                if (filter === 'domains') DS.setDomainsData(data);
+                return false; // Use the first one to order
             }
         });
     };
