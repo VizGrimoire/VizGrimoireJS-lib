@@ -719,7 +719,10 @@ if (Viz === undefined) var Viz = {};
         }
         if (use_stacked){
             displayDSLinesStacked(div_id, history, lines_data, title, config_metric);
-        }else{
+        } else if (history.unixtime === undefined) {
+            // Unixtime is not included yet in some metric time series (time_to)
+            displayDSLinesStacked(div_id, history, lines_data, title, config_metric);
+        } else {
             displayDSLinesZoom(div_id, history, lines_data, title, config_metric);
         }
     }
@@ -1422,11 +1425,11 @@ if (Viz === undefined) var Viz = {};
                 'mls_sent' ];
         displayRadar(div_id, metrics);
     }
-    
+
     function displayTimeToAttention(div_id, ttf_data, column, labels, title) {
         displayTimeTo(div_id, ttf_data, column, labels, title);
     }
-    
+
     function displayTimeToFix(div_id, ttf_data, column, labels, title) {
         displayTimeTo(div_id, ttf_data, column, labels, title);
     }
@@ -1816,7 +1819,7 @@ if (Viz === undefined) var Viz = {};
         var title = '';
         if (config.show_title){
             title = getMetricFriendlyName(ds, metrics);
-        }        
+        }
         displayMetricsLines(div_target, metrics, data, title, config);
     }
 
