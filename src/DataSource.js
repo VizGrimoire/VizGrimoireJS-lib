@@ -218,7 +218,9 @@ function DataSource(name, basic_metrics) {
         var items = this.companies;
         if  (items instanceof Array === false) {
             // New format with names and metrics
-            items = this.companies.name;
+            if (this.companies !== null) {
+                items = this.companies.name;
+            }
         }
         return items;
     };
@@ -276,7 +278,9 @@ function DataSource(name, basic_metrics) {
         var items = this.repos;
         if  (items instanceof Array === false) {
             // New format with names and metrics
-            items = this.repos.name;
+            if (this.repos !== null) {
+                items = this.repos.name;
+            }
         }
         return items;
     };
@@ -363,7 +367,9 @@ function DataSource(name, basic_metrics) {
         var items = this.domains;
         if  (items instanceof Array === false) {
             // New format with names and metrics
-            items = this.domains.name;
+            if (this.domains !== null) {
+                items = this.domains.name;
+            }
         }
         return items;
     };
