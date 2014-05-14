@@ -993,6 +993,8 @@ function DataSource(name, basic_metrics) {
     this.getSummaryLabels = function () {};
 
     this.displaySummary = function(report, divid, item, ds) {
+        // Prints all the keys:values for an item
+        // This function is no longer used on the dash
         if (!item) item = "";
         var html = "<h6>" + ds.getTitle()+ "</h6>";
         var id_label = this.getSummaryLabels();
