@@ -827,7 +827,7 @@ if (Viz === undefined) var Viz = {};
             showLastPoint = true;
         }
         if (showLastPoint) {
-            lines_data = lastLineValueToPoint(lines_data);
+            lines_data = lastLineValueToPoint(history, lines_data);
             // Add an extra entry for adding space for the circle point. Ugly hack!
             // var last = lines_data[0].data.length;
             var next_id = history.id[history.id.length-1]+1;

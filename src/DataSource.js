@@ -214,6 +214,10 @@ function DataSource(name, basic_metrics) {
     };
 
     this.companies = null;
+    this.getCompaniesDataFull = function() {
+        return this.companies;
+    };
+
     this.getCompaniesData = function() {
         var items = this.companies;
         if  (items instanceof Array === false) {
@@ -363,6 +367,10 @@ function DataSource(name, basic_metrics) {
     };
 
     this.domains = null;
+    this.getDomainsDataFull = function() {
+        return this.domains;
+    };
+
     this.getDomainsData = function() {
         var items = this.domains;
         if  (items instanceof Array === false) {
@@ -575,10 +583,13 @@ function DataSource(name, basic_metrics) {
 
         if ($.isEmptyObject(data)) return;
 
+        // Ordered also done in Report.js
         var order = DataProcess.sortGlobal(this, order_by, report);
-        order = DataProcess.paginate(order, Report.getCurrentPage());
+        // Hack because different formats
+        if (order instanceof Array === false) {order = order.name;}
+        data_page = DataProcess.paginate(order, Report.getCurrentPage());
 
-        Viz.displayMetricSubReportStatic(metric_id, data, order,
+        Viz.displayMetricSubReportStatic(metric_id, data, data_page,
             div_target, config);
     };
 

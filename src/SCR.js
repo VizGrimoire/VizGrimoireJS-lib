@@ -164,7 +164,15 @@ function SCR() {
     this.getSummaryLabels = function () {
         var id_label = {
                 first_date : "Start",
-                last_date : "End"
+                last_date : "End",
+                review_time_pending_ReviewsWaitingForReviewer_days_avg: "Review Time for reviewers (days, avg)",
+                review_time_pending_ReviewsWaitingForReviewer_days_median: "Review Time for reviewers (days, median)",
+                review_time_pending_update_ReviewsWaitingForReviewer_days_avg: "Update time for reviewers (days, avg)",
+                review_time_pending_update_ReviewsWaitingForReviewer_days_median: "Update time for reviewers (days, avg)",
+                review_time_pending_days_avg:"Review time (days, avg)",
+                review_time_pending_days_median:"Review time (days, median)",
+                review_time_pending_update_days_avg:"Update time (days, avg)",
+                review_time_pending_update_days_median:"Update time (days, median)"
         };
         return id_label;
     };
