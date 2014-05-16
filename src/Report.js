@@ -303,6 +303,8 @@ if (Report === undefined) var Report = {};
             $(".wiki-menu")[0].className = $(".wiki-menu")[0].className + " active";
         } else if (page.indexOf('downloads') === 0) {
             $(".downloads-menu")[0].className = $(".downloads-menu")[0].className + " active";
+        } else if (page.indexOf('projects') === 0) {
+            $(".listprojects-menu")[0].className = $(".listprojects-menu")[0].className + " active";
         } else if (page.indexOf('index') === 0 || page === '') {
             if ($(".summary-menu").length === 0) return;
             $(".summary-menu")[0].className =  $(".summary-menu")[0].className + " active";
