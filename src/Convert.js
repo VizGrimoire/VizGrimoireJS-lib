@@ -37,10 +37,10 @@ Convert.convertMicrodashText = function () {
             var ds = Report.getMetricDS(metric)[0];
             if (ds === undefined) return;
             var total = ds.getGlobalData()[metric];
-            var html = '<div class="row-fluid">';
+            var html = '<div class="row">';
 
             if(show_name){ //if name is shown we'll have four columns
-                html += '<div class="span3">';
+                html += '<div class="col-md-3">';
                 html += '<span class="dayschange">' + ds.basic_metrics[metric].name + '</span>';
                 html += '</div>';
             }
@@ -61,9 +61,9 @@ Convert.convertMicrodashText = function () {
                 if (netvalue < 0) str_percentagevalue = '-' + Math.abs(percentagevalue);
 
                 if(show_name){
-                    html += '<div class="span3">';
+                    html += '<div class="col-md-3">';
                 }else{
-                    html += '<div class="span4">';
+                    html += '<div class="col-md-4">';
                 }
 
                 html += '<span class="dayschange">Last '+period+' days:</span>';
@@ -75,10 +75,10 @@ Convert.convertMicrodashText = function () {
                 } else if (netvalue < 0) {
                     html += '<i class="fa fa-arrow-circle-down"></i> <span class="negpercent">&nbsp;'+str_percentagevalue+'%</span>&nbsp;';
                 }
-                html += '</div><!--span4-->';
+                html += '</div><!--col-md-4-->';
             });
 
-            html += '</div><!--row-fluid-->';
+            html += '</div><!--row-->';
             $(div).append(html);
         });
     }
