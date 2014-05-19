@@ -550,7 +550,9 @@ Convert.convertPersonData = function (upeople_id, upeople_identifier) {
                 email = DataProcess.selectPersonEmail(data);
                 email = "("+DataProcess.hideEmail(email)+")";
             } else {
-                name = upeople_identifier;
+                if (upeople_identifier !== undefined)
+                    name = upeople_identifier;
+                else name = upeople_id;
                 email = "";
             }
             $("#"+div.id).append("<h1><small>"+name + " "+ email + "</small></h1>");
