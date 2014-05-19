@@ -600,7 +600,7 @@ function DataSource(name, basic_metrics) {
             $("#"+div_id).hide();
             return;
         }
-        Viz.displayMetricsCompany(company, metrics, data, div_id, config);
+        Viz.displayMetricsCompany(this, company, metrics, data, div_id, config);
     };
 
     this.displayMetricsRepo = function (repo, metrics, div_id, config) {
@@ -609,7 +609,7 @@ function DataSource(name, basic_metrics) {
             $("#"+div_id).hide();
             return;
         }
-        Viz.displayMetricsRepo(repo, metrics, data, div_id, config);
+        Viz.displayMetricsRepo(this, repo, metrics, data, div_id, config);
     };
 
     this.displayMetricsCountry = function (country, metrics, div_id, config) {
@@ -618,13 +618,13 @@ function DataSource(name, basic_metrics) {
             $("#"+div_id).hide();
             return;
         }
-        Viz.displayMetricsCountry(country, metrics, data, div_id, config);
+        Viz.displayMetricsCountry(this, country, metrics, data, div_id, config);
     };
 
     this.displayMetricsDomain = function (domain, metrics, div_id, config) {
         var data = this.getDomainsMetricsData()[domain];
         if (data === undefined) return;
-        Viz.displayMetricsDomain(domain, metrics, data, div_id, config);
+        Viz.displayMetricsDomain(this, domain, metrics, data, div_id, config);
     };
 
     this.displayMetricsProject = function (project, metrics, div_id, config) {

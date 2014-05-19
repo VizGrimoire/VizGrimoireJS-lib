@@ -1824,21 +1824,21 @@ if (Viz === undefined) var Viz = {};
         displayMetricsLines(div_target, metrics, data, title, config);
     }
 
-    function displayMetricsCompany (company, metrics, data, div_id, config) {
+    function displayMetricsCompany (ds, company, metrics, data, div_id, config) {
         config = checkBasicConfig(config);
-        var title = company;
+        var title = getMetricFriendlyName(ds, metrics);
         displayMetricsLines(div_id, metrics, data, title, config);
     }
 
-    function displayMetricsRepo (repo, metrics, data, div_id, config) {
+    function displayMetricsRepo (ds, repo, metrics, data, div_id, config) {
         config = checkBasicConfig(config);
-        var title = repo;
+        var title = getMetricFriendlyName(ds, metrics);
         displayMetricsLines(div_id, metrics, data, title, config);
     }
 
-    function displayMetricsDomain (domain, metrics, data, div_id, config) {
+    function displayMetricsDomain (ds, domain, metrics, data, div_id, config) {
         config = checkBasicConfig(config);
-        var title = domain;
+        var title = getMetricFriendlyName(ds, metrics);
         displayMetricsLines(div_id, metrics, data, title, config);
     }
 
@@ -1859,16 +1859,17 @@ if (Viz === undefined) var Viz = {};
     function displayMetricRepos(metric, data, div_target, 
             config, start, end) {
         config = checkBasicConfig(config);
-        config.show_legend = true;
+        if (config.show_legend !== false)
+            config.show_legend = true;
         var title = metric;
         displayMetricSubReportLines(div_target, metric, data, title, 
                 config, start, end);
     }
 
-    function displayMetricsCountry (country, metrics, data, div_id, 
+    function displayMetricsCountry (ds, country, metrics, data, div_id, 
             config) {
         config = checkBasicConfig(config);
-        var title = country;
+        var title = getMetricFriendlyName(ds, metrics);
         displayMetricsLines(div_id, metrics, data, title, config);
     }
 
