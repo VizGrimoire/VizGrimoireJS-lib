@@ -895,8 +895,8 @@ if (Viz === undefined) var Viz = {};
 
         var number_lines = lines_data.length;
         var data_length = lines_data[0].data.length;
-        for (z = 0; z < number_lines; z++){
-            for (i = 0; i < data_length; i++) {
+        for (var z = 0; z < number_lines; z++){
+            for (var i = 0; i < data_length; i++) {
                 lines_data[z].data[i][0] = parseInt(history.unixtime[i],10);
             }
         }
