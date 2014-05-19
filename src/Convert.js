@@ -1,4 +1,4 @@
-/* 
+ /* 
  * Copyright (C) 2013-2014 Bitergia
  *
  * This program is free software; you can redistribute it and/or modify
@@ -233,6 +233,21 @@ Convert.convertGlobalData = function (){
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
             var data = DS.getGlobalData();
+            var key = $(this).data('field');
+            $(this).text(Report.formatValue(data[key], key));
+        });
+    }
+};
+
+Convert.convertProjectData = function (){
+    var divs = $(".ProjectData");
+    var p = Report.getParameterByName("project");
+    if (divs.length > 0) {
+        $.each(divs, function(id, div) {
+            ds = $(this).data('data-source');
+            DS = Report.getDataSourceByName(ds);
+            if (DS === null) return;
+            var data = DS.getProjectsGlobalData()[p];
             var key = $(this).data('field');
             $(this).text(Report.formatValue(data[key], key));
         });
@@ -1042,6 +1057,7 @@ Convert.convertFilterStudyItem = function (filter, item) {
     Convert.convertFilterItemSummary(filter, item);
     Convert.convertFilterItemMetricsEvol(filter, item);
     Convert.convertFilterItemTop(filter, item);
+    Convert.convertProjectData();
 
     Convert.activateHelp();
 
@@ -1114,6 +1130,7 @@ Convert.convertBasicDivs = function() {
     //Convert.convertRefcard(); //deprecated
     Convert.convertDSTable();
     Convert.convertGlobalData();
+    //Convert.convertProjectData();
     Convert.convertSummary();
 };
 
