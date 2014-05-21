@@ -123,7 +123,7 @@ if (Report === undefined) var Report = {};
         return viz_config_file;
     };
 
-    function getProjectsHierarchy(){
+    function getProjectsHierarchy (){
         return projects_hierarchy;
     }
     Report.setProjectsHierarchy = function(data){

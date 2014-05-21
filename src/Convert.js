@@ -19,6 +19,7 @@
  *
  * Authors:
  *   Alvaro del Castillo San Felix <acs@bitergia.com>
+ *   Luis Cañas-Díaz <lcanas@bitergia.com>
  */
 
 var Convert = {};
@@ -129,10 +130,131 @@ Convert.convertMicrodash = function () {
     }
 };
 
+function getProjectTitle(project_id, hierarchy){
+    /**
+       Gets the title of the project based on the hierarchy
+    **/
+    if (hierarchy.hasOwnProperty(project_id) && hierarchy[project_id].title){
+        return hierarchy[project_id].title;
+    }else{
+        return undefined;
+    }
+}
+
+function getParentProjects(project_id, hierarchy){
+    /** 
+        Gets the parent project based on the hierarchy
+    **/
+    var parent = [];
+    var iterate_p = project_id;
+    var parent_id = '';
+    var aux = {};
+    
+    while (hierarchy[iterate_p].hasOwnProperty('parent_project')){
+        parent_id = hierarchy[iterate_p].parent_project;
+        aux = hierarchy[parent_id];
+        aux.project_id = parent_id;
+        parent.push(aux);
+        iterate_p = parent_id;
+    }
+    //parent.push(hierarchy[parent_id]);        
+    return parent.reverse();
+}
+
+function getChildrenProjects(project_id, hierarchy){
+    /**
+       Gets the n children project name based on the hierarchy
+    **/
+    var children = [];
+    var aux ={};
+    $.each(hierarchy, function(id, p){
+        if (hierarchy[id].parent_project === project_id){
+            // we need the key so we keep it
+            aux = hierarchy[id];
+            aux.project_id = id;
+            children.push(aux);
+        }
+    });
+    return children;
+}
+
+function composePBreadcrumbsHTMLlast(project_id, children, hierarchy){   
+    var html = '';
+    if(children.length > 0){
+        html += '<li class="dropdown">';
+        html += getProjectTitle(project_id, hierarchy);
+        html += '<a class="dropdown-toggle" data-toggle="dropdown" href="#">';
+        html += '&nbsp;<span class="caret"></span></a>';
+        html += '<ul class="dropdown-menu">';
+        $.each(children, function(id,value){
+            gchildren = getChildrenProjects(value.project_id, hierarchy);            
+            if (gchildren.length > 0){
+                html += '<li><a href="project.html?project='+ value.project_id +'">'+ value.title +'&nbsp;&nbsp;<span class="badge">'+gchildren.length +'&nbsp;<i class="fa fa-rocket"></i></span></a></li>';
+            }else{
+                html += '<li><a href="project.html?project='+ value.project_id +'">'+ value.title +'</a></li>';
+            }
+        });
+        html += '</ul></li>';
+    }
+    else{
+        html += '<li>' + getProjectTitle(project_id, hierarchy) + '</li>';
+    }
+    return html;
+}
+
+function composeProjectBreadcrumbs(project_id) {
+    /** 
+        compose the project navigation bar based on the hierarchy
+    **/
+    var html = '<ol class="breadcrumb">';    
+    var hierarchy = Report.getProjectsHierarchy();
+    
+    if (project_id === undefined){
+        project_id = 'root';
+    }
+    var children = getChildrenProjects(project_id, hierarchy);
+    var parents = getParentProjects(project_id, hierarchy);
+    // parents
+    if (parents.length > 0){
+        $.each(parents, function(id,value){
+            if(value.parent_project){
+                html += '<li><a href="project.html?project='+value.project_id+'">' + value.title + '</a></li>';
+            }else{
+                html += '<li><a href="./">' + value.title + '</a></li>';
+            }
+        });
+    }
+    html += composePBreadcrumbsHTMLlast(project_id, children, hierarchy);    
+    html += '</ol>';
+    return html;
+}
+
+Convert.convertProjectNavBar = function (project_id){
+    var divs = $(".ProjectNavBar");
+    if (divs.length > 0){
+        $.each(divs, function(id, div){
+            $(this).empty();
+            if (!div.id) div.id = "ProjectNavBar" + getRandomId();
+            //project_id will be empty for root project
+            var label;
+            if(project_id){
+                label = Report.cleanLabel(project_id); 
+            }
+            var htmlaux = composeProjectBreadcrumbs(label);
+            $("#"+div.id).append(htmlaux);
+
+        });
+    }    
+};
+
 Convert.convertNavbar = function() {
     $.get(Report.getHtmlDir()+"navbar.html", function(navigation) {
         $("#Navbar").html(navigation);
-        displayReportData();
+        project_id = Report.getParameterByName("project");
+        Convert.convertProjectNavBar(project_id);
+        /**
+         // Could this break the support of different JSON directories?         
+           displayReportData();
         Report.displayActiveMenu();
         var addURL = Report.addDataDir(); 
         if (addURL) {
@@ -141,7 +263,7 @@ Convert.convertNavbar = function() {
                 if (value.href.indexOf("data_dir")!==-1) return;
                 value.href += "?"+addURL;
             });
-        }
+        }**/
     });
 };
 
@@ -885,45 +1007,6 @@ Convert.convertFilterItemData = function (filter, item) {
 };
 
 
-function composeProjectBreadcrumbs(project_id){
-    //project id could be eclipe or eclipse.whatever
-    var html = '<ul class="breadcrumb"> Project:&nbsp;&nbsp;';
-    var aux = '';
-    var tokens = [];
-    var lentokens = 0;
-    tokens = project_id.split('.');
-    lentokens = tokens.length;
-    /*html += '<li><a href="/">Summary</a> <span class="divider">/</span></li>';
-    html += '<li><a href="projects.html">List of projects</a> <span class="divider">/</span></li>';*/
-    $.each(tokens, function(key,value){
-        if (key === 0){ //first
-            aux += value;
-        }else{
-            aux += '.' + value;}
-
-        if (key === lentokens - 1 ) { //if last
-            html += '<li class="active">' + value + '</li>';
-        }else{
-            html += '<li><a href="project.html?project=' + aux +' ">' + value + '</a> <span class="divider">/</span></li>';
-        }
-    });
-    html += '</ul>';
-    return html;
-}
-
-Convert.convertProjectBreadcrumbs = function (filter, item) {
-    //based on FilterItemData
-    var divs = $(".ProjectBreadcrumbs");
-    if (divs.length > 0) {
-        $.each(divs, function(id, div) {
-            $(this).empty();
-            var label = Report.cleanLabel(item);
-            if (!div.id) div.id = "ProjectBreadcrumbs" + getRandomId();
-            $("#"+div.id).append(composeProjectBreadcrumbs(label));
-        });
-    }
-};
-
 Convert.convertFilterItemSummary = function(filter, item) {
     var divlabel = "FilterItemSummary";
     divs = $("."+divlabel);
@@ -1053,7 +1136,6 @@ Convert.convertFilterStudyItem = function (filter, item) {
     if (Loader.FilterItemCheck(item, filter) === false) return;
 
     Convert.convertFilterItemData(filter, item);
-    Convert.convertProjectBreadcrumbs(filter, item);
     Convert.convertFilterItemSummary(filter, item);
     Convert.convertFilterItemMetricsEvol(filter, item);
     Convert.convertFilterItemTop(filter, item);
@@ -1126,6 +1208,7 @@ Convert.convertDSTable = function() {
 
 Convert.convertBasicDivs = function() {
     Convert.convertNavbar();
+    //Convert.convertProjectNavBar();
     Convert.convertFooter(); 
     //Convert.convertRefcard(); //deprecated
     Convert.convertDSTable();
