@@ -182,14 +182,14 @@ function composePBreadcrumbsHTMLlast(project_id, children, hierarchy){
     var html = '';
     if(children.length > 0){
         html += '<li class="dropdown">';
-        html += getProjectTitle(project_id, hierarchy);
+        html += '<span data-toggle="tooltip" title="Project name"> ' + getProjectTitle(project_id, hierarchy) + '</span>';
         html += '<a class="dropdown-toggle" data-toggle="dropdown" href="#">';
-        html += '&nbsp;<span class="caret"></span></a>';
+        html += '&nbsp;<span data-toggle="tooltip" title="Select subproject" class="caret"></span></a>';
         html += '<ul class="dropdown-menu">';
         $.each(children, function(id,value){
             gchildren = getChildrenProjects(value.project_id, hierarchy);            
             if (gchildren.length > 0){
-                html += '<li><a href="project.html?project='+ value.project_id +'">'+ value.title +'&nbsp;&nbsp;<span class="badge">'+gchildren.length +'&nbsp;<i class="fa fa-rocket"></i></span></a></li>';
+                html += '<li><a href="project.html?project='+ value.project_id +'">'+ value.title +'&nbsp;&nbsp;<span data-toggle="tooltip" title="Number of suprojects" class="badge">'+gchildren.length +'&nbsp;<i class="fa fa-rocket"></i></span></a></li>';
             }else{
                 html += '<li><a href="project.html?project='+ value.project_id +'">'+ value.title +'</a></li>';
             }
@@ -207,6 +207,7 @@ function composeProjectBreadcrumbs(project_id) {
         compose the project navigation bar based on the hierarchy
     **/
     var html = '<ol class="breadcrumb">';    
+    html += '<span class="badge"><i class="fa fa-rocket"></i></span>&nbsp;&nbsp;';
     var hierarchy = Report.getProjectsHierarchy();
     
     if (project_id === undefined){
@@ -225,8 +226,102 @@ function composeProjectBreadcrumbs(project_id) {
         });
     }
     html += composePBreadcrumbsHTMLlast(project_id, children, hierarchy);    
+    // add here the section
+    html += composeSectionBreadCrumb();
     html += '</ol>';
     return html;
+}
+
+function getSectionName(){
+    var url_names = {"scm":"SCM Overview","scm-companies":"SCM Companies","scm-contributors":"SCM Contributors","scm-companies-summary":"SCM Companies Summary","scm-projects":"SCM Projects","scm-repos":"SCM Repositories"};
+    var url_tokens = document.URL.split('/');
+    var section = url_tokens[url_tokens.length-1].split('.')[0];
+    if (section === 'project' || section === 'index' || section === ''){
+        //no sections are support for subprojects so far
+        return 'Project Overview';
+    }else{
+        if (url_names.hasOwnProperty(section)){
+            return url_names[section];
+        }else{        
+            return 'No name section';                  
+        }
+    }
+}
+
+function composeSectionBreadCrumb(){
+    var html = '<li class="dropdown">';
+    html += '<span data-toggle="tooltip" title="Section name"> ' + getSectionName() + '</span>';
+    html += '<a class="dropdown-toggle" data-toggle="dropdown" href="#">';
+    html += '&nbsp;<span data-toggle="tooltip" title="Select more metrics" class="caret"></span></a>';
+    html += '<ul class="dropdown-menu">';
+    html += '<li><a href="./"><i class="fa fa-tachometer"></i> Project Overview</a></li>';
+    html += '<li role="presentation" class="dropdown-header">Source Code Management</li>';
+    html += '<li><a href="scm.html"><i class="fa fa-tachometer"></i> Overview</a></li>';
+    html += '<li><a href="scm-companies.html"><i class="fa fa-building-o"></i> Companies</a></li>';
+    html += '<li><a href="scm-contributors.html"><i class="fa fa-users"></i> Contributors</a></li>';
+    html +='<li><a href="scm-companies-summary.html"><i class="fa fa-building-o"></i> Companies Summary</a></li>';
+    html += '<li><a href="scm-projects.html"><i class="fa fa-rocket"></i> Projects</a></li>';
+    html += '<li><a href="scm-repos.html"><i class="fa fa-code-fork"></i> Repositories</a></li>';
+
+    html += '<li role="presentation" class="dropdown-header">Tickets</li>';
+    html += '<li><a href="its.html"><i class="fa fa-tachometer"></i> Overview</a></li>';
+    html += '<li><a href="its-companies.html"><i class="fa fa-building-o"></i> Companies</a></li>';
+    html += '<li><a href="its-contributors.html"><i class="fa fa-users"></i> Contributors</a></li>';
+    html += '<li><a href="its-projects.html"><i class="fa fa-rocket"></i> Projects</a></li>';
+    html += '<li><a href="its-repos.html"><i class="fa fa-code-fork"></i> Repositories</a></li>';
+
+    html += '<li role="presentation" class="dropdown-header">Mailing lists</li>';
+    html += '<li><a href="mls.html"><i class="fa fa-tachometer"></i> Overview</a></li>';
+    html += '<li><a href="mls-companies.html"><i class="fa fa-building-o"></i> Companies</a></li>';
+    html += '<li><a href="mls-contributors.html"><i class="fa fa-users"></i> Contributors</a></li>';
+    html += '<li><a href="mls-projects.html"><i class="fa fa-rocket"></i> Projects</a></li>';
+    html += '<li><a href="mls-repos.html"><i class="fa fa-code-fork"></i> Repositories</a></li>';
+
+    html += '<li role="presentation" class="dropdown-header">Code review</li>';
+    html += '<li><a href="scr.html"><i class="fa fa-tachometer"></i> Overview</a></li>';
+    html += '<li><a href="scr-companies.html"><i class="fa fa-building-o"></i> Companies</a></li>';
+    html += '<li><a href="scr-projects.html"><i class="fa fa-rocket"></i> Projects</a></li>';
+    html += '<li><a href="scr-repos.html"><i class="fa fa-code-fork"></i> Repositories</a></li>';
+
+    html += '</ul></li>';
+    return html;
+
+
+/*    var html = '<ol class="breadcrumb">';
+    var url_tokens = document.URL.split('/');
+    var section = url_tokens[url_tokens.length-1].split('.')[0];
+    var section_tokens = section.split('-');
+    if (project_id === undefined){
+        project_id = 'root';    
+    }
+    var project_title = getProjectTitle(project_id,Report.getProjectsHierarchy());
+    //project_title = 'pepe';
+
+    if (section_tokens.length > 0){
+        html += '<li></i> <a href="#">'+ project_title +' overview</a></li>';
+    }else{
+        html += '<li class="active"><a href="#">'+project_title+' overview</a></li>';
+    }
+    $.each(section_tokens, function(id, value) {
+        var text = '';
+        if (value === 'repos'){
+            text = 'Repositories';
+        }else if(value === 'companies'){
+            text = 'Companies';
+        }else if(value === 'contributors' || value === 'participants'){
+            text = 'Contributors';
+        }else if(value === 'scm'){
+            text ='Source Code Management';
+        }else if(value === 'its'){
+            text ='Tickets';
+        }else if(value === 'mls'){
+            text = 'Mailing lists';
+        }
+
+        html += '<li><a href="#">'+ text + '</a></li>';
+    });
+    html += '</ol>';
+    return html;*/
 }
 
 Convert.convertProjectNavBar = function (project_id){
@@ -234,7 +329,7 @@ Convert.convertProjectNavBar = function (project_id){
     if (divs.length > 0){
         $.each(divs, function(id, div){
             $(this).empty();
-            if (!div.id) div.id = "ProjectNavBar" + getRandomId();
+            if (!div.id) div.id = "ProjectNavBar";// + getRandomId();
             //project_id will be empty for root project
             var label;
             if(project_id){
@@ -242,7 +337,6 @@ Convert.convertProjectNavBar = function (project_id){
             }
             var htmlaux = composeProjectBreadcrumbs(label);
             $("#"+div.id).append(htmlaux);
-
         });
     }    
 };
@@ -250,7 +344,7 @@ Convert.convertProjectNavBar = function (project_id){
 Convert.convertNavbar = function() {
     $.get(Report.getHtmlDir()+"navbar.html", function(navigation) {
         $("#Navbar").html(navigation);
-        project_id = Report.getParameterByName("project");
+        var project_id = Report.getParameterByName("project");
         Convert.convertProjectNavBar(project_id);
         /**
          // Could this break the support of different JSON directories?         
