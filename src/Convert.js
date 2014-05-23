@@ -361,6 +361,12 @@ Convert.convertNavbar = function() {
     });
 };
 
+Convert.convertModalProjectMap = function(){
+    $.get(Report.getHtmlDir() + "modal_projects", function(modal_html){
+        $("#ModalProjectMap").html(modal_html);
+    });
+};
+
 Convert.convertFooter = function() {
     $.get(Report.getHtmlDir()+"footer.html", function(footer) {
         $("#Footer").html(footer);
@@ -1303,6 +1309,7 @@ Convert.convertDSTable = function() {
 Convert.convertBasicDivs = function() {
     Convert.convertNavbar();
     //Convert.convertProjectNavBar();
+    Convert.convertModalProjectMap();
     Convert.convertFooter(); 
     //Convert.convertRefcard(); //deprecated
     Convert.convertDSTable();
