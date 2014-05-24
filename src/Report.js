@@ -24,6 +24,14 @@
  *
  */
 
+/**
+ * @fileOverview Main driver functions and init code for producing dashboards
+ * @author <a href="mailto:acs@bitergia.com">Alvaro del Castillo San Felix</a>
+ * @author <a href="mailto:dizquierdo@bitergia.com">Daniel Izquierdo Cortazar</a>
+ * @author <a href="mailto:lcanas@bitergia.com">Luis Cañas Díaz</a>
+
+ */
+
 if (Report === undefined) var Report = {};
 
 (function() {
@@ -532,46 +540,75 @@ if (Report === undefined) var Report = {};
     };
 })();
 
-Loader.data_ready_global(function() {
-    Report.configDataSources();
-    Report.convertGlobal();
-    Report.convertStudiesGlobal();
-});
-
-Loader.data_ready(function() {
-    Report.convertStudies();
-    $("body").css("cursor", "auto");
-    // Popover help system
-    $('html').click(function(e) {
-        $('.help').popover('hide');
+/**
+ * Default code to run as soon as possible.
+ */
+function run_asap() {
+    Loader.data_ready_global(function() {
+	Report.configDataSources();
+	Report.convertGlobal();
+	Report.convertStudiesGlobal();
     });
-    Convert.activateHelp();
-});
 
-$(document).ready(function() {
+    Loader.data_ready(function() {
+	Report.convertStudies();
+	$("body").css("cursor", "auto");
+	// Popover help system
+	$('html').click(function(e) {
+            $('.help').popover('hide');
+	});
+	Convert.activateHelp();
+    });
+};
+
+/**
+ * Default code to run after DOM is ready.
+ */
+function run_after_ready() {
     // var filename = Report.getDataDir()+'/config.json';
     // Config file loaded from root dir
     var filename = './config.json';
     $.getJSON(filename, function(data) {
         Report.setConfig(data);
     }).fail(function() {
-        if (window.console)
-            Report.log("Can't read global config file " + filename);
+        Report.log("Can't read global config file " + filename);
     }).always(function (data) {
         Report.createDataSources();
         Loader.data_load();
         $("body").css("cursor", "progress");
     });
-});
-
-function resizedw(){
-     Report.convertGlobal();
-     Report.convertStudiesGlobal();
-     Report.convertStudies();
-     Convert.activateHelp();
 }
-var resized;
-$(window).resize(function () {
-    clearTimeout(resized);
-    resized = setTimeout(resizedw, 100);
-});
+
+/**
+ * Default code to run when resizing window.
+ */
+function run_resized(){
+    Report.log ("Running standard code after detecting resized window");
+    Report.convertGlobal();
+    Report.convertStudiesGlobal();
+    Report.convertStudies();
+    Convert.activateHelp();
+}
+
+// We use window.onmyown variable to decide if we're on our own (and
+// therefore we don't have to run any specific code) or not (and we
+// run standard stuff to set up the dashboard).
+// Not defining window.onmyown, or making it false, will mean we don't
+// want the standard stuff to be run.
+//
+if ( window.onmyown ) {
+    Report.log ("window.onmyown is set to true: " +
+		"not running standard stuff to set up the dashboard.");
+} else {
+    // Not on my own, run standard stuff
+    // Urgent stuff
+    run_asap();
+    // Here starts the party: when the DOM is ready, run the thing!
+    $(document).ready(run_after_ready);
+    // Prepare updating when resizing window
+    var resized;
+    $(window).resize(function () {
+	clearTimeout(resized);
+	resized = setTimeout(run_resized, 100);
+    });
+}
