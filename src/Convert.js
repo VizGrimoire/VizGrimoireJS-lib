@@ -248,6 +248,69 @@ function getSectionName(){
     }
 }
 
+
+function composeSideBar(project_id){
+    if (project_id === undefined){
+        project_id = 'root';
+    }
+    var html='';
+    html += '<ul class="nav navmenu-nav">';
+    if (project_id === 'root'){
+        html += '<li><a href="./">Home</a></li>';
+        html += '<li class="dropdown">';
+        html += '<a href="#" class="dropdown-toggle" data-toggle="dropdown">';
+        html += '<i class="fa fa-code"></i>&nbsp;Source code management';
+        html += '<b class="caret"></b></a>';
+        html += '<ul class="dropdown-menu navmenu-nav">';
+        html += '<li><a href="scm.html"><i class="fa fa-tachometer"></i> Overview</a></li>';
+        html += '<li><a href="scm-companies.html"><i class="fa fa-building-o"></i> Companies</a></li>';
+        html += '<li><a href="scm-contributors.html"><i class="fa fa-users"></i> Contributors</a></li>';
+        html += '<li><a href="scm-companies-summary.html"><i class="fa fa-building-o"></i> Companies Summary</a></li>';
+        html += '<li><a href="scm-projects.html"><i class="fa fa-rocket"></i> Projects</a></li>';
+        html += '<li><a href="scm-repos.html"><i class="fa fa-code-fork"></i> Repositories</a></li>';
+        html += '</ul>';
+        html += '</li>';
+        html += '<li class="dropdown">';
+        html += '<a class="dropdown-toggle" data-toggle="dropdown" href="">';
+        html += '<i class="fa fa-ticket"></i> Tickets <b class="caret"></b></a>';
+        html += '<ul class="dropdown-menu navmenu-nav">';
+        html += '<li><a href="its.html"><i class="fa fa-tachometer"></i> Overview</a></li>';
+        html += '<li><a href="its-companies.html"><i class="fa fa-building-o"></i> Companies</a></li>';
+        html += '<li><a href="its-contributors.html"><i class="fa fa-users"></i> Contributors</a></li>';
+        html += '<li><a href="its-projects.html"><i class="fa fa-rocket"></i> Projects</a></li>';
+        html += '<li><a href="its-repos.html"><i class="fa fa-code-fork"></i> Repositories</a></li>';
+        html += '</ul>';
+        html += '</li>';
+        html += '<li class="dropdown">';
+        html += '<a class="dropdown-toggle" data-toggle="dropdown" href="">';
+        html += '                <i class="fa fa-envelope-o"></i> Mailing lists <b class="caret"></b></a>';
+        html += '<ul class="dropdown-menu navmenu-nav">';
+        html += '<li><a href="mls.html"><i class="fa fa-tachometer"></i> Overview</a></li>';
+        html += '<li><a href="mls-companies.html"><i class="fa fa-building-o"></i> Companies</a></li>';
+        html += '<li><a href="mls-contributors.html"><i class="fa fa-users"></i> Contributors</a></li>';
+        html += '<li><a href="mls-projects.html"><i class="fa fa-rocket"></i> Projects</a></li>';
+        html += '<li><a href="mls-repos.html"><i class="fa fa-code-fork"></i> Repositories</a></li>';
+        html += '</ul>';
+        html += '</li>';
+        html += '<li class="dropdown">';
+        html += '<a class="dropdown-toggle" data-toggle="dropdown" href="">';
+        html += '<i class="fa fa-check"></i> Code review<b class="caret"></b></a>';
+        html += '<ul class="dropdown-menu navmenu-nav">';
+        html += '<li><a href="scr.html"><i class="fa fa-tachometer"></i> Overview</a></li>';
+        html += '<li><a href="scr-companies.html"><i class="fa fa-building-o"></i> Companies</a></li>';
+        html += '<!--<li><a href="scr-contributors.html"><i class="fa fa-users"></i> Contributors</a></li>-->';
+        html += '<li><a href="scr-projects.html"><i class="fa fa-rocket"></i> Projects</a></li>';
+        html += '<li><a href="scr-repos.html"><i class="fa fa-code-fork"></i> Repositories</a></li>';
+        html += '</ul>';
+        html += '</li>';
+    }else{
+        html += '<li class="active"><a href="#">' + getSectionName() + '</a></li>';
+    }
+    html += '<li><a href="data-sources.html">Data sources</a></li>';
+    html += '</ul>';
+    return html;
+}
+
 function composeSectionBreadCrumb(project_id){
     var html = '';
     if (project_id === 'root'){
@@ -293,6 +356,23 @@ function composeSectionBreadCrumb(project_id){
 
 }
 
+Convert.convertSideBar = function(project_id){
+    var divs = $(".SideNavBar");
+    if (divs.length > 0){
+        $.each(divs, function(id, div){
+            $(this).empty();
+            if (!div.id) div.id = "SideNavBar";// + getRandomId();
+            //project_id will be empty for root project
+            var label;
+            if(project_id){
+                label = Report.cleanLabel(project_id); 
+            }
+            var htmlaux = composeSideBar(label);
+            $("#"+div.id).append(htmlaux);
+        });
+    }    
+};
+
 Convert.convertProjectNavBar = function (project_id){
     var divs = $(".ProjectNavBar");
     if (divs.length > 0){
@@ -315,6 +395,7 @@ Convert.convertNavbar = function() {
         $("#Navbar").html(navigation);
         var project_id = Report.getParameterByName("project");
         Convert.convertProjectNavBar(project_id);
+        Convert.convertSideBar(project_id);
         /**
          // Could this break the support of different JSON directories?         
            displayReportData();
