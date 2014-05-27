@@ -1188,6 +1188,72 @@ Convert.convertFilterItemSummary = function(filter, item) {
     }
 };
 
+Convert.convertFilterItemMicrodashText = function (filter, item) {
+    /* composes the HTML for trends with number about diff and percentages*/
+    var divs = $(".FilterItemMicrodashText");
+    if (divs.length > 0) {
+        $.each(divs, function(id, div) {
+            $(this).empty();
+            var real_item = item; // project, repo, company, etc ..
+            var metric = $(this).data('metric');
+            var show_name = $(this).data('name');
+            var ds = Report.getMetricDS(metric)[0];
+            if (ds === undefined) return;
+            if (filter === "projects")
+                var global_data = ds.getProjectsGlobalData()[item];
+            else
+                return; //so far only project filter is supported
+            var html = '<div class="row">';
+
+            if(show_name){ //if name is shown we'll have four columns
+                html += '<div class="col-md-3">';
+                html += '<span class="dayschange">' + ds.basic_metrics[metric].name + '</span>';
+                html += '</div>';
+            }
+
+            // $.each({7:'week',30:'month',365:'year'}, function(period, name) {
+            $.each([365,30,7], function(index, period) {
+                var column = ds.getMetrics()[metric].column;
+                // value -> items for this period
+                // netvalue -> change with previous period
+                // percentagevalue -> % changed with previous
+                var value = global_data[metric+"_"+period];
+                var netvalue = global_data["diff_net"+column+"_"+period];
+                var percentagevalue = global_data["percentage_"+column+"_"+period];
+                percentagevalue = Math.round(percentagevalue*10)/10;  // round "original" to 1 decimal
+                if (value === undefined) return;
+                var str_percentagevalue = '';
+                if (netvalue > 0) str_percentagevalue = '+' + percentagevalue;
+                if (netvalue < 0) str_percentagevalue = '-' + Math.abs(percentagevalue);
+
+                if(show_name){
+                    html += '<div class="col-md-3">';
+                }else{
+                    html += '<div class="col-md-4">';
+                }
+
+                html += '<span class="dayschange">Last '+period+' days:</span>';
+                html += ' '+Report.formatValue(value) + '<br>';
+                if (netvalue === 0) {
+                    html += '<i class="fa fa-arrow-circle-right"></i> <span class="zeropercent">&nbsp;'+str_percentagevalue+'%</span>&nbsp;';
+                } else if (netvalue > 0) {
+                    html += '<i class="fa fa-arrow-circle-up"></i> <span class="pospercent">&nbsp;'+str_percentagevalue+'%</span>&nbsp;';
+                } else if (netvalue < 0) {
+                    html += '<i class="fa fa-arrow-circle-down"></i> <span class="negpercent">&nbsp;'+str_percentagevalue+'%</span>&nbsp;';
+                }
+                html += '</div><!--col-md-4-->';
+            });
+
+            html += '</div><!--row-->';
+            $(div).append(html);
+        });
+    }
+};
+
+
+
+
+
 Convert.convertFilterItemMetricsEvol = function(filter, item) {
     var config_metric = filterItemsConfig();
     var divlabel = "FilterItemMetricsEvol";
@@ -1289,6 +1355,7 @@ Convert.convertFilterStudyItem = function (filter, item) {
     Convert.convertFilterItemSummary(filter, item);
     Convert.convertFilterItemMetricsEvol(filter, item);
     Convert.convertFilterItemTop(filter, item);
+    Convert.convertFilterItemMicrodashText(filter, item);
     Convert.convertProjectData();
 
     Convert.activateHelp();
