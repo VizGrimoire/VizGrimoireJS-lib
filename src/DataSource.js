@@ -819,8 +819,7 @@ function DataSource(name, basic_metrics) {
         else if (report === "repos") {
             data = this.getReposMetricsData();
             sorted = DataProcess.sortGlobal(this, sort_metric, report);
-        }
-        else if (report === "countries") {
+        }        else if (report === "countries") {
             data = this.getCountriesMetricsData();
             sorted = DataProcess.sortGlobal(this, sort_metric, report);
         }
@@ -1026,17 +1025,17 @@ function DataSource(name, basic_metrics) {
 
         var self = this;
         html += "<table class='table-condensed table-hover'>";
+        var html_irow = '<tr><td>';
+        var html_erow = '</td></tr>';
         $.each(global_data,function(id,value) {
-            html += "<tr><td>";
             // if (id_label[id] === undefined) return;
             if (self.getMetrics()[id]) {
-                html += self.getMetrics()[id].name + "</td><td>" + Report.formatValue(value);
+                html += html_irow + self.getMetrics()[id].name + "</td><td>" + Report.formatValue(value) + html_erow;
             } else if (id_label[id]) { 
-                html += id_label[id] + "</td><td>" + Report.formatValue(value);
-            } else {
+                html += html_irow + id_label[id] + "</td><td>" + Report.formatValue(value) + html_erow;
+            } /*else {
                 if (report) html += id + "</td><td>" + Report.formatValue(value);
-            }
-            html += "</td></tr>";
+            }*/
         });
         html += "</table>";
         $("#"+divid).append(html);
