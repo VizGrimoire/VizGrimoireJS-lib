@@ -90,6 +90,23 @@ function QAForums() {
             Viz.displayBubbles(divid, "qaforums_quetions", "qaforums_authors", radius);
     };
 
+    this.getSummaryLabels = function () {
+        /* This summary functions should be removed. We can use the metrics.json file instead
+           It is used to display the summary table on repository.html*/
+        var id_label = {
+            first_date:'Start',
+            last_date:'End',
+            sent:'Messages posted',
+            qsent:'Questions posted',
+            asent:'Answers posted',
+            senders:'Persons posting messages',
+            asenders: 'Persons posting answers',
+            qsenders:'Persons posting questions'
+            };
+        return id_label;
+    };
+
+
 
     this.getTitle = function() {return "QAForums";};
 }
