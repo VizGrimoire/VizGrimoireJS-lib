@@ -111,7 +111,7 @@ describe( "VizGrimoireJS library", function () {
                     });
                 });
             });
-            it("html bubbles should be displayed", function () {
+            /*it("html bubbles should be displayed", function () {
                 runs(function() {
                     $.each(Report.getDataSources(), function(index, DS) {
                         buildNode(DS.getName()+"-time-bubbles","Bubbles",
@@ -128,7 +128,7 @@ describe( "VizGrimoireJS library", function () {
                     var bubbles_ds = Report.getDataSources().length - 6;
                     expect(new_ncanvas-ncanvas).toEqual(bubbles_ds);
                 });        
-            });
+            });*/
             it("html demographics should be displayed", function () {
                 function buildNodesDemographic(type) {
                     $.each(Report.getDataSources(), function(index, DS) {
