@@ -159,6 +159,13 @@ if (Viz === undefined) var Viz = {};
                 var_names.action = "sent";
            }          
         }       
+        if (ds_name === "releases"){
+            if (metric === "authors"){
+                var_names.name = "authors";
+                var_names.action = "releases";
+            }
+        }
+
         return var_names;
     }
 
