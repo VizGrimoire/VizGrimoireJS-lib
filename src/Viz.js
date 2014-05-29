@@ -161,7 +161,7 @@ if (Viz === undefined) var Viz = {};
         }       
         if (ds_name === "releases"){
             if (metric === "authors"){
-                var_names.name = "authors";
+                var_names.name = "username";
                 var_names.action = "releases";
             }
         }
