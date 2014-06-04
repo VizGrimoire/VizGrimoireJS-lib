@@ -309,6 +309,7 @@ function composeSideBar(project_id){
         html += '<li class="active"><a href="#">' + getSectionName() + '</a></li>';
     }
     html += '<li><a href="data-sources.html">Data sources</a></li>';
+    html += '<li><a href="project-map.html"><i class="fa fa-icon fa-sitemap"></i> Project map</a></li>';
     html += '</ul>';
     return html;
 }
