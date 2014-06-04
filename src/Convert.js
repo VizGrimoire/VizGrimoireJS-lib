@@ -229,7 +229,7 @@ function composeProjectBreadcrumbs(project_id) {
     }
     html += composePBreadcrumbsHTMLlast(project_id, children, hierarchy);    
     // add here the section
-    html += composeSectionBreadCrumb(project_id);
+    /*html += composeSectionBreadCrumb(project_id);*/
     html += '</ol>';
     return html;
 }
