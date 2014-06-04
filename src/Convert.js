@@ -180,11 +180,12 @@ function getChildrenProjects(project_id, hierarchy){
 
 function composePBreadcrumbsHTMLlast(project_id, children, hierarchy){   
     var html = '';
-    if(children.length > 0){
+    var clen = children.length;
+    if(clen > 0){
         html += '<li class="dropdown">';
         html += '<span data-toggle="tooltip" title="Project name"> ' + getProjectTitle(project_id, hierarchy) + '</span>';
-        html += '<a class="dropdown-toggle" data-toggle="dropdown" href="#">';
-        html += '&nbsp;<span data-toggle="tooltip" title="Select subproject" class="caret"></span></a>';
+        html += '&nbsp;<a class="dropdown-toggle" data-toggle="dropdown" href="#">';
+        html += '<span data-toggle="tooltip" title="Select subproject" class="badge"> ' + clen + ' Subprojects </span></a>';
         html += '<ul class="dropdown-menu">';
         $.each(children, function(id,value){
             gchildren = getChildrenProjects(value.project_id, hierarchy);            
@@ -194,6 +195,8 @@ function composePBreadcrumbsHTMLlast(project_id, children, hierarchy){
                 html += '<li><a href="project.html?project='+ value.project_id +'">'+ value.title +'</a></li>';
             }
         });
+        html += '<li class="divider"></li>';
+        html += '<li><a href="./project-map.html"><i class="fa fa-icon fa-sitemap"></i> Projects treemap</a></li>';
         html += '</ul></li>';
     }
     else{
@@ -206,8 +209,7 @@ function composeProjectBreadcrumbs(project_id) {
     /** 
         compose the project navigation bar based on the hierarchy
     **/
-    var html = '<ol class="breadcrumb">';    
-    html += '<span class="badge"><i class="fa fa-rocket"></i></span>&nbsp;&nbsp;';
+    var html = '<ol class="breadcrumbtitle">';
     var hierarchy = Report.getProjectsHierarchy();
     
     if (project_id === undefined){
