@@ -161,7 +161,7 @@ function SCM() {
         var id_label = {
                 first_date:'Start',
                 last_date:'End',
-                actions:'Files actions',
+                /*actions:'Files actions',
                 avg_commits_month:'Commits/month',
                 avg_files_month:'Files/month',
                 avg_authors_month:'Authors/month',
@@ -171,7 +171,7 @@ function SCM() {
                 avg_authors_week:'Authors/week',
                 avg_reviewers_week:'Reviewers/week',
                 avg_commits_author:'Commits/author',
-                avg_files_author:'Files/author'
+                avg_files_author:'Files/author'*/
             };
         return id_label;
     };

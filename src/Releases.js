@@ -21,7 +21,7 @@
  *   Luis Cañas Díaz <lcanas@bitergia.com>
  */
 
-function QAForums() {
+function Releases() {
 
     var self = this;
 
@@ -33,16 +33,16 @@ function QAForums() {
     */
 
     this.basic_metrics = {
-        "qaforums_qsent" : {
-            "name" : "Questions posted",
-            "desc" : "Number of questions posted to Q&A forums(s)",
-            "column": "qsent"
+        "releases_modules" : {
+            "name" : "Modules created",
+            "desc" : "Number of modules created on the forge",
+            "column": "modules"
         }
     };
 
     this.getMainMetric = function() {
         /*only for testing purposes*/
-        return "qaforums_qsent";
+        return "releases_modules";
     };
 
 
@@ -87,7 +87,7 @@ function QAForums() {
     this.displayBubbles = function(divid, radius) {
         /* only for testing purposes */
         if (false)    
-            Viz.displayBubbles(divid, "qaforums_quetions", "qaforums_authors", radius);
+            Viz.displayBubbles(divid, "releases_modules", "releases_releases", radius);
     };
 
     this.getSummaryLabels = function () {
@@ -96,18 +96,15 @@ function QAForums() {
         var id_label = {
             first_date:'Start',
             last_date:'End',
-            sent:'Messages posted',
-            qsent:'Questions posted',
-            asent:'Answers posted',
-            senders:'Persons posting messages',
-            asenders: 'Persons posting answers',
-            qsenders:'Persons posting questions'
+            modules:'Modules created',
+            releases:'Module releases created',
+            authors:'Persons creating/updating modules'
             };
         return id_label;
     };
 
 
 
-    this.getTitle = function() {return "QAForums";};
+    this.getTitle = function() {return "Releases";};
 }
-QAForums.prototype = new DataSource("qaforums");
+Releases.prototype = new DataSource("releases");

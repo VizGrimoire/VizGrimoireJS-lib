@@ -111,7 +111,7 @@ describe( "VizGrimoireJS library", function () {
                     });
                 });
             });
-            it("html bubbles should be displayed", function () {
+            /*it("html bubbles should be displayed", function () {
                 runs(function() {
                     $.each(Report.getDataSources(), function(index, DS) {
                         buildNode(DS.getName()+"-time-bubbles","Bubbles",
@@ -128,13 +128,14 @@ describe( "VizGrimoireJS library", function () {
                     var bubbles_ds = Report.getDataSources().length - 6;
                     expect(new_ncanvas-ncanvas).toEqual(bubbles_ds);
                 });        
-            });
+            });*/
             it("html demographics should be displayed", function () {
                 function buildNodesDemographic(type) {
                     $.each(Report.getDataSources(), function(index, DS) {
                         if (DS.getName() !== "scr" && DS.getName() !== "irc" && 
                             DS.getName() !== "mediawiki" && DS.getName() !== "people" &&
-                            DS.getName() !== "downloads" && DS.getName() !== "qaforums")
+                            DS.getName() !== "downloads" && DS.getName() !== "qaforums" &&
+                            DS.getName() !== "releases")
                             buildNode(DS.getName()+"-demographics-"+type,
                                       'Demographics',
                                     {
@@ -484,7 +485,7 @@ describe( "VizGrimoireJS library", function () {
                 $.each(data_sources, function(index, DS) {
                     if (DS.getName() === 'irc' || DS.getName() === "mediawiki" || 
                         DS.getName() === "people" || DS.getName() === "downloads"
-                       || DS.getName() === "qaforums")
+                        || DS.getName() === "qaforums" || DS.getName() === "releases")
                         return;
                     var np = DS.getPeopleData().length;
                     if (np > max_people_index) max_people_index = np;
@@ -495,7 +496,7 @@ describe( "VizGrimoireJS library", function () {
                     $.each(data_sources, function(index, DS) { 
                         if (DS.getName() === 'irc' || DS.getName() === "mediawiki" || 
                             DS.getName() === "people" || DS.getName() === "downloads"
-                            || DS.getName() === "qaforums")
+                            || DS.getName() === "qaforums" || DS.getName() === "releases")
                             return;
                         if ($.inArray(i,DS.getPeopleData())===-1) {
                             dev_found = false;
@@ -507,7 +508,7 @@ describe( "VizGrimoireJS library", function () {
                 $.each(data_sources, function(index, DS) {
                     if (DS.getName() === 'irc' || DS.getName() === "mediawiki" ||
                        DS.getName() === "people" || DS.getName() === "downloads"
-                       || DS.getName() === "qaforums")
+                        || DS.getName() === "qaforums" || DS.getName() === "releases")
                         return;
                     if (DS.getName() === 'scm') metrics = 'scm_commits';
                     else if (DS.getName() === 'its') metrics = 'its_closed';

@@ -159,6 +159,13 @@ if (Viz === undefined) var Viz = {};
                 var_names.action = "sent";
            }          
         }       
+        if (ds_name === "releases"){
+            if (metric === "authors"){
+                var_names.name = "username";
+                var_names.action = "releases";
+            }
+        }
+
         return var_names;
     }
 
@@ -189,9 +196,13 @@ if (Viz === undefined) var Viz = {};
             rows_html += "<td>";
             if (threads_links === true){
                 var url = "http://www.google.com/search?output=search&q=X&btnI=1";
+                if (threads_data.hasOwnProperty('url') && threads_data.url[i].length > 0){
+                    url = "http://www.google.com/search?output=search&q=X%20site%3AY&btnI=1";
+                    url = url.replace(/Y/g, threads_data.url[i]);
+                }
                 url = url.replace(/X/g, threads_data.subject[i]);
                 rows_html += "<td>";
-                rows_html += "<a href=\""+url+ "\">";
+                rows_html += '<a target="_blank" href="'+url+ '">';
                 rows_html += threads_data.subject[i] + "</a>";
                 rows_html += "&nbsp;<i class=\"fa fa-external-link\"></i></td>";
             }else{
