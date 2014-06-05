@@ -227,26 +227,51 @@ function composeProjectBreadcrumbs(project_id) {
             }
         });
     }
-    html += composePBreadcrumbsHTMLlast(project_id, children, hierarchy);    
-    // add here the section
-    /*html += composeSectionBreadCrumb(project_id);*/
+    html += composePBreadcrumbsHTMLlast(project_id, children, hierarchy);
     html += '</ol>';
     return html;
 }
 
 function getSectionName(){
-    var url_names = {"scm":"SCM Overview","scm-companies":"SCM Companies","scm-contributors":"SCM Contributors","scm-companies-summary":"SCM Companies Summary","scm-projects":"SCM Projects","scm-repos":"SCM Repositories"};
+    var result = [];
+    var sections = {"mls":"MLS overview",
+                    "irc":"IRC overview",
+                    "its":"ITS overview",
+                    "qaforums":"QA Forums overview",
+                    "scr":"Code Review overview",
+                    "scm":"SCM overview",
+                    "wiki":"Wiki overview"};
+    var filters = {"companies":"Activity by companies",
+                   "contributors":"Activity by contributors",
+                   "countries":"Activity by companies",
+                   "domains":"Activity by domains",
+                   "projects":"Activity by project",
+                   "repos":"Activity by repositories",
+                   "states":"Activity by states",
+                   "tags":"Activity by tags"};
+
     var url_tokens = document.URL.split('/');
     var section = url_tokens[url_tokens.length-1].split('.')[0];
     if (section === 'project' || section === 'index' || section === ''){
         //no sections are support for subprojects so far
-        return 'Project Overview';
+        return [['#','Project Overview']];
     }else{
-        if (url_names.hasOwnProperty(section)){
-            return url_names[section];
-        }else{        
-            return 'No name section';                  
+        //if it contains a - we return section + subsection
+        //it could be scm or scm-repos
+
+        var s_tokens = section.split('-');
+        if (sections.hasOwnProperty(s_tokens[0])){
+            result.push([s_tokens[0], sections[s_tokens[0]]]);
+
+            if (s_tokens.length > 0){
+                if (filters.hasOwnProperty(s_tokens[1])){
+                result.push([s_tokens[0], filters[s_tokens[1]]]);
+                }
+            }
+        }else{
+            return [['#','Unavailable section name']];
         }
+        return result;
     }
 }
 
@@ -314,50 +339,6 @@ function composeSideBar(project_id){
     return html;
 }
 
-function composeSectionBreadCrumb(project_id){
-    var html = '';
-    if (project_id === 'root'){
-        html += '<li class="dropdown">';
-        html += '<span data-toggle="tooltip" title="Section name"> ' + getSectionName() + '</span>';
-        html += '<a class="dropdown-toggle" data-toggle="dropdown" href="#">';
-        html += '&nbsp;<span data-toggle="tooltip" title="Select more metrics" class="caret"></span></a>';
-        html += '<ul class="dropdown-menu">';
-        html += '<li><a href="./"><i class="fa fa-tachometer"></i> Project Overview</a></li>';
-        html += '<li role="presentation" class="dropdown-header">Source Code Management</li>';
-        html += '<li><a href="scm.html"><i class="fa fa-tachometer"></i> Overview</a></li>';
-        html += '<li><a href="scm-companies.html"><i class="fa fa-building-o"></i> Companies</a></li>';
-        html += '<li><a href="scm-contributors.html"><i class="fa fa-users"></i> Contributors</a></li>';
-        html +='<li><a href="scm-companies-summary.html"><i class="fa fa-building-o"></i> Companies Summary</a></li>';
-        html += '<li><a href="scm-projects.html"><i class="fa fa-rocket"></i> Projects</a></li>';
-        html += '<li><a href="scm-repos.html"><i class="fa fa-code-fork"></i> Repositories</a></li>';
-        
-        html += '<li role="presentation" class="dropdown-header">Tickets</li>';
-        html += '<li><a href="its.html"><i class="fa fa-tachometer"></i> Overview</a></li>';
-        html += '<li><a href="its-companies.html"><i class="fa fa-building-o"></i> Companies</a></li>';
-        html += '<li><a href="its-contributors.html"><i class="fa fa-users"></i> Contributors</a></li>';
-        html += '<li><a href="its-projects.html"><i class="fa fa-rocket"></i> Projects</a></li>';
-        html += '<li><a href="its-repos.html"><i class="fa fa-code-fork"></i> Repositories</a></li>';
-        
-        html += '<li role="presentation" class="dropdown-header">Mailing lists</li>';
-        html += '<li><a href="mls.html"><i class="fa fa-tachometer"></i> Overview</a></li>';
-        html += '<li><a href="mls-companies.html"><i class="fa fa-building-o"></i> Companies</a></li>';
-        html += '<li><a href="mls-contributors.html"><i class="fa fa-users"></i> Contributors</a></li>';
-        html += '<li><a href="mls-projects.html"><i class="fa fa-rocket"></i> Projects</a></li>';
-        html += '<li><a href="mls-repos.html"><i class="fa fa-code-fork"></i> Repositories</a></li>';
-        
-        html += '<li role="presentation" class="dropdown-header">Code review</li>';
-        html += '<li><a href="scr.html"><i class="fa fa-tachometer"></i> Overview</a></li>';
-        html += '<li><a href="scr-companies.html"><i class="fa fa-building-o"></i> Companies</a></li>';
-        html += '<li><a href="scr-projects.html"><i class="fa fa-rocket"></i> Projects</a></li>';
-        html += '<li><a href="scr-repos.html"><i class="fa fa-code-fork"></i> Repositories</a></li>';
-        
-        html += '</ul></li>';
-    }else{
-        html += '<li> ' + getSectionName() + '</li>';
-    }
-    return html;
-
-}
 
 Convert.convertSideBar = function(project_id){
     var divs = $(".SideNavBar");
@@ -412,6 +393,47 @@ Convert.convertNavbar = function() {
             });
         }**/
     });
+};
+
+function composeSectionBreadCrumb(project_id){
+    var html = '<ol class="breadcrumb">';
+    if (project_id === undefined){
+        //main project enters here
+        html += '<li><a href="./">Project Overview</a></li>';
+        var subsects = getSectionName();
+        var cont = 1;
+        $.each(subsects, function(id,value){
+            if (subsects.length === cont){
+                html += '<li class="active">' + value[1] + '</li>';
+            }else{
+                html += '<li><a href="'+ value[0] +'.html">' + value[1] + '</a></li>';
+            }
+            cont += 1;
+        });
+
+    }else{
+        //subprojects have no sections yet
+        html += '<li> ' + getSectionName() + '</li>';
+    }
+    html += '</ol>';
+    return html;
+}
+
+Convert.convertSectionBreadcrumb = function (project_id){
+    var divs = $(".SectionBreadcrumb");
+    if (divs.length > 0){
+        $.each(divs, function(id, div){
+            $(this).empty();
+            if (!div.id) div.id = "SectionBreadcrumb";// + getRandomId();
+            //project_id will be empty for root project
+            var label;
+            if(project_id){
+                label = Report.cleanLabel(project_id);
+            }
+            var htmlaux = composeSectionBreadCrumb(label);
+            $("#"+div.id).append(htmlaux);
+        });
+    }
 };
 
 Convert.convertModalProjectMap = function(){
@@ -1429,6 +1451,7 @@ Convert.convertDSTable = function() {
 Convert.convertBasicDivs = function() {
     Convert.convertNavbar();
     //Convert.convertProjectNavBar();
+    Convert.convertSectionBreadcrumb();
     Convert.convertModalProjectMap();
     Convert.convertFooter(); 
     //Convert.convertRefcard(); //deprecated
