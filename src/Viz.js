@@ -745,7 +745,7 @@ if (Viz === undefined) var Viz = {};
                 tickFormatter : function(x) {
                     var index = null;
                     for ( var i = 0; i < history.id.length; i++) {
-                        if (parseInt(x, null)===history.id[i],10) {
+                        if (parseInt(x, 10) === history.id[i]) {
                             index = i; break;}
                     }
                     return history.date[index];
