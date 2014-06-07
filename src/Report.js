@@ -344,7 +344,7 @@ if (Report === undefined) var Report = {};
         checkDynamicConfig();
 
         var projects_dirs = Report.getProjectsDirs();
-        var scm, its, mls, scr, irc, mediawiki;
+        var scm, its, mls, scr, irc, mediawiki, people, downloads, qaforums, releases;
 
         $.each(projects_dirs, function (i, project) {
             if (Report.getConfig() === null ||
@@ -371,7 +371,6 @@ if (Report === undefined) var Report = {};
                 Report.registerDataSource(releases);
             }
             else {
-                // "scm","mediawiki","its","irc","gerrit","mlstats"
                 var active_ds = Report.getConfig()['data-sources'];
                 $.each(active_ds, function(i, name) {
                     if (name === "its") {
