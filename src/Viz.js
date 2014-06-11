@@ -593,8 +593,10 @@ if (Viz === undefined) var Viz = {};
                         var value = lines_data[i].data[o.index][1];
                         if (value === undefined) continue;
                         if (lines_data.length > 1) {
-                            if (lines_data[i].label !== undefined)
-                                label += lines_data[i].label +":";
+                            if (lines_data[i].label !== undefined) {
+                                value_name = lines_data[i].label;
+                                label += value_name.substring(0,9) +":";
+                            }
                         }
                         label += "<strong>"+Report.formatValue(value) +"</strong><br>";
                     }
