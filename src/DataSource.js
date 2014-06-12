@@ -848,7 +848,7 @@ function DataSource(name, basic_metrics) {
         });
         list += '</tr>';
         $.each(sorted, function(id, item) {
-            list += "<tr><td class='span2 repository-name'>";
+            list += "<tr><td class='col-md-2 repository-name'>";
             list += "#" + cont + "&nbsp;";
             cont++;
             var addURL = null;
@@ -889,7 +889,7 @@ function DataSource(name, basic_metrics) {
             //list += "<br><a href='#nav'>^</a>";
             list += "</td>";
             $.each(metrics, function(id, metric) {
-                list += "<td class='span5'>";
+                list += "<td class='col-md-5'>";
                 list += "<div id='"+report+"-"+item+"-"+metric+"'";
                 list +=" class='subreport-list-item'>";
             });

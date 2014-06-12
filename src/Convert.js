@@ -19,6 +19,7 @@
  *
  * Authors:
  *   Alvaro del Castillo San Felix <acs@bitergia.com>
+ *   Luis Cañas-Díaz <lcanas@bitergia.com>
  */
 
 var Convert = {};
@@ -37,10 +38,10 @@ Convert.convertMicrodashText = function () {
             var ds = Report.getMetricDS(metric)[0];
             if (ds === undefined) return;
             var total = ds.getGlobalData()[metric];
-            var html = '<div class="row-fluid">';
+            var html = '<div class="row">';
 
             if(show_name){ //if name is shown we'll have four columns
-                html += '<div class="span3">';
+                html += '<div class="col-md-3">';
                 html += '<span class="dayschange">' + ds.basic_metrics[metric].name + '</span>';
                 html += '</div>';
             }
@@ -61,9 +62,9 @@ Convert.convertMicrodashText = function () {
                 if (netvalue < 0) str_percentagevalue = '-' + Math.abs(percentagevalue);
 
                 if(show_name){
-                    html += '<div class="span3">';
+                    html += '<div class="col-md-3">';
                 }else{
-                    html += '<div class="span4">';
+                    html += '<div class="col-md-4">';
                 }
 
                 html += '<span class="dayschange">Last '+period+' days:</span>';
@@ -75,10 +76,10 @@ Convert.convertMicrodashText = function () {
                 } else if (netvalue < 0) {
                     html += '<i class="fa fa-arrow-circle-down"></i> <span class="negpercent">&nbsp;'+str_percentagevalue+'%</span>&nbsp;';
                 }
-                html += '</div><!--span4-->';
+                html += '</div><!--col-md-4-->';
             });
 
-            html += '</div><!--row-fluid-->';
+            html += '</div><!--row-->';
             $(div).append(html);
         });
     }
@@ -129,10 +130,269 @@ Convert.convertMicrodash = function () {
     }
 };
 
+function getProjectTitle(project_id, hierarchy){
+    /**
+       Gets the title of the project based on the hierarchy
+    **/
+    if (hierarchy.hasOwnProperty(project_id) && hierarchy[project_id].title){
+        return hierarchy[project_id].title;
+    }else{
+        return undefined;
+    }
+}
+
+function getParentProjects(project_id, hierarchy){
+    /** 
+        Gets the parent project based on the hierarchy
+    **/
+    var parent = [];
+    var iterate_p = project_id;
+    var parent_id = '';
+    var aux = {};
+    
+    while (hierarchy[iterate_p].hasOwnProperty('parent_project')){
+        parent_id = hierarchy[iterate_p].parent_project;
+        aux = hierarchy[parent_id];
+        aux.project_id = parent_id;
+        parent.push(aux);
+        iterate_p = parent_id;
+    }
+    //parent.push(hierarchy[parent_id]);        
+    return parent.reverse();
+}
+
+function getChildrenProjects(project_id, hierarchy){
+    /**
+       Gets the n children project name based on the hierarchy
+    **/
+    var children = [];
+    var aux ={};
+    $.each(hierarchy, function(id, p){
+        if (hierarchy[id].parent_project === project_id){
+            // we need the key so we keep it
+            aux = hierarchy[id];
+            aux.project_id = id;
+            children.push(aux);
+        }
+    });
+    return children;
+}
+
+function composePBreadcrumbsHTMLlast(project_id, children, hierarchy){   
+    var html = '';
+    var clen = children.length;
+    if(clen > 0){
+        html += '<li class="dropdown">';
+        html += '<span data-toggle="tooltip" title="Project name"> ' + getProjectTitle(project_id, hierarchy) + '</span>';
+        html += '&nbsp;<a class="dropdown-toggle" data-toggle="dropdown" href="#">';
+        html += '<span data-toggle="tooltip" title="Select subproject" class="badge"> ' + clen + ' Subprojects </span></a>';
+        html += '<ul class="dropdown-menu">';
+        $.each(children, function(id,value){
+            gchildren = getChildrenProjects(value.project_id, hierarchy);            
+            if (gchildren.length > 0){
+                html += '<li><a href="project.html?project='+ value.project_id +'">'+ value.title +'&nbsp;&nbsp;<span data-toggle="tooltip" title="Number of suprojects" class="badge">'+gchildren.length +'&nbsp;<i class="fa fa-rocket"></i></span></a></li>';
+            }else{
+                html += '<li><a href="project.html?project='+ value.project_id +'">'+ value.title +'</a></li>';
+            }
+        });
+        html += '<li class="divider"></li>';
+        html += '<li><a href="./project_map.html"><i class="fa fa-icon fa-sitemap"></i> Projects treemap</a></li>';
+        html += '</ul></li>';
+    }
+    else{
+        html += '<li>' + getProjectTitle(project_id, hierarchy) + '</li>';
+    }
+    return html;
+}
+
+function composeProjectBreadcrumbs(project_id) {
+    /** 
+        compose the project navigation bar based on the hierarchy
+    **/
+    var html = '<ol class="breadcrumbtitle">';
+    var hierarchy = Report.getProjectsHierarchy();
+    if (hierarchy.length === 0){
+        // we don't have information about subprojects
+        return '';
+    }
+    
+    if (project_id === undefined){
+        project_id = 'root';
+    }
+    var children = getChildrenProjects(project_id, hierarchy);
+    var parents = getParentProjects(project_id, hierarchy);
+    // parents
+    if (parents.length > 0){
+        $.each(parents, function(id,value){
+            if(value.parent_project){
+                html += '<li><a href="project.html?project='+value.project_id+'">' + value.title + '</a></li>';
+            }else{
+                html += '<li><a href="./">' + value.title + '</a></li>';
+            }
+        });
+    }
+    html += composePBreadcrumbsHTMLlast(project_id, children, hierarchy);
+    html += '</ol>';
+    return html;
+}
+
+function getSectionName(){
+    var result = [];
+    var sections = {"mls":"MLS overview",
+                    "irc":"IRC overview",
+                    "its":"ITS overview",
+                    "qaforums":"QA Forums overview",
+                    "scr":"Code Review overview",
+                    "scm":"SCM overview",
+                    "wiki":"Wiki overview",
+                    "people":"Contributor",
+                    "company":"Company",
+                    "country":"Country",
+                    "repository":"Repository",
+                    "data_sources":"Data sources",
+                    "project_map":"Project map"};
+    var filters = {"companies":"Activity by companies",
+                   "contributors":"Activity by contributors",
+                   "countries":"Activity by companies",
+                   "domains":"Activity by domains",
+                   "projects":"Activity by project",
+                   "repos":"Activity by repositories",
+                   "states":"Activity by states",
+                   "tags":"Activity by tags"};
+
+    var url_tokens = document.URL.split('/');
+    var section = url_tokens[url_tokens.length-1].split('.')[0];
+    if (section === 'project' || section === 'index' || section === ''){
+        //no sections are support for subprojects so far
+        return [];
+    }else{
+        //if it contains a - we return section + subsection
+        //it could be scm or scm-repos
+
+        var s_tokens = section.split('-');
+        if (sections.hasOwnProperty(s_tokens[0])){
+            result.push([s_tokens[0], sections[s_tokens[0]]]);
+
+            if (s_tokens.length > 0){
+                if (filters.hasOwnProperty(s_tokens[1])){
+                result.push([s_tokens[0], filters[s_tokens[1]]]);
+                }
+            }
+        }else{
+            return [['#','Unavailable section name']];
+        }
+        return result;
+    }
+}
+
+
+function composeSideBar(project_id){
+    if (project_id === undefined){
+        project_id = 'root';
+    }
+    var html='';
+    html += '<ul class="nav navmenu-nav">';
+    if (project_id === 'root'){
+        html += '<li><a href="./">Home</a></li>';
+        html += '<li class="dropdown">';
+        html += '<a href="#" class="dropdown-toggle" data-toggle="dropdown">';
+        html += '<i class="fa fa-code"></i>&nbsp;Source code management';
+        html += '<b class="caret"></b></a>';
+        html += '<ul class="dropdown-menu navmenu-nav">';
+        html += '<li><a href="scm.html"><i class="fa fa-tachometer"></i> Overview</a></li>';
+        html += '<li><a href="scm-companies.html"><i class="fa fa-building-o"></i> Companies</a></li>';
+        html += '<li><a href="scm-contributors.html"><i class="fa fa-users"></i> Contributors</a></li>';
+        html += '<li><a href="scm-companies-summary.html"><i class="fa fa-building-o"></i> Companies Summary</a></li>';
+        html += '<li><a href="scm-projects.html"><i class="fa fa-rocket"></i> Projects</a></li>';
+        html += '<li><a href="scm-repos.html"><i class="fa fa-code-fork"></i> Repositories</a></li>';
+        html += '</ul>';
+        html += '</li>';
+        html += '<li class="dropdown">';
+        html += '<a class="dropdown-toggle" data-toggle="dropdown" href="">';
+        html += '<i class="fa fa-ticket"></i> Tickets <b class="caret"></b></a>';
+        html += '<ul class="dropdown-menu navmenu-nav">';
+        html += '<li><a href="its.html"><i class="fa fa-tachometer"></i> Overview</a></li>';
+        html += '<li><a href="its-companies.html"><i class="fa fa-building-o"></i> Companies</a></li>';
+        html += '<li><a href="its-contributors.html"><i class="fa fa-users"></i> Contributors</a></li>';
+        html += '<li><a href="its-projects.html"><i class="fa fa-rocket"></i> Projects</a></li>';
+        html += '<li><a href="its-repos.html"><i class="fa fa-code-fork"></i> Repositories</a></li>';
+        html += '</ul>';
+        html += '</li>';
+        html += '<li class="dropdown">';
+        html += '<a class="dropdown-toggle" data-toggle="dropdown" href="">';
+        html += '                <i class="fa fa-envelope-o"></i> Mailing lists <b class="caret"></b></a>';
+        html += '<ul class="dropdown-menu navmenu-nav">';
+        html += '<li><a href="mls.html"><i class="fa fa-tachometer"></i> Overview</a></li>';
+        html += '<li><a href="mls-companies.html"><i class="fa fa-building-o"></i> Companies</a></li>';
+        html += '<li><a href="mls-contributors.html"><i class="fa fa-users"></i> Contributors</a></li>';
+        html += '<li><a href="mls-projects.html"><i class="fa fa-rocket"></i> Projects</a></li>';
+        html += '<li><a href="mls-repos.html"><i class="fa fa-code-fork"></i> Repositories</a></li>';
+        html += '</ul>';
+        html += '</li>';
+        html += '<li class="dropdown">';
+        html += '<a class="dropdown-toggle" data-toggle="dropdown" href="">';
+        html += '<i class="fa fa-check"></i> Code review<b class="caret"></b></a>';
+        html += '<ul class="dropdown-menu navmenu-nav">';
+        html += '<li><a href="scr.html"><i class="fa fa-tachometer"></i> Overview</a></li>';
+        html += '<li><a href="scr-companies.html"><i class="fa fa-building-o"></i> Companies</a></li>';
+        html += '<!--<li><a href="scr-contributors.html"><i class="fa fa-users"></i> Contributors</a></li>-->';
+        html += '<li><a href="scr-projects.html"><i class="fa fa-rocket"></i> Projects</a></li>';
+        html += '<li><a href="scr-repos.html"><i class="fa fa-code-fork"></i> Repositories</a></li>';
+        html += '</ul>';
+        html += '</li>';
+    }else{
+        html += '<li class="active"><a href="#">' + getSectionName() + '</a></li>';
+    }
+    html += '<li><a href="data_sources.html">Data sources</a></li>';
+    html += '<li><a href="project_map.html"><i class="fa fa-icon fa-sitemap"></i> Project map</a></li>';
+    html += '</ul>';
+    return html;
+}
+
+
+Convert.convertSideBar = function(project_id){
+    var divs = $(".SideNavBar");
+    if (divs.length > 0){
+        $.each(divs, function(id, div){
+            $(this).empty();
+            if (!div.id) div.id = "SideNavBar";// + getRandomId();
+            //project_id will be empty for root project
+            var label;
+            if(project_id){
+                label = Report.cleanLabel(project_id); 
+            }
+            var htmlaux = composeSideBar(label);
+            $("#"+div.id).append(htmlaux);
+        });
+    }    
+};
+
+Convert.convertProjectNavBar = function (project_id){
+    var divs = $(".ProjectNavBar");
+    if (divs.length > 0){
+        $.each(divs, function(id, div){
+            $(this).empty();
+            if (!div.id) div.id = "ProjectNavBar";// + getRandomId();
+            //project_id will be empty for root project
+            var label;
+            if(project_id){
+                label = Report.cleanLabel(project_id); 
+            }
+            var htmlaux = composeProjectBreadcrumbs(label);
+            $("#"+div.id).append(htmlaux);
+        });
+    }    
+};
+
 Convert.convertNavbar = function() {
     $.get(Report.getHtmlDir()+"navbar.html", function(navigation) {
         $("#Navbar").html(navigation);
-        displayReportData();
+        var project_id = Report.getParameterByName("project");
+        Convert.convertProjectNavBar(project_id);
+        Convert.convertSideBar(project_id);
+        /**
+         // Could this break the support of different JSON directories?         
+           displayReportData();
         Report.displayActiveMenu();
         var addURL = Report.addDataDir(); 
         if (addURL) {
@@ -141,7 +401,59 @@ Convert.convertNavbar = function() {
                 if (value.href.indexOf("data_dir")!==-1) return;
                 value.href += "?"+addURL;
             });
+        }**/
+    });
+};
+
+function composeSectionBreadCrumb(project_id){
+    var html = '<ol class="breadcrumb">';
+    if (project_id === undefined){
+        //main project enters here
+        var subsects = getSectionName();
+        if (subsects.length > 0){
+            html += '<li><a href="./">Project Overview</a></li>';
+            var cont = 1;
+            $.each(subsects, function(id,value){
+                if (subsects.length === cont){
+                    html += '<li class="active">' + value[1] + '</li>';
+                }else{
+                    html += '<li><a href="'+ value[0] +'.html">' + value[1] + '</a></li>';
+                }
+                cont += 1;
+            });
         }
+        else{
+            html += '<li class="active">Project Overview</li>';
+        }
+
+    }else{
+        //subprojects have no sections yet
+        html += '<li> ' + getSectionName() + '</li>';
+    }
+    html += '</ol>';
+    return html;
+}
+
+Convert.convertSectionBreadcrumb = function (project_id){
+    var divs = $(".SectionBreadcrumb");
+    if (divs.length > 0){
+        $.each(divs, function(id, div){
+            $(this).empty();
+            if (!div.id) div.id = "SectionBreadcrumb";// + getRandomId();
+            //project_id will be empty for root project
+            var label;
+            if(project_id){
+                label = Report.cleanLabel(project_id);
+            }
+            var htmlaux = composeSectionBreadCrumb(label);
+            $("#"+div.id).append(htmlaux);
+        });
+    }
+};
+
+Convert.convertModalProjectMap = function(){
+    $.get(Report.getHtmlDir() + "modal_projects", function(modal_html){
+        $("#ModalProjectMap").html(modal_html);
     });
 };
 
@@ -570,7 +882,7 @@ Convert.convertPersonData = function (upeople_id, upeople_identifier) {
                 else name = upeople_id;
                 email = "";
             }
-            $("#"+div.id).append("<h1><small>"+name + " "+ email + "</small></h1>");
+            $("#"+div.id).append("<h2>"+name + " "+ email + "</h2>");
         });
     }
 };
@@ -879,50 +1191,11 @@ Convert.convertFilterItemData = function (filter, item) {
             $(this).empty();
             var label = Report.cleanLabel(item);
             if (!div.id) div.id = "FilterItemData" + getRandomId();
-            $("#"+div.id).append("<h1><small>"+label + "</small></h1>");
+            $("#"+div.id).append("<h2>"+label + "</h2>");
         });
     }
 };
 
-
-function composeProjectBreadcrumbs(project_id){
-    //project id could be eclipe or eclipse.whatever
-    var html = '<ul class="breadcrumb"> Project:&nbsp;&nbsp;';
-    var aux = '';
-    var tokens = [];
-    var lentokens = 0;
-    tokens = project_id.split('.');
-    lentokens = tokens.length;
-    /*html += '<li><a href="/">Summary</a> <span class="divider">/</span></li>';
-    html += '<li><a href="projects.html">List of projects</a> <span class="divider">/</span></li>';*/
-    $.each(tokens, function(key,value){
-        if (key === 0){ //first
-            aux += value;
-        }else{
-            aux += '.' + value;}
-
-        if (key === lentokens - 1 ) { //if last
-            html += '<li class="active">' + value + '</li>';
-        }else{
-            html += '<li><a href="project.html?project=' + aux +' ">' + value + '</a> <span class="divider">/</span></li>';
-        }
-    });
-    html += '</ul>';
-    return html;
-}
-
-Convert.convertProjectBreadcrumbs = function (filter, item) {
-    //based on FilterItemData
-    var divs = $(".ProjectBreadcrumbs");
-    if (divs.length > 0) {
-        $.each(divs, function(id, div) {
-            $(this).empty();
-            var label = Report.cleanLabel(item);
-            if (!div.id) div.id = "ProjectBreadcrumbs" + getRandomId();
-            $("#"+div.id).append(composeProjectBreadcrumbs(label));
-        });
-    }
-};
 
 Convert.convertFilterItemSummary = function(filter, item) {
     var divlabel = "FilterItemSummary";
@@ -954,6 +1227,72 @@ Convert.convertFilterItemSummary = function(filter, item) {
         });
     }
 };
+
+Convert.convertFilterItemMicrodashText = function (filter, item) {
+    /* composes the HTML for trends with number about diff and percentages*/
+    var divs = $(".FilterItemMicrodashText");
+    if (divs.length > 0) {
+        $.each(divs, function(id, div) {
+            $(this).empty();
+            var real_item = item; // project, repo, company, etc ..
+            var metric = $(this).data('metric');
+            var show_name = $(this).data('name');
+            var ds = Report.getMetricDS(metric)[0];
+            if (ds === undefined) return;
+            if (filter === "projects")
+                var global_data = ds.getProjectsGlobalData()[item];
+            else
+                return; //so far only project filter is supported
+            var html = '<div class="row">';
+
+            if(show_name){ //if name is shown we'll have four columns
+                html += '<div class="col-md-3">';
+                html += '<span class="dayschange">' + ds.basic_metrics[metric].name + '</span>';
+                html += '</div>';
+            }
+
+            // $.each({7:'week',30:'month',365:'year'}, function(period, name) {
+            $.each([365,30,7], function(index, period) {
+                var column = ds.getMetrics()[metric].column;
+                // value -> items for this period
+                // netvalue -> change with previous period
+                // percentagevalue -> % changed with previous
+                var value = global_data[metric+"_"+period];
+                var netvalue = global_data["diff_net"+column+"_"+period];
+                var percentagevalue = global_data["percentage_"+column+"_"+period];
+                percentagevalue = Math.round(percentagevalue*10)/10;  // round "original" to 1 decimal
+                if (value === undefined) return;
+                var str_percentagevalue = '';
+                if (netvalue > 0) str_percentagevalue = '+' + percentagevalue;
+                if (netvalue < 0) str_percentagevalue = '-' + Math.abs(percentagevalue);
+
+                if(show_name){
+                    html += '<div class="col-md-3">';
+                }else{
+                    html += '<div class="col-md-4">';
+                }
+
+                html += '<span class="dayschange">Last '+period+' days:</span>';
+                html += ' '+Report.formatValue(value) + '<br>';
+                if (netvalue === 0) {
+                    html += '<i class="fa fa-arrow-circle-right"></i> <span class="zeropercent">&nbsp;'+str_percentagevalue+'%</span>&nbsp;';
+                } else if (netvalue > 0) {
+                    html += '<i class="fa fa-arrow-circle-up"></i> <span class="pospercent">&nbsp;'+str_percentagevalue+'%</span>&nbsp;';
+                } else if (netvalue < 0) {
+                    html += '<i class="fa fa-arrow-circle-down"></i> <span class="negpercent">&nbsp;'+str_percentagevalue+'%</span>&nbsp;';
+                }
+                html += '</div><!--col-md-4-->';
+            });
+
+            html += '</div><!--row-->';
+            $(div).append(html);
+        });
+    }
+};
+
+
+
+
 
 Convert.convertFilterItemMetricsEvol = function(filter, item) {
     var config_metric = filterItemsConfig();
@@ -1053,10 +1392,10 @@ Convert.convertFilterStudyItem = function (filter, item) {
     if (Loader.FilterItemCheck(item, filter) === false) return;
 
     Convert.convertFilterItemData(filter, item);
-    Convert.convertProjectBreadcrumbs(filter, item);
     Convert.convertFilterItemSummary(filter, item);
     Convert.convertFilterItemMetricsEvol(filter, item);
     Convert.convertFilterItemTop(filter, item);
+    Convert.convertFilterItemMicrodashText(filter, item);
     Convert.convertProjectData();
 
     Convert.activateHelp();
@@ -1126,6 +1465,9 @@ Convert.convertDSTable = function() {
 
 Convert.convertBasicDivs = function() {
     Convert.convertNavbar();
+    //Convert.convertProjectNavBar();
+    Convert.convertSectionBreadcrumb();
+    Convert.convertModalProjectMap();
     Convert.convertFooter(); 
     //Convert.convertRefcard(); //deprecated
     Convert.convertDSTable();

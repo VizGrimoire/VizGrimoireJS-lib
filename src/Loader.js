@@ -72,6 +72,9 @@ if (Loader === undefined) var Loader = {};
             data_load_file(prj_file, fillProjectInfo, data_dir);
         }
 
+        // Loads also the project hierarchy
+        data_load_file(Report.getProjectsHierarchyFile(), Report.setProjectsHierarchy);
+
         data_load_file(Report.getVizConfigFile(),
                 function(data, self) {Report.setVizConfig(data);});
 
@@ -115,6 +118,10 @@ if (Loader === undefined) var Loader = {};
     };
 
     function data_load_file(file, fn_data_set, self) {
+        /**
+           If file is fetched via HTTP then it executes the fn_data_set
+           function with the data
+         **/
         $.when($.getJSON(file)).done(function(history) {
             fn_data_set(history, self);
             end_data_load();

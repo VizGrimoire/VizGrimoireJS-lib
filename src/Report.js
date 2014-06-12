@@ -39,9 +39,10 @@ if (Report === undefined) var Report = {};
     var projects_datasources = {};
     var repos_map;
     var project_file = data_dir + "/project-info.json",
-        viz_config_file = data_dir + "/viz_cfg.json",
-        markers_file = data_dir + "/markers.json",
-        repos_map_file = data_dir + "/repos-map.json";
+    viz_config_file = data_dir + "/viz_cfg.json",
+    markers_file = data_dir + "/markers.json",
+    repos_map_file = data_dir + "/repos-map.json",
+    projects_hierarchy_file = data_dir + "/projects_hierarchy.json";
     var page_size = 10, page = null;
     var project_people_identities = {};
 
@@ -50,6 +51,7 @@ if (Report === undefined) var Report = {};
     Report.getAllMetrics = getAllMetrics;
     Report.getMarkers = getMarkers;
     Report.getVizConfig = getVizConfig;
+    Report.getProjectsHierarchy = getProjectsHierarchy;
     Report.getMetricDS = getMetricDS;
     Report.getGridster = getGridster;
     Report.setGridster = setGridster;
@@ -85,6 +87,7 @@ if (Report === undefined) var Report = {};
         config_file = dataDir + "/viz_cfg.json";
         markers_file = dataDir + "/markers.json";
         repos_mapping_file = data_dir + "/repos-mapping.json";
+        projects_hierarchy_file = data_dir + "/projects_hierarchy.json";
     };
 
     function getMarkers() {
@@ -118,6 +121,16 @@ if (Report === undefined) var Report = {};
 
     Report.getVizConfigFile = function() {
         return viz_config_file;
+    };
+
+    function getProjectsHierarchy (){
+        return projects_hierarchy;
+    }
+    Report.setProjectsHierarchy = function(data){
+        projects_hierarchy = data;
+    };
+    Report.getProjectsHierarchyFile = function() {
+        return projects_hierarchy_file;
     };
 
     function getGridster() {
