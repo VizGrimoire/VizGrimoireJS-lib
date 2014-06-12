@@ -196,7 +196,7 @@ function composePBreadcrumbsHTMLlast(project_id, children, hierarchy){
             }
         });
         html += '<li class="divider"></li>';
-        html += '<li><a href="./project-map.html"><i class="fa fa-icon fa-sitemap"></i> Projects treemap</a></li>';
+        html += '<li><a href="./project_map.html"><i class="fa fa-icon fa-sitemap"></i> Projects treemap</a></li>';
         html += '</ul></li>';
     }
     else{
@@ -244,7 +244,9 @@ function getSectionName(){
                     "people":"Contributor",
                     "company":"Company",
                     "country":"Country",
-                    "repository":"Repository"};
+                    "repository":"Repository",
+                    "data_sources":"Data sources",
+                    "project_map":"Project map"};
     var filters = {"companies":"Activity by companies",
                    "contributors":"Activity by contributors",
                    "countries":"Activity by companies",
@@ -337,8 +339,8 @@ function composeSideBar(project_id){
     }else{
         html += '<li class="active"><a href="#">' + getSectionName() + '</a></li>';
     }
-    html += '<li><a href="data-sources.html">Data sources</a></li>';
-    html += '<li><a href="project-map.html"><i class="fa fa-icon fa-sitemap"></i> Project map</a></li>';
+    html += '<li><a href="data_sources.html">Data sources</a></li>';
+    html += '<li><a href="project_map.html"><i class="fa fa-icon fa-sitemap"></i> Project map</a></li>';
     html += '</ul>';
     return html;
 }
