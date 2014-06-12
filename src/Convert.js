@@ -211,6 +211,10 @@ function composeProjectBreadcrumbs(project_id) {
     **/
     var html = '<ol class="breadcrumbtitle">';
     var hierarchy = Report.getProjectsHierarchy();
+    if (hierarchy.length === 0){
+        // we don't have information about subprojects
+        return '';
+    }
     
     if (project_id === undefined){
         project_id = 'root';
