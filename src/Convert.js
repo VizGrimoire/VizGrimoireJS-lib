@@ -240,7 +240,11 @@ function getSectionName(){
                     "qaforums":"QA Forums overview",
                     "scr":"Code Review overview",
                     "scm":"SCM overview",
-                    "wiki":"Wiki overview"};
+                    "wiki":"Wiki overview",
+                    "people":"Contributor",
+                    "company":"Company",
+                    "country":"Country",
+                    "repository":"Repository"};
     var filters = {"companies":"Activity by companies",
                    "contributors":"Activity by contributors",
                    "countries":"Activity by companies",
@@ -254,7 +258,7 @@ function getSectionName(){
     var section = url_tokens[url_tokens.length-1].split('.')[0];
     if (section === 'project' || section === 'index' || section === ''){
         //no sections are support for subprojects so far
-        return [['#','Project Overview']];
+        return [];
     }else{
         //if it contains a - we return section + subsection
         //it could be scm or scm-repos
@@ -399,17 +403,22 @@ function composeSectionBreadCrumb(project_id){
     var html = '<ol class="breadcrumb">';
     if (project_id === undefined){
         //main project enters here
-        html += '<li><a href="./">Project Overview</a></li>';
         var subsects = getSectionName();
-        var cont = 1;
-        $.each(subsects, function(id,value){
-            if (subsects.length === cont){
-                html += '<li class="active">' + value[1] + '</li>';
-            }else{
-                html += '<li><a href="'+ value[0] +'.html">' + value[1] + '</a></li>';
-            }
-            cont += 1;
-        });
+        if (subsects.length > 0){
+            html += '<li><a href="./">Project Overview</a></li>';
+            var cont = 1;
+            $.each(subsects, function(id,value){
+                if (subsects.length === cont){
+                    html += '<li class="active">' + value[1] + '</li>';
+                }else{
+                    html += '<li><a href="'+ value[0] +'.html">' + value[1] + '</a></li>';
+                }
+                cont += 1;
+            });
+        }
+        else{
+            html += '<li class="active">Project Overview</li>';
+        }
 
     }else{
         //subprojects have no sections yet
