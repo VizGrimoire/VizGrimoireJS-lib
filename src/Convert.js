@@ -882,7 +882,7 @@ Convert.convertPersonData = function (upeople_id, upeople_identifier) {
                 else name = upeople_id;
                 email = "";
             }
-            $("#"+div.id).append("<h1><small>"+name + " "+ email + "</small></h1>");
+            $("#"+div.id).append("<h2>"+name + " "+ email + "</h2>");
         });
     }
 };
