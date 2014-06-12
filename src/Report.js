@@ -390,7 +390,7 @@ if (Report === undefined) var Report = {};
                         its = new ITS();
                         Report.registerDataSource(its);
                     }
-                    else if (name === "mlstats") {
+                    else if (name === "mls") {
                         mls = new MLS();
                         Report.registerDataSource(mls);
                     }
@@ -398,7 +398,7 @@ if (Report === undefined) var Report = {};
                         scm = new SCM();
                         Report.registerDataSource(scm);
                     }
-                    else if (name === "gerrit") {
+                    else if (name === "scr") {
                         scr = new SCR();
                         Report.registerDataSource(scr);
                     }
