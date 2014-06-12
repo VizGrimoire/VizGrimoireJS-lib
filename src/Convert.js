@@ -1191,7 +1191,7 @@ Convert.convertFilterItemData = function (filter, item) {
             $(this).empty();
             var label = Report.cleanLabel(item);
             if (!div.id) div.id = "FilterItemData" + getRandomId();
-            $("#"+div.id).append("<h1><small>"+label + "</small></h1>");
+            $("#"+div.id).append("<h2>"+label + "</h2>");
         });
     }
 };
