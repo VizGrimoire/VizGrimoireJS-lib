@@ -552,7 +552,31 @@ if (Viz === undefined) var Viz = {};
         displayDSLines(div_id, history, lines_data, title, config);
     }
 
-    function getConfLinesChart(title, legend_div, history, lines_data){
+    // Add SCR companies pending to values
+    Viz.track_formatter_com_pending = function(o) {
+        scr = Report.getDataSourceByName('scr');
+        companies = scr.getCompaniesMetricsData();
+        history = Viz._history;
+        lines_data = Viz._lines_data;
+        var label = history.date[parseInt(o.index, 10)];
+        if (label === undefined) label = "";
+        else label += "<br>";
+        for (var i=0; i<lines_data.length; i++) {
+            var value = lines_data[i].data[o.index][1];
+            if (value === undefined) continue;
+            if (lines_data.length > 1) {
+                if (lines_data[i].label !== undefined)
+                    company_name = lines_data[i].label;
+                    label += lines_data[i].label +":";
+            }
+            label += "<strong>"+Report.formatValue(value) +"</strong>";
+            if (company_name) label += "("+companies[company_name].pending[o.index]+")";
+            label += "<br>";
+        }
+        return label;
+    };
+
+    function getConfLinesChart(title, legend_div, history, lines_data, mouse_tracker_fn){
         // simply returns this basic configuration for a lines chart
         var config = {
             subtitle : title,
@@ -607,9 +631,14 @@ if (Viz === undefined) var Viz = {};
             },
             shadowSize: 4
         };
+
+        if (mouse_tracker_fn) {
+            Viz._history = history;
+            Viz._lines_data = lines_data;
+            config.mouse.trackFormatter = Viz[mouse_tracker_fn];
+        }
+
         return config;
-
-
     }
 
     function dropLastLineValue(history, lines_data){
@@ -867,7 +896,8 @@ if (Viz === undefined) var Viz = {};
         if (config_metric && config_metric.legend && config_metric.legend.container)
             legend_div = $('#'+config_metric.legend.container);
 
-        var config = getConfLinesChart(title, legend_div, history, lines_data);
+        var config = getConfLinesChart(title, legend_div, history, lines_data,
+                                       config_metric.mouse_tracker);
 
         if (config_metric) {
             // depending on the configuration we enable/disable options
