@@ -1114,6 +1114,7 @@ Convert.convertFilterItemsMetricsEvol = function(filter) {
                 container: $(this).data('legend-div')};
             } else config_metric.legend = {container: null};
             config_metric.show_legend = $(this).data('legend');
+            config_metric.mouse_tracker = $(this).data('mouse_tracker');
 
             var remove_last_point = $(this).data('remove-last-point');
             if (remove_last_point) config_metric.remove_last_point = true;
@@ -1309,7 +1310,6 @@ Convert.convertFilterItemMetricsEvol = function(filter, item) {
             if (filter !== $(this).data('filter')) return;
             if (!filter) return;
             if ($(this).data('item')) real_item = $(this).data('item');
-
             config_metric = loadHTMLEvolParameters(div, config_metric);
 
             div.id = Report.cleanLabel(item).replace(/ /g,"_")+"-";
