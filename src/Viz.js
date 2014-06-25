@@ -556,9 +556,9 @@ if (Viz === undefined) var Viz = {};
     Viz.track_formatter_com_pending = function(o) {
         scr = Report.getDataSourceByName('scr');
         companies = scr.getCompaniesMetricsData();
-        history = Viz._history;
+        dhistory = Viz._history;
         lines_data = Viz._lines_data;
-        var label = history.date[parseInt(o.index, 10)];
+        var label = dhistory.date[parseInt(o.index, 10)];
         if (label === undefined) label = "";
         else label += "<br>";
         for (var i=0; i<lines_data.length; i++) {
