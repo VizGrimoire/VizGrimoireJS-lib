@@ -186,7 +186,7 @@ function composePBreadcrumbsHTMLlast(project_id, children, hierarchy){
         html += '<span data-toggle="tooltip" title="Project name"> ' + getProjectTitle(project_id, hierarchy) + '</span>';
         html += '&nbsp;<a class="dropdown-toggle" data-toggle="dropdown" href="#">';
         html += '<span data-toggle="tooltip" title="Select subproject" class="badge"> ' + clen + ' Subprojects </span></a>';
-        html += '<ul class="dropdown-menu">';
+        html += '<ul class="dropdown-menu scrollable-menu">';
         $.each(children, function(id,value){
             gchildren = getChildrenProjects(value.project_id, hierarchy);            
             if (gchildren.length > 0){
