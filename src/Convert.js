@@ -285,6 +285,41 @@ function getSectionName(){
     }
 }
 
+function composeSBSectionLinks(icon_text, title, ds_name, elements){
+    // text = {'companies': '<i class="fa fa-building-o"></i> Companies',
+    // 'companies-summary': '<i class="fa fa-building-o"></i> Companies summary',
+    // 'contributors': '<i class="fa fa-users"></i> Contributors',
+    // 'countries': '<i class="fa fa-flag"></i> Countries',
+    // 'domains': '<i class="fa fa-envelope-square"></i> Domains',
+    // 'projects': '<i class="fa fa-rocket"></i> Projects',
+    // 'repos': '<i class="fa fa-code-fork"></i> Repositories',
+    // 'states': '<i class="fa fa-code-fork"></i> States'};
+    // html = '';
+    // html += '<li><a href="' + ds_name + '.html"><i class="fa fa-tachometer"></i> Overview</a></li>';
+    text = {'companies': 'Companies',
+    'companies-summary': 'Companies summary',
+    'contributors': 'Contributors',
+    'countries': 'Countries',
+    'domains': 'Domains',
+    'projects': 'Projects',
+    'repos': 'Repositories',
+	'states': 'States'};
+    html = '';
+    html += '<li class="dropdown">';
+    html += '<a href="#" class="dropdown-toggle" data-toggle="dropdown">';
+    html += '<i class="fa ' + icon_text + '"></i>&nbsp;' + title + ' <b class="caret"></b></a>';
+    html += '<ul class="dropdown-menu navmenu-nav">';
+    html += '<li><a href="' + ds_name + '.html">&nbsp;Overview</a></li>';
+    $.each(elements, function(id,value){
+	if (text.hasOwnProperty(value)){
+            html += '<li><a href="'+ ds_name + '-' + value + '.html">&nbsp;' +text[value] + '</a></li>';
+	}else{
+            html += '<li><a href="'+ ds_name + '-' + value + '.html">&nbsp;' + value + '</a></li>';
+	}
+    });
+    html += '</ul></li>';
+    return html;
+}
 
 function composeSideBar(project_id){
     if (project_id === undefined){
@@ -293,57 +328,66 @@ function composeSideBar(project_id){
     var html='';
     html += '<ul class="nav navmenu-nav">';
     if (project_id === 'root'){
-        html += '<li><a href="./">Home</a></li>';
-        html += '<li class="dropdown">';
-        html += '<a href="#" class="dropdown-toggle" data-toggle="dropdown">';
-        html += '<i class="fa fa-code"></i>&nbsp;Source code management';
-        html += '<b class="caret"></b></a>';
-        html += '<ul class="dropdown-menu navmenu-nav">';
-        html += '<li><a href="scm.html"><i class="fa fa-tachometer"></i> Overview</a></li>';
-        html += '<li><a href="scm-companies.html"><i class="fa fa-building-o"></i> Companies</a></li>';
-        html += '<li><a href="scm-contributors.html"><i class="fa fa-users"></i> Contributors</a></li>';
-        html += '<li><a href="scm-companies-summary.html"><i class="fa fa-building-o"></i> Companies Summary</a></li>';
-        html += '<li><a href="scm-projects.html"><i class="fa fa-rocket"></i> Projects</a></li>';
-        html += '<li><a href="scm-repos.html"><i class="fa fa-code-fork"></i> Repositories</a></li>';
-        html += '</ul>';
-        html += '</li>';
-        html += '<li class="dropdown">';
-        html += '<a class="dropdown-toggle" data-toggle="dropdown" href="">';
-        html += '<i class="fa fa-ticket"></i> Tickets <b class="caret"></b></a>';
-        html += '<ul class="dropdown-menu navmenu-nav">';
-        html += '<li><a href="its.html"><i class="fa fa-tachometer"></i> Overview</a></li>';
-        html += '<li><a href="its-companies.html"><i class="fa fa-building-o"></i> Companies</a></li>';
-        html += '<li><a href="its-contributors.html"><i class="fa fa-users"></i> Contributors</a></li>';
-        html += '<li><a href="its-projects.html"><i class="fa fa-rocket"></i> Projects</a></li>';
-        html += '<li><a href="its-repos.html"><i class="fa fa-code-fork"></i> Repositories</a></li>';
-        html += '</ul>';
-        html += '</li>';
-        html += '<li class="dropdown">';
-        html += '<a class="dropdown-toggle" data-toggle="dropdown" href="">';
-        html += '                <i class="fa fa-envelope-o"></i> Mailing lists <b class="caret"></b></a>';
-        html += '<ul class="dropdown-menu navmenu-nav">';
-        html += '<li><a href="mls.html"><i class="fa fa-tachometer"></i> Overview</a></li>';
-        html += '<li><a href="mls-companies.html"><i class="fa fa-building-o"></i> Companies</a></li>';
-        html += '<li><a href="mls-contributors.html"><i class="fa fa-users"></i> Contributors</a></li>';
-        html += '<li><a href="mls-projects.html"><i class="fa fa-rocket"></i> Projects</a></li>';
-        html += '<li><a href="mls-repos.html"><i class="fa fa-code-fork"></i> Repositories</a></li>';
-        html += '</ul>';
-        html += '</li>';
-        html += '<li class="dropdown">';
-        html += '<a class="dropdown-toggle" data-toggle="dropdown" href="">';
-        html += '<i class="fa fa-check"></i> Code review<b class="caret"></b></a>';
-        html += '<ul class="dropdown-menu navmenu-nav">';
-        html += '<li><a href="scr.html"><i class="fa fa-tachometer"></i> Overview</a></li>';
-        html += '<li><a href="scr-companies.html"><i class="fa fa-building-o"></i> Companies</a></li>';
-        html += '<!--<li><a href="scr-contributors.html"><i class="fa fa-users"></i> Contributors</a></li>-->';
-        html += '<li><a href="scr-projects.html"><i class="fa fa-rocket"></i> Projects</a></li>';
-        html += '<li><a href="scr-repos.html"><i class="fa fa-code-fork"></i> Repositories</a></li>';
-        html += '</ul>';
-        html += '</li>';
+	
+	var mele = Report.getMenuElements();
+
+        html += '<li><a href="./"><i class="fa fa-home"></i> Home</a></li>';
+
+	if (mele.hasOwnProperty('scm')){
+            aux = mele.scm;
+            aux_html = composeSBSectionLinks('fa-code','Source code management','scm', aux);
+            html += aux_html;
+	}
+	if (mele.hasOwnProperty('scr')){
+            aux = mele.scr;
+            aux_html = composeSBSectionLinks('fa-check','Code review','scr', aux);
+            html += aux_html;
+	}
+	if (mele.hasOwnProperty('its')){
+            aux = mele.its;
+            aux_html = composeSBSectionLinks('fa-ticket','Tickets','its', aux);
+            html += aux_html;
+	}
+	if (mele.hasOwnProperty('mls')){
+            aux = mele.mls;
+            aux_html = composeSBSectionLinks('fa-envelope-o','Mailing lists','mls', aux);
+            html += aux_html;
+	}	
+        if (mele.hasOwnProperty('qaforums')){
+            aux = mele.qaforums;
+            aux_html = composeSBSectionLinks('fa-question','Q&A Forums','qaforums', aux);
+            html += aux_html;
+        }
+        if (mele.hasOwnProperty('irc')){
+            aux = mele.irc;
+            aux_html = composeSBSectionLinks('fa-comment-o','IRC','irc', aux);
+            html += aux_html;
+        }
+        if (mele.hasOwnProperty('downloads')){
+            aux = mele.downloads;
+            aux_html = composeSBSectionLinks('fa-download','Downloads','downloads', aux);
+            html += aux_html;
+        }
+        if (mele.hasOwnProperty('wiki')){
+            aux = mele.wiki;
+            aux_html = composeSBSectionLinks('fa-pencil-square-o','Wiki','wiki', aux);
+            html += aux_html;
+        }
+        if (mele.hasOwnProperty('studies')){
+            aux = mele.studies;
+            html += '<li class="dropdown">';
+            html += '<a href="#" class="dropdown-toggle" data-toggle="dropdown">';
+            html += '<i class="fa fa-lightbulb-o"></i>&nbsp;Studies <b class="caret"></b></a>';
+            html += '<ul class="dropdown-menu navmenu-nav">';
+            if (aux.indexOf('demographics') >= 0){
+            html += '<li><a href="demographics.html">&nbsp;Demographics</a></li>';
+            }
+            html += '</ul></li>';
+        }
     }else{
         html += '<li class="active"><a href="#">' + getSectionName() + '</a></li>';
     }
-    html += '<li><a href="data_sources.html">Data sources</a></li>';
+    html += '<li><a href="data_sources.html"><i class="fa fa-database"></i> Data sources</a></li>';
     html += '<li><a href="project_map.html"><i class="fa fa-icon fa-sitemap"></i> Project map</a></li>';
     html += '</ul>';
     return html;

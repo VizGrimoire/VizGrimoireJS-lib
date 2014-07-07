@@ -75,6 +75,9 @@ if (Loader === undefined) var Loader = {};
         // Loads also the project hierarchy
         data_load_file(Report.getProjectsHierarchyFile(), Report.setProjectsHierarchy);
 
+	// Loads the side menu elements
+	data_load_file(Report.getMenuElementsFile(), Report.setMenuElements);
+
         data_load_file(Report.getVizConfigFile(),
                 function(data, self) {Report.setVizConfig(data);});
 
