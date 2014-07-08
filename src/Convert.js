@@ -407,6 +407,12 @@ Convert.convertSideBar = function(project_id){
             }
             var htmlaux = composeSideBar(label);
             $("#"+div.id).append(htmlaux);
+
+            data = Report.getProjectData();
+            //document.title = data.project_name + ' Report by Bitergia';
+            //if (data.title) document.title = data.title;
+            //$(".report_date").text(data.date);
+            $(".report_name").text(data.project_name);
         });
     }    
 };

@@ -39,7 +39,7 @@ if (Report === undefined) var Report = {};
     var projects_data = {};
     var projects_datasources = {};
     var repos_map;
-    var project_file = data_dir + "/project-info.json",
+    var project_file = config_dir + "/project-info.json",
     viz_config_file = data_dir + "/viz_cfg.json",
     markers_file = data_dir + "/markers.json",
     repos_map_file = data_dir + "/repos-map.json",
