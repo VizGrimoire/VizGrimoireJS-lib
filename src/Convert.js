@@ -249,6 +249,50 @@ function composeProjectBreadcrumbs(project_id) {
     return html;
 }
 
+function composeHTMLNestedProjects(project_id, children, hierarchy){
+    var html = '';
+    var clen = children.length;
+    if(clen > 0){
+	html += '<li>';
+	html += '<a href="project.hmlt?project='+project_id+'">'+ getProjectTitle(project_id, hierarchy) + '</a>';
+        html += '&nbsp;<a data-toggle="collapse" data-parent="#accordion" href="#collapse'+project_id+'"><span class="badge">'+clen+'&nbsp;subprojects</span></a><div id="collapse'+project_id+'" class="panel-collapse collapse"><ul>';
+
+        $.each(children, function(id,value){
+            gchildren = getChildrenProjects(value.project_id, hierarchy);
+            html += composeHTMLNestedProjects(value.project_id, gchildren, hierarchy);
+        });
+        html += '</ul></li>';
+    }
+    else{
+        html += '<li><a href="project.hmlt?project='+project_id+'">' + getProjectTitle(project_id, hierarchy) + '</a></li>';
+    }
+    return html;
+}
+
+function composeProjectMap() {
+    /** 
+        compose the project navigation bar based on the hierarchy
+    **/
+    var html = '<ul>';
+    var hierarchy = Report.getProjectsHierarchy();
+    if (hierarchy.length === 0){
+        // we don't have information about subprojects
+        return '';
+    }
+    
+    project_id = 'root';
+    var children = getChildrenProjects(project_id, hierarchy);
+    var parents = getParentProjects(project_id, hierarchy);
+    $.each(children, function(id,value){
+	grandchildren = getChildrenProjects(value.project_id, hierarchy);
+	html += composeHTMLNestedProjects(value.project_id, grandchildren, hierarchy);
+    });
+    html += '</ul>';
+    return html;
+}
+
+
+
 function getSectionName(){
     var result = [];
     var sections = {"mls":"MLS overview",
@@ -519,7 +563,21 @@ Convert.convertModalProjectMap = function(){
     $.get(Report.getHtmlDir() + "modal_projects", function(modal_html){
         $("#ModalProjectMap").html(modal_html);
     });
-}*/;
+};*/
+
+Convert.convertProjectMap = function (){
+    var divs = $(".ProjectMap");
+    if (divs.length >0){
+        $.each(divs, function(id, div){
+            $(this).empty();
+            if (!div.id) div.id = "ProjectMap";// is this needed??;
+            //project_id will be empty for root project
+            var label;
+            var htmlaux = composeProjectMap();//composeSectionBreadCrumb(label);
+            $("#"+div.id).append(htmlaux);
+        });
+    }
+};
 
 Convert.convertFooter = function() {
     $.get(Report.getHtmlDir()+"footer.html", function(footer) {
@@ -1531,7 +1589,8 @@ Convert.convertBasicDivs = function() {
     Convert.convertNavbar();
     //Convert.convertProjectNavBar();
     Convert.convertSectionBreadcrumb();
-    Convert.convertModalProjectMap();
+    Convert.convertProjectMap();
+    //Convert.convertModalProjectMap();
     Convert.convertFooter(); 
     //Convert.convertRefcard(); //deprecated
     Convert.convertDSTable();
