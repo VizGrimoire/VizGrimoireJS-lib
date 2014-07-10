@@ -360,7 +360,8 @@ function composeSBSectionLinks(icon_text, title, ds_name, elements){
     'domains': 'Domains',
     'projects': 'Projects',
     'repos': 'Repositories',
-	'states': 'States'};
+    'tags': 'Tags',
+    'states': 'States'};
     html = '';
     html += '<li class="dropdown">';
     html += '<a href="#" class="dropdown-toggle" data-toggle="dropdown">';
