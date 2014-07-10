@@ -501,11 +501,12 @@ Convert.convertSectionBreadcrumb = function (project_id){
     }
 };
 
+/* DEPRECATED
 Convert.convertModalProjectMap = function(){
     $.get(Report.getHtmlDir() + "modal_projects", function(modal_html){
         $("#ModalProjectMap").html(modal_html);
     });
-};
+}*/;
 
 Convert.convertFooter = function() {
     $.get(Report.getHtmlDir()+"footer.html", function(footer) {
