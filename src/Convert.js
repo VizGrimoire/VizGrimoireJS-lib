@@ -141,6 +141,18 @@ function getProjectTitle(project_id, hierarchy){
     }
 }
 
+function compareProjectTitles(a, b){
+    if (a.project_id < b.project_id){
+	return -1;
+    }
+    else if (a.project_id > b.project_id){
+	return 1;
+    }
+    else{
+	return 0;
+    }
+}
+
 function getParentProjects(project_id, hierarchy){
     /** 
         Gets the parent project based on the hierarchy
@@ -175,6 +187,7 @@ function getChildrenProjects(project_id, hierarchy){
             children.push(aux);
         }
     });
+    children.sort(compareProjectTitles);
     return children;
 }
 
