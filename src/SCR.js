@@ -154,7 +154,14 @@ function SCR() {
             "name" : "Openers",
             "desc" : "Reviews openers",
             "action" : "opened"
-        }
+        },
+        "scr_reviewers" : {
+            "divid" : "scr_reviewers",
+            "column" : "reviewers",
+            "name" : "Reviewers",
+            "desc" : "Number of people reviewing contributions"
+     }
+
     };
 
     this.getMainMetric = function() {
