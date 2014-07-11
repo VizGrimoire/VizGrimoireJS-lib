@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2012-2014 Bitergia
+ * Copyright (C) 2012-2013 Bitergia
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,6 @@
  *
  * Authors:
  *   Alvaro del Castillo San Felix <acs@bitergia.com>
- *   Luis Cañas-Díaz <lcanas@bitergia.com>
  */
 
 if (Loader === undefined) var Loader = {};
@@ -55,14 +54,14 @@ if (Loader === undefined) var Loader = {};
             Report.setProjectData(Report.getConfig().project_info);
             if (Report.getConfig().markers)
                 data_load_file(Report.getMarkersFile(),
-			       function(data, self) {Report.setMarkers(data);});
+                    function(data, self) {Report.setMarkers(data);});
         }
         // No config file. Try to load all
         else {
             data_load_file(Report.getProjectFile(),
-			   function(data, self) {Report.setProjectData(data);});
+                function(data, self) {Report.setProjectData(data);});
             data_load_file(Report.getMarkersFile(),
-			   function(data, self) {Report.setMarkers(data);});
+                    function(data, self) {Report.setMarkers(data);});
         }
 
         // Multiproject not tested with config.json
@@ -80,7 +79,7 @@ if (Loader === undefined) var Loader = {};
 	data_load_file(Report.getMenuElementsFile(), Report.setMenuElements);
 
         data_load_file(Report.getVizConfigFile(),
-                       function(data, self) {Report.setVizConfig(data);});
+                function(data, self) {Report.setVizConfig(data);});
 
         data_load_metrics_definition();
         data_load_metrics();
@@ -125,7 +124,7 @@ if (Loader === undefined) var Loader = {};
         /**
            If file is fetched via HTTP then it executes the fn_data_set
            function with the data
-        **/
+         **/
         $.when($.getJSON(file)).done(function(history) {
             fn_data_set(history, self);
             end_data_load();
@@ -143,7 +142,7 @@ if (Loader === undefined) var Loader = {};
                 DS.setCompaniesData([]);
             else
                 data_load_file(DS.getCompaniesDataFile(),
-			       DS.setCompaniesData, DS);
+                    DS.setCompaniesData, DS);
         });
     }
 
@@ -155,7 +154,7 @@ if (Loader === undefined) var Loader = {};
                 DS.setReposData([]);
             else
                 data_load_file(DS.getReposDataFile(), 
-                               DS.setReposData, DS);
+                        DS.setReposData, DS);
         });
         // Repositories mapping between data sources
         data_load_file(Report.getReposMapFile(), Report.setReposMap);
@@ -217,7 +216,7 @@ if (Loader === undefined) var Loader = {};
         $.each(data_sources, function(i, DS) {
             if (DS.getName() === "mls")
                 data_load_file(DS.getTimeToAttentionDataFile(), 
-                               DS.setTimeToAttentionData, DS);
+                        DS.setTimeToAttentionData, DS);
         });
     }
 
@@ -225,9 +224,9 @@ if (Loader === undefined) var Loader = {};
         var data_sources = Report.getDataSources();
         $.each(data_sources, function(i, DS) {
             data_load_file(DS.getDemographicsAgingFile(),
-			   DS.setDemographicsAgingData, DS);
+                    DS.setDemographicsAgingData, DS);
             data_load_file(DS.getDemographicsBirthFile(),
-			   DS.setDemographicsBirthData, DS);
+                    DS.setDemographicsBirthData, DS);
         });
     }
 
@@ -369,7 +368,7 @@ if (Loader === undefined) var Loader = {};
                     return true;
                 }
                 Loader.data_load_item (item, ds, null,
-				       Convert.convertFilterStudyItem, filter, null);
+                        Convert.convertFilterStudyItem, filter, null);
                 return false;
             }
 
@@ -390,7 +389,7 @@ if (Loader === undefined) var Loader = {};
                                 continue;
                             }
                             Loader.data_load_item (items_map[i], ds, null,
-						   Convert.convertFilterStudyItem, filter, items_map);
+                                    Convert.convertFilterStudyItem, filter, items_map);
                         }
                     }
                     check = false;
@@ -403,11 +402,11 @@ if (Loader === undefined) var Loader = {};
                 if (Loader.check_item (item, filter) === false) {
                     check = false;
                     Loader.data_load_item (item, DS, null, 
-					   Convert.convertFilterStudyItem, filter, null);
+                        Convert.convertFilterStudyItem, filter, null);
                     if (filter === "companies") {
                         if ($.inArray(DS.getName(),ds_not_supported_company_top) === -1)
                             Loader.data_load_item_top (item, DS, null,
-						       Convert.convertFilterStudyItem, filter);
+                                    Convert.convertFilterStudyItem, filter);
                     }
                 }
             });
@@ -437,7 +436,7 @@ if (Loader === undefined) var Loader = {};
                 else if ($.inArray(item, companies) === -1) check = true;
                 // Check item data for all data sources
                 else if (DS.getCompaniesGlobalData()[item] === undefined ||
-			 DS.getCompaniesMetricsData()[item] === undefined) {
+                    DS.getCompaniesMetricsData()[item] === undefined) {
                     check = false;
                     return false;
                 }
@@ -457,7 +456,7 @@ if (Loader === undefined) var Loader = {};
                 else if ($.inArray(item, countries) === -1) check = true;
                 // Check item data for all data sources
                 else if (DS.getCountriesGlobalData()[item] === undefined ||
-			 DS.getCountriesMetricsData()[item] === undefined) {
+                    DS.getCountriesMetricsData()[item] === undefined) {
                     check = false;
                     return false;
                 }
@@ -472,7 +471,7 @@ if (Loader === undefined) var Loader = {};
                 else if ($.inArray(item, domains) === -1) check = true;
                 // Check item data for all data sources
                 else if (DS.getDomainsGlobalData()[item] === undefined ||
-			 DS.getDomainsMetricsData()[item] === undefined) {
+                    DS.getDomainsMetricsData()[item] === undefined) {
                     check = false;
                     return false;
                 }
@@ -487,7 +486,7 @@ if (Loader === undefined) var Loader = {};
                 else if ($.inArray(item, projects) === -1) check = true;
                 // Check item data for all data sources
                 else if (DS.getProjectsGlobalData()[item] === undefined ||
-			 DS.getProjectsMetricsData()[item] === undefined) {
+                    DS.getProjectsMetricsData()[item] === undefined) {
                     check = false;
                     return false;
                 }
@@ -558,9 +557,9 @@ if (Loader === undefined) var Loader = {};
         $.each(Report.getDataSources(), function(index, DS) {
             if (DS.getPeopleGlobalData()[item] === undefined ||
                 DS.getPeopleMetricsData()[item] === undefined) {
-                check = false;
-                return false;
-            }
+                    check = false;
+                    return false;
+                }
         });
         return check;
     };
@@ -570,15 +569,15 @@ if (Loader === undefined) var Loader = {};
         var file_evo = file + "-evolutionary.json";
         var file_static = file + "-static.json";
         $.when($.getJSON(file_evo),$.getJSON(file_static)
-              ).done(function(evo, global) {
-		  DS.addPeopleMetricsData(upeople_id, evo[0], DS);
-		  DS.addPeopleGlobalData(upeople_id, global[0], DS);
-		  if (Loader.check_people_item(upeople_id)) cb(upeople_id);
-              }).fail(function() {
-		  DS.addPeopleMetricsData(upeople_id, [], DS);
-		  DS.addPeopleGlobalData(upeople_id, [], DS);
-		  if (Loader.check_people_item(upeople_id)) cb(upeople_id);
-              });
+            ).done(function(evo, global) {
+            DS.addPeopleMetricsData(upeople_id, evo[0], DS);
+            DS.addPeopleGlobalData(upeople_id, global[0], DS);
+            if (Loader.check_people_item(upeople_id)) cb(upeople_id);
+        }).fail(function() {
+            DS.addPeopleMetricsData(upeople_id, [], DS);
+            DS.addPeopleGlobalData(upeople_id, [], DS);
+            if (Loader.check_people_item(upeople_id)) cb(upeople_id);
+        });
     };
 
     function getFilterSuffix(filter) {
@@ -678,68 +677,68 @@ if (Loader === undefined) var Loader = {};
         var file_evo = file +"-evolutionary.json";
         var file_static = file +"-static.json";
         $.when($.getJSON(file_evo),$.getJSON(file_static)
-              ).done(function(evo, global) {
-		  if (filter === "repos") {
-                      DS.addRepoMetricsData(item, evo[0], DS);
-                      DS.addRepoGlobalData(item, global[0], DS);
-		  } else if (filter === "companies") {
-                      DS.addCompanyMetricsData(item, evo[0], DS);
-                      DS.addCompanyGlobalData(item, global[0], DS);
-		  } else if (filter === "countries") {
-                      DS.addCountryMetricsData(item, evo[0], DS);
-                      DS.addCountryGlobalData(item, global[0], DS);
-		  } else if (filter === "domains") {
-                      DS.addDomainMetricsData(item, evo[0], DS);
-                      DS.addDomainGlobalData(item, global[0], DS);
-		  } else if (filter === "projects") {
-                      DS.addProjectMetricsData(item, evo[0], DS);
-                      DS.addProjectGlobalData(item, global[0], DS);
-		  }
+                ).done(function(evo, global) {
+            if (filter === "repos") {
+                DS.addRepoMetricsData(item, evo[0], DS);
+                DS.addRepoGlobalData(item, global[0], DS);
+            } else if (filter === "companies") {
+                DS.addCompanyMetricsData(item, evo[0], DS);
+                DS.addCompanyGlobalData(item, global[0], DS);
+            } else if (filter === "countries") {
+                DS.addCountryMetricsData(item, evo[0], DS);
+                DS.addCountryGlobalData(item, global[0], DS);
+            } else if (filter === "domains") {
+                DS.addDomainMetricsData(item, evo[0], DS);
+                DS.addDomainGlobalData(item, global[0], DS);
+            } else if (filter === "projects") {
+                DS.addProjectMetricsData(item, evo[0], DS);
+                DS.addProjectGlobalData(item, global[0], DS);
+            }
 
-              }).always(function() {
-		  // Check all items for a page
-		  if (page !== null) {
-                      if (Loader.check_filter_page (page, filter)) {
-			  if (cb.called_page === undefined) {
-                              cb.called_page = {};
-                              cb.called_page[filter] = true;
-                              cb(filter);
-			  }
-			  else if (!cb.called_page[filter]) {
-                              cb(filter);
-                              cb.called_page[filter] = true;
-			  }
-                      }
-		  } 
-		  // Check all items for repositories mapping
-		  else if (items_map !== null) {
-                      if (Loader.check_items (items_map, filter)) {
-			  if (cb.called_map === undefined) {
-                              cb.called_map = {};
-                              cb.called_map[filter] = true;
-                              cb(filter);
-			  }
-			  else if (!cb.called_map[filter]) {
-                              cb(filter);
-                              cb.called_map[filter] = true;
-			  }
-                      }
-		  }
-		  // Check just one item
-		  else {
-                      if (Loader.check_item (item, filter)) {
-			  if (cb.called_item === undefined) {
-                              cb.called_item = {};
-                              cb.called_item[filter] = true;
-                              cb(filter, item);
-			  }
-			  else if (!cb.called_item[filter]) {
-                              cb(filter, item);
-                              cb.called_item[filter] = true;
-			  }
-                      }
-		  }
-              });
+        }).always(function() {
+            // Check all items for a page
+            if (page !== null) {
+                if (Loader.check_filter_page (page, filter)) {
+                    if (cb.called_page === undefined) {
+                        cb.called_page = {};
+                        cb.called_page[filter] = true;
+                        cb(filter);
+                    }
+                    else if (!cb.called_page[filter]) {
+                        cb(filter);
+                        cb.called_page[filter] = true;
+                    }
+                }
+            } 
+            // Check all items for repositories mapping
+            else if (items_map !== null) {
+                if (Loader.check_items (items_map, filter)) {
+                    if (cb.called_map === undefined) {
+                        cb.called_map = {};
+                        cb.called_map[filter] = true;
+                        cb(filter);
+                    }
+                    else if (!cb.called_map[filter]) {
+                        cb(filter);
+                        cb.called_map[filter] = true;
+                    }
+                }
+            }
+            // Check just one item
+            else {
+                if (Loader.check_item (item, filter)) {
+                    if (cb.called_item === undefined) {
+                        cb.called_item = {};
+                        cb.called_item[filter] = true;
+                        cb(filter, item);
+                    }
+                    else if (!cb.called_item[filter]) {
+                        cb(filter, item);
+                        cb.called_item[filter] = true;
+                    }
+                }
+            }
+        });
     };
 
     function data_load_metrics() {
@@ -825,7 +824,7 @@ if (Loader === undefined) var Loader = {};
             if (DS.getGlobalTopData() === null) {check = false; return false;}
             if (DS.getDemographicsData().aging === undefined ||
                 DS.getDemographicsData().birth === undefined)
-            {check = false; return false;}
+                {check = false; return false;}
             if (DS.getName() === "its")
                 if (DS.getTimeToFixData() === null) {check = false; return false;}
             if (DS.getName() === "mls")
