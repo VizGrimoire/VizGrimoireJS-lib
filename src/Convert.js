@@ -249,13 +249,21 @@ function composeProjectBreadcrumbs(project_id) {
     return html;
 }
 
+function escapeString(string){
+    var aux = '';
+    aux = string.replace(' ','_');
+    aux = aux.toLowerCase();
+    return aux;        
+}
+
 function composeHTMLNestedProjects(project_id, children, hierarchy){
     var html = '';
     var clen = children.length;
+    var epid = escapeString(project_id);
     if(clen > 0){
 	html += '<li>';
-	html += '<a href="project.hmlt?project='+project_id+'">'+ getProjectTitle(project_id, hierarchy) + '</a>';
-        html += '&nbsp;<a data-toggle="collapse" data-parent="#accordion" href="#collapse'+project_id+'"><span class="badge">'+clen+'&nbsp;subprojects</span></a><div id="collapse'+project_id+'" class="panel-collapse collapse"><ul>';
+	html += '<a href="project.html?project='+epid+'">'+ getProjectTitle(project_id, hierarchy) + '</a>';
+        html += '&nbsp;<a data-toggle="collapse" data-parent="#accordion" href="#collapse'+epid+'"><span class="badge">'+clen+'&nbsp;subprojects</span></a><div id="collapse'+epid+'" class="panel-collapse collapse"><ul>';
 
         $.each(children, function(id,value){
             gchildren = getChildrenProjects(value.project_id, hierarchy);
@@ -264,7 +272,7 @@ function composeHTMLNestedProjects(project_id, children, hierarchy){
         html += '</ul></li>';
     }
     else{
-        html += '<li><a href="project.hmlt?project='+project_id+'">' + getProjectTitle(project_id, hierarchy) + '</a></li>';
+        html += '<li><a href="project.html?project='+project_id+'">' + getProjectTitle(project_id, hierarchy) + '</a></li>';
     }
     return html;
 }
