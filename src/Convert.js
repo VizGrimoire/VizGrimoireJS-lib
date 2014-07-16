@@ -58,8 +58,15 @@ Convert.convertMicrodashText = function () {
                 percentagevalue = Math.round(percentagevalue*10)/10;  // round "original" to 1 decimal
                 if (value === undefined) return;
                 var str_percentagevalue = '';
-                if (netvalue > 0) str_percentagevalue = '+' + percentagevalue;
-                if (netvalue < 0) str_percentagevalue = '-' + Math.abs(percentagevalue);
+
+                // if % is 0 the output is 0, if not it depends on the netvalue
+                if (percentagevalue === 0){
+                    str_percentagevalue = Math.abs(percentagevalue);
+                }else if (netvalue > 0){
+                    str_percentagevalue = '+' + percentagevalue;
+                }else if (netvalue < 0){
+                    str_percentagevalue = '-' + Math.abs(percentagevalue);
+                }
 
                 if(show_name){
                     html += '<div class="col-md-3">';
@@ -69,7 +76,7 @@ Convert.convertMicrodashText = function () {
 
                 html += '<span class="dayschange">Last '+period+' days:</span>';
                 html += ' '+Report.formatValue(value) + '<br>';
-                if (netvalue === 0) {
+                if (percentagevalue === 0) {
                     html += '<i class="fa fa-arrow-circle-right"></i> <span class="zeropercent">&nbsp;'+str_percentagevalue+'%</span>&nbsp;';
                 } else if (netvalue > 0) {
                     html += '<i class="fa fa-arrow-circle-up"></i> <span class="pospercent">&nbsp;'+str_percentagevalue+'%</span>&nbsp;';
