@@ -1507,11 +1507,16 @@ if (Viz === undefined) var Viz = {};
     // For example: "committers.all":{"commits":[5310, ...],"name":["Brion
     // Vibber",..]}
 
-    function displayTop(div, ds, all, selected_metric, period, period_all, graph, titles, limit, people_links, threads_links) {
+    function displayTop(div, ds, all, selected_metric, period, period_all, graph, titles, limit, people_links, threads_links, repository) {
         var desc_metrics = ds.getMetrics();
 
         if (all === undefined) all = true;
-        var history = ds.getGlobalTopData();
+        var history;
+        if (repository === undefined){
+            history = ds.getGlobalTopData();
+        }else{
+            history = ds.getRepositoriesTopData()[repository];
+        }
         if (period_all === true){
             var filtered_history = {};
             $.each(history, function(key, value) {

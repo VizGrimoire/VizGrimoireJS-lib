@@ -540,7 +540,7 @@ if (Report === undefined) var Report = {};
 
     // Data available in global
     Report.convertStudiesGlobal = function() {
-        Convert.convertTop();
+        //Convert.convertTop();
         Convert.convertPeople(); // using on demand file loading
     };
 
@@ -569,6 +569,14 @@ Loader.data_ready_global(function() {
     Report.configDataSources();
     Report.convertGlobal();
     Report.convertStudiesGlobal();
+});
+
+
+Loader.data_ready(function(){
+    // when this is triggered, the scm-repos has been already read
+    // but .. are the tops by repos already assigned? -> we need a check
+    study = "repos";
+    Convert.convertFilterTop(study);
 });
 
 Loader.data_ready(function() {

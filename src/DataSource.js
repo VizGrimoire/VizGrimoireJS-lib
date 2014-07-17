@@ -325,6 +325,22 @@ function DataSource(name, basic_metrics) {
         return this.repos_global_data;
     };
 
+    // Repos + top
+    this.repositories_top_data = {};
+    this.addRepositoryTopData = function(repository, data, self) {
+        if (self === undefined) self = this;
+        if (self.repositories_top_data[repository] === undefined)
+            self.repositories_top_data[repository] = {};
+        self.repositories_top_data[repository] = data;
+    };
+    this.getRepositoriesTopData = function() {
+        return this.repositories_top_data;
+    };
+    this.setRepositoriesTopData = function(data, self) {
+        if (self === undefined) self = this;
+        self.repositories_top_data = data;
+    };
+
     // Countries data
     this.countries_data_file = 
         this.data_dir+'/'+ this.name +'-countries.json';
@@ -1099,10 +1115,10 @@ function DataSource(name, basic_metrics) {
         Viz.displayMarkovTable(div_id, data, title);
     };
 
-    this.displayTop = function(div, all, show_metric, period, period_all, graph, limit, people_links, threads_links) {
+    this.displayTop = function(div, all, show_metric, period, period_all, graph, limit, people_links, threads_links, repository) {
         if (all === undefined) all = true;
         var titles = null;
-        Viz.displayTop(div, this, all, show_metric, period, period_all, null, null, limit, people_links, threads_links);
+        Viz.displayTop(div, this, all, show_metric, period, period_all, null, null, limit, people_links, threads_links, repository);
 /*
         if ( (this.getName() == "mls") && (show_metric == "threads") ){
             Viz.displayTopThreads(div, this, all, show_metric, period, period_all, limit, people_links, threads_links);
