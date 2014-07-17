@@ -30,8 +30,13 @@ if (Loader === undefined) var Loader = {};
     var data_repos_callbacks = [];
     var check_companies = false, check_repos = false, check_countries = false;
     var ds_not_supported_company_top = ['scr','irc','mediawiki'];
+    var ds_supporting_top_repos = ['scm'];
 
     Loader.data_ready = function(callback) {
+        /**
+         This function is used to push methods to an array of callbacks. That
+         array is used to wait until some sets of JSON files are loaded
+         **/
         data_callbacks.push(callback);
     };
 
@@ -864,6 +869,11 @@ if (Loader === undefined) var Loader = {};
 
     // Two steps data loading
     function end_data_load()  {
+        /** 
+         Every time data is loaded (file read and loaded) this function
+         is called in order to execute the callbacks. It uses two different
+         checks which return true when all data is available 
+         **/
         if (check_data_loaded_global()) {
             for (var i = 0; i < data_global_callbacks.length; i++) {
                 data_global_callbacks[i]();
