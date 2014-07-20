@@ -63,7 +63,12 @@ function QAForums() {
             "name" : "Persons posting questions",
             "desc" : "Number of persons asking questions in Q&A forums(s)",
             "column" : "qsenders"
-	}
+	},
+        "qaforums_participants" : {
+            "name" : "Participants",
+            "desc" : "Number of persons posting messages",
+            "column" : "participants"
+        }
     };
 
     this.getMainMetric = function() {
