@@ -957,6 +957,7 @@ Convert.convertTop = function() {
             var threads_links = $(this).data('threads_links');
             var period = $(this).data('period');
             var period_all = $(this).data('period_all');
+            var repository = Report.getParameterByName("repository");
             div.id = ds + "-" + div_id_top + (unique++);
             if (graph){
                 div.id += "-"+graph;
@@ -968,7 +969,7 @@ Convert.convertTop = function() {
                 limit = 10;
             }
             DS.displayTop(div.id, show_all, top_metric, period, period_all,
-                          graph, limit, people_links, threads_links);
+                          graph, limit, people_links, threads_links, repository);
         });
     }
 };
@@ -1626,6 +1627,18 @@ Convert.convertBasicMetrics = function(config) {
     Convert.convertMetricsEvol();
     Convert.convertTimeTo();
     Convert.convertMarkovTable();
+};
+
+Convert.convertFilterTop = function(filter){
+    /**
+     Display top tables.
+     If item is provided through URL parameter it waits and display filtered 
+     information, if not it displays total/global information.
+     **/
+    var item = Report.getParameterByName("repository");
+    // If data is not available load them and cb this function
+    if (Loader.filterTopCheck(item, filter) === false) return;
+    Convert.convertTop();
 };
 
 })();
