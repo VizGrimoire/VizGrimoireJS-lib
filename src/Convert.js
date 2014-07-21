@@ -617,6 +617,54 @@ Convert.convertSummary = function() {
     }
 };
 
+function composeDropDownRepo(DS){
+    var repository = Report.getParameterByName("repository");
+    if (repository && $.inArray(repository, DS.getReposData()) < 0) return '';
+    var section = '';
+    if (repository !== undefined){
+        section = repository;
+    }else{
+        section = 'All repositories';
+    }
+    html = '<div class="row"><span class="col-md-12">';
+    html = '<ol class="filterbar"><li>Filtered by:&nbsp;&nbsp;</li>';
+    html += '<li><div class="dropdown"><button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown"> '+ section + ' <span class="caret"></span></button>';
+    html += '<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">';
+
+    if (repository){
+        html += '<li role="presentation"><a role="menuitem" tabindex="-1" href="scm-contributors.html">';
+        html += 'All repositories';
+        html +='</a></li>';
+    }
+    $.each(DS.getReposData(), function(id, value){
+        if (value === repository) return;
+        html += '<li role="presentation"><a role="menuitem" tabindex="-1" href="?repository=';
+        html += value;
+        html +='">';
+        html += value;
+        html +='</a></li>';
+    });
+    html += '</ul></div></li></ol>';
+    html += '</span></div>'; //row + span12
+    return html;
+}
+
+Convert.convertRepositorySelector = function(){
+    var divs = $(".repository-selector");
+    if (divs.length > 0) {
+        $.each(divs, function(id, div) {
+            $(this).empty();
+            var ds = $(this).data('data-source');
+            var DS = Report.getDataSourceByName(ds);
+            if (DS === null) return;
+            div.id = ds+'-repository-selector';
+            var htmlaux = composeDropDownRepo(DS);
+            $("#"+div.id).append(htmlaux);
+            //DS.displayGlobalSummary(div.id);
+        });
+    }
+};
+
 function displayReportData() {
     data = Report.getProjectData();
     document.title = data.project_name + ' Report by Bitergia';
@@ -1639,6 +1687,7 @@ Convert.convertFilterTop = function(filter){
     // If data is not available load them and cb this function
     if (Loader.filterTopCheck(item, filter) === false) return;
     Convert.convertTop();
+    Convert.convertRepositorySelector();
 };
 
 })();
