@@ -660,10 +660,17 @@ function DataSource(name, basic_metrics) {
     };
 
     // TODO: support multiproject
-    this.displayMetricsEvol = function(metric_ids, div_target, config, convert) {
-        var data = this.getData();
+    this.displayMetricsEvol = function(metric_ids, div_target, config, convert, repository) {
+        var data;
+        //if we get a repo name, we display its history
+        if (repository && ($.inArray(repository, this.getReposData()) >= 0)){
+            data = this.getReposMetricsData()[repository];
+        }
+        else{
+            data = this.getData();
+        }
         if (convert) data = DataProcess.convert(data, convert, metric_ids);
-        Viz.displayMetricsEvol(this, metric_ids, data, div_target, config);
+        Viz.displayMetricsEvol(this, metric_ids, data, div_target, config, repository);
     };
 
     this.isPageDisplayed = function (visited, linked, total, displayed) {

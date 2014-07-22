@@ -627,7 +627,7 @@ function composeDropDownRepo(DS){
         section = 'All repositories';
     }
     html = '<div class="row"><span class="col-md-12">';
-    html = '<ol class="filterbar"><li>Filtered by:&nbsp;&nbsp;</li>';
+    html = '<ol class="filterbar"><li>Filtered by repository:&nbsp;&nbsp;</li>';
     html += '<li><div class="dropdown"><button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown"> '+ section + ' <span class="caret"></span></button>';
     html += '<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">';
 
@@ -867,11 +867,12 @@ Convert.convertMetricsEvol = function() {
             config_metric[key] = value;
         });
     }
-
     var div_param = "MetricsEvol";
     var divs = $("." + div_param);
     if (divs.length > 0) {
         $.each(divs, function(id, div) {
+            // FIXME add check of "repository" var to avoid being executed
+            //if present. See convertMetricsEvolSelector
             var config_viz = {};
             $.each(config_metric, function(key, value) {
                 config_viz[key] = value;
@@ -891,6 +892,52 @@ Convert.convertMetricsEvol = function() {
         });
     }
 };
+
+Convert.convertMetricsEvolSelector = function() {
+    /**
+     This function compose the HTML when "repository" GET parameter is passed
+     via URL. In that case convertMetricsEvolSelector is not executed.
+     Having this function we avoid slowing down the load of MetricsEvol when
+     it is not needed to wait for repository data.
+     **/
+    // FIXME: this code and convertMetricsEvol is 90% the same. 
+    var config_metric = {};
+
+    config_metric.show_desc = false;
+    config_metric.show_title = true;
+    config_metric.show_labels = true;
+
+    var config = Report.getVizConfig();
+    if (config) {
+        $.each(config, function(key, value) {
+            config_metric[key] = value;
+        });
+    }
+    var div_param = "MetricsEvol";
+    var divs = $("." + div_param);
+    if (divs.length > 0) {
+        $.each(divs, function(id, div) {
+            var config_viz = {};
+            $.each(config_metric, function(key, value) {
+                config_viz[key] = value;
+            });
+            $(this).empty();
+            var metrics = $(this).data('metrics');
+            var ds = $(this).data('data-source');
+            var DS = Report.getDataSourceByName(ds);
+            if (DS === null) return;
+            var repository = Report.getParameterByName("repository");
+
+            config_viz = loadHTMLEvolParameters(div, config_viz);
+
+            div.id = metrics.replace(/,/g,"-")+"-"+ds+"-metrics-evol-"+this.id;
+            div.id = div.id.replace(/\n|\s/g, "");
+            DS.displayMetricsEvol(metrics.split(","),div.id,
+                    config_viz, $(this).data('convert'), repository);
+        });
+    }
+};
+
 
 Convert.convertMetricsEvolSet = function() {
     div_param = "MetricsEvolSet";
@@ -1557,6 +1604,7 @@ Convert.convertFilterItemTop = function(filter, item) {
     }
 };
 
+
 Convert.convertFilterStudyItem = function (filter, item) {
     // Control convert is not called several times per filter
     var convertfn = Convert.convertFilterStudyItem;
@@ -1586,6 +1634,8 @@ Convert.convertFilterStudyItem = function (filter, item) {
     Convert.convertProjectData();
 
     Convert.activateHelp();
+
+    Convert.convertMetricsEvolSelector();
 
     convertfn.done[filter] = true;
 };
@@ -1672,7 +1722,8 @@ Convert.convertBasicDivsMisc = function() {
 };
 
 Convert.convertBasicMetrics = function(config) {
-    Convert.convertMetricsEvol();
+    var item = Report.getParameterByName("repository");
+    if (item === undefined) Convert.convertMetricsEvol();
     Convert.convertTimeTo();
     Convert.convertMarkovTable();
 };
