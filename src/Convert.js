@@ -399,6 +399,7 @@ function composeSideBar(project_id){
         project_id = 'root';
     }
     var html='';
+    var html_extra='';
     html += '<ul class="nav navmenu-nav">';
     if (project_id === 'root'){
 	
@@ -457,11 +458,20 @@ function composeSideBar(project_id){
             }
             html += '</ul></li>';
         }
+        if (mele.hasOwnProperty('extra')){
+            aux = mele.extra;
+            html_extra += '<li class="sidemenu-divider"></li>';
+            html_extra += '<li class="sidemenu-smallheader">More links:</li>';
+            $.each(aux, function(id,value){
+                html_extra += '<li><a href="'+ value[1]+'">&nbsp;' + value[0] + '</a></li>';
+            });
+        }
     }else{
         html += '<li class="active"><a href="#">' + getSectionName() + '</a></li>';
     }
     html += '<li><a href="data_sources.html"><i class="fa fa-database"></i> Data sources</a></li>';
     html += '<li><a href="project_map.html"><i class="fa fa-icon fa-sitemap"></i> Project map</a></li>';
+    html += html_extra;
     html += '</ul>';
     return html;
 }

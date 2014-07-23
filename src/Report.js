@@ -136,6 +136,7 @@ if (Report === undefined) var Report = {};
         return projects_hierarchy_file;
     };
 
+    /** menu_elements contains JSON for side menu**/
     function getMenuElements(){
 	return menu_elements;
     }
