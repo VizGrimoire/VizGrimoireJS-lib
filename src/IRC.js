@@ -59,6 +59,13 @@ function IRC() {
         return id_label;
     };
 
+    this.getLabelForRepository = function(){
+        return 'channel';
+    };
+    this.getLabelForRepositories = function(){
+        return 'channels';
+    };
+
     this.displayData = function(divid) {
         var div_id = "#" + divid;
 

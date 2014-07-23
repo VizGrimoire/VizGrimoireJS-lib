@@ -383,9 +383,15 @@ function composeSBSectionLinks(icon_text, title, ds_name, elements){
     html += '<i class="fa ' + icon_text + '"></i>&nbsp;' + title + ' <b class="caret"></b></a>';
     html += '<ul class="dropdown-menu navmenu-nav">';
     html += '<li><a href="' + ds_name + '.html">&nbsp;Overview</a></li>';
-    $.each(elements, function(id,value){
+    $.each(elements, function(id,value){        
 	if (text.hasOwnProperty(value)){
-            html += '<li><a href="'+ ds_name + '-' + value + '.html">&nbsp;' +text[value] + '</a></li>';
+            var label = text[value];
+            if (value === 'repos'){
+                var DS = Report.getDataSourceByName(ds_name);
+                label = DS.getLabelForRepositories();
+                label = label.charAt(0).toUpperCase() + label.slice(1);
+            }
+            html += '<li><a href="'+ ds_name + '-' + value + '.html">&nbsp;' + label + '</a></li>';
 	}else{
             html += '<li><a href="'+ ds_name + '-' + value + '.html">&nbsp;' + value + '</a></li>';
 	}
