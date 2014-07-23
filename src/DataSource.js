@@ -1025,6 +1025,14 @@ function DataSource(name, basic_metrics) {
     // Return labels to be shown in the summary
     this.getSummaryLabels = function () {};
 
+    this.getLabelForRepository = function(){
+        return 'repository';
+    };
+    this.getLabelForRepositories = function(){
+        return 'repositories';
+    };
+
+
     this.displaySummary = function(report, divid, item, ds) {
         // Prints all the keys:values for an item
         // This function is no longer used on the dash

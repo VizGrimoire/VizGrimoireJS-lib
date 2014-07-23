@@ -122,6 +122,14 @@ function ITS() {
         return labels;
     };
 
+    this.getLabelForRepository = function(){
+        return 'tracker';
+    };
+    this.getLabelForRepositories = function(){
+        return 'trackers';
+    };
+
+
     this.displayData = function(divid) {
         var div_id = "#" + divid;
         var str = this.global_data.url;

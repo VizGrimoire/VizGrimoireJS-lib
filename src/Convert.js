@@ -636,27 +636,30 @@ function composeDropDownRepo(DS){
     if (repository && $.inArray(repository, DS.getReposData()) < 0) return '';
     var dsname = DS.getName();
     var section = '';
+    var label_repo = DS.getLabelForRepository();
+    var label_repo_plural = DS.getLabelForRepositories();
+
     if (repository !== undefined){
         section = repository;
     }else{
-        section = 'All repositories';
+        section = 'All ' + label_repo_plural;
     }
     html = '<div class="row"><span class="col-md-12">';
 
     //FIXME this should be in a method DS.getLabel('repository') or similar
-    var label_repo = 'repository';
+    /*var label_repo = 'repository';
     if (dsname === 'its'){ 
         label_repo = 'tracker';
     }else if (dsname === 'mls'){
         label_repo = 'mailing list';
-    }
+    }*/
     html = '<ol class="filterbar"><li>Filtered by '+ label_repo +':&nbsp;&nbsp;</li>';
     html += '<li><div class="dropdown"><button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown"> '+ section + ' <span class="caret"></span></button>';
     html += '<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">';
 
     if (repository){
         html += '<li role="presentation"><a role="menuitem" tabindex="-1" href="'+dsname+'-contributors.html">';
-        html += 'All repositories';
+        html += 'All ' + label_repo_plural;
         html +='</a></li>';
     }
     $.each(DS.getReposData(), function(id, value){
