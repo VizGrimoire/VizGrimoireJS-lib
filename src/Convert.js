@@ -634,6 +634,7 @@ Convert.convertSummary = function() {
 function composeDropDownRepo(DS){
     var repository = Report.getParameterByName("repository");
     if (repository && $.inArray(repository, DS.getReposData()) < 0) return '';
+    var dsname = DS.getName();
     var section = '';
     if (repository !== undefined){
         section = repository;
@@ -641,12 +642,20 @@ function composeDropDownRepo(DS){
         section = 'All repositories';
     }
     html = '<div class="row"><span class="col-md-12">';
-    html = '<ol class="filterbar"><li>Filtered by repository:&nbsp;&nbsp;</li>';
+
+    //FIXME this should be in a method DS.getLabel('repository') or similar
+    var label_repo = 'repository';
+    if (dsname === 'its'){ 
+        label_repo = 'tracker';
+    }else if (dsname === 'mls'){
+        label_repo = 'mailing list';
+    }
+    html = '<ol class="filterbar"><li>Filtered by '+ label_repo +':&nbsp;&nbsp;</li>';
     html += '<li><div class="dropdown"><button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown"> '+ section + ' <span class="caret"></span></button>';
     html += '<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">';
 
     if (repository){
-        html += '<li role="presentation"><a role="menuitem" tabindex="-1" href="scm-contributors.html">';
+        html += '<li role="presentation"><a role="menuitem" tabindex="-1" href="'+dsname+'-contributors.html">';
         html += 'All repositories';
         html +='</a></li>';
     }

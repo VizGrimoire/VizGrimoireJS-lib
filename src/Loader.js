@@ -30,7 +30,7 @@ if (Loader === undefined) var Loader = {};
     var data_repos_callbacks = [];
     var check_companies = false, check_repos = false, check_countries = false;
     var ds_not_supported_company_top = ['scr','irc','mediawiki'];
-    var ds_supporting_top_repos = ['scm'];
+    var ds_supporting_top_repos = ['scm','mls','its']; //filter by repo in contributors panel
 
     /**
      This two functionsa are used to push methods to an array of callbacks. That
