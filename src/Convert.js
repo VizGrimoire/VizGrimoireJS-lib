@@ -320,6 +320,7 @@ function getSectionName(){
                     "people":"Contributor",
                     "company":"Company",
                     "country":"Country",
+                    "domain":"Domain",
                     "repository":"Repository",
                     "data_sources":"Data sources",
                     "project_map":"Project map"};
