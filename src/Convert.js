@@ -1427,7 +1427,8 @@ Convert.convertFilterItemsMiniCharts = function(filter, page) {
             var start = $(this).data('start');
             var end = $(this).data('end');
             var convert = $(this).data('convert');
-
+            if ($(this).data('frame-time')) //FIXME we should check the value
+                config_metric.frame_time = true;
             var remove_last_point = $(this).data('remove-last-point');
             if (remove_last_point) config_metric.remove_last_point = true;
 

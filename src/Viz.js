@@ -513,6 +513,7 @@ if (Viz === undefined) var Viz = {};
         var lines_data = [];
         var history = {};
 
+
         // TODO: move this data logic to Data Source
         $.each(items, function(item, data) {
             if (data === undefined) return false;
@@ -520,6 +521,8 @@ if (Viz === undefined) var Viz = {};
 
             if (convert) data = DataProcess.convert(data, convert, metric);
             if (start) data = DataProcess.filterDates(start, end, data);
+            if (config.frame_time) data =
+                DataProcess.frameTime(data, [metric]);
 
             /*if (config.remove_last_point) data =
                 DataProcess.revomeLastPoint(data);*/
