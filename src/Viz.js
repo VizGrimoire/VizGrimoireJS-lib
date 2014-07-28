@@ -220,7 +220,7 @@ if (Viz === undefined) var Viz = {};
         for (var j = 0; j < people_data[var_names.id].length; j++) {
             if (limit && limit <= j) break;
             var metric_value = people_data[var_names.action][j];
-            rows_html += "<tr><td>#" + (j+1) + "</td>";
+            rows_html += "<tr><td>" + (j+1) + "</td>";
             rows_html += "<td>";
             if (people_links){
                 rows_html += '<a href="people.html?id=' +people_data[var_names.id][j]+ '">';
@@ -245,7 +245,11 @@ if (Viz === undefined) var Viz = {};
                 var data_period_formatted = data_period;
                 if (data_period === ""){
                     data_period = "all";
-                    data_period_formatted = "complete history";
+                    data_period_formatted = "Complete history";
+                }else if(data_period === "last month"){
+                    data_period_formatted = "Last 30 days";
+                }else if (data_period === "last year"){
+                    data_period_formatted = "Last 365 days";
                 }
                 var data_period_nows = data_period.replace(/\ /g, '');
                 var html = '';
@@ -275,15 +279,29 @@ if (Viz === undefined) var Viz = {};
             desc = desc.toLowerCase();
         }
 
+        if (selected_period === ""){
+            data_period_formatted = "Complete history";
+        }else if(selected_period === "last month"){
+            data_period_formatted = "Last 30 days";
+        }else if (selected_period === "last year"){
+            data_period_formatted = "Last 365 days";
+        }
+
+
         if (tabs === true){
             //title += '<span class="TabTitle">Top ' + desc + '</span>';
             title += '<h6>Top ' + desc + '</h6>';
         }else{
             //title += '<span class="TabTitle">Top ' + desc + ' ' + selected_period+ '</span>';
-            title += '<h6>Top ' + desc + ' ' + selected_period+ '</h6>';
+            //title += '<h6>Top ' + desc + ' ' + selected_period+ '</h6>';
+            title += '<div class="toptable-title">' + data_period_formatted+ '</div>';
         }
         return title;
     }
+
+    String.prototype.capitalize = function() {
+        return this.replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
+    };
 
     function displayTopMetric_new(div_id, data, metric, limit, desc_metrics, people_links, threads_links, selected_period){
         /* This function will replace displayTopMetric + displayTopMetricTable */
@@ -330,15 +348,20 @@ if (Viz === undefined) var Viz = {};
                         first = false;
                     }
                     tables += '<div class="tab-pane fade'+ html  +'" id="' + ds_name + metric + data_period_nows + '">';
-                    tables += '<table class="table table-striped"><tbody>';
+                    //tables += '<table class="table table-striped"><tbody>';
+                    tables += '<table class="table table-striped">';
                     if (metric === "threads"){
                         tables += composeTopRowsThreads(data[key], limit, threads_links);
                     }else if (metric === "packages" || metric === "ips"){
                         tables += composeTopRowsDownloads(data[key], limit, var_names);
                     }else{
+                        unit = desc_metrics[ds_name + "_" + metric].action;
+                        tables += '<thead><th>#</th><th>' +metric.capitalize()+'</th><th>'+unit.capitalize() +'</th></thead><tbody>';
                         tables += composeTopRowsPeople(data[key], limit, people_links, var_names);
+                        tables += '</tbody>';
                     }
-                    tables += "</tbody></table>";
+                    //tables += "</tbody></table>";
+                    tables += "</table>";
                     tables += '</div>';
                 }
             }
@@ -350,14 +373,20 @@ if (Viz === undefined) var Viz = {};
             }else if (metric === "packages" || metric === "ips"){
                 tables += composeTopRowsDownloads(data, limit, var_names);
             }else{
+                unit = desc_metrics[ds_name + "_" + metric].action;
+                tables += '<thead><th>#</th><th>' +metric.capitalize()+'</th><th>'+unit.capitalize()+'</th></thead><tbody>';
                 tables += composeTopRowsPeople(data, limit, people_links, var_names);
+                tables += '</tbody>';
             }
             tables += "</tbody></table>";
             //tables += '</div>';
         }
         tables += '</div>'; // this closes div tab-content
 
-        div.append(title);
+        if (gen_tabs === false){
+            // prints tabs
+            div.append(title);
+        }
         div.append(tabs);
         div.append(tables);
         if (gen_tabs === true){
