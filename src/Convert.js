@@ -1324,6 +1324,7 @@ Convert.convertFilterItemsNav = function(filter, page) {
     var divlabel = "FilterItemsNav";
     divs = $("."+divlabel);
     if (divs.length > 0) {
+        var cont = 0;
         $.each(divs, function(id, div) {
             ds = $(this).data('data-source');
             DS = Report.getDataSourceByName(ds);
@@ -1333,7 +1334,8 @@ Convert.convertFilterItemsNav = function(filter, page) {
             if (!filter) return;
             if ($(this).data('page')) page = $(this).data('page');
             order_by = $(this).data('order-by');
-            div.id = ds+"-"+divlabel;
+            div.id = ds+"-"+divlabel + "-" + cont;
+            cont += 1;
             $(this).empty();
             if (filter === "repos")
                 DS.displayItemsNav(div.id, filter, page, order_by);
