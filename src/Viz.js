@@ -807,7 +807,6 @@ if (Viz === undefined) var Viz = {};
         var legend_div = null;
         if (config_metric && config_metric.legend && config_metric.legend.container)
             legend_div = $('#'+config_metric.legend.container);
-
         var config = {
             subtitle : title,
             legend: {
@@ -891,6 +890,7 @@ if (Viz === undefined) var Viz = {};
                 config.subtitle = config_metric.custom_title;
             }
         }
+        
 
         // Show last time series as a point, not a line. The data is incomplete
         // Only show for single lines when time series is complete
@@ -1081,7 +1081,7 @@ if (Viz === undefined) var Viz = {};
         }
 
         var config = {
-            title : title,
+            subtitle : title,
             grid : {
                 verticalLines : false,
                 horizontalLines : false,
@@ -1156,7 +1156,6 @@ if (Viz === undefined) var Viz = {};
             config.pie = {show : true};
             config.mouse.position = 'ne';
         }
-
 
         graph = Flotr.draw(container, chart_data, config);
     }

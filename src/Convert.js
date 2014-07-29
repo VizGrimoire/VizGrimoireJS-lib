@@ -913,6 +913,7 @@ Convert.convertMetricsEvol = function() {
             $(this).empty();
             var metrics = $(this).data('metrics');
             var ds = $(this).data('data-source');
+            config_viz.title = $(this).data('title');
             var DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
 
