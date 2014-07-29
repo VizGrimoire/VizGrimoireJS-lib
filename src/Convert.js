@@ -1298,6 +1298,8 @@ Convert.convertFilterItemsGlobal = function(filter) {
                 container: $(this).data('legend-div')};
             } else config_metric.legend = {container: null};
             config_metric.graph = $(this).data('graph');
+            config_metric.title = $(this).data('title');
+            config_metric.show_title = 1;
             div.id = metric+"-"+divlabel;
             $(this).empty();
             if (filter === "repos")

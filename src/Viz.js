@@ -1899,7 +1899,11 @@ if (Viz === undefined) var Viz = {};
         config = checkBasicConfig(config);
         var title = '';
         if (config.show_title){
-            title = getMetricFriendlyName(ds, metrics);
+            if (config.title === undefined){        
+                title = getMetricFriendlyName(ds, metrics);
+            }else{
+                title = config.title;
+            }
         }
         displayMetricsLines(div_target, metrics, data, title, config);
     }
@@ -1986,7 +1990,11 @@ if (Viz === undefined) var Viz = {};
     function displayMetricSubReportStatic(metric, data, order,
             div_id, config) {
         config = checkBasicConfig(config);
-        var title = metric;
+        var title = '';
+        if (config.title === undefined)
+            title = metric;
+        else
+            title = config.title;
         var metric_data = [];
         var labels = [];
 
