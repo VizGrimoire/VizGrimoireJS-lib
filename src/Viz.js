@@ -966,6 +966,8 @@ if (Viz === undefined) var Viz = {};
             if (config_metric.custom_title){
                 config.subtitle = config_metric.custom_title;
             }
+            // value box on top
+            config.mouse.position = 'n';
         }
 
         var number_lines = lines_data.length;
