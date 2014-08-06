@@ -578,6 +578,7 @@ Loader.data_ready(function(){
     // but .. are the tops by repos already assigned? -> we need a check
     study = "repos";
     Convert.convertFilterTop(study);
+    Convert.convertModifiedBasicMetrics(study);
 });
 
 Loader.data_ready(function() {

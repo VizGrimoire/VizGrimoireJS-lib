@@ -874,6 +874,10 @@ function loadHTMLEvolParameters(htmldiv, config_viz){
     } else {
         config_viz.custom_help = "";
     }
+    // Repository filter used to display only certain repos in a chart
+    if ($(htmldiv).data('repo-filter')){
+        config_viz.repo_filter = $(htmldiv).data('repo-filter');
+    }
     // In unixtime
     var start = $(htmldiv).data('start');
     if (start) config_viz.start_time = start;
@@ -913,6 +917,7 @@ Convert.convertMetricsEvol = function() {
             $(this).empty();
             var metrics = $(this).data('metrics');
             var ds = $(this).data('data-source');
+            //FIXME title is duplicated with custom-title
             config_viz.title = $(this).data('title');
             var DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
@@ -926,6 +931,50 @@ Convert.convertMetricsEvol = function() {
         });
     }
 };
+
+Convert.convertMetricsEvolCustomized = function(filter) {
+    // General config for metrics viz
+    var config_metric = {};
+
+    config_metric.show_desc = false;
+    config_metric.show_title = true;
+    config_metric.show_labels = true;
+
+    var config = Report.getVizConfig();
+    if (config) {
+        $.each(config, function(key, value) {
+            config_metric[key] = value;
+        });
+    }
+    var div_param = "MetricsEvolCustomized";
+    var divs = $("." + div_param);
+    if (divs.length > 0) {
+        $.each(divs, function(id, div) {
+            // FIXME add check of "repository" var to avoid being executed
+            //if present. See convertMetricsEvolSelector
+            if (filter !== $(this).data('filter')) return;
+            var config_viz = {};
+            $.each(config_metric, function(key, value) {
+                config_viz[key] = value;
+            });
+            $(this).empty();
+            var metrics = $(this).data('metrics');
+            var ds = $(this).data('data-source');
+            //FIXME title is duplicated with custom-title
+            config_viz.title = $(this).data('title');
+            var DS = Report.getDataSourceByName(ds);
+            if (DS === null) return;
+
+            config_viz = loadHTMLEvolParameters(div, config_viz);
+
+            div.id = metrics.replace(/,/g,"-")+"-"+ds+"-metrics-evol-"+this.id;
+            div.id = div.id.replace(/\n|\s/g, "");
+            DS.displayMetricsEvol(metrics.split(","),div.id,
+                    config_viz, $(this).data('convert'));
+        });
+    }
+};
+
 
 Convert.convertMetricsEvolSelector = function() {
     /**
@@ -1709,6 +1758,7 @@ Convert.convertFilterStudy = function(filter) {
     // repositories comes from Automator config
     if (filter === "repositories") filter = "repos";
 
+
     // If data is not available load them and cb this function
     if (Loader.check_filter_page (page, filter) === false) {
         $.each(Report.getDataSources(), function(index, DS) {
@@ -1716,6 +1766,7 @@ Convert.convertFilterStudy = function(filter) {
         });
         return;
     }
+
 
     Convert.convertFilterItemsSummary(filter);
     Convert.convertFilterItemsGlobal(filter);
@@ -1767,6 +1818,33 @@ Convert.convertBasicMetrics = function(config) {
     Convert.convertMarkovTable();
 };
 
+Convert.convertModifiedBasicMetrics = function(filter) {
+    /*
+     The functions call here display the basic charts with more info from repos
+
+     Controls the load of data and put the callback waiting until it's ready.
+     */
+
+    // repositories comes from Automator config
+    var page = 1; // FIXME just to get it work, useless
+
+    // If data is not available load them and cb this function
+    if (Loader.check_filter_page (page, filter) === false) {
+        $.each(Report.getDataSources(), function(index, DS) {
+            if (filter !== "repos") return;
+            if (filter === "repos") total = DS.getReposData().length;
+            for (var i=0;i<total;i++) {
+                var repo = DS.getReposData()[i];
+                Loader.data_load_item(repo, DS, page, Convert.convertModifiedBasicMetrics, filter);
+            }
+
+        });
+        return;
+    }
+    Convert.convertMetricsEvolCustomized(filter);
+};
+
+
 Convert.convertFilterTop = function(filter){
     /**
      Display top tables.
@@ -1778,6 +1856,7 @@ Convert.convertFilterTop = function(filter){
     if (Loader.filterTopCheck(item, filter) === false) return;
     Convert.convertTop();
     Convert.convertRepositorySelector();
+
 };
 
 })();

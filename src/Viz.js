@@ -537,6 +537,33 @@ if (Viz === undefined) var Viz = {};
 
     }
 
+    function displayMetricsLinesRepos(div_id, metrics, history, title, config, repositories) {
+        if (!(config && config.help === false)) showHelp(div_id, metrics, config.custom_help);
+
+        var lines_data = [];
+        var metric = metrics[0];
+        var aux = {};
+        $.each(history, function(item, data){
+            if (data === undefined) return false;
+            if (data[metric] === undefined) return false;
+            if (config.remove_last_point) data =
+                DataProcess.revomeLastPoint(data);
+            if (config.frame_time) data =
+                DataProcess.frameTime(data, [metric]);
+            if (config.start_time) data =
+                DataProcess.filterDates(config.start_time, config.end_time, data);
+
+            var mdata = [[],[]];
+            $.each(data[metric], function (i, value) {
+                mdata[i] = [data.id[i] , data[metric][i]];
+            });
+            lines_data.push({label:item, data:mdata});            
+            aux = data;
+        });
+        displayDSLines(div_id, aux, lines_data, title, config);
+    }
+
+
     function displayMetricSubReportLines(div_id, metric, items, title, 
             config, start, end, convert, order) {
         var lines_data = [];
@@ -651,7 +678,8 @@ if (Viz === undefined) var Viz = {};
                         if (lines_data.length > 1) {
                             if (lines_data[i].label !== undefined) {
                                 value_name = lines_data[i].label;
-                                label += value_name.substring(0,9) +":";
+                                //label += value_name.substring(0,9) +":";
+                                label += value_name + ":";
                             }
                         }
                         label += "<strong>"+Report.formatValue(value) +"</strong><br>";
@@ -921,8 +949,50 @@ if (Viz === undefined) var Viz = {};
         }
     }
 
+    function guessBarWidth(lines_data, history){
+        /*
+         The idea is to get the time between periods in order to calculated the correct
+         bar width for flotr2
+
+         lines_data: list of objects with data to be plotted
+         history: object where unixtime for every period of the chart is available
+         */
+
+        var gap_size;
+        var data_sets = lines_data.length;
+        gap_size = parseInt(history.unixtime[1]) - parseInt(history.unixtime[0]);
+        return gap_size / (data_sets + 1);
+    }
+
+    function timeToUnixTime(lines_data, history, bars_flag, bar_width){
+        /*
+         Convert the number of period to the unixtime stored in history
+
+         lines_data: list of objects with data to be plotted
+         history: object where unixtime for period is available
+         bars_flag: TRUE when more bars will be drawn for same period (maximum = 2 per period)
+         bar_width: width of the bar to be used as offset
+         */
+
+        var number_lines = lines_data.length;
+        var data_length = lines_data[0].data.length;
+        for (var z = 0; z < number_lines; z++){
+            for (var i = 0; i < data_length; i++) {
+                if (bars_flag){
+                //lines_data[z].data[i][0] = parseInt(history.unixtime[i],10);
+                    lines_data[z].data[i][0] = parseInt(history.unixtime[i],10) + z * bar_width;
+                }else{
+                    lines_data[z].data[i][0] = parseInt(history.unixtime[i],10);
+                }
+            }
+        }
+        return lines_data;
+    }
 
     function displayDSLinesZoom(div_id, history, lines_data, title, config_metric) {
+        var bars_flag = false;
+        var bar_width;
+
         if (lines_data.length === 0) return;
         // evolution of the displayDSLines function with zoom in/out feature
         var container = document.getElementById(div_id);
@@ -957,7 +1027,12 @@ if (Viz === undefined) var Viz = {};
                 config.mouse.track = false;
             }
             if (config_metric.graph === "bars") {
-                config.bars = {show : true};
+                // this barWidth won't work with periods of time different to months
+                config.bars = {show:true, stacked:false, horizontal:false, barWidth:728000, lineWidth:1};
+                config.bars.barWidth = guessBarWidth(lines_data, history);
+                bars_flag = true;
+                bar_width = config.bars.barWidth;
+
             }
             if (config_metric.light_style === true) {
                 config.grid.color = '#ccc';
@@ -968,15 +1043,10 @@ if (Viz === undefined) var Viz = {};
             }
             // value box on top
             config.mouse.position = 'n';
+            config.mouse.margin = 20;
         }
 
-        var number_lines = lines_data.length;
-        var data_length = lines_data[0].data.length;
-        for (var z = 0; z < number_lines; z++){
-            for (var i = 0; i < data_length; i++) {
-                lines_data[z].data[i][0] = parseInt(history.unixtime[i],10);
-            }
-        }
+        lines_data = timeToUnixTime(lines_data, history, bars_flag, bar_width);
 
         // Show last time series as a point, not a line. The data is incomplete
         // Only show for single lines when time series is complete
@@ -1002,7 +1072,7 @@ if (Viz === undefined) var Viz = {};
             // Return a new graph.
             return Flotr.draw(container, lines_data, o);
         }
-
+        console.log(config);
         // Actually draw the graph.
         graph = drawGraph();        
         
@@ -1895,7 +1965,7 @@ if (Viz === undefined) var Viz = {};
         return title;
     }
 
-    function displayMetricsEvol(ds, metrics, data, div_target, config) {
+    function displayMetricsEvol(ds, metrics, data, div_target, config, repositories) {
         /* gets readeable title for metrics + conf and calls displayMetricsLines*/
         config = checkBasicConfig(config);
         var title = '';
@@ -1906,7 +1976,12 @@ if (Viz === undefined) var Viz = {};
                 title = config.title;
             }
         }
-        displayMetricsLines(div_target, metrics, data, title, config);
+        if (repositories !== undefined){
+            //only supports one metric so far
+            displayMetricsLinesRepos(div_target, metrics, data, title, config);
+        }else{
+            displayMetricsLines(div_target, metrics, data, title, config);
+        }
     }
 
     function displayMetricsCompany (ds, company, metrics, data, div_id, config) {

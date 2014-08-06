@@ -660,17 +660,30 @@ function DataSource(name, basic_metrics) {
     };
 
     // TODO: support multiproject
-    this.displayMetricsEvol = function(metric_ids, div_target, config, convert, repository) {
-        var data;
+    this.displayMetricsEvol = function(metric_ids, div_target, config, convert) {
+        var data = {};
+        var repositories;
         //if we get a repo name, we display its history
-        if (repository && ($.inArray(repository, this.getReposData()) >= 0)){
-            data = this.getReposMetricsData()[repository];
+        if (config.repo_filter){
+            repositories = config.repo_filter.split(',');
+            var self = this; //we need it for the loop $.each
+            $.each(repositories, function(id, value){
+                if (($.inArray(value, self.getReposData()) >= 0)){
+                    if (self.getName() === 'mls'){
+                        //var mls_name = self.displayMLSListName(value);
+                        var mls_name = MLS.displayMLSListName(value);
+                        data[mls_name] = self.getReposMetricsData()[value];
+                    }else{
+                        data[value] = self.getReposMetricsData()[value];
+                    }
+                }
+            });
         }
         else{
             data = this.getData();
         }
         if (convert) data = DataProcess.convert(data, convert, metric_ids);
-        Viz.displayMetricsEvol(this, metric_ids, data, div_target, config, repository);
+        Viz.displayMetricsEvol(this, metric_ids, data, div_target, config, repositories);
     };
 
     this.isPageDisplayed = function (visited, linked, total, displayed) {
