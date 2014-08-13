@@ -1167,6 +1167,8 @@ Convert.convertPersonMetrics = function (upeople_id, upeople_identifier) {
             if (DS === null) return;
             var metrics = $(this).data('metrics');
             config_metric.show_legend = false;
+            config_metric.help = false;
+            if ($(this).data('frame-time')) config_metric.frame_time = true;
             if ($(this).data('legend')) config_metric.show_legend = true;
             if ($(this).data('person_id')) upeople_id = $(this).data('person_id');
             if ($(this).data('person_name')) upeople_identifier = $(this).data('person_name');
@@ -1199,7 +1201,30 @@ Convert.convertPersonData = function (upeople_id, upeople_identifier) {
                 else name = upeople_id;
                 email = "";
             }
-            $("#"+div.id).append("<h2>"+name + " "+ email + "</h2>");
+            html = HTMLComposer.personName(name, email);
+            $("#"+div.id).append(html);
+        });
+    }
+};
+
+
+Convert.personSummaryBlock = function(upeople_id){
+    /* Converts this id into a block with PersonSummary + PersonMetrics*/
+    var divs = $(".PersonSummaryBlock");
+    if (divs.length > 0){
+        $.each(divs, function(id, div) {            
+            /*workaround to avoid being called again when redrawing*/
+            if (div.id.indexOf('Parsed') >= 0 ) return;
+            
+            ds_name = $(this).data('data-source');            
+            metric_name = $(this).data('metrics');
+            DS = Report.getDataSourceByName(ds_name);
+            if (DS === null) return;
+            if (DS.getData().length === 0) return; /* no data for data source*/
+            if (DS.getPeopleMetricsData()[upeople_id].length === 0) return; /* no data for this person */
+            var html = HTMLComposer.personSummary(ds_name, metric_name);
+            if (!div.id) div.id = "Parsed" + getRandomId();
+            $("#"+div.id).append(html);
         });
     }
 };
@@ -1236,6 +1261,7 @@ Convert.convertPeople = function(upeople_id, upeople_identifier) {
         return;
     }
 
+    Convert.personSummaryBlock(upeople_id);
     Convert.convertPersonData(upeople_id, upeople_identifier);
     Convert.convertPersonSummary(upeople_id, upeople_identifier);
     Convert.convertPersonMetrics(upeople_id, upeople_identifier);

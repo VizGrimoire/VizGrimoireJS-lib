@@ -998,25 +998,8 @@ function DataSource(name, basic_metrics) {
     this.displayPeopleSummary = function(divid, upeople_id, 
             upeople_identifier, ds) {
         var history = ds.getPeopleGlobalData()[upeople_id];
-
         if (history === undefined || history instanceof Array) return;
-
-        html = "<h6>" + ds.getTitle() + "</h6>";
-
-        html += "<table class='table-condensed table-hover'>";
-        html += "<tr><td>";
-        html += "Start</td><td>"+history.first_date;
-        html += "</td></tr><tr><td>";
-        html += "End</td><td>"+ history.last_date;
-        html += "</td></tr><tr><td>";
-        if (ds.getName() == "scm") html += "Commits</td><td>" + history.scm_commits;
-        else if (ds.getName() == "its") html += "Closed</td><td>" + history.its_closed;
-        else if (ds.getName() == "mls") html += "Sent</td><td>" + history.mls_sent;
-        else if (ds.getName() == "irc") html += "Sent</td><td>" + history.irc_sent;
-        else if (ds.getName() == "scr") html += "Closed</td><td>" + history.scr_closed;
-        html += "</td></tr>";
-        html += "</table>";
-
+        html = HTMLComposer.personSummaryTable(ds.getName(), history);
         $("#"+divid).append(html);
     };
 
