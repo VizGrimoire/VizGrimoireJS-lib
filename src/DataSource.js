@@ -899,6 +899,7 @@ function DataSource(name, basic_metrics) {
                     list += "<a href='";
                     list += "repository.html";
                     list += "?repository=" + encodeURIComponent(item);
+                    list += "&ds=" + ds.getName();
                     if (addURL) list += "&"+addURL;
                     list += "'>";
                 }
