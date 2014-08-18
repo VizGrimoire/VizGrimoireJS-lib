@@ -1328,6 +1328,7 @@ Convert.getRealItem = function(ds, filter, item) {
 
 Convert.convertFilterItemsSummary = function(filter) {
     var divlabel = "FilterItemsSummary";
+    /*watch out! there is FilterItemsSummary and FilterItemSummary!!*/
     divs = $("."+divlabel);
     if (divs.length > 0) {
         $.each(divs, function(id, div) {
@@ -1533,14 +1534,20 @@ Convert.convertFilterItemsMiniCharts = function(filter, page) {
     }
 };
 
+
 Convert.convertFilterItemData = function (filter, item) {
+    /* FilterItemData displays the title of the panel (strange name BTW)*/
     var divs = $(".FilterItemData");
+    //FIXME: replace this awful name
+    
     if (divs.length > 0) {
         $.each(divs, function(id, div) {
             $(this).empty();
             var label = Report.cleanLabel(item);
+            var ds_name = $.urlParam('ds'); // urlParam is defined in Utils.js
             if (!div.id) div.id = "FilterItemData" + getRandomId();
-            $("#"+div.id).append("<h2>"+label + "</h2>");
+            html = HTMLComposer.itemName(label, ds_name);
+            $("#"+div.id).append(html);
         });
     }
 };
@@ -1548,6 +1555,7 @@ Convert.convertFilterItemData = function (filter, item) {
 
 Convert.convertFilterItemSummary = function(filter, item) {
     var divlabel = "FilterItemSummary";
+    /*watch out! there is FilterItemsSummary and FilterItemSummary!!*/
     divs = $("."+divlabel);
     if (item !== null && divs.length > 0) {
         $.each(divs, function(id, div) {
