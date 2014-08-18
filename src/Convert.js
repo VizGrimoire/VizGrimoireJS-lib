@@ -1570,8 +1570,10 @@ Convert.convertFilterItemSummary = function(filter, item) {
             div.id = ds+"-"+filter+"-"+divlabel;
             $(this).empty();
             if (filter === "repos") {
-                real_item = Convert.getRealItem(DS, filter, real_item);
-                if (real_item) DS.displayRepoSummary(div.id, real_item, DS);
+                // Repos map for repository.html page disabled
+                /*real_item = Convert.getRealItem(DS, filter, real_item);
+                if (real_item) DS.displayRepoSummary(div.id, real_item, DS);*/
+                DS.displayRepoSummary(div.id, real_item, DS);
             }
             else if (filter === "countries")
                 DS.displayCountrySummary(div.id, real_item, DS);
@@ -1672,12 +1674,15 @@ Convert.convertFilterItemMetricsEvol = function(filter, item) {
             div.id += metrics.replace(/,/g,"-")+"-"+ds+"-"+filter+"-"+divlabel;
             $(this).empty();
             if (filter === "repos") {
-                real_item = Convert.getRealItem(DS, filter, real_item);
+                // Repos map for repository.html page disabled
+                /*real_item = Convert.getRealItem(DS, filter, real_item);
                 if (real_item) {
                     DS.displayMetricsRepo(real_item, metrics.split(","),
                             div.id, config_metric);
                 }
-                else $(this).hide();
+                else $(this).hide();*/
+                DS.displayMetricsRepo(real_item, metrics.split(","),
+                    div.id, config_metric);
             }
             else if (filter === "countries") {
                 DS.displayMetricsCountry(real_item, metrics.split(","),
