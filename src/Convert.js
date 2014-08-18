@@ -317,13 +317,13 @@ function getSectionName(){
                     "scr":"Code Review overview",
                     "scm":"SCM overview",
                     "wiki":"Wiki overview",
+                    "data_sources":"Data sources",
+                    "project_map":"Project map",
                     "people":"Contributor",
                     "company":"Company",
                     "country":"Country",
-                    "domain":"Domain",
-                    "repository":"Repository",
-                    "data_sources":"Data sources",
-                    "project_map":"Project map"};
+                    "domain":"Domain"           
+                   };    
     var filters = {"companies":"Activity by companies",
                    "contributors":"Activity by contributors",
                    "countries":"Activity by companies",
@@ -331,7 +331,10 @@ function getSectionName(){
                    "projects":"Activity by project",
                    "repos":"Activity by repositories",
                    "states":"Activity by states",
-                   "tags":"Activity by tags"};
+                   "tags":"Activity by tags"
+                  };
+    var filters2 = {"repository":"Repository",
+                   };
 
     var url_tokens = document.URL.split('/');
     var section = url_tokens[url_tokens.length-1].split('.')[0];
@@ -343,13 +346,26 @@ function getSectionName(){
         //it could be scm or scm-repos
 
         var s_tokens = section.split('-');
+        
+        //we generate the navigation hierarchy repository pages
+        if (s_tokens[0] === 'repository'){
+            ds_name = $.urlParam('ds');
+            s_tokens = [ds_name,'repos','repository'];
+        }
+        
         if (sections.hasOwnProperty(s_tokens[0])){
             result.push([s_tokens[0], sections[s_tokens[0]]]);
 
             if (s_tokens.length > 0){
                 if (filters.hasOwnProperty(s_tokens[1])){
-                result.push([s_tokens[0], filters[s_tokens[1]]]);
-                }
+                result.push([s_tokens[0] + '-' + s_tokens[1], filters[s_tokens[1]]]);
+                    
+                    if (s_tokens.length > 2){
+                        if (filters2.hasOwnProperty(s_tokens[2])){
+                            result.push([s_tokens[0], filters2[s_tokens[2]]]);
+                        }                            
+                    }
+                }                
             }
         }else{
             return [['#','Unavailable section name']];
@@ -1209,7 +1225,10 @@ Convert.convertPersonData = function (upeople_id, upeople_identifier) {
 
 
 Convert.personSummaryBlock = function(upeople_id){
-    /* Converts this id into a block with PersonSummary + PersonMetrics*/
+    /* 
+     Two steps conversion: 
+     Converts this id into a block with PersonSummary + PersonMetrics
+     */
     var divs = $(".PersonSummaryBlock");
     if (divs.length > 0){
         $.each(divs, function(id, div) {            
@@ -1222,7 +1241,7 @@ Convert.personSummaryBlock = function(upeople_id){
             if (DS === null) return;
             if (DS.getData().length === 0) return; /* no data for data source*/
             if (DS.getPeopleMetricsData()[upeople_id].length === 0) return; /* no data for this person */
-            var html = HTMLComposer.personSummary(ds_name, metric_name);
+            var html = HTMLComposer.personDSBlock(ds_name, metric_name);
             if (!div.id) div.id = "Parsed" + getRandomId();
             $("#"+div.id).append(html);
         });
@@ -1268,6 +1287,62 @@ Convert.convertPeople = function(upeople_id, upeople_identifier) {
 
     Convert.activateHelp();
 };
+
+function dataFilterAvailable(filter_name, item_name){
+    /*
+     filter_name: repos, companies, countries and domains
+     item_name: name of the repo, company, etc ..
+
+     Returns true when data is available. False if not available
+     */
+    if (filter_name === 'repos'){
+        if (DS.getReposGlobalData()[item_name] === undefined ||
+            DS.getReposGlobalData()[item_name].length === 0) return false;
+    }else if(filter_name === 'companies'){
+        if (DS.getCompaniesGlobalData()[item_name] === undefined ||
+            DS.getCompaniesGlobalData()[item_name].length === 0) return false;
+    }else if(filter_name === 'countries'){
+        if (DS.getCountriesGlobalData()[item_name] === undefined ||
+            DS.getCountriesGlobalData()[item_name].length === 0) return false;
+    }else if(filter_name === 'companies'){
+        if (DS.getDomainsGlobalData()[item_name] === undefined ||
+            DS.getDomainsGlobalData()[item_name].length === 0) return false;
+    }
+
+    return true;
+};
+
+Convert.repositoryDSBlock = function(repo_id){
+    /*      
+     Two steps conversion: 
+     Converts this id into a block with FilterItemSummary + FilterItemMetricsEvol.     
+     */
+    var divs = $(".FilterDSBlock");
+    if (divs.length > 0){
+        $.each(divs, function(id, div) {            
+            /*workaround to avoid being called again when redrawing*/
+            if (div.id.indexOf('Parsed') >= 0 ) return;
+            
+            ds_name = $(this).data('data-source');            
+            filter_name = $(this).data('filter');
+            aux = $(this).data('metrics');
+            metric_names = aux.split(',');
+            $.each(metric_names, function(id, value){
+                metric_names[id] = metric_names[id].replace(/:/g,',');
+            });
+            DS = Report.getDataSourceByName(ds_name);
+            if (DS === null) return;
+            if (DS.getData().length === 0) return; /* no data for data source*/
+            
+            if (dataFilterAvailable(filter_name, repo_id)){ 
+                var html = HTMLComposer.filterDSBlock(ds_name, filter_name, metric_names);
+                if (!div.id) div.id = "Parsed" + getRandomId();
+                $("#"+div.id).append(html);
+            }
+        });
+    }
+};
+
 
 Convert.convertDemographics = function() {
     var divs = $(".Demographics");
@@ -1544,9 +1619,9 @@ Convert.convertFilterItemData = function (filter, item) {
         $.each(divs, function(id, div) {
             $(this).empty();
             var label = Report.cleanLabel(item);
-            var ds_name = $.urlParam('ds'); // urlParam is defined in Utils.js
+            //var ds_name = $.urlParam('ds'); // urlParam is defined in Utils.js
             if (!div.id) div.id = "FilterItemData" + getRandomId();
-            html = HTMLComposer.itemName(label, ds_name);
+            html = HTMLComposer.itemName(label, filter);
             $("#"+div.id).append(html);
         });
     }
@@ -1753,6 +1828,7 @@ Convert.convertFilterStudyItem = function (filter, item) {
 
     if (Loader.FilterItemCheck(item, filter) === false) return;
 
+    Convert.repositoryDSBlock(item);
     Convert.convertFilterItemData(filter, item);
     Convert.convertFilterItemSummary(filter, item);
     Convert.convertFilterItemMetricsEvol(filter, item);

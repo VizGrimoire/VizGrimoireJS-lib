@@ -1032,7 +1032,6 @@ function DataSource(name, basic_metrics) {
 
     this.displaySummary = function(report, divid, item, ds) {
         // Prints all the keys:values for an item
-        // This function is no longer used on the dash
         if (!item) item = "";
         var html = "<h6>" + ds.getTitle()+ "</h6>";
         var id_label = this.getSummaryLabels();
@@ -1050,22 +1049,8 @@ function DataSource(name, basic_metrics) {
         else global_data = ds.getGlobalData();
 
         if (!global_data) return;
-
-        var self = this;
-        html += "<table class='table-condensed table-hover'>";
-        var html_irow = '<tr><td>';
-        var html_erow = '</td></tr>';
-        $.each(global_data,function(id,value) {
-            // if (id_label[id] === undefined) return;
-            if (self.getMetrics()[id]) {
-                html += html_irow + self.getMetrics()[id].name + "</td><td>" + Report.formatValue(value) + html_erow;
-            } else if (id_label[id]) { 
-                html += html_irow + id_label[id] + "</td><td>" + Report.formatValue(value) + html_erow;
-            } /*else {
-                if (report) html += id + "</td><td>" + Report.formatValue(value);
-            }*/
-        });
-        html += "</table>";
+        
+        html = HTMLComposer.repositorySummaryTable(ds, global_data, id_label);
         $("#"+divid).append(html);
     };
 
