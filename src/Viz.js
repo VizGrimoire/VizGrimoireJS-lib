@@ -1046,6 +1046,9 @@ if (Viz === undefined) var Viz = {};
             config.mouse.margin = 20;
         }
 
+        // we force the legend when several lines are plotted
+        if (lines_data.length > 1) config.legend.show = true;
+
         lines_data = timeToUnixTime(lines_data, history, bars_flag, bar_width);
 
         // Show last time series as a point, not a line. The data is incomplete
