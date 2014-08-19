@@ -215,7 +215,7 @@ var HTMLComposer = {};
         else if(ds_name === "releases")
             title = '<i class="fa fa-umbrella"></i> Releases';
         return title;
-    };
+    }
 
 
 })();
