@@ -1310,7 +1310,7 @@ function dataFilterAvailable(filter_name, item_name){
     }
 
     return true;
-};
+}
 
 Convert.repositoryDSBlock = function(repo_id){
     /*      
