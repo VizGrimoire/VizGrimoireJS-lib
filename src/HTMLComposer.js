@@ -33,6 +33,7 @@ var HTMLComposer = {};
     HTMLComposer.personSummaryTable = personSummaryTable;
     HTMLComposer.personName = personName;
     HTMLComposer.itemName = itemName;
+    HTMLComposer.sideMenu4Release = sideMenu4Release;
 
     function personDSBlock(ds_name, metric_name){
         /* Display block with PersonSummary and PersonMetrics divs.
@@ -215,6 +216,20 @@ var HTMLComposer = {};
         else if(ds_name === "releases")
             title = '<i class="fa fa-umbrella"></i> Releases';
         return title;
+    }
+
+    function sideMenu4Release(){
+        /* Returns HTML for release side menu
+         */
+        html = '';
+        params = '?data_dir='+ $.urlParam('data_dir') +'&release=' + $.urlParam('release'); 
+        html += '<li><a href="./"><i class="fa fa-home"></i> Home</a></li>';
+        html += '<li><a href="./release.html'+ params +'"> ' +$.urlParam('release') +' release</a></li>';
+        html += '<li><a href="./scm-companies.html'+ params +'"><i class="fa fa-code"></i><i class="fa fa-building-o"></i> Source code repositories by companies</a></li>';
+        html += '<li><a href="./mls-companies.html' + params + '"><i class="fa fa-envelope-o"></i><i class="fa fa-building-o"></i> Mailing Lists by companies</a></li>';
+        html += '<li><a href="./its-companies.html' + params + '"><i class="fa fa-ticket"></i><i class="fa fa-building-o"></i> Tickets by companies</a></li>';
+        
+        return html;
     }
 
 
