@@ -26,6 +26,8 @@ var Utils = {};
 
 (function() {
 
+    Utils.paramsInURL = paramsInURL;
+
     $.urlParam = function(name){
         var results = new RegExp('[?&]' + name + '=([^&#]*)').exec(window.location.href);
         if (results === null){
@@ -35,5 +37,18 @@ var Utils = {};
             return results[1] || 0;
         }
     };
+
+    function paramsInURL(){
+    /*
+     Return raw string with the GET params in the current URL
+     */
+    params = '';    
+    if (document.URL.split('?').length > 1){
+        params = document.URL.split('?')[1];
+    }
+    return params;
+}
+
+
 
 })();

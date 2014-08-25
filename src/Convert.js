@@ -463,17 +463,6 @@ function isURLRelease(){
     else return false;    
 }
 
-function paramsInURL(){
-    /*
-     Return raw string with the GET params in the current URL
-     */
-    params = '';    
-    if (document.URL.split('?').length > 1){
-        params = document.URL.split('?')[1];
-    }
-    return params;
-}
-
 function composeSideBar(project_id){
     if (project_id === undefined){
         project_id = 'root';
@@ -632,7 +621,7 @@ function composeSectionBreadCrumb(project_id){
     if (isURLRelease()){
         var subsects = getSectionName4Release();
         if (subsects.length > 0){
-            get_params = paramsInURL();
+            get_params = Utils.paramsInURL();
             html += '<li><a href="./release.html?' + get_params + '">Release Overview</a></li>';
             var cont = 1;
             $.each(subsects, function(id,value){
