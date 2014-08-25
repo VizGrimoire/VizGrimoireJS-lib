@@ -306,9 +306,44 @@ function composeProjectMap() {
     return html;
 }
 
+function getSectionName4Release(){
+    /*
+     This function bypass some of the conditions of getSectionName. It should
+     be deprecated as soon as we generate the same data for releases (the same
+     data we have for the normal dash)
+     */
+    var result = [];
+    var sections = {"data_sources":"Data sources",
+                    "project_map":"Project map",
+                    "people":"Contributor",
+                    "company":"Company",
+                    "country":"Country",
+                    "domain":"Domain",
+                    "scm-companies":"Activity on code repositories by companies",
+                    "mls-companies":"Activity on mailing lists by companies",
+                    "its-companies":"Activity on issue trackers by companies"
+                   };
+    url_no_params = document.URL.split('?')[0];
+    url_tokens = url_no_params.split('/');
+    var section = url_tokens[url_tokens.length-1].split('.')[0];
+    if (section === 'project' || section === 'index' || section === 'release' || section === ''){
+        //no sections are support for subprojects so far
+        return [];
+    }else{
+        if (sections.hasOwnProperty(section)){
+            result.push([section, sections[section]]);
+        }else{
+            return [['#','Unavailable section name']];
+        }
+        return result;
+    }
 
+}
 
 function getSectionName(){
+    /*
+     Return array with section name and section title
+     */
     var result = [];
     var sections = {"mls":"MLS overview",
                     "irc":"IRC overview",
@@ -336,7 +371,8 @@ function getSectionName(){
     var filters2 = {"repository":"Repository",
                    };
 
-    var url_tokens = document.URL.split('/');
+    url_no_params = document.URL.split('?')[0];
+    url_tokens = url_no_params.split('/');
     var section = url_tokens[url_tokens.length-1].split('.')[0];
     if (section === 'project' || section === 'index' || section === ''){
         //no sections are support for subprojects so far
@@ -417,6 +453,27 @@ function composeSBSectionLinks(icon_text, title, ds_name, elements){
     return html;
 }
 
+function isURLRelease(){
+    /*
+     Returns true when the URL received contains the values for a release 
+     */
+    if ( $.urlParam('release') !== null && 
+         $.urlParam('release').length > 0 &&
+         $.urlParam('data_dir') !== null ) return true;
+    else return false;    
+}
+
+function paramsInURL(){
+    /*
+     Return raw string with the GET params in the current URL
+     */
+    params = '';    
+    if (document.URL.split('?').length > 1){
+        params = document.URL.split('?')[1];
+    }
+    return params;
+}
+
 function composeSideBar(project_id){
     if (project_id === undefined){
         project_id = 'root';
@@ -425,80 +482,80 @@ function composeSideBar(project_id){
     var html_extra='';
     html += '<ul class="nav navmenu-nav">';
 
-    var mele = Report.getMenuElements();
+    if (isURLRelease()){
+        //side menu for the releases here
+        html += HTMLComposer.sideMenu4Release();        
+    }else{
+        var mele = Report.getMenuElements();
+        html += '<li><a href="./"><i class="fa fa-home"></i> Home</a></li>';
 
-    html += '<li><a href="./"><i class="fa fa-home"></i> Home</a></li>';
-
-    if (project_id === 'root'){
-
-	if (mele.hasOwnProperty('scm')){
-            aux = mele.scm;
-            aux_html = composeSBSectionLinks('fa-code','Source code management','scm', aux);
-            html += aux_html;
-	}
-	if (mele.hasOwnProperty('scr')){
-            aux = mele.scr;
-            aux_html = composeSBSectionLinks('fa-check','Code review','scr', aux);
-            html += aux_html;
-	}
-	if (mele.hasOwnProperty('its')){
-            aux = mele.its;
-            aux_html = composeSBSectionLinks('fa-ticket','Tickets','its', aux);
-            html += aux_html;
-	}
-	if (mele.hasOwnProperty('mls')){
-            aux = mele.mls;
-            aux_html = composeSBSectionLinks('fa-envelope-o','Mailing lists','mls', aux);
-            html += aux_html;
-	}	
-        if (mele.hasOwnProperty('qaforums')){
-            aux = mele.qaforums;
-            aux_html = composeSBSectionLinks('fa-question','Q&A Forums','qaforums', aux);
-            html += aux_html;
-        }
-        if (mele.hasOwnProperty('irc')){
-            aux = mele.irc;
-            aux_html = composeSBSectionLinks('fa-comment-o','IRC','irc', aux);
-            html += aux_html;
-        }
-        if (mele.hasOwnProperty('downloads')){
-            aux = mele.downloads;
-            aux_html = composeSBSectionLinks('fa-download','Downloads','downloads', aux);
-            html += aux_html;
-        }
-        if (mele.hasOwnProperty('wiki')){
-            aux = mele.wiki;
-            aux_html = composeSBSectionLinks('fa-pencil-square-o','Wiki','wiki', aux);
-            html += aux_html;
-        }
-        if (mele.hasOwnProperty('studies')){
-            aux = mele.studies;
-            html += '<li class="dropdown">';
-            html += '<a href="#" class="dropdown-toggle" data-toggle="dropdown">';
-            html += '<i class="fa fa-lightbulb-o"></i>&nbsp;Studies <b class="caret"></b></a>';
-            html += '<ul class="dropdown-menu navmenu-nav">';
-            if (aux.indexOf('demographics') >= 0){
-            html += '<li><a href="demographics.html">&nbsp;Demographics</a></li>';
+        if (project_id === 'root'){
+            if (mele.hasOwnProperty('scm')){
+                aux = mele.scm;
+                aux_html = composeSBSectionLinks('fa-code','Source code management','scm', aux);
+                html += aux_html;
             }
-            html += '</ul></li>';
+            if (mele.hasOwnProperty('scr')){
+                aux = mele.scr;
+                aux_html = composeSBSectionLinks('fa-check','Code review','scr', aux);
+                html += aux_html;
+            }
+            if (mele.hasOwnProperty('its')){
+                aux = mele.its;
+                aux_html = composeSBSectionLinks('fa-ticket','Tickets','its', aux);
+                html += aux_html;
+            }
+            if (mele.hasOwnProperty('mls')){
+                aux = mele.mls;
+                aux_html = composeSBSectionLinks('fa-envelope-o','Mailing lists','mls', aux);
+                html += aux_html;
+            }
+            if (mele.hasOwnProperty('qaforums')){
+                aux = mele.qaforums;
+                aux_html = composeSBSectionLinks('fa-question','Q&A Forums','qaforums', aux);
+                html += aux_html;
+            }
+            if (mele.hasOwnProperty('irc')){
+                aux = mele.irc;
+                aux_html = composeSBSectionLinks('fa-comment-o','IRC','irc', aux);
+                html += aux_html;
+            }
+            if (mele.hasOwnProperty('downloads')){
+                aux = mele.downloads;
+                aux_html = composeSBSectionLinks('fa-download','Downloads','downloads', aux);
+                html += aux_html;
+            }
+            if (mele.hasOwnProperty('wiki')){
+                aux = mele.wiki;
+                aux_html = composeSBSectionLinks('fa-pencil-square-o','Wiki','wiki', aux);
+                html += aux_html;
+            }
+            if (mele.hasOwnProperty('studies')){
+                aux = mele.studies;
+                html += '<li class="dropdown">';
+                html += '<a href="#" class="dropdown-toggle" data-toggle="dropdown">';
+                html += '<i class="fa fa-lightbulb-o"></i>&nbsp;Studies <b class="caret"></b></a>';
+                html += '<ul class="dropdown-menu navmenu-nav">';
+                if (aux.indexOf('demographics') >= 0){
+                    html += '<li><a href="demographics.html">&nbsp;Demographics</a></li>';
+                }
+                html += '</ul></li>';
+            }
         }
-    }
-    /*else{
-        html += '<li class="active"><a href="#">' + getSectionName() + '</a></li>';
-    }*/
-    html += '<li><a href="data_sources.html"><i class="fa fa-database"></i> Data sources</a></li>';
-    html += '<li><a href="project_map.html"><i class="fa fa-icon fa-sitemap"></i> Project map</a></li>';
+        html += '<li><a href="data_sources.html"><i class="fa fa-database"></i> Data sources</a></li>';
+        html += '<li><a href="project_map.html"><i class="fa fa-icon fa-sitemap"></i> Project map</a></li>';
 
-    if (mele.hasOwnProperty('extra')){
-        aux = mele.extra;
-        html_extra += '<li class="sidemenu-divider"></li>';
-        html_extra += '<li class="sidemenu-smallheader">More links:</li>';
-        $.each(aux, function(id,value){
-            html_extra += '<li><a href="'+ value[1]+'">&nbsp;' + value[0] + '</a></li>';
-        });
+        if (mele.hasOwnProperty('extra')){
+            aux = mele.extra;
+            html_extra += '<li class="sidemenu-divider"></li>';
+            html_extra += '<li class="sidemenu-smallheader">More links:</li>';
+            $.each(aux, function(id,value){
+                html_extra += '<li><a href="'+ value[1]+'">&nbsp;' + value[0] + '</a></li>';
+            });
+        }
+        html += html_extra;
     }
 
-    html += html_extra;
     html += '</ul>';
     return html;
 }
@@ -566,16 +623,21 @@ Convert.convertNavbar = function() {
 };
 
 function composeSectionBreadCrumb(project_id){
+    /*
+     Returns HTML for the breadcrumb shown on top (horizontal) with the section
+     names
+     */
     var html = '<ol class="breadcrumb">';
-    if (project_id === undefined){
-        //main project enters here
-        var subsects = getSectionName();
+
+    if (isURLRelease()){
+        var subsects = getSectionName4Release();
         if (subsects.length > 0){
-            html += '<li><a href="./">Project Overview</a></li>';
+            get_params = paramsInURL();
+            html += '<li><a href="./release.html?' + get_params + '">Release Overview</a></li>';
             var cont = 1;
             $.each(subsects, function(id,value){
                 if (subsects.length === cont){
-                    html += '<li class="active">' + value[1] + '</li>';
+                        html += '<li class="active">' + value[1] + '</li>';
                 }else{
                     html += '<li><a href="'+ value[0] +'.html">' + value[1] + '</a></li>';
                 }
@@ -583,12 +645,33 @@ function composeSectionBreadCrumb(project_id){
             });
         }
         else{
-            html += '<li class="active">Project Overview</li>';
+            html += '<li class="active">Release Overview</li>';
         }
+    }
+    else{
+        if (project_id === undefined){
+            //main project enters here
+            var subsects_b = getSectionName();
+            if (subsects_b.length > 0){
+                html += '<li><a href="./">Project Overview</a></li>';
+                var cont_b = 1;
+                $.each(subsects_b, function(id,value){
+                    if (subsects_b.length === cont_b){
+                        html += '<li class="active">' + value[1] + '</li>';
+                    }else{
+                        html += '<li><a href="'+ value[0] +'.html">' + value[1] + '</a></li>';
+                    }
+                    cont_b += 1;
+                });
+            }
+            else{
+                html += '<li class="active">Project Overview</li>';
+            }
 
-    }else{
-        //subprojects have no sections yet
-        html += '<li> ' + getSectionName() + '</li>';
+        }else{
+            //subprojects have no sections yet
+            html += '<li> ' + getSectionName() + '</li>';
+        }
     }
     html += '</ol>';
     return html;
