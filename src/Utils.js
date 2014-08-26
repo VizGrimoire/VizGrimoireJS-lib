@@ -27,6 +27,7 @@ var Utils = {};
 (function() {
 
     Utils.paramsInURL = paramsInURL;
+    Utils.filenameInURL = filenameInURL;
 
     $.urlParam = function(name){
         var results = new RegExp('[?&]' + name + '=([^&#]*)').exec(window.location.href);
@@ -49,6 +50,11 @@ var Utils = {};
     return params;
 }
 
+    function filenameInURL(){
+        aux = document.URL.split('?')[0].split('/');
+        res = aux[aux.length-1];
+        return res;
+    }
 
 
 })();
