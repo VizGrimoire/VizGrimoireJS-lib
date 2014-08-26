@@ -223,7 +223,11 @@ if (Viz === undefined) var Viz = {};
             rows_html += "<tr><td>" + (j+1) + "</td>";
             rows_html += "<td>";
             if (people_links){
-                rows_html += '<a href="people.html?id=' +people_data[var_names.id][j]+ '">';
+                rows_html += '<a href="people.html?id=' +people_data[var_names.id][j];
+                //we spread the GET variables if any
+                get_params = Utils.paramsInURL();
+                if (get_params.length > 0) rows_html += '&' + get_params;
+                rows_html += '">';
                 rows_html += people_data[var_names.name][j] +"</a>";
             }else{
                 rows_html += people_data[var_names.name][j];
