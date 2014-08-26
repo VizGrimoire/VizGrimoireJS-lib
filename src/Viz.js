@@ -960,7 +960,7 @@ if (Viz === undefined) var Viz = {};
 
         var gap_size;
         var data_sets = lines_data.length;
-        gap_size = parseInt(history.unixtime[1]) - parseInt(history.unixtime[0]);
+        gap_size = parseInt(history.unixtime[1],10) - parseInt(history.unixtime[0],10);
         return gap_size / (data_sets + 1);
     }
 
