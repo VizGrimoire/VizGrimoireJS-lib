@@ -458,8 +458,7 @@ function isURLRelease(){
      Returns true when the URL received contains the values for a release 
      */
     if ( $.urlParam('release') !== null && 
-         $.urlParam('release').length > 0 &&
-         $.urlParam('data_dir') !== null ) return true;
+         $.urlParam('release').length > 0) return true;
     else return false;    
 }
 
@@ -595,6 +594,7 @@ Convert.convertNavbar = function() {
         $("#Navbar").html(navigation);
         var project_id = Report.getParameterByName("project");
         Convert.convertProjectNavBar(project_id);
+        Convert.convertReleaseSelector();
         Convert.convertSideBar(project_id);
         /**
          // Could this break the support of different JSON directories?         
@@ -610,6 +610,23 @@ Convert.convertNavbar = function() {
         }**/
     });
 };
+
+Convert.convertReleaseSelector = function (){
+    var releases = Report.getReleaseNames();
+    if (releases.length > 0){       // if no releases, we don't print HTML
+        var divs = $(".ReleaseSelector");
+        if (divs.length > 0){
+            $.each(divs, function(id, div){
+                $(this).empty();
+                if (!div.id) div.id = "ReleaseSelector" + getRandomId();
+                var htmlaux = HTMLComposer.releaseSelector($.urlParam('release'), releases);
+                $("#"+div.id).append(htmlaux);
+            });
+        }
+    }
+
+};
+
 
 function composeSectionBreadCrumb(project_id){
     /*

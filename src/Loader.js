@@ -57,6 +57,7 @@ if (Loader === undefined) var Loader = {};
     Loader.data_load = function() {
         // If we have a config file just load what is configured
         if (Report.getConfig() !== null &&
+
             Report.getConfig().project_info !== undefined) {
             Report.setProjectData(Report.getConfig().project_info);
             if (Report.getConfig().markers)

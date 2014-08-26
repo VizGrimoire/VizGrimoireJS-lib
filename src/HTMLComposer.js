@@ -34,6 +34,7 @@ var HTMLComposer = {};
     HTMLComposer.personName = personName;
     HTMLComposer.itemName = itemName;
     HTMLComposer.sideMenu4Release = sideMenu4Release;
+    HTMLComposer.releaseSelector = releaseSelector;
 
     function personDSBlock(ds_name, metric_name){
         /* Display block with PersonSummary and PersonMetrics divs.
@@ -224,11 +225,74 @@ var HTMLComposer = {};
         html = '';
         params = '?data_dir='+ $.urlParam('data_dir') +'&release=' + $.urlParam('release'); 
         html += '<li><a href="./"><i class="fa fa-home"></i> Home</a></li>';
-        html += '<li><a href="./release.html'+ params +'"> ' +$.urlParam('release') +' release</a></li>';
-        html += '<li><a href="./scm-companies.html'+ params +'"><i class="fa fa-code"></i><i class="fa fa-building-o"></i> Source code repositories by companies</a></li>';
-        html += '<li><a href="./mls-companies.html' + params + '"><i class="fa fa-envelope-o"></i><i class="fa fa-building-o"></i> Mailing Lists by companies</a></li>';
-        html += '<li><a href="./its-companies.html' + params + '"><i class="fa fa-ticket"></i><i class="fa fa-building-o"></i> Tickets by companies</a></li>';
+        //html += '<li><a href="./release.html'+ params +'"> ' +$.urlParam('release') +' release</a></li>';
+        html += '<li><a href="./scm-companies.html'+ params +'"><i class="fa fa-code"></i> Source code repositories by companies</a></li>';
+        html += '<li><a href="./mls-companies.html' + params + '"><i class="fa fa-envelope-o"></i> Mailing Lists by companies</a></li>';
+        html += '<li><a href="./its-companies.html' + params + '"><i class="fa fa-ticket"></i> Tickets by companies</a></li>';
         
+        return html;
+    }
+
+    function releaseSelector(current_release, release_names){
+        /*
+         Compose HTML for dropdown selector for releases
+         
+         current_release: value of GET variable release
+         release_names: releases set up in config file
+         */
+
+        // if no releases, we don't print HTML
+        if(release_names.length === 0) return '';
+
+        ah_label = ' - All history - ';
+        label = current_release;
+        if (label === null) 
+            label = ah_label;
+        else{
+            label = ' Release ' + label[0].toUpperCase() + label.substring(1);
+            release_names.reverse().push(ah_label);
+            release_names.reverse();
+        }
+        
+        html = '<div class="input-group-btn">';
+        html += '<button type="button" class="btn btn-default dropdown-toggle"';
+        html += 'data-toggle="dropdown">';
+        html += label;
+        html += '<span class="caret"></span>';
+        html += '</button>';
+        html += '<ul class="dropdown-menu pull-left">';        
+        page_name = Utils.filenameInURL();
+        $.each(release_names, function(id, value){
+            var final_p = [];
+            params = Utils.paramsInURL().split('&');
+
+            //we filter the GET values
+            for (i = 0; i < params.length; i++){
+                sub_value = params[i];
+                
+                if (sub_value.length === 0) continue;
+                //for All History we skip the release value
+                if (sub_value.indexOf('release') === 0){
+                    if (value != ah_label) final_p.push('release='+value);
+                }else{
+                    final_p.push(sub_value);
+                }
+            }
+            
+            //if release is not present we add it
+            if ($.urlParam('release') === null){
+                final_p.push('release=' + value);                
+            }
+            
+            if (value === ah_label){
+                html += '<li><a href="'+ page_name +'?'+ final_p.join('&') +'" data-value="'+value+'">  '+value+'</a></li>';
+            }else{
+                html += '<li><a href="'+ page_name +'?'+ final_p.join('&') +'" data-value="'+value+'"> Release '+value+'</a></li>';
+            }
+        });
+        html += '</ul>';
+        html += '</div>';
+
         return html;
     }
 
