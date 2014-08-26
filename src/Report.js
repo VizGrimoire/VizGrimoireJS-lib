@@ -143,7 +143,7 @@ if (Report === undefined) var Report = {};
     }
     function getReleaseNames() {
         return menu_elements.releases;
-    };    
+    }    
     Report.setMenuElements = function(data){
 	menu_elements = data;
     };
@@ -371,7 +371,7 @@ if (Report === undefined) var Report = {};
         }*/
         
         var release = $.urlParam('release');
-        if (release != null && release.length > 0 ){
+        if (release !== null && release.length > 0 ){
             data_sources.push('data/json/' + release);
             Report.setDataDir('data/json/' + release);
             if (data_sources.length>0)                
