@@ -635,50 +635,38 @@ function composeSectionBreadCrumb(project_id){
      */
     var html = '<ol class="breadcrumb">';
 
-    if (isURLRelease()){
-        var subsects = getSectionName4Release();
-        if (subsects.length > 0){
-            get_params = Utils.paramsInURL();
-            html += '<li><a href="./release.html?' + get_params + '">Release Overview</a></li>';
-            var cont = 1;
-            $.each(subsects, function(id,value){
-                if (subsects.length === cont){
-                        html += '<li class="active">' + value[1] + '</li>';
+    if (project_id === undefined){
+        //main project enters here
+        var subsects_b = getSectionName();
+        var params = Utils.paramsInURL();
+        if (subsects_b.length > 0){
+            html += '<li><a href="./';
+            if (params.length > 0) html += '?' + params;
+            html += '">Project Overview</a></li>';
+            var cont_b = 1;
+            $.each(subsects_b, function(id,value){
+                if (subsects_b.length === cont_b){
+                    html += '<li class="active">' + value[1] + '</li>';
                 }else{
-                    html += '<li><a href="'+ value[0] +'.html">' + value[1] + '</a></li>';
-                }
-                cont += 1;
-            });
-        }
-        else{
-            html += '<li class="active">Release Overview</li>';
-        }
-    }
-    else{
-        if (project_id === undefined){
-            //main project enters here
-            var subsects_b = getSectionName();
-            if (subsects_b.length > 0){
-                html += '<li><a href="./">Project Overview</a></li>';
-                var cont_b = 1;
-                $.each(subsects_b, function(id,value){
-                    if (subsects_b.length === cont_b){
-                        html += '<li class="active">' + value[1] + '</li>';
+                    if (params.length > 0){
+                        html += '<li><a href="'+ value[0] +'.html?' + params + '">';
+                        html += value[1] + '</a></li>';
                     }else{
                         html += '<li><a href="'+ value[0] +'.html">' + value[1] + '</a></li>';
                     }
-                    cont_b += 1;
-                });
-            }
-            else{
-                html += '<li class="active">Project Overview</li>';
-            }
-
-        }else{
-            //subprojects have no sections yet
-            html += '<li> ' + getSectionName() + '</li>';
+                }
+                cont_b += 1;
+            });
         }
+        else{
+            html += '<li class="active">Project Overview</li>';
+        }
+        
+    }else{
+        //subprojects have no sections yet
+        html += '<li> ' + getSectionName() + '</li>';
     }
+    
     html += '</ol>';
     return html;
 }
