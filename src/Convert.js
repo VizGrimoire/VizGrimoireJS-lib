@@ -1420,6 +1420,34 @@ Convert.repositoryDSBlock = function(repo_id){
     }
 };
 
+Convert.convertDSSummaryBlock = function(upeople_id){
+    /* 
+     Two steps conversion: 
+     Converts this id into a block with PersonSummary + PersonMetrics
+     */
+    var divs = $(".DSSummaryBlock");
+    if (divs.length > 0){
+        $.each(divs, function(id, div) {            
+            /*workaround to avoid being called again when redrawing*/
+            if (div.id.indexOf('Parsed') >= 0 ) return;
+            
+            ds_name = $(this).data('data-source');
+            box_labels = $(this).data('box-labels');
+            box_metrics = $(this).data('box-metrics');
+            ts_metrics = $(this).data('ts-metrics');
+            //metric_name = $(this).data('metrics');
+            DS = Report.getDataSourceByName(ds_name);
+            if (DS === null) return;
+            if (DS.getData().length === 0) return; /* no data for data source*/
+            var html = HTMLComposer.DSBlock(ds_name,box_labels,box_metrics,
+                                            ts_metrics);
+            if (!div.id) div.id = "Parsed" + getRandomId();
+            $("#"+div.id).append(html);
+        });
+    }
+};
+
+
 
 Convert.convertDemographics = function() {
     var divs = $(".Demographics");
@@ -1990,6 +2018,7 @@ Convert.convertBasicDivs = function() {
     //Convert.convertModalProjectMap();
     Convert.convertFooter(); 
     //Convert.convertRefcard(); //deprecated
+    Convert.convertDSSummaryBlock();
     Convert.convertDSTable();
     Convert.convertGlobalData();
     //Convert.convertProjectData();

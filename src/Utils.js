@@ -29,6 +29,7 @@ var Utils = {};
     Utils.paramsInURL = paramsInURL;
     Utils.isReleasePage = isReleasePage;
     Utils.filenameInURL = filenameInURL;
+    Utils.createLink = createLink;
 
     $.urlParam = function(name){
         var results = new RegExp('[?&]' + name + '=([^&#]*)').exec(window.location.href);
@@ -69,5 +70,14 @@ var Utils = {};
         return res;
     }
 
-
+    function createLink(target){
+        /*
+         Return the URL appending the GET variables of the current page
+         */
+        url = target;
+        if (paramsInURL().length > 0) url+= '?' + paramsInURL();
+        return url;
+    }
+    
+    
 })();

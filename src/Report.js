@@ -524,9 +524,6 @@ if (Report === undefined) var Report = {};
     };
 
     Report.convertGlobal = function() {
-        // Templates markup divs
-        Convert.convertMicrodash();
-        Convert.convertMicrodashText();
         // Normal markup divs
         Convert.convertBasicDivs();
         Convert.convertBasicDivsMisc();
@@ -534,6 +531,9 @@ if (Report === undefined) var Report = {};
         Convert.convertDemographics();
         Convert.convertMetricsEvolSet();
         Convert.convertLastActivity();
+        // Templates markup divs
+        Convert.convertMicrodash();
+        Convert.convertMicrodashText();
     };
 
     Report.getActiveStudies = function() {

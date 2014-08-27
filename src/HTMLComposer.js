@@ -29,6 +29,7 @@ var HTMLComposer = {};
 (function() {
     HTMLComposer.personDSBlock = personDSBlock;
     HTMLComposer.filterDSBlock = filterDSBlock;
+    HTMLComposer.DSBlock = DSBlock;
     HTMLComposer.repositorySummaryTable = repositorySummaryTable;
     HTMLComposer.personSummaryTable = personSummaryTable;
     HTMLComposer.personName = personName;
@@ -293,6 +294,120 @@ var HTMLComposer = {};
         html += '</ul>';
         html += '</div>';
 
+        return html;
+    }
+
+    function DSBlock(ds_name,box_labels,box_metrics,ts_metrics){
+        /* Display block with functions DSSummaryBox and DSSummaryTimeSerie.
+         
+         Receives strings for box_labels,box_metrics,ts_metrics
+         
+         Note: This block is used in the index.html page
+         */
+        
+        html = '';
+        html += '<!-- irc -->';
+        html += '<div class="row invisible-box">';
+
+        //summary box here
+        blabels = box_labels.split(',');
+        bmetrics = box_metrics.split(',');
+        html += DSSummaryBox(ds_name, blabels, bmetrics);
+
+        html += '<div class="col-md-5">';
+        tsm = ts_metrics.split(',');
+        html += DSTimeSerie(ds_name, tsm[0]);
+        html += '</div>';
+
+        html += '<div class="col-md-5">';
+        html += DSTimeSerie(ds_name, tsm[1]);
+        html += '</div>';
+        
+        html += '</div>';
+        html += '<!-- end irc -->';
+        
+        return html;
+
+
+    }
+
+    
+    function summaryCell(width, label, ds_name, metric){
+        /* Compose small cell used by the DS summary box*/
+        html = '';
+        html += '<div class="col-md-'+ width+'">';
+        html += '<div class="row thin-border">';
+        html += '<div class="col-md-12">' + label + '</div>';
+        html += '</div>';
+        html += '<div class="row">';
+        html += '<div class="col-md-12 medium-fp-number">';
+        target_page = Utils.createLink(ds_name + '.html');
+        html += '<a href="'+ target_page +'"> <span class="GlobalData"';
+        html += 'data-data-source="' + ds_name + '" data-field="' + metric + '"></span>';
+        html += '</a>';
+        html += '</div>';
+        html += '</div>';
+	html += '</div>';
+        return html;        
+
+    }
+    function DSSummaryBox(ds_name, labels, metrics){
+        /* Compose HTML for DS summary box.
+         
+         ds_name: string
+         labels: array of strings
+         metrics: array of strings
+         */
+        html = '';
+        html += '<!-- summary box-->';
+        html += '<div class="col-md-2">';
+        html += '<div class="well well-small">';
+        html += '<div class="row thin-border">';
+        html += '<div class="col-md-12">' + labels[0] + '</div>';
+        html += '</div>';
+        html += '<div class="row grey-border">';
+        html += '<div class="col-md-12 big-fp-number">';
+        target_page = Utils.createLink(ds_name + '.html');
+        html += '<a href="' + target_page +'"> <span class="GlobalData"';
+        html += 'data-data-source="' + ds_name + '" data-field="' + metrics[0]+ '"></span>';
+        html += '</a>';
+        html += '</div>';
+        html += '</div>';
+        html += '<div class="row" style="padding: 5px 0px 0px 0px;">';
+
+        if (labels.length === 2 && metrics.length === 2){
+            html += summaryCell('12', labels[1], ds_name, metrics[1]);
+        } else if (labels.length === 3 && metrics.length === 3){
+            html += summaryCell('6', labels[1], ds_name, metrics[1]);
+            html += summaryCell('6', labels[2], ds_name, metrics[2]);
+        } else if (labels.length === 4 && metrics.length === 4){
+            html += summaryCell('4', labels[1], ds_name, metrics[1]);
+            html += summaryCell('4', labels[2], ds_name, metrics[2]);
+            html += summaryCell('4', labels[3], ds_name, metrics[3]);            
+        }
+
+        html += '</div>';
+        html += '</div>';
+        html += '</div>';
+        html += '<!-- end summary box -->';
+        return html;
+
+    }
+
+    function DSTimeSerie(ds_name, metric){
+        /*
+         ds_name: string
+         metric: string
+         */
+        html = '';
+        html += '<div class="well well-small">';
+        html += '<div class="MetricsEvol" data-data-source="'+ ds_name +'"';
+        html += 'data-metrics="' + metric +'" data-min="true" style="height: 100px;"';
+        html += 'data-light-style="true"></div>';
+        html += '<a href="irc.html" style="color: black;">';
+        html += ' <span class="MicrodashText" data-metric="' + metric+ '"></span>';
+        html += '</a>';
+        html += '</div>';
         return html;
     }
 
