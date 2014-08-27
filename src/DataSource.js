@@ -890,8 +890,13 @@ function DataSource(name, basic_metrics) {
             var addURL = null;
             if (Report.addDataDir()) addURL = Report.addDataDir();
             if (show_links) {
+                var release_var = '';
+                if (Utils.isReleasePage()) 
+                    release_var = '&release=' + $.urlParam('release');
+                
                 if (report === "companies") { 
                     list += "<a href='company.html?company="+item;
+                    list += release_var;
                     if (addURL) list += "&"+addURL;
                     list += "'>";
                 }
@@ -899,22 +904,26 @@ function DataSource(name, basic_metrics) {
                     list += "<a href='";
                     list += "repository.html";
                     list += "?repository=" + encodeURIComponent(item);
+                    list += release_var;
                     list += "&ds=" + ds.getName();
                     if (addURL) list += "&"+addURL;
                     list += "'>";
                 }
                 else if (report === "countries") {
                     list += "<a href='country.html?country="+item;
+                    list += release_var;
                     if (addURL) list += "&"+addURL;
                     list += "'>";
                 }
                 else if (report === "domains") {
                     list += "<a href='domain.html?domain="+item;
+                    list += release_var;
                     if (addURL) list += "&"+addURL;
                     list += "'>";
                 }
                 else if (report === "projects") {
                     list += "<a href='project.html?project="+item;
+                    list += release_var;
                     if (addURL) list += "&"+addURL;
                     list += "'>";
                 }
