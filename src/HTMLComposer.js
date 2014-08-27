@@ -36,6 +36,7 @@ var HTMLComposer = {};
     HTMLComposer.itemName = itemName;
     HTMLComposer.sideMenu4Release = sideMenu4Release;
     HTMLComposer.releaseSelector = releaseSelector;
+    HTMLComposer.sideBarLinks = sideBarLinks;
 
     function personDSBlock(ds_name, metric_name){
         /* Display block with PersonSummary and PersonMetrics divs.
@@ -410,6 +411,52 @@ var HTMLComposer = {};
         html += '</div>';
         return html;
     }
+
+    function sideBarLinks(icon_text, title, ds_name, elements){
+        // text = {'companies': '<i class="fa fa-building-o"></i> Companies',
+        // 'companies-summary': '<i class="fa fa-building-o"></i> Companies summary',
+        // 'contributors': '<i class="fa fa-users"></i> Contributors',
+        // 'countries': '<i class="fa fa-flag"></i> Countries',
+        // 'domains': '<i class="fa fa-envelope-square"></i> Domains',
+        // 'projects': '<i class="fa fa-rocket"></i> Projects',
+        // 'repos': '<i class="fa fa-code-fork"></i> Repositories',
+        // 'states': '<i class="fa fa-code-fork"></i> States'};
+        // html = '';
+        // html += '<li><a href="' + ds_name + '.html"><i class="fa fa-tachometer"></i> Overview</a></li>';
+        text = {'companies': 'Companies',
+                'companies-summary': 'Companies summary',
+                'contributors': 'Contributors',
+                'countries': 'Countries',
+                'domains': 'Domains',
+                'projects': 'Projects',
+                'repos': 'Repositories',
+                'tags': 'Tags',
+                'states': 'States'};
+        html = '';
+        html += '<li class="dropdown">';
+        html += '<a href="#" class="dropdown-toggle" data-toggle="dropdown">';
+        html += '<i class="fa ' + icon_text + '"></i>&nbsp;' + title + ' <b class="caret"></b></a>';
+        html += '<ul class="dropdown-menu navmenu-nav">';
+        var target_page = Utils.createLink(ds_name +'.html');
+        html += '<li><a href="' + target_page + '">&nbsp;Overview</a></li>';
+        $.each(elements, function(id,value){        
+            target_page = Utils.createLink(ds_name + '-' + value + '.html');
+	    if (text.hasOwnProperty(value)){
+                var label = text[value];
+                if (value === 'repos'){
+                    var DS = Report.getDataSourceByName(ds_name);
+                    label = DS.getLabelForRepositories();
+                    label = label.charAt(0).toUpperCase() + label.slice(1);
+                }
+                html += '<li><a href="'+ target_page + '">&nbsp;' + label + '</a></li>';
+	    }else{
+                html += '<li><a href="'+ target_page + '">&nbsp;' + value + '</a></li>';
+	    }
+        });
+        html += '</ul></li>';
+        return html;
+    }
+
 
 
 })();
