@@ -246,6 +246,9 @@ var HTMLComposer = {};
         // if no releases, we don't print HTML
         if(release_names.length === 0) return '';
 
+        // sections which don't support releases
+        unsupported =  ['irc.html','qaforums.html'];
+
         ah_label = ' - All history - ';
         label = current_release;
         if (label === null) 
@@ -264,6 +267,7 @@ var HTMLComposer = {};
         html += '</button>';
         html += '<ul class="dropdown-menu pull-left">';        
         page_name = Utils.filenameInURL();
+        if (unsupported.indexOf(page_name) < 0){
         $.each(release_names, function(id, value){
             var final_p = [];
             params = Utils.paramsInURL().split('&');
@@ -292,6 +296,9 @@ var HTMLComposer = {};
                 html += '<li><a href="'+ page_name +'?'+ final_p.join('&') +'" data-value="'+value+'"> Release '+value+'</a></li>';
             }
         });
+        }else{
+            html += '<li><i>No releases for this data source</i></li>';
+        }
         html += '</ul>';
         html += '</div>';
 
