@@ -27,6 +27,7 @@ var Utils = {};
 (function() {
 
     Utils.paramsInURL = paramsInURL;
+    Utils.isReleasePage = isReleasePage;
     Utils.filenameInURL = filenameInURL;
 
     $.urlParam = function(name){
@@ -38,6 +39,18 @@ var Utils = {};
             return results[1] || 0;
         }
     };
+
+    function isReleasePage(){
+        /*
+         Returns true if the GET variable release is available.
+
+         Can be improved checking the conf file with the release names, in order
+         to check if the release name is correct.
+         */
+        
+        if ($.urlParam('release') === null) return false;
+        else return true;
+    }
 
     function paramsInURL(){
     /*

@@ -291,6 +291,9 @@ if (Viz === undefined) var Viz = {};
             data_period_formatted = "Last 365 days";
         }
 
+        // If we are watching a release page, we overwrite the title of the table
+        if (Utils.isReleasePage()) data_period_formatted = "Release history";        
+
 
         if (tabs === true){
             //title += '<span class="TabTitle">Top ' + desc + '</span>';
@@ -1618,8 +1621,12 @@ if (Viz === undefined) var Viz = {};
     // Vibber",..]}
 
     function displayTop(div, ds, all, selected_metric, period, period_all, graph, titles, limit, people_links, threads_links, repository) {
+        /*
+         Call functions to compose the HTML for top tables with multiple of single
+         tabs.
+         */
+        
         var desc_metrics = ds.getMetrics();
-
         if (all === undefined) all = true;
         var history;
         if (repository === undefined){
@@ -1627,6 +1634,14 @@ if (Viz === undefined) var Viz = {};
         }else{
             history = ds.getRepositoriesTopData()[repository];
         }
+
+        // If the release flag is available, we overwrite the period_all and period
+        // variables.
+        if (Utils.isReleasePage()){
+            period_all = false;
+            period = ''; 
+        }        
+        
         if (period_all === true){
             var filtered_history = {};
             $.each(history, function(key, value) {
