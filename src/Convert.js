@@ -641,15 +641,16 @@ function composeSectionBreadCrumb(project_id){
         var params = Utils.paramsInURL();
         if (subsects_b.length > 0){
             html += '<li><a href="./';
-            if (params.length > 0) html += '?' + params;
+            if(Utils.isReleasePage()) html += '?release=' + $.urlParam('release');
             html += '">Project Overview</a></li>';
             var cont_b = 1;
             $.each(subsects_b, function(id,value){
                 if (subsects_b.length === cont_b){
                     html += '<li class="active">' + value[1] + '</li>';
                 }else{
-                    if (params.length > 0){
-                        html += '<li><a href="'+ value[0] +'.html?' + params + '">';
+                    if(Utils.isReleasePage()){
+                        html += '<li><a href="'+ value[0] +'.html';
+                        html += '?release=' + $.urlParam('release') + '">';
                         html += value[1] + '</a></li>';
                     }else{
                         html += '<li><a href="'+ value[0] +'.html">' + value[1] + '</a></li>';
