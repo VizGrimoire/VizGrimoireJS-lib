@@ -1061,18 +1061,20 @@ if (Viz === undefined) var Viz = {};
         // Show last time series as a point, not a line. The data is incomplete
         // Only show for single lines when time series is complete
         var showLastPoint = false;
+        // If we show past information to overwrite to false the lastpoint
 
-        if (config_metric.graph !== "bars" && lines_data.length === 1) {
-            showLastPoint = true;
-        }
-
-        if (showLastPoint) {
-            lines_data = lastLineValueToPoint(history, lines_data);
-            // Add an extra entry for adding space for the circle point.
-            addEmptyValue(lines_data);
-        }else if(!showLastPoint && lines_data.length > 1){
-            // we drop it to avoid showing not complete periods without points
-            dropLastLineValue(history, lines_data);
+        if (Utils.isReleasePage() === false){
+            if (config_metric.graph !== "bars" && lines_data.length === 1) {
+                showLastPoint = true;
+            }
+            if (showLastPoint) {
+                lines_data = lastLineValueToPoint(history, lines_data);
+                // Add an extra entry for adding space for the circle point.
+                addEmptyValue(lines_data);
+            }else if(!showLastPoint && lines_data.length > 1){
+                // we drop it to avoid showing not complete periods without points
+                dropLastLineValue(history, lines_data);
+            }
         }
 
         /*graph = Flotr.draw(container, lines_data, config);*/
