@@ -30,6 +30,7 @@ var Utils = {};
     Utils.isReleasePage = isReleasePage;
     Utils.filenameInURL = filenameInURL;
     Utils.createLink = createLink;
+    Utils.createReleaseLink = createReleaseLink;
 
     $.urlParam = function(name){
         var results = new RegExp('[?&]' + name + '=([^&#]*)').exec(window.location.href);
@@ -78,6 +79,16 @@ var Utils = {};
         if (paramsInURL().length > 0) url+= '?' + paramsInURL();
         return url;
     }
+
+    function createReleaseLink(target){
+        /*
+         Return the URL appending the GET variable for the release
+         */
+        url = target;
+        if (isReleasePage()) url+= '?release=' + $.urlParam('release');
+        return url;
+    }
+    
     
     
 })();

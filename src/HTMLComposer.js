@@ -37,6 +37,7 @@ var HTMLComposer = {};
     HTMLComposer.sideMenu4Release = sideMenu4Release;
     HTMLComposer.releaseSelector = releaseSelector;
     HTMLComposer.sideBarLinks = sideBarLinks;
+    HTMLComposer.overallSummaryBlock = overallSummaryBlock;
 
     function personDSBlock(ds_name, metric_name){
         /* Display block with PersonSummary and PersonMetrics divs.
@@ -260,7 +261,7 @@ var HTMLComposer = {};
         }
         
         html = '<div class="input-group-btn">';
-        html += '<button type="button" class="btn btn-default dropdown-toggle"';
+        html += '<button type="button" class="btn btn-default btn-lg btn-info dropdown-toggle"';
         html += 'data-toggle="dropdown">';
         html += label;
         html += '<span class="caret"></span>';
@@ -448,7 +449,7 @@ var HTMLComposer = {};
         html += '<li><a href="' + target_page + '">&nbsp;Overview</a></li>';
         $.each(elements, function(id,value){        
             target_page = Utils.createLink(ds_name + '-' + value + '.html');
-	    if (text.hasOwnProperty(value)){
+            if (text.hasOwnProperty(value)){
                 var label = text[value];
                 if (value === 'repos'){
                     var DS = Report.getDataSourceByName(ds_name);
@@ -456,11 +457,35 @@ var HTMLComposer = {};
                     label = label.charAt(0).toUpperCase() + label.slice(1);
                 }
                 html += '<li><a href="'+ target_page + '">&nbsp;' + label + '</a></li>';
-	    }else{
+            }else{
                 html += '<li><a href="'+ target_page + '">&nbsp;' + value + '</a></li>';
-	    }
+            }
         });
         html += '</ul></li>';
+        return html;
+    }
+
+    function overallSummaryBlock(){
+        html = '';
+        html += '<!-- summary bar -->';
+        html += '<div class="capped-box overall-summary ">';
+        html += '<div class="stats-switcher-viewport js-stats-switcher-viewport">';
+        html += '<ul class="numbers-summary">';
+        html += '<li><a href="'+ Utils.createReleaseLink('scm.html') +'"><span class="GlobalData" ';
+        html += 'data-data-source="scm" data-field="scm_commits"></span></a> commits</li>';
+        html += '<li><a href="'+ Utils.createReleaseLink('scm.html') +'"><span class="GlobalData" ';
+        html += 'data-data-source="scm" data-field="scm_authors"></span></a> developers ';
+        html += '</li>';
+        html += '<li><a href="'+ Utils.createReleaseLink('its.html') +'"><span class="GlobalData" ';
+        html += 'data-data-source="its" data-field="its_opened"></span></a> tickets</li>';
+        html += '<li><a href="'+ Utils.createReleaseLink('mls.html') +'"><span class="GlobalData" ';
+        html += 'data-data-source="mls" data-field="mls_sent"></span></a> mail messages ';
+        html += '</li>';
+        html += '</ul>';
+        html += '</div>';
+        html += '</div>';
+        html += '<!-- end of summary bar -->';
+
         return html;
     }
 

@@ -1404,7 +1404,18 @@ Convert.convertDSSummaryBlock = function(upeople_id){
     }
 };
 
-
+Convert.convertOverallSummaryBlock = function (){
+    var divs = $(".OverallSummaryBlock");
+    if (divs.length > 0){
+        $.each(divs, function(id, div) {            
+            /*workaround to avoid being called again when redrawing*/
+            if (div.id.indexOf('Parsed') >= 0 ) return;            
+            var html = HTMLComposer.overallSummaryBlock();
+            if (!div.id) div.id = "Parsed" + getRandomId();
+            $("#"+div.id).append(html);
+        });
+    }
+};
 
 Convert.convertDemographics = function() {
     var divs = $(".Demographics");
@@ -1975,6 +1986,7 @@ Convert.convertBasicDivs = function() {
     //Convert.convertModalProjectMap();
     Convert.convertFooter(); 
     //Convert.convertRefcard(); //deprecated
+    Convert.convertOverallSummaryBlock();
     Convert.convertDSSummaryBlock();
     Convert.convertDSTable();
     Convert.convertGlobalData();
