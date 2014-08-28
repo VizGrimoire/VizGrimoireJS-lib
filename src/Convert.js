@@ -357,7 +357,8 @@ function getSectionName(){
                     "people":"Contributor",
                     "company":"Company",
                     "country":"Country",
-                    "domain":"Domain"           
+                    "domain":"Domain",
+                    "release":"Companies analysis by release"
                    };    
     var filters = {"companies":"Activity by companies",
                    "contributors":"Activity by contributors",
@@ -482,6 +483,12 @@ function composeSideBar(project_id){
             html += '<ul class="dropdown-menu navmenu-nav">';
             if (aux.indexOf('demographics') >= 0){
                 html += '<li><a href="demographics.html">&nbsp;Demographics</a></li>';
+            }
+            if (aux.indexOf('release') >= 0){
+                //we link by the default the latest release (first in the list)
+                aux = Report.getReleaseNames().reverse();
+                latest_release = aux[0];
+                html += '<li><a href="release.html?release='+ latest_release +'">&nbsp;Companies by release</a></li>';
             }
             html += '</ul></li>';
         }
