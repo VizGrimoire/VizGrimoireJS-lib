@@ -249,7 +249,7 @@ var HTMLComposer = {};
         if(release_names.length === 0) return '';
 
         // sections which don't support releases
-        unsupported =  ['irc.html','qaforums.html'];
+        unsupported =  ['irc.html','qaforums.html','project.html'];
 
         ah_label = ' - All history - ';
         label = current_release;
@@ -299,7 +299,7 @@ var HTMLComposer = {};
             }
         });
         }else{
-            html += '<li><i>No releases for this data source</i></li>';
+            html += '<li><i>No releases for this section</i></li>';
         }
         html += '</ul>';
         html += '</div>';
