@@ -1879,6 +1879,21 @@ Convert.convertFilterItemTop = function(filter, item) {
     }
 };
 
+Convert.convertSmartLinks = function (){
+    var divs = $(".SmartLinks");
+    if (divs.length > 0){
+        $.each(divs, function(id, div) {            
+            /*workaround to avoid being called again when redrawing*/
+            if (div.id.indexOf('Parsed') >= 0 ) return;            
+            target_page = $(this).data('target');
+            label = $(this).data('label');
+            var html = HTMLComposer.smartLinks(target_page, label);
+            if (!div.id) div.id = "Parsed" + getRandomId();
+            $("#"+div.id).append(html);
+        });
+    }
+};
+
 
 Convert.convertFilterStudyItem = function (filter, item) {
     // Control convert is not called several times per filter
@@ -1980,6 +1995,7 @@ Convert.convertDSTable = function() {
 
 Convert.convertBasicDivs = function() {
     Convert.convertNavbar();
+    Convert.convertSmartLinks();
     //Convert.convertProjectNavBar();
     Convert.convertSectionBreadcrumb();
     Convert.convertProjectMap();

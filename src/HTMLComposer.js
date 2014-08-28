@@ -38,6 +38,7 @@ var HTMLComposer = {};
     HTMLComposer.releaseSelector = releaseSelector;
     HTMLComposer.sideBarLinks = sideBarLinks;
     HTMLComposer.overallSummaryBlock = overallSummaryBlock;
+    HTMLComposer.smartLinks = smartLinks;
 
     function personDSBlock(ds_name, metric_name){
         /* Display block with PersonSummary and PersonMetrics divs.
@@ -489,6 +490,35 @@ var HTMLComposer = {};
         return html;
     }
 
-
+    function smartLinks(target_page, label){
+        /*
+         Compose a link checking if the section is enabled and the release
+         */
+        html = '';
+        link_exists = false;
+        
+        try {
+            //scm-repos.html, scr-companies.html, ...
+            fname = target_page.split('.')[0];
+            section = fname.split('-')[0];
+            subsection = fname.split('-')[1];
+            
+            var mele = Report.getMenuElements();
+            if ( mele[section].indexOf(subsection) >= 0)
+                link_exists = true; // section is enabled
+            
+            if(Utils.isReleasePage() && link_exists){            
+                link_to = Utils.createReleaseLink(target_page);            
+                html = '<a href="' + link_to + '">' + label + '</a>';
+            }else if (link_exists){
+                html = '<a href="' + target_page + '">' + label + '</a>';
+            }else{
+                html = label;
+            }
+        }catch(err){
+            html = label;
+        }        
+        return html;
+    }
 
 })();
