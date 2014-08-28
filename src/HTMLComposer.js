@@ -251,18 +251,18 @@ var HTMLComposer = {};
         // sections which don't support releases
         unsupported =  ['irc.html','qaforums.html','project.html'];
 
-        ah_label = ' - All history - ';
+        ah_label = '&nbsp;All history&nbsp;';
         label = current_release;
         if (label === null) 
             label = ah_label;
         else{
-            label = ' Release ' + label[0].toUpperCase() + label.substring(1);
+            label = '&nbsp;Release ' + label[0].toUpperCase() + label.substring(1) + '&nbsp;';
             release_names.reverse().push(ah_label);
             release_names.reverse();
         }
         
         html = '<div class="input-group-btn">';
-        html += '<button type="button" class="btn btn-default btn-lg btn-info dropdown-toggle"';
+        html += '<button type="button" class="btn btn-default btn-lg btn-releaseselector dropdown-toggle"';
         html += 'data-toggle="dropdown">';
         html += label;
         html += '<span class="caret"></span>';
