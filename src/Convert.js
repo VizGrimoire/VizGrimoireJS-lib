@@ -431,8 +431,8 @@ function composeSideBar(project_id){
     html += '<ul class="nav navmenu-nav">';
 
     var mele = Report.getMenuElements();
-    html += '<li><a href="' + Utils.createLink('index.html') + '">';
-    html += '<i class="fa fa-home"></i> Home</a></li>';
+    /*html += '<li><a href="' + Utils.createLink('index.html') + '">';
+    html += '<i class="fa fa-home"></i> Home</a></li>';*/
     
     if (project_id === 'root'){
         if (mele.hasOwnProperty('scm')){
