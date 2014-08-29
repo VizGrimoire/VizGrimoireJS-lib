@@ -531,6 +531,8 @@ Convert.convertSideBar = function(project_id){
             //if (data.title) document.title = data.title;
             //$(".report_date").text(data.date);
             $(".report_name").text(data.project_name);
+            if(Utils.isReleasePage())
+                $(".report_name").attr("href", "./?release=" + $.urlParam('release'));
         });
     }    
 };
