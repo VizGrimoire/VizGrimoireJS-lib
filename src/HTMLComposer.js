@@ -256,7 +256,7 @@ var HTMLComposer = {};
         if (label === null) 
             label = ah_label;
         else{
-            label = '&nbsp;Release ' + label[0].toUpperCase() + label.substring(1) + '&nbsp;';
+            label = '&nbsp; ' + label[0].toUpperCase() + label.substring(1) + ' release &nbsp;';
             release_names.reverse().push(ah_label);
             release_names.reverse();
         }
@@ -295,7 +295,7 @@ var HTMLComposer = {};
             if (value === ah_label){
                 html += '<li><a href="'+ page_name +'?'+ final_p.join('&') +'" data-value="'+value+'">  '+value+'</a></li>';
             }else{
-                html += '<li><a href="'+ page_name +'?'+ final_p.join('&') +'" data-value="'+value+'"> Release '+value+'</a></li>';
+                html += '<li><a href="'+ page_name +'?'+ final_p.join('&') +'" data-value="'+value+'">  '+ value[0].toUpperCase() + value.substring(1)+' release</a></li>';
             }
         });
         }else{
