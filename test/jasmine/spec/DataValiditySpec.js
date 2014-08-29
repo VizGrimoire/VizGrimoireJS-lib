@@ -25,19 +25,19 @@ describe("VizGrimoireJS data validity", function() {
             ds = getDataSource('scm');
             commits = ds.getData().scm_commits;
             authors = ds.getData().scm_authors;
-            expect(ss.sample_correlation(commits,authors)).toBeGreaterThan("0.9");
+            expect(ss.sample_correlation(commits,authors)).toBeGreaterThan("0.5");
         });
         it("High commits and files", function() {
             ds = getDataSource('scm');
             commits = ds.getData().scm_commits;
             files = ds.getData().scm_files;
-            expect(ss.sample_correlation(commits,files)).toBeGreaterThan("0.9");        
+            expect(ss.sample_correlation(commits,files)).toBeGreaterThan("0.6");        
         });
         it("Medium added lines and removed lines", function() {
             ds = getDataSource('scm');
             added_lines = ds.getData().scm_added_lines;
             removed_lines = ds.getData().scm_removed_lines;
-            expect(ss.sample_correlation(added_lines,removed_lines)).toBeGreaterThan("0.8");        
+            expect(ss.sample_correlation(added_lines,removed_lines)).toBeGreaterThan("0.7");
         });
     });
 
