@@ -223,7 +223,11 @@ if (Viz === undefined) var Viz = {};
             rows_html += "<tr><td>" + (j+1) + "</td>";
             rows_html += "<td>";
             if (people_links){
-                rows_html += '<a href="people.html?id=' +people_data[var_names.id][j]+ '">';
+                rows_html += '<a href="people.html?id=' +people_data[var_names.id][j];
+                //we spread the GET variables if any
+                get_params = Utils.paramsInURL();
+                if (get_params.length > 0) rows_html += '&' + get_params;
+                rows_html += '">';
                 rows_html += people_data[var_names.name][j] +"</a>";
             }else{
                 rows_html += people_data[var_names.name][j];
@@ -286,6 +290,9 @@ if (Viz === undefined) var Viz = {};
         }else if (selected_period === "last year"){
             data_period_formatted = "Last 365 days";
         }
+
+        // If we are watching a release page, we overwrite the title of the table
+        if (Utils.isReleasePage()) data_period_formatted = "Release history";        
 
 
         if (tabs === true){
@@ -1054,18 +1061,20 @@ if (Viz === undefined) var Viz = {};
         // Show last time series as a point, not a line. The data is incomplete
         // Only show for single lines when time series is complete
         var showLastPoint = false;
+        // If we show past information to overwrite to false the lastpoint
 
-        if (config_metric.graph !== "bars" && lines_data.length === 1) {
-            showLastPoint = true;
-        }
-
-        if (showLastPoint) {
-            lines_data = lastLineValueToPoint(history, lines_data);
-            // Add an extra entry for adding space for the circle point.
-            addEmptyValue(lines_data);
-        }else if(!showLastPoint && lines_data.length > 1){
-            // we drop it to avoid showing not complete periods without points
-            dropLastLineValue(history, lines_data);
+        if (Utils.isReleasePage() === false){
+            if (config_metric.graph !== "bars" && lines_data.length === 1) {
+                showLastPoint = true;
+            }
+            if (showLastPoint) {
+                lines_data = lastLineValueToPoint(history, lines_data);
+                // Add an extra entry for adding space for the circle point.
+                addEmptyValue(lines_data);
+            }else if(!showLastPoint && lines_data.length > 1){
+                // we drop it to avoid showing not complete periods without points
+                dropLastLineValue(history, lines_data);
+            }
         }
 
         /*graph = Flotr.draw(container, lines_data, config);*/
@@ -1614,8 +1623,12 @@ if (Viz === undefined) var Viz = {};
     // Vibber",..]}
 
     function displayTop(div, ds, all, selected_metric, period, period_all, graph, titles, limit, people_links, threads_links, repository) {
+        /*
+         Call functions to compose the HTML for top tables with multiple of single
+         tabs.
+         */
+        
         var desc_metrics = ds.getMetrics();
-
         if (all === undefined) all = true;
         var history;
         if (repository === undefined){
@@ -1623,6 +1636,14 @@ if (Viz === undefined) var Viz = {};
         }else{
             history = ds.getRepositoriesTopData()[repository];
         }
+
+        // If the release flag is available, we overwrite the period_all and period
+        // variables.
+        if (Utils.isReleasePage()){
+            period_all = false;
+            period = ''; 
+        }        
+        
         if (period_all === true){
             var filtered_history = {};
             $.each(history, function(key, value) {

@@ -55,6 +55,7 @@ if (Report === undefined) var Report = {};
     Report.getVizConfig = getVizConfig;
     Report.getProjectsHierarchy = getProjectsHierarchy;
     Report.getMenuElements = getMenuElements;
+    Report.getReleaseNames = getReleaseNames;
     Report.getMetricDS = getMetricDS;
     Report.getGridster = getGridster;
     Report.setGridster = setGridster;
@@ -138,8 +139,11 @@ if (Report === undefined) var Report = {};
 
     /** menu_elements contains JSON for side menu**/
     function getMenuElements(){
-	return menu_elements;
+	return menu_elements.menu;
     }
+    function getReleaseNames() {
+        return menu_elements.releases;
+    }    
     Report.setMenuElements = function(data){
 	menu_elements = data;
     };
@@ -344,8 +348,9 @@ if (Report === undefined) var Report = {};
 
     function checkDynamicConfig() {
         var data_sources = [];
-
-        function getDataDirs(dirs_config) {
+        
+        /*
+         function getDataDirs(dirs_config) {
             var full_params = dirs_config.split ("&");
             var dirs_param = $.grep(full_params,function(item, index) {
                 return (item.indexOf("data_dir=") === 0);
@@ -362,6 +367,14 @@ if (Report === undefined) var Report = {};
         if (querystr && querystr.indexOf("data_dir")>=0) {
             getDataDirs(querystr);
             if (data_sources.length>0)
+                Report.setProjectsDirs(data_sources);
+        }*/
+        
+        var release = $.urlParam('release');
+        if (release !== null && release.length > 0 ){
+            data_sources.push('data/json/' + release);
+            Report.setDataDir('data/json/' + release);
+            if (data_sources.length>0)                
                 Report.setProjectsDirs(data_sources);
         }
     }
@@ -511,9 +524,6 @@ if (Report === undefined) var Report = {};
     };
 
     Report.convertGlobal = function() {
-        // Templates markup divs
-        Convert.convertMicrodash();
-        Convert.convertMicrodashText();
         // Normal markup divs
         Convert.convertBasicDivs();
         Convert.convertBasicDivsMisc();
@@ -521,6 +531,9 @@ if (Report === undefined) var Report = {};
         Convert.convertDemographics();
         Convert.convertMetricsEvolSet();
         Convert.convertLastActivity();
+        // Templates markup divs
+        Convert.convertMicrodash();
+        Convert.convertMicrodashText();
     };
 
     Report.getActiveStudies = function() {

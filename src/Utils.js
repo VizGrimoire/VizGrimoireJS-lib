@@ -27,6 +27,10 @@ var Utils = {};
 (function() {
 
     Utils.paramsInURL = paramsInURL;
+    Utils.isReleasePage = isReleasePage;
+    Utils.filenameInURL = filenameInURL;
+    Utils.createLink = createLink;
+    Utils.createReleaseLink = createReleaseLink;
 
     $.urlParam = function(name){
         var results = new RegExp('[?&]' + name + '=([^&#]*)').exec(window.location.href);
@@ -37,6 +41,18 @@ var Utils = {};
             return results[1] || 0;
         }
     };
+
+    function isReleasePage(){
+        /*
+         Returns true if the GET variable release is available.
+
+         Can be improved checking the conf file with the release names, in order
+         to check if the release name is correct.
+         */
+        
+        if ($.urlParam('release') === null) return false;
+        else return true;
+    }
 
     function paramsInURL(){
     /*
@@ -49,6 +65,30 @@ var Utils = {};
     return params;
 }
 
+    function filenameInURL(){
+        aux = document.URL.split('?')[0].split('/');
+        res = aux[aux.length-1];
+        return res;
+    }
 
+    function createLink(target){
+        /*
+         Return the URL appending the GET variables of the current page
+         */
+        url = target;
+        if (paramsInURL().length > 0) url+= '?' + paramsInURL();
+        return url;
+    }
 
+    function createReleaseLink(target){
+        /*
+         Return the URL appending the GET variable for the release
+         */
+        url = target;
+        if (isReleasePage()) url+= '?release=' + $.urlParam('release');
+        return url;
+    }
+    
+    
+    
 })();

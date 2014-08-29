@@ -357,7 +357,8 @@ function getSectionName(){
                     "people":"Contributor",
                     "company":"Company",
                     "country":"Country",
-                    "domain":"Domain"           
+                    "domain":"Domain",
+                    "release":"Companies analysis by release"
                    };    
     var filters = {"companies":"Activity by companies",
                    "contributors":"Activity by contributors",
@@ -410,56 +411,14 @@ function getSectionName(){
     }
 }
 
-function composeSBSectionLinks(icon_text, title, ds_name, elements){
-    // text = {'companies': '<i class="fa fa-building-o"></i> Companies',
-    // 'companies-summary': '<i class="fa fa-building-o"></i> Companies summary',
-    // 'contributors': '<i class="fa fa-users"></i> Contributors',
-    // 'countries': '<i class="fa fa-flag"></i> Countries',
-    // 'domains': '<i class="fa fa-envelope-square"></i> Domains',
-    // 'projects': '<i class="fa fa-rocket"></i> Projects',
-    // 'repos': '<i class="fa fa-code-fork"></i> Repositories',
-    // 'states': '<i class="fa fa-code-fork"></i> States'};
-    // html = '';
-    // html += '<li><a href="' + ds_name + '.html"><i class="fa fa-tachometer"></i> Overview</a></li>';
-    text = {'companies': 'Companies',
-    'companies-summary': 'Companies summary',
-    'contributors': 'Contributors',
-    'countries': 'Countries',
-    'domains': 'Domains',
-    'projects': 'Projects',
-    'repos': 'Repositories',
-    'tags': 'Tags',
-    'states': 'States'};
-    html = '';
-    html += '<li class="dropdown">';
-    html += '<a href="#" class="dropdown-toggle" data-toggle="dropdown">';
-    html += '<i class="fa ' + icon_text + '"></i>&nbsp;' + title + ' <b class="caret"></b></a>';
-    html += '<ul class="dropdown-menu navmenu-nav">';
-    html += '<li><a href="' + ds_name + '.html">&nbsp;Overview</a></li>';
-    $.each(elements, function(id,value){        
-	if (text.hasOwnProperty(value)){
-            var label = text[value];
-            if (value === 'repos'){
-                var DS = Report.getDataSourceByName(ds_name);
-                label = DS.getLabelForRepositories();
-                label = label.charAt(0).toUpperCase() + label.slice(1);
-            }
-            html += '<li><a href="'+ ds_name + '-' + value + '.html">&nbsp;' + label + '</a></li>';
-	}else{
-            html += '<li><a href="'+ ds_name + '-' + value + '.html">&nbsp;' + value + '</a></li>';
-	}
-    });
-    html += '</ul></li>';
-    return html;
-}
-
 function isURLRelease(){
     /*
      Returns true when the URL received contains the values for a release 
+     
+     COMMENT: dup with Utils.isReleasePage()
      */
     if ( $.urlParam('release') !== null && 
-         $.urlParam('release').length > 0 &&
-         $.urlParam('data_dir') !== null ) return true;
+         $.urlParam('release').length > 0) return true;
     else return false;    
 }
 
@@ -471,69 +430,72 @@ function composeSideBar(project_id){
     var html_extra='';
     html += '<ul class="nav navmenu-nav">';
 
-    if (isURLRelease()){
-        //side menu for the releases here
-        html += HTMLComposer.sideMenu4Release();        
-    }else{
-        var mele = Report.getMenuElements();
-        html += '<li><a href="./"><i class="fa fa-home"></i> Home</a></li>';
-
-        if (project_id === 'root'){
-            if (mele.hasOwnProperty('scm')){
-                aux = mele.scm;
-                aux_html = composeSBSectionLinks('fa-code','Source code management','scm', aux);
-                html += aux_html;
-            }
-            if (mele.hasOwnProperty('scr')){
-                aux = mele.scr;
-                aux_html = composeSBSectionLinks('fa-check','Code review','scr', aux);
-                html += aux_html;
-            }
-            if (mele.hasOwnProperty('its')){
-                aux = mele.its;
-                aux_html = composeSBSectionLinks('fa-ticket','Tickets','its', aux);
-                html += aux_html;
-            }
-            if (mele.hasOwnProperty('mls')){
-                aux = mele.mls;
-                aux_html = composeSBSectionLinks('fa-envelope-o','Mailing lists','mls', aux);
-                html += aux_html;
-            }
-            if (mele.hasOwnProperty('qaforums')){
-                aux = mele.qaforums;
-                aux_html = composeSBSectionLinks('fa-question','Q&A Forums','qaforums', aux);
-                html += aux_html;
-            }
-            if (mele.hasOwnProperty('irc')){
-                aux = mele.irc;
-                aux_html = composeSBSectionLinks('fa-comment-o','IRC','irc', aux);
-                html += aux_html;
-            }
-            if (mele.hasOwnProperty('downloads')){
-                aux = mele.downloads;
-                aux_html = composeSBSectionLinks('fa-download','Downloads','downloads', aux);
-                html += aux_html;
-            }
-            if (mele.hasOwnProperty('wiki')){
-                aux = mele.wiki;
-                aux_html = composeSBSectionLinks('fa-pencil-square-o','Wiki','wiki', aux);
-                html += aux_html;
-            }
-            if (mele.hasOwnProperty('studies')){
-                aux = mele.studies;
-                html += '<li class="dropdown">';
-                html += '<a href="#" class="dropdown-toggle" data-toggle="dropdown">';
-                html += '<i class="fa fa-lightbulb-o"></i>&nbsp;Studies <b class="caret"></b></a>';
-                html += '<ul class="dropdown-menu navmenu-nav">';
-                if (aux.indexOf('demographics') >= 0){
-                    html += '<li><a href="demographics.html">&nbsp;Demographics</a></li>';
-                }
-                html += '</ul></li>';
-            }
+    var mele = Report.getMenuElements();
+    /*html += '<li><a href="' + Utils.createLink('index.html') + '">';
+    html += '<i class="fa fa-home"></i> Home</a></li>';*/
+    
+    if (project_id === 'root'){
+        if (mele.hasOwnProperty('scm')){
+            aux = mele.scm;
+            aux_html = HTMLComposer.sideBarLinks('fa-code','Source code management','scm', aux);
+            html += aux_html;
         }
+        if (mele.hasOwnProperty('scr')){
+            aux = mele.scr;
+            aux_html = HTMLComposer.sideBarLinks('fa-check','Code review','scr', aux);
+            html += aux_html;
+        }
+        if (mele.hasOwnProperty('its')){
+            aux = mele.its;
+            aux_html = HTMLComposer.sideBarLinks('fa-ticket','Tickets','its', aux);
+            html += aux_html;
+        }
+        if (mele.hasOwnProperty('mls')){
+            aux = mele.mls;
+            aux_html = HTMLComposer.sideBarLinks('fa-envelope-o','Mailing lists','mls', aux);
+            html += aux_html;
+        }
+        if (mele.hasOwnProperty('qaforums') && Utils.isReleasePage() === false){
+            aux = mele.qaforums;
+            aux_html = HTMLComposer.sideBarLinks('fa-question','Q&A Forums','qaforums', aux);
+            html += aux_html;
+        }
+        if (mele.hasOwnProperty('irc') && Utils.isReleasePage() === false){
+            aux = mele.irc;
+            aux_html = HTMLComposer.sideBarLinks('fa-comment-o','IRC','irc', aux);
+            html += aux_html;
+        }
+        if (mele.hasOwnProperty('downloads') && Utils.isReleasePage() === false){
+            aux = mele.downloads;
+            aux_html = HTMLComposer.sideBarLinks('fa-download','Downloads','downloads', aux);
+            html += aux_html;
+        }
+        if (mele.hasOwnProperty('wiki') && Utils.isReleasePage() === false){
+            aux = mele.wiki;
+            aux_html = HTMLComposer.sideBarLinks('fa-pencil-square-o','Wiki','wiki', aux);
+            html += aux_html;
+        }
+        if (mele.hasOwnProperty('studies') && Utils.isReleasePage() === false){
+            aux = mele.studies;
+            html += '<li class="dropdown">';
+            html += '<a href="#" class="dropdown-toggle" data-toggle="dropdown">';
+            html += '<i class="fa fa-lightbulb-o"></i>&nbsp;Studies <b class="caret"></b></a>';
+            html += '<ul class="dropdown-menu navmenu-nav">';
+            if (aux.indexOf('demographics') >= 0){
+                html += '<li><a href="demographics.html">&nbsp;Demographics</a></li>';
+            }
+            if (aux.indexOf('release') >= 0){
+                //we link by the default the latest release (first in the list)
+                aux = Report.getReleaseNames().reverse();
+                latest_release = aux[0];
+                html += '<li><a href="release.html?release='+ latest_release +'">&nbsp;Companies by release</a></li>';
+            }
+            html += '</ul></li>';
+        }
+        
         html += '<li><a href="data_sources.html"><i class="fa fa-database"></i> Data sources</a></li>';
         html += '<li><a href="project_map.html"><i class="fa fa-icon fa-sitemap"></i> Project map</a></li>';
-
+        
         if (mele.hasOwnProperty('extra')){
             aux = mele.extra;
             html_extra += '<li class="sidemenu-divider"></li>';
@@ -544,7 +506,7 @@ function composeSideBar(project_id){
         }
         html += html_extra;
     }
-
+    
     html += '</ul>';
     return html;
 }
@@ -569,6 +531,8 @@ Convert.convertSideBar = function(project_id){
             //if (data.title) document.title = data.title;
             //$(".report_date").text(data.date);
             $(".report_name").text(data.project_name);
+            if(Utils.isReleasePage())
+                $(".report_name").attr("href", "./?release=" + $.urlParam('release'));
         });
     }    
 };
@@ -595,6 +559,7 @@ Convert.convertNavbar = function() {
         $("#Navbar").html(navigation);
         var project_id = Report.getParameterByName("project");
         Convert.convertProjectNavBar(project_id);
+        Convert.convertReleaseSelector();
         Convert.convertSideBar(project_id);
         /**
          // Could this break the support of different JSON directories?         
@@ -611,6 +576,23 @@ Convert.convertNavbar = function() {
     });
 };
 
+Convert.convertReleaseSelector = function (){
+    var releases = Report.getReleaseNames();
+    if (releases.length > 0){       // if no releases, we don't print HTML
+        var divs = $(".ReleaseSelector");
+        if (divs.length > 0){
+            $.each(divs, function(id, div){
+                $(this).empty();
+                if (!div.id) div.id = "ReleaseSelector" + getRandomId();
+                var htmlaux = HTMLComposer.releaseSelector($.urlParam('release'), releases);
+                $("#"+div.id).append(htmlaux);
+            });
+        }
+    }
+
+};
+
+
 function composeSectionBreadCrumb(project_id){
     /*
      Returns HTML for the breadcrumb shown on top (horizontal) with the section
@@ -618,50 +600,39 @@ function composeSectionBreadCrumb(project_id){
      */
     var html = '<ol class="breadcrumb">';
 
-    if (isURLRelease()){
-        var subsects = getSectionName4Release();
-        if (subsects.length > 0){
-            get_params = Utils.paramsInURL();
-            html += '<li><a href="./release.html?' + get_params + '">Release Overview</a></li>';
-            var cont = 1;
-            $.each(subsects, function(id,value){
-                if (subsects.length === cont){
-                        html += '<li class="active">' + value[1] + '</li>';
+    if (project_id === undefined){
+        //main project enters here
+        var subsects_b = getSectionName();
+        var params = Utils.paramsInURL();
+        if (subsects_b.length > 0){
+            html += '<li><a href="./';
+            if(Utils.isReleasePage()) html += '?release=' + $.urlParam('release');
+            html += '">Project Overview</a></li>';
+            var cont_b = 1;
+            $.each(subsects_b, function(id,value){
+                if (subsects_b.length === cont_b){
+                    html += '<li class="active">' + value[1] + '</li>';
                 }else{
-                    html += '<li><a href="'+ value[0] +'.html">' + value[1] + '</a></li>';
-                }
-                cont += 1;
-            });
-        }
-        else{
-            html += '<li class="active">Release Overview</li>';
-        }
-    }
-    else{
-        if (project_id === undefined){
-            //main project enters here
-            var subsects_b = getSectionName();
-            if (subsects_b.length > 0){
-                html += '<li><a href="./">Project Overview</a></li>';
-                var cont_b = 1;
-                $.each(subsects_b, function(id,value){
-                    if (subsects_b.length === cont_b){
-                        html += '<li class="active">' + value[1] + '</li>';
+                    if(Utils.isReleasePage()){
+                        html += '<li><a href="'+ value[0] +'.html';
+                        html += '?release=' + $.urlParam('release') + '">';
+                        html += value[1] + '</a></li>';
                     }else{
                         html += '<li><a href="'+ value[0] +'.html">' + value[1] + '</a></li>';
                     }
-                    cont_b += 1;
-                });
-            }
-            else{
-                html += '<li class="active">Project Overview</li>';
-            }
-
-        }else{
-            //subprojects have no sections yet
-            html += '<li> ' + getSectionName() + '</li>';
+                }
+                cont_b += 1;
+            });
         }
+        else{
+            html += '<li class="active">Project Overview</li>';
+        }
+        
+    }else{
+        //subprojects have no sections yet
+        html += '<li> ' + getSectionName() + '</li>';
     }
+    
     html += '</ol>';
     return html;
 }
@@ -1415,6 +1386,45 @@ Convert.repositoryDSBlock = function(repo_id){
     }
 };
 
+Convert.convertDSSummaryBlock = function(upeople_id){
+    /* 
+     Two steps conversion: 
+     Converts this id into a block with PersonSummary + PersonMetrics
+     */
+    var divs = $(".DSSummaryBlock");
+    if (divs.length > 0){
+        $.each(divs, function(id, div) {            
+            /*workaround to avoid being called again when redrawing*/
+            if (div.id.indexOf('Parsed') >= 0 ) return;
+            
+            ds_name = $(this).data('data-source');
+            box_labels = $(this).data('box-labels');
+            box_metrics = $(this).data('box-metrics');
+            ts_metrics = $(this).data('ts-metrics');
+            //metric_name = $(this).data('metrics');
+            DS = Report.getDataSourceByName(ds_name);
+            if (DS === null) return;
+            if (DS.getData().length === 0) return; /* no data for data source*/
+            var html = HTMLComposer.DSBlock(ds_name,box_labels,box_metrics,
+                                            ts_metrics);
+            if (!div.id) div.id = "Parsed" + getRandomId();
+            $("#"+div.id).append(html);
+        });
+    }
+};
+
+Convert.convertOverallSummaryBlock = function (){
+    var divs = $(".OverallSummaryBlock");
+    if (divs.length > 0){
+        $.each(divs, function(id, div) {            
+            /*workaround to avoid being called again when redrawing*/
+            if (div.id.indexOf('Parsed') >= 0 ) return;            
+            var html = HTMLComposer.overallSummaryBlock();
+            if (!div.id) div.id = "Parsed" + getRandomId();
+            $("#"+div.id).append(html);
+        });
+    }
+};
 
 Convert.convertDemographics = function() {
     var divs = $(".Demographics");
@@ -1878,6 +1888,21 @@ Convert.convertFilterItemTop = function(filter, item) {
     }
 };
 
+Convert.convertSmartLinks = function (){
+    var divs = $(".SmartLinks");
+    if (divs.length > 0){
+        $.each(divs, function(id, div) {            
+            /*workaround to avoid being called again when redrawing*/
+            if (div.id.indexOf('Parsed') >= 0 ) return;            
+            target_page = $(this).data('target');
+            label = $(this).data('label');
+            var html = HTMLComposer.smartLinks(target_page, label);
+            if (!div.id) div.id = "Parsed" + getRandomId();
+            $("#"+div.id).append(html);
+        });
+    }
+};
+
 
 Convert.convertFilterStudyItem = function (filter, item) {
     // Control convert is not called several times per filter
@@ -1979,12 +2004,15 @@ Convert.convertDSTable = function() {
 
 Convert.convertBasicDivs = function() {
     Convert.convertNavbar();
+    Convert.convertSmartLinks();
     //Convert.convertProjectNavBar();
     Convert.convertSectionBreadcrumb();
     Convert.convertProjectMap();
     //Convert.convertModalProjectMap();
     Convert.convertFooter(); 
     //Convert.convertRefcard(); //deprecated
+    Convert.convertOverallSummaryBlock();
+    Convert.convertDSSummaryBlock();
     Convert.convertDSTable();
     Convert.convertGlobalData();
     //Convert.convertProjectData();

@@ -29,11 +29,16 @@ var HTMLComposer = {};
 (function() {
     HTMLComposer.personDSBlock = personDSBlock;
     HTMLComposer.filterDSBlock = filterDSBlock;
+    HTMLComposer.DSBlock = DSBlock;
     HTMLComposer.repositorySummaryTable = repositorySummaryTable;
     HTMLComposer.personSummaryTable = personSummaryTable;
     HTMLComposer.personName = personName;
     HTMLComposer.itemName = itemName;
     HTMLComposer.sideMenu4Release = sideMenu4Release;
+    HTMLComposer.releaseSelector = releaseSelector;
+    HTMLComposer.sideBarLinks = sideBarLinks;
+    HTMLComposer.overallSummaryBlock = overallSummaryBlock;
+    HTMLComposer.smartLinks = smartLinks;
 
     function personDSBlock(ds_name, metric_name){
         /* Display block with PersonSummary and PersonMetrics divs.
@@ -224,13 +229,296 @@ var HTMLComposer = {};
         html = '';
         params = '?data_dir='+ $.urlParam('data_dir') +'&release=' + $.urlParam('release'); 
         html += '<li><a href="./"><i class="fa fa-home"></i> Home</a></li>';
-        html += '<li><a href="./release.html'+ params +'"> ' +$.urlParam('release') +' release</a></li>';
-        html += '<li><a href="./scm-companies.html'+ params +'"><i class="fa fa-code"></i><i class="fa fa-building-o"></i> Source code repositories by companies</a></li>';
-        html += '<li><a href="./mls-companies.html' + params + '"><i class="fa fa-envelope-o"></i><i class="fa fa-building-o"></i> Mailing Lists by companies</a></li>';
-        html += '<li><a href="./its-companies.html' + params + '"><i class="fa fa-ticket"></i><i class="fa fa-building-o"></i> Tickets by companies</a></li>';
+        //html += '<li><a href="./release.html'+ params +'"> ' +$.urlParam('release') +' release</a></li>';
+        html += '<li><a href="./scm-companies.html'+ params +'"><i class="fa fa-code"></i> Source code repositories by companies</a></li>';
+        html += '<li><a href="./mls-companies.html' + params + '"><i class="fa fa-envelope-o"></i> Mailing Lists by companies</a></li>';
+        html += '<li><a href="./its-companies.html' + params + '"><i class="fa fa-ticket"></i> Tickets by companies</a></li>';
         
         return html;
     }
 
+    function releaseSelector(current_release, release_names){
+        /*
+         Compose HTML for dropdown selector for releases
+         
+         current_release: value of GET variable release
+         release_names: releases set up in config file
+         */
+
+        // if no releases, we don't print HTML
+        if(release_names.length === 0) return '';
+
+        // sections which don't support releases
+        unsupported =  ['irc.html','qaforums.html','project.html'];
+
+        ah_label = '&nbsp;All history&nbsp;';
+        label = current_release;
+        if (label === null) 
+            label = ah_label;
+        else{
+            label = '&nbsp; ' + label[0].toUpperCase() + label.substring(1) + ' release &nbsp;';
+            release_names.reverse().push(ah_label);
+            release_names.reverse();
+        }
+        
+        html = '<div class="input-group-btn">';
+        html += '<button type="button" class="btn btn-default btn-lg btn-releaseselector dropdown-toggle"';
+        html += 'data-toggle="dropdown">';
+        html += label;
+        html += '<span class="caret"></span>';
+        html += '</button>';
+        html += '<ul class="dropdown-menu pull-left">';        
+        page_name = Utils.filenameInURL();
+        if (unsupported.indexOf(page_name) < 0){
+        $.each(release_names, function(id, value){
+            var final_p = [];
+            params = Utils.paramsInURL().split('&');
+
+            //we filter the GET values
+            for (i = 0; i < params.length; i++){
+                sub_value = params[i];
+                
+                if (sub_value.length === 0) continue;
+                //for All History we skip the release value
+                if (sub_value.indexOf('release') === 0){
+                    if (value != ah_label) final_p.push('release='+value);
+                }else{
+                    final_p.push(sub_value);
+                }
+            }
+            
+            //if release is not present we add it
+            if ($.urlParam('release') === null){
+                final_p.push('release=' + value);                
+            }
+            
+            if (value === ah_label){
+                html += '<li><a href="'+ page_name +'?'+ final_p.join('&') +'" data-value="'+value+'">  '+value+'</a></li>';
+            }else{
+                html += '<li><a href="'+ page_name +'?'+ final_p.join('&') +'" data-value="'+value+'">  '+ value[0].toUpperCase() + value.substring(1)+' release</a></li>';
+            }
+        });
+        }else{
+            html += '<li><i>No releases for this section</i></li>';
+        }
+        html += '</ul>';
+        html += '</div>';
+
+        return html;
+    }
+
+    function DSBlock(ds_name,box_labels,box_metrics,ts_metrics){
+        /* Display block with functions DSSummaryBox and DSSummaryTimeSerie.
+         
+         Receives strings for box_labels,box_metrics,ts_metrics
+         
+         Note: This block is used in the index.html page
+         */
+        
+        html = '';
+        html += '<!-- irc -->';
+        html += '<div class="row invisible-box">';
+
+        //summary box here
+        blabels = box_labels.split(',');
+        bmetrics = box_metrics.split(',');
+        html += DSSummaryBox(ds_name, blabels, bmetrics);
+
+        html += '<div class="col-md-5">';
+        tsm = ts_metrics.split(',');
+        html += DSTimeSerie(ds_name, tsm[0]);
+        html += '</div>';
+
+        html += '<div class="col-md-5">';
+        html += DSTimeSerie(ds_name, tsm[1]);
+        html += '</div>';
+        
+        html += '</div>';
+        html += '<!-- end irc -->';
+        
+        return html;
+
+
+    }
+
+    
+    function summaryCell(width, label, ds_name, metric){
+        /* Compose small cell used by the DS summary box*/
+        html = '';
+        html += '<div class="col-md-'+ width+'">';
+        html += '<div class="row thin-border">';
+        html += '<div class="col-md-12">' + label + '</div>';
+        html += '</div>';
+        html += '<div class="row">';
+        html += '<div class="col-md-12 medium-fp-number">';
+        target_page = Utils.createLink(ds_name + '.html');
+        html += '<a href="'+ target_page +'"> <span class="GlobalData"';
+        html += 'data-data-source="' + ds_name + '" data-field="' + metric + '"></span>';
+        html += '</a>';
+        html += '</div>';
+        html += '</div>';
+	html += '</div>';
+        return html;        
+
+    }
+    function DSSummaryBox(ds_name, labels, metrics){
+        /* Compose HTML for DS summary box.
+         
+         ds_name: string
+         labels: array of strings
+         metrics: array of strings
+         */
+        html = '';
+        html += '<!-- summary box-->';
+        html += '<div class="col-md-2">';
+        html += '<div class="well well-small">';
+        html += '<div class="row thin-border">';
+        html += '<div class="col-md-12">' + labels[0] + '</div>';
+        html += '</div>';
+        html += '<div class="row grey-border">';
+        html += '<div class="col-md-12 big-fp-number">';
+        target_page = Utils.createLink(ds_name + '.html');
+        html += '<a href="' + target_page +'"> <span class="GlobalData"';
+        html += 'data-data-source="' + ds_name + '" data-field="' + metrics[0]+ '"></span>';
+        html += '</a>';
+        html += '</div>';
+        html += '</div>';
+        html += '<div class="row" style="padding: 5px 0px 0px 0px;">';
+
+        if (labels.length === 2 && metrics.length === 2){
+            html += summaryCell('12', labels[1], ds_name, metrics[1]);
+        } else if (labels.length === 3 && metrics.length === 3){
+            html += summaryCell('6', labels[1], ds_name, metrics[1]);
+            html += summaryCell('6', labels[2], ds_name, metrics[2]);
+        } else if (labels.length === 4 && metrics.length === 4){
+            html += summaryCell('4', labels[1], ds_name, metrics[1]);
+            html += summaryCell('4', labels[2], ds_name, metrics[2]);
+            html += summaryCell('4', labels[3], ds_name, metrics[3]);            
+        }
+
+        html += '</div>';
+        html += '</div>';
+        html += '</div>';
+        html += '<!-- end summary box -->';
+        return html;
+
+    }
+
+    function DSTimeSerie(ds_name, metric){
+        /*
+         ds_name: string
+         metric: string
+         */
+        html = '';
+        html += '<div class="well well-small">';
+        html += '<div class="MetricsEvol" data-data-source="'+ ds_name +'"';
+        html += 'data-metrics="' + metric +'" data-min="true" style="height: 100px;"';
+        html += 'data-light-style="true"></div>';
+        html += '<a href="irc.html" style="color: black;">';
+        html += ' <span class="MicrodashText" data-metric="' + metric+ '"></span>';
+        html += '</a>';
+        html += '</div>';
+        return html;
+    }
+
+    function sideBarLinks(icon_text, title, ds_name, elements){
+        // text = {'companies': '<i class="fa fa-building-o"></i> Companies',
+        // 'companies-summary': '<i class="fa fa-building-o"></i> Companies summary',
+        // 'contributors': '<i class="fa fa-users"></i> Contributors',
+        // 'countries': '<i class="fa fa-flag"></i> Countries',
+        // 'domains': '<i class="fa fa-envelope-square"></i> Domains',
+        // 'projects': '<i class="fa fa-rocket"></i> Projects',
+        // 'repos': '<i class="fa fa-code-fork"></i> Repositories',
+        // 'states': '<i class="fa fa-code-fork"></i> States'};
+        // html = '';
+        // html += '<li><a href="' + ds_name + '.html"><i class="fa fa-tachometer"></i> Overview</a></li>';
+        text = {'companies': 'Companies',
+                'companies-summary': 'Companies summary',
+                'contributors': 'Contributors',
+                'countries': 'Countries',
+                'domains': 'Domains',
+                'projects': 'Projects',
+                'repos': 'Repositories',
+                'tags': 'Tags',
+                'states': 'States'};
+        html = '';
+        html += '<li class="dropdown">';
+        html += '<a href="#" class="dropdown-toggle" data-toggle="dropdown">';
+        html += '<i class="fa ' + icon_text + '"></i>&nbsp;' + title + ' <b class="caret"></b></a>';
+        html += '<ul class="dropdown-menu navmenu-nav">';
+        var target_page = Utils.createLink(ds_name +'.html');
+        html += '<li><a href="' + target_page + '">&nbsp;Overview</a></li>';
+        $.each(elements, function(id,value){        
+            target_page = Utils.createLink(ds_name + '-' + value + '.html');
+            if (text.hasOwnProperty(value)){
+                var label = text[value];
+                if (value === 'repos'){
+                    var DS = Report.getDataSourceByName(ds_name);
+                    label = DS.getLabelForRepositories();
+                    label = label.charAt(0).toUpperCase() + label.slice(1);
+                }
+                html += '<li><a href="'+ target_page + '">&nbsp;' + label + '</a></li>';
+            }else{
+                html += '<li><a href="'+ target_page + '">&nbsp;' + value + '</a></li>';
+            }
+        });
+        html += '</ul></li>';
+        return html;
+    }
+
+    function overallSummaryBlock(){
+        html = '';
+        html += '<!-- summary bar -->';
+        html += '<div class="capped-box overall-summary ">';
+        html += '<div class="stats-switcher-viewport js-stats-switcher-viewport">';
+        html += '<ul class="numbers-summary">';
+        html += '<li><a href="'+ Utils.createReleaseLink('scm.html') +'"><span class="GlobalData" ';
+        html += 'data-data-source="scm" data-field="scm_commits"></span></a> commits</li>';
+        html += '<li><a href="'+ Utils.createReleaseLink('scm.html') +'"><span class="GlobalData" ';
+        html += 'data-data-source="scm" data-field="scm_authors"></span></a> developers ';
+        html += '</li>';
+        html += '<li><a href="'+ Utils.createReleaseLink('its.html') +'"><span class="GlobalData" ';
+        html += 'data-data-source="its" data-field="its_opened"></span></a> tickets</li>';
+        html += '<li><a href="'+ Utils.createReleaseLink('mls.html') +'"><span class="GlobalData" ';
+        html += 'data-data-source="mls" data-field="mls_sent"></span></a> mail messages ';
+        html += '</li>';
+        html += '</ul>';
+        html += '</div>';
+        html += '</div>';
+        html += '<!-- end of summary bar -->';
+
+        return html;
+    }
+
+    function smartLinks(target_page, label){
+        /*
+         Compose a link checking if the section is enabled and the release
+         */
+        html = '';
+        link_exists = false;
+        
+        try {
+            //scm-repos.html, scr-companies.html, ...
+            fname = target_page.split('.')[0];
+            section = fname.split('-')[0];
+            subsection = fname.split('-')[1];
+            
+            var mele = Report.getMenuElements();
+            if ( mele[section].indexOf(subsection) >= 0)
+                link_exists = true; // section is enabled
+            
+            if(Utils.isReleasePage() && link_exists){            
+                link_to = Utils.createReleaseLink(target_page);            
+                html = '<a href="' + link_to + '">' + label + '</a>';
+            }else if (link_exists){
+                html = '<a href="' + target_page + '">' + label + '</a>';
+            }else{
+                html = label;
+            }
+        }catch(err){
+            html = label;
+        }        
+        return html;
+    }
 
 })();
