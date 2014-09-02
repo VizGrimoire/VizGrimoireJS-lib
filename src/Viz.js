@@ -157,7 +157,10 @@ if (Viz === undefined) var Viz = {};
                 // the same as in mls and irc
                 var_names.name = "senders";
                 var_names.action = "sent";
-           }          
+           }else if (metric === "participants"){
+               var_names.name = "name";
+               var_names.action = "messages_sent";
+           }
         }       
         if (ds_name === "releases"){
             if (metric === "authors"){
