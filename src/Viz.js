@@ -363,7 +363,9 @@ if (Viz === undefined) var Viz = {};
                         tables += composeTopRowsDownloads(data[key], limit, var_names);
                     }else{
                         unit = desc_metrics[ds_name + "_" + metric].action;
-                        tables += '<thead><th>#</th><th>' +metric.capitalize()+'</th><th>'+unit.capitalize() +'</th></thead><tbody>';
+                        //tables += '<thead><th>#</th><th>' +metric.capitalize()+'</th><th>'+unit.capitalize() +'</th></thead><tbody>';
+                        metric_name = desc_metrics[ds_name + "_" + metric].name;
+                        tables += '<thead><th>#</th><th>' +metric_name.capitalize()+'</th><th>'+unit.capitalize() +'</th></thead><tbody>';
                         tables += composeTopRowsPeople(data[key], limit, people_links, var_names);
                         tables += '</tbody>';
                     }
