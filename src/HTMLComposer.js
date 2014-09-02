@@ -378,6 +378,8 @@ var HTMLComposer = {};
         html += '<div class="row grey-border">';
         html += '<div class="col-md-12 big-fp-number">';
         target_page = Utils.createLink(ds_name + '.html');
+        /* we overwrite this for the forge */
+        if (ds_name === 'releases') target_page = Utils.createLink('forge.html');
         html += '<a href="' + target_page +'"> <span class="GlobalData"';
         html += 'data-data-source="' + ds_name + '" data-field="' + metrics[0]+ '"></span>';
         html += '</a>';
