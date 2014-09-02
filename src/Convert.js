@@ -352,6 +352,7 @@ function getSectionName(){
                     "scr":"Code Review overview",
                     "scm":"SCM overview",
                     "wiki":"Wiki overview",
+                    "forge":"Forge releases",
                     "data_sources":"Data sources",
                     "project_map":"Project map",
                     "people":"Contributor",
