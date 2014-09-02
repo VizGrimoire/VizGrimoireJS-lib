@@ -59,14 +59,14 @@ vizgrimoire.core.css: \
 
 %.min.js: %.js Makefile
 	@rm -f $@
-        # $(JS_UGLIFY) -o $@ -c -m $<
-	$(JS_UGLIFY) -o $@ $<  
+	#$(JS_UGLIFY) -o $@ -c --max-line-len $<
+	$(JS_UGLIFY) -o $@ $<
 
 vizgrimoire%js: Makefile
 	echo $@
 	@rm -f $@
 	@cat $(filter %.js,$^) > $@
-        # @cat $(filter %.js,$^) > $@.tmp
+        #@cat $(filter %.js,$^) > $@.tmp
         # $(JS_UGLIFY) -o $@  $@.tmp
         # @rm $@.tmp
         # @chmod a-w $@
@@ -89,7 +89,8 @@ test: all
 	cd ../..
 
 testci: all
-	cd test/jasmine; xvfb-run jasmine-headless-webkit -j jasmine.yml -c
+	cd test/jasmine
+	xvfb-run jasmine-headless-webkit -j jasmine.yml -c
 	cd ../..
 
 vizgrimoire%css: Makefile
