@@ -471,6 +471,11 @@ function composeSideBar(project_id){
             aux_html = HTMLComposer.sideBarLinks('fa-download','Downloads','downloads', aux);
             html += aux_html;
         }
+        if (mele.hasOwnProperty('forge') && Utils.isReleasePage() === false){
+            aux = mele.forge;
+            aux_html = HTMLComposer.sideBarLinks('fa-umbrella','Forge releases','forge', aux);
+            html += aux_html;
+        }
         if (mele.hasOwnProperty('wiki') && Utils.isReleasePage() === false){
             aux = mele.wiki;
             aux_html = HTMLComposer.sideBarLinks('fa-pencil-square-o','Wiki','wiki', aux);
