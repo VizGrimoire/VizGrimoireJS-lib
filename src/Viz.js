@@ -608,7 +608,7 @@ if (Viz === undefined) var Viz = {};
                 track : true,
                 trackY : false,
                 relative: true,
-                position: 'ne',
+                position: 'n',
                 trackFormatter : function(o) {
                     var label = history.date[parseInt(o.index, 10)];
                     if (label === undefined) label = "";
@@ -1097,7 +1097,7 @@ if (Viz === undefined) var Viz = {};
             }
 
             if (config_metric && config_metric.show_legend !== false)
-                config.legend = {show:true, position: 'ne', 
+                config.legend = {show:true, position: 'n', 
                     container: legend_div};
 
             // TODO: Color management should be defined
@@ -1120,7 +1120,7 @@ if (Viz === undefined) var Viz = {};
         }
         if (graph === "pie") {
             config.pie = {show : true};
-            config.mouse.position = 'ne';
+            config.mouse.position = 'n';
         }
 
 
@@ -1219,7 +1219,7 @@ if (Viz === undefined) var Viz = {};
             },
             legend : {
                 show : true,
-                position : 'ne',
+                position : 'n',
                 backgroundColor : '#D2E8FF',
                 container: legend_div
             }
@@ -1231,7 +1231,7 @@ if (Viz === undefined) var Viz = {};
         }
 
         if (config_metric && config_metric.show_legend !== false)
-            config.legend = {show:true, position: 'ne',
+            config.legend = {show:true, position: 'n',
                 container: legend_div};
 
         config.grid.horizontalLines = true;
