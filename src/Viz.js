@@ -570,7 +570,15 @@ if (Viz === undefined) var Viz = {};
                     label += lines_data[i].label +":";
             }
             label += "<strong>"+Report.formatValue(value) +"</strong>";
-            if (company_name) label += "("+companies[company_name].pending[o.index]+")";
+            // companies[company_name].pending should be aggregated. 
+            // pending is the net value for a month.
+            if (company_name) {
+                pending = 0;
+                for (var k=0; k<=o.index; k++) {
+                    pending += companies[company_name].pending[k];
+                }
+                label += "("+pending+")";
+            }
             label += "<br>";
         }
         return label;
