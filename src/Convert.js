@@ -383,6 +383,7 @@ Convert.convertMetricsEvol = function() {
             var ds = $(this).data('data-source');
             var DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
+            config_viz.mouse_tracker = $(this).data('mouse_tracker');
 
             config_viz = loadHTMLEvolParameters(div, config_viz);
 

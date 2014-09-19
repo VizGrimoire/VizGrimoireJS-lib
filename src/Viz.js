@@ -552,12 +552,47 @@ if (Viz === undefined) var Viz = {};
         displayDSLines(div_id, history, lines_data, title, config);
     }
 
+    // Add SCR number of pending reviews
+    Viz.track_formatter_age_pending = function(o) {
+        scr = Report.getDataSourceByName('scr');
+        metrics = scr.getData();
+        companies = scr.getCompaniesMetricsData();
+        dhistory = Viz._history;
+        lines_data = Viz._lines_data.track_formatter_age_pending;
+        var label = dhistory.date[parseInt(o.index, 10)];
+        if (label === undefined) label = "";
+        else label += "<br>";
+        for (var i=0; i<lines_data.length; i++) {
+            var value = lines_data[i].data[o.index][1];
+            if (value === undefined) continue;
+            if (lines_data.length > 1) {
+                if (lines_data[i].label !== undefined)
+                    metric_name = lines_data[i].label;
+                    label += lines_data[i].label +":";
+            }
+            label += "<strong>"+Report.formatValue(value) +"</strong>";
+            // Read the number of reviews to compute this age
+            // Initial -> review_time_pending_ReviewsWaitingForReviewer_reviews
+            // recent -> review_time_pending_upload_ReviewsWaitingForReviewer_reviews
+            if (metric_name) {
+                age = "";
+                if (metric_name.indexOf("Initial")>-1)
+                    age = scr.getData().review_time_pending_ReviewsWaitingForReviewer_reviews[o.index];
+                else if (metric_name.indexOf("recent")>-1)
+                    age = scr.getData().review_time_pending_upload_ReviewsWaitingForReviewer_reviews[o.index];
+                label += "("+age+")";
+            }
+            label += "<br>";
+        }
+        return label;
+    };
+
     // Add SCR companies pending to values
     Viz.track_formatter_com_pending = function(o) {
         scr = Report.getDataSourceByName('scr');
         companies = scr.getCompaniesMetricsData();
         dhistory = Viz._history;
-        lines_data = Viz._lines_data;
+        lines_data = Viz._lines_data.track_formatter_com_pending;
         var label = dhistory.date[parseInt(o.index, 10)];
         if (label === undefined) label = "";
         else label += "<br>";
@@ -642,7 +677,8 @@ if (Viz === undefined) var Viz = {};
 
         if (mouse_tracker_fn) {
             Viz._history = history;
-            Viz._lines_data = lines_data;
+            if (Viz._lines_data === undefined) Viz._lines_data = {};
+            Viz._lines_data[mouse_tracker_fn] = lines_data;
             config.mouse.trackFormatter = Viz[mouse_tracker_fn];
         }
 
