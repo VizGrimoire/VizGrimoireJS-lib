@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2012-2014 Bitergia
  *
  * This program is free software; you can redistribute it and/or modify
@@ -107,20 +107,20 @@ if (Viz === undefined) var Viz = {};
 
     function getTopVarsFromMetric(metric, ds_name){
         //maps the JSON vars with the metric name
-        //FIXME this function should be private        
+        //FIXME this function should be private
         var var_names = {};
         var_names.id = "id";
         if (metric === "senders" && (ds_name === "mls" || ds_name === "irc")){
             var_names.name = "senders";
             var_names.action = "sent";
-        } 
+        }
         if (metric === "authors" && ds_name === "scm"){
             var_names.name = "authors";
             var_names.action = "commits";
         }
         if (metric === "closers" && ds_name === "its"){
             var_names.name = "closers";
-            var_names.action = "closed";            
+            var_names.action = "closed";
         }
         if (ds_name === "scr"){
             if (metric === "mergers"){
@@ -161,7 +161,7 @@ if (Viz === undefined) var Viz = {};
                var_names.name = "name";
                var_names.action = "messages_sent";
            }
-        }       
+        }
         if (ds_name === "releases"){
             if (metric === "authors"){
                 var_names.name = "username";
@@ -175,13 +175,13 @@ if (Viz === undefined) var Viz = {};
     function getSortedPeriods(){
         return ['last month','last year',''];
     }
-    
+
     function composeTopRowsDownloads(dl_data, limit, var_names){
         var rows_html = "";
         for (var j = 0; j < dl_data[var_names.name].length; j++) {
             if (limit && limit <= j) break;
             var metric_value = dl_data[var_names.action][j];
-            rows_html += "<tr><td>#" + (j+1) + "</td>";
+            rows_html += "<tr><td> " + (j+1) + "</td>";
             rows_html += "<td>";
             rows_html += dl_data[var_names.name][j];
             rows_html += "</td>";
@@ -190,7 +190,7 @@ if (Viz === undefined) var Viz = {};
         return(rows_html);
     }
 
-    
+
     function composeTopRowsThreads(threads_data, limit, threads_links){
         var rows_html = "";
         for (var i = 0; i < threads_data.subject.length; i++) {
@@ -244,7 +244,7 @@ if (Viz === undefined) var Viz = {};
     function composeTopTabs(periods, metric, data, ds_name){
         var tabs_html = "";
         var first = true;
-        tabs_html += '<ul id="myTab" class="nav nav-tabs">';          
+        tabs_html += '<ul id="myTab" class="nav nav-tabs">';
         for (var i=0; i< periods.length; i++){
             var mykey = metric + '.' + periods[i];
             if (data[mykey]){
@@ -295,7 +295,7 @@ if (Viz === undefined) var Viz = {};
         }
 
         // If we are watching a release page, we overwrite the title of the table
-        if (Utils.isReleasePage()) data_period_formatted = "Release history";        
+        if (Utils.isReleasePage()) data_period_formatted = "Release history";
 
 
         if (tabs === true){
@@ -331,7 +331,7 @@ if (Viz === undefined) var Viz = {};
         }
 
         title += composeTitle(metric, ds_name, gen_tabs, desc_metrics, selected_period);
-        
+
         if (gen_tabs === true){
             // prints tabs
             tabs += composeTopTabs(periods, metric, data, ds_name);
@@ -363,7 +363,14 @@ if (Viz === undefined) var Viz = {};
                     if (metric === "threads"){
                         tables += composeTopRowsThreads(data[key], limit, threads_links);
                     }else if (metric === "packages" || metric === "ips"){
+                        // duplicated code, see next "else"
+                        unit = desc_metrics[ds_name + "_" + metric].action;
+                        //tables += '<thead><th>#</th><th>' +metric.capitalize()+'</th><th>'+unit.capitalize() +'</th></thead><tbody>';
+                        metric_name = desc_metrics[ds_name + "_" + metric].name;
+                        tables += '<thead><th>#</th><th>' +metric_name.capitalize()+'</th><th>'+unit.capitalize() +'</th></thead><tbody>';
+                        // end duplicated code
                         tables += composeTopRowsDownloads(data[key], limit, var_names);
+                        //tables += '</tbody>';
                     }else{
                         unit = desc_metrics[ds_name + "_" + metric].action;
                         //tables += '<thead><th>#</th><th>' +metric.capitalize()+'</th><th>'+unit.capitalize() +'</th></thead><tbody>';
@@ -380,9 +387,13 @@ if (Viz === undefined) var Viz = {};
         }else{
             //tables += '<div class="tab-pane fade'+ html  +'" id="' + metric + data_period_nows + '">';
             tables += '<table class="table table-striped"><tbody>';
-            if (metric === "threads"){                
+            if (metric === "threads"){
                 tables += composeTopRowsThreads(data, limit, threads_links);
             }else if (metric === "packages" || metric === "ips"){
+                // duplicated code, see next "else"
+                unit = desc_metrics[ds_name + "_" + metric].action;
+                tables += '<thead><th>#</th><th>' +metric.capitalize()+'</th><th>'+unit.capitalize()+'</th></thead><tbody>';
+                // end duplicated code
                 tables += composeTopRowsDownloads(data, limit, var_names);
             }else{
                 unit = desc_metrics[ds_name + "_" + metric].action;
@@ -409,9 +420,9 @@ if (Viz === undefined) var Viz = {};
 
     function displayTopMetric
     (div_id, metric, metric_period, history, graph, titles, limit, people_links) {
-        // 
+        //
         // this function is being replaced
-        // 
+        //
         var top_metric_id = metric.name;
         if (!history || $.isEmptyObject(history)) return;
         var metric_id = metric.action;
@@ -461,7 +472,7 @@ if (Viz === undefined) var Viz = {};
         }
     }
 
-    function displayDataSourcesTable(div){        
+    function displayDataSourcesTable(div){
         dsources = Report.getDataSources();
         html = '<table class="table table-striped">';
         html += '<thead><th>Data Source</th><th>From</th>';
@@ -492,7 +503,7 @@ if (Viz === undefined) var Viz = {};
             html += '<td>' + last_date + '</td></tr>';
             });
         html += '</tbody></table>';
-        $(div).append(html);      
+        $(div).append(html);
     }
 
     function showHelp(div_id, metrics, custom_help) {
@@ -514,7 +525,7 @@ if (Viz === undefined) var Viz = {};
             content = "<strong>Description</strong>: " + custom_help;
         }
 
-        help += 'data-content="'+content+'" data-html="true">'; 
+        help += 'data-content="'+content+'" data-html="true">';
         help += '<img src="qm_15.png"></a>';
         // Remove previous "?" so we don't duplicate
         var old_help =$('#'+div_id).prev()[0];
@@ -541,7 +552,7 @@ if (Viz === undefined) var Viz = {};
                 mdata[i] = [history.id[i], history[metric][i]];
             });
             var label = metric;
-            if (Report.getAllMetrics()[metric]) 
+            if (Report.getAllMetrics()[metric])
                 label = Report.getAllMetrics()[metric].name;
             lines_data.push({label:label, data:mdata});
         });
@@ -569,14 +580,14 @@ if (Viz === undefined) var Viz = {};
             $.each(data[metric], function (i, value) {
                 mdata[i] = [data.id[i] , data[metric][i]];
             });
-            lines_data.push({label:item, data:mdata});            
+            lines_data.push({label:item, data:mdata});
             aux = data;
         });
         displayDSLines(div_id, aux, lines_data, title, config);
     }
 
 
-    function displayMetricSubReportLines(div_id, metric, items, title, 
+    function displayMetricSubReportLines(div_id, metric, items, title,
             config, start, end, convert, order) {
         var lines_data = [];
         var history = {};
@@ -717,19 +728,19 @@ if (Viz === undefined) var Viz = {};
 
     function dropLastLineValue(history, lines_data){
         // If there are several lines, just remove last value
-        // Removed because not useful if last data is not fresh        
+        // Removed because not useful if last data is not fresh
         if (lines_data.length === 0) return lines_data;
         if (lines_data.length>1) {
             for (var j=0; j<lines_data.length; j++) {
                 var last = lines_data[j].data.length - 1;
                 lines_data[j].data[last][1] = undefined;
             }
-        }        
+        }
     }
 
     // Last value is incomplete. Change it to a point.
     function lastLineValueToPoint(history, lines_data) {
-        
+
         if (lines_data.length !== 1) return lines_data;
         var last = lines_data[0].data.length;
 
@@ -744,7 +755,7 @@ if (Viz === undefined) var Viz = {};
         var dot_graph = {'data':dots};
         dot_graph.points = {show : true, radius:3, lineWidth: 1, fillColor: null, shadowSize : 0};
         lines_data.push(dot_graph);
-        
+
         // Remove last data line because covered by dot graph
         lines_data[0].data[last-1][1] = undefined;
 
@@ -754,7 +765,7 @@ if (Viz === undefined) var Viz = {};
         return lines_data;
     }
 
-    
+
     function composeRangeText(former_title,starting_utime, end_utime){
         //compose text to be appended to title on charts when zooming in/out
         var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -768,7 +779,7 @@ if (Viz === undefined) var Viz = {};
     }
 
     function sortBiArray(bi_array){
-        bi_array.sort(function(a, b) { 
+        bi_array.sort(function(a, b) {
             return (a[1] > b[1] || b[1] === undefined)?1:-1;
         });
         return bi_array;
@@ -778,7 +789,7 @@ if (Viz === undefined) var Viz = {};
         // get max value of multiple array object
         from_unixstamp = Math.round(from_unixstamp);
         to_unixstamp = Math.round(to_unixstamp);
-        
+
         // first, we have to filter the arrays
         var narrays = multiple_array.length;
         var aux_array = [];
@@ -793,21 +804,21 @@ if (Viz === undefined) var Viz = {};
                     //multiple_array[i].data.pop([z]);
                 }
             }
-        }        
+        }
 
         var res = [];
         for (i = 0; i < narrays; i++) {
             aux_array = multiple_array[i].data;
-            aux_array = sortBiArray(aux_array);        
+            aux_array = sortBiArray(aux_array);
             res.push(aux_array[aux_array.length-1][1]);
-        }        
+        }
         res.sort(function(a,b){return a-b;});
         return res[res.length-1];
-    }    
+    }
 
     function addEmptyValue(lines_data){
         // add empty value at the end to avoid drawing an incomplete point
-        
+
         var step = lines_data[0].data[1][0] - lines_data[0].data[0][0];
         var narrays = lines_data.length;
         var last_date = 0;
@@ -930,7 +941,7 @@ if (Viz === undefined) var Viz = {};
                 config.subtitle = config_metric.custom_title;
             }
         }
-        
+
 
         // Show last time series as a point, not a line. The data is incomplete
         // Only show for single lines when time series is complete
@@ -1091,8 +1102,8 @@ if (Viz === undefined) var Viz = {};
         }
         console.log(config);
         // Actually draw the graph.
-        graph = drawGraph();        
-        
+        graph = drawGraph();
+
         // Hook into the 'flotr:select' event to draw the chart after zoom in
         Flotr.EventAdapter.observe(container, 'flotr:select', function(area) {
             // Draw graph with new area
@@ -1116,7 +1127,7 @@ if (Viz === undefined) var Viz = {};
                     outline: 's'
                 }
             };
-            
+
             zoom_options.subtitle = composeRangeText(config.subtitle, area.xfirst, area.xsecond);
 
             //we don't want our object data to be modified so ..
@@ -1125,10 +1136,10 @@ if (Viz === undefined) var Viz = {};
 
             zoom_options.yaxis.max = max_value + max_value * 0.2; //we do Y axis a bit higher than max
 
-            
+
             graph = drawGraph(zoom_options);
         });
-        
+
         // When graph is clicked, draw the graph with default area.
         Flotr.EventAdapter.observe(container, 'flotr:click', function() {
             drawGraph();
@@ -1211,7 +1222,7 @@ if (Viz === undefined) var Viz = {};
 
         if (graph === "bars") {
             config.bars = {
-                show : true, 
+                show : true,
                 horizontal : horizontal
             };
             if (fixColor) {
@@ -1220,7 +1231,7 @@ if (Viz === undefined) var Viz = {};
             }
 
             if (config_metric && config_metric.show_legend !== false)
-                config.legend = {show:true, position: 'ne', 
+                config.legend = {show:true, position: 'ne',
                     container: legend_div};
 
             // TODO: Color management should be defined
@@ -1601,7 +1612,7 @@ if (Viz === undefined) var Viz = {};
     function displayTimeTo(div_id, ttf_data, column, labels, title) {
         // We can have several columns (metrics)
         var metrics = column.split(",");
-        var history = ttf_data.data; 
+        var history = ttf_data.data;
         if (!history[metrics[0]]) return;
         var new_history = {};
         new_history.date = history.date;
@@ -1632,7 +1643,7 @@ if (Viz === undefined) var Viz = {};
          Call functions to compose the HTML for top tables with multiple of single
          tabs.
          */
-        
+
         var desc_metrics = ds.getMetrics();
         if (all === undefined) all = true;
         var history;
@@ -1646,9 +1657,9 @@ if (Viz === undefined) var Viz = {};
         // variables.
         if (Utils.isReleasePage()){
             period_all = false;
-            period = ''; 
-        }        
-        
+            period = '';
+        }
+
         if (period_all === true){
             var filtered_history = {};
             $.each(history, function(key, value) {
@@ -1698,7 +1709,7 @@ if (Viz === undefined) var Viz = {};
             if (data_file === undefined) return;
             Loader.get_file_data_div (data_file, Viz.displayTreeMap, divid);
             return;
-        } 
+        }
         else if (data === null) return;
 
         // We have the data to be drawn
@@ -1706,7 +1717,7 @@ if (Viz === undefined) var Viz = {};
 
         var div = d3.select("#"+divid);
 
-        var width = $("#"+divid).width(), 
+        var width = $("#"+divid).width(),
             height = $("#"+divid).height();
 
         var treemap = d3.layout.treemap()
@@ -1739,7 +1750,7 @@ if (Viz === undefined) var Viz = {};
                 });
 
         d3.selectAll("input").on("change", function change() {
-            var value = this.value === "count" 
+            var value = this.value === "count"
                 ? function() {return 1;}
                 : function(d) {return d.size;};
 
@@ -1778,8 +1789,8 @@ if (Viz === undefined) var Viz = {};
                     }
                 }
             }
-        };        
-        
+        };
+
         options.data = {
             summary : [history.id,history.sent],
             markers : markers,
@@ -1795,9 +1806,9 @@ if (Viz === undefined) var Viz = {};
             if (all_metrics[metric]) label = all_metrics[metric].name;
             options.data[metric] = [{label:label, data:[history.id,history[metric]]}];
         }
-        
+
         options.trackFormatter = function(o) {
-            var sdata = o.series.data, index = sdata[o.index][0] - firstMonth;            
+            var sdata = o.series.data, index = sdata[o.index][0] - firstMonth;
 
             var value = history.date[index] + ":<br>";
 
@@ -1830,7 +1841,7 @@ if (Viz === undefined) var Viz = {};
             if ((ds_name === null && DS.getName() === "scm") ||
                 (ds_name && DS.getName() == ds_name)) {
                 summary_data = [DS.getData().id, DS.getData()[main_metric]];
-                if (summary_graph === false) 
+                if (summary_graph === false)
                     summary_data = [DS.getData().id, []];
                 return false;
             }
@@ -1842,7 +1853,7 @@ if (Viz === undefined) var Viz = {};
         $.each(projects_data, function(project, data) {
             $.each(data, function(index, DS) {
                 if (ds_name && ds_name !== DS.getName()) return;
-                dates = DataProcess.fillDates(dates, 
+                dates = DataProcess.fillDates(dates,
                         [DS.getData().id, DS.getData().date]);
             });
         });
@@ -1885,7 +1896,7 @@ if (Viz === undefined) var Viz = {};
         var buildProjectInfo = function(index, ds) {
             var data = ds.getData();
             if (data[metric] === undefined) return;
-            if (options.data[metric] === undefined) 
+            if (options.data[metric] === undefined)
                 options.data[metric] = [];
             var full_data =
                 DataProcess.fillHistory(dates[0], [data.id, data[metric]]);
@@ -1893,7 +1904,7 @@ if (Viz === undefined) var Viz = {};
                 options.data[metric].push(
                         {label:project, data:full_data});
                 if (data[metric+"_relative"] === undefined) return;
-                if (options.data[metric+"_relative"] === undefined) 
+                if (options.data[metric+"_relative"] === undefined)
                     options.data[metric+"_relative"] = [];
                 full_data = DataProcess.fillHistory(dates[0],
                             [data.id, data[metric+"_relative"]]);
@@ -1941,7 +1952,7 @@ if (Viz === undefined) var Viz = {};
             if (projects.length>1) value +="<td></td>";
             for (metric in basic_metrics) {
                 if (options.data[metric] === undefined) continue;
-                if ($.inArray(metric,options.data.envision_hide) > -1) 
+                if ($.inArray(metric,options.data.envision_hide) > -1)
                     continue;
                 value += "<td>"+basic_metrics[metric].name+"</td>";
             }
@@ -1950,7 +1961,7 @@ if (Viz === undefined) var Viz = {};
                 var row = "<tr>";
                 for (var metric in basic_metrics) {
                     if (options.data[metric] === undefined) continue;
-                    if ($.inArray(metric,options.data.envision_hide) > -1) 
+                    if ($.inArray(metric,options.data.envision_hide) > -1)
                         continue;
                     mvalue = project_metrics[project][metric];
                     if (mvalue === undefined) mvalue = "n/a";
@@ -1999,7 +2010,7 @@ if (Viz === undefined) var Viz = {};
         config = checkBasicConfig(config);
         var title = '';
         if (config.show_title){
-            if (config.title === undefined){        
+            if (config.title === undefined){
                 title = getMetricFriendlyName(ds, metrics);
             }else{
                 title = config.title;
@@ -2045,30 +2056,30 @@ if (Viz === undefined) var Viz = {};
         displayMetricsLines(div_id, metrics, data, title, config);
     }
 
-    function displayMetricRepos(metric, data, div_target, 
+    function displayMetricRepos(metric, data, div_target,
             config, start, end) {
         config = checkBasicConfig(config);
         if (config.show_legend !== false)
             config.show_legend = true;
         var title = metric;
-        displayMetricSubReportLines(div_target, metric, data, title, 
+        displayMetricSubReportLines(div_target, metric, data, title,
                 config, start, end);
     }
 
-    function displayMetricsCountry (ds, country, metrics, data, div_id, 
+    function displayMetricsCountry (ds, country, metrics, data, div_id,
             config) {
         config = checkBasicConfig(config);
         var title = getMetricFriendlyName(ds, metrics);
         displayMetricsLines(div_id, metrics, data, title, config);
     }
 
-    function displayMetricCompanies(metric, data, div_target, 
+    function displayMetricCompanies(metric, data, div_target,
             config, start, end, order) {
         config = checkBasicConfig(config);
         if (config.show_legend !== false)
             config.show_legend = true;
         var title = metric;
-        displayMetricSubReportLines(div_target, metric, data, title, 
+        displayMetricSubReportLines(div_target, metric, data, title,
                 config, start, end, null, order);
     }
 
