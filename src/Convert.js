@@ -1,4 +1,4 @@
- /* 
+ /*
  * Copyright (C) 2013-2014 Bitergia
  *
  * This program is free software; you can redistribute it and/or modify
@@ -161,14 +161,14 @@ function compareProjectTitles(a, b){
 }
 
 function getParentProjects(project_id, hierarchy){
-    /** 
+    /**
         Gets the parent project based on the hierarchy
     **/
     var parent = [];
     var iterate_p = project_id;
     var parent_id = '';
     var aux = {};
-    
+
     while (hierarchy[iterate_p].hasOwnProperty('parent_project')){
         parent_id = hierarchy[iterate_p].parent_project;
         aux = hierarchy[parent_id];
@@ -176,7 +176,7 @@ function getParentProjects(project_id, hierarchy){
         parent.push(aux);
         iterate_p = parent_id;
     }
-    //parent.push(hierarchy[parent_id]);        
+    //parent.push(hierarchy[parent_id]);
     return parent.reverse();
 }
 
@@ -198,7 +198,7 @@ function getChildrenProjects(project_id, hierarchy){
     return children;
 }
 
-function composePBreadcrumbsHTMLlast(project_id, children, hierarchy){   
+function composePBreadcrumbsHTMLlast(project_id, children, hierarchy){
     var html = '';
     var clen = children.length;
     if(clen > 0){
@@ -208,7 +208,7 @@ function composePBreadcrumbsHTMLlast(project_id, children, hierarchy){
         html += '<span data-toggle="tooltip" title="Select subproject" class="badge"> ' + clen + ' Subprojects </span></a>';
         html += '<ul class="dropdown-menu scrollable-menu">';
         $.each(children, function(id,value){
-            gchildren = getChildrenProjects(value.project_id, hierarchy);            
+            gchildren = getChildrenProjects(value.project_id, hierarchy);
             if (gchildren.length > 0){
                 html += '<li><a href="project.html?project='+ value.project_id +'">'+ value.title +'&nbsp;&nbsp;<span data-toggle="tooltip" title="Number of suprojects" class="badge">'+gchildren.length +'&nbsp;<i class="fa fa-rocket"></i></span></a></li>';
             }else{
@@ -226,7 +226,7 @@ function composePBreadcrumbsHTMLlast(project_id, children, hierarchy){
 }
 
 function composeProjectBreadcrumbs(project_id) {
-    /** 
+    /**
         compose the project navigation bar based on the hierarchy
     **/
     var html = '<ol class="breadcrumbtitle">';
@@ -235,7 +235,7 @@ function composeProjectBreadcrumbs(project_id) {
         // we don't have information about subprojects
         return '';
     }
-    
+
     if (project_id === undefined){
         project_id = 'root';
     }
@@ -260,7 +260,7 @@ function escapeString(string){
     var aux = '';
     aux = string.replace(' ','_');
     aux = aux.toLowerCase();
-    return aux;        
+    return aux;
 }
 
 function composeHTMLNestedProjects(project_id, children, hierarchy){
@@ -285,7 +285,7 @@ function composeHTMLNestedProjects(project_id, children, hierarchy){
 }
 
 function composeProjectMap() {
-    /** 
+    /**
         compose the project navigation bar based on the hierarchy
     **/
     var html = '<ul>';
@@ -294,7 +294,7 @@ function composeProjectMap() {
         // we don't have information about subprojects
         return '';
     }
-    
+
     project_id = 'root';
     var children = getChildrenProjects(project_id, hierarchy);
     var parents = getParentProjects(project_id, hierarchy);
@@ -352,6 +352,7 @@ function getSectionName(){
                     "scr":"Code Review overview",
                     "scm":"SCM overview",
                     "wiki":"Wiki overview",
+                    "downloads":"Downloads",
                     "forge":"Forge releases",
                     "data_sources":"Data sources",
                     "project_map":"Project map",
@@ -360,7 +361,7 @@ function getSectionName(){
                     "country":"Country",
                     "domain":"Domain",
                     "release":"Companies analysis by release"
-                   };    
+                   };
     var filters = {"companies":"Activity by companies",
                    "contributors":"Activity by contributors",
                    "countries":"Activity by companies",
@@ -384,26 +385,26 @@ function getSectionName(){
         //it could be scm or scm-repos
 
         var s_tokens = section.split('-');
-        
+
         //we generate the navigation hierarchy repository pages
         if (s_tokens[0] === 'repository'){
             ds_name = $.urlParam('ds');
             s_tokens = [ds_name,'repos','repository'];
         }
-        
+
         if (sections.hasOwnProperty(s_tokens[0])){
             result.push([s_tokens[0], sections[s_tokens[0]]]);
 
             if (s_tokens.length > 0){
                 if (filters.hasOwnProperty(s_tokens[1])){
                 result.push([s_tokens[0] + '-' + s_tokens[1], filters[s_tokens[1]]]);
-                    
+
                     if (s_tokens.length > 2){
                         if (filters2.hasOwnProperty(s_tokens[2])){
                             result.push([s_tokens[0], filters2[s_tokens[2]]]);
-                        }                            
+                        }
                     }
-                }                
+                }
             }
         }else{
             return [['#','Unavailable section name']];
@@ -414,13 +415,13 @@ function getSectionName(){
 
 function isURLRelease(){
     /*
-     Returns true when the URL received contains the values for a release 
-     
+     Returns true when the URL received contains the values for a release
+
      COMMENT: dup with Utils.isReleasePage()
      */
-    if ( $.urlParam('release') !== null && 
+    if ( $.urlParam('release') !== null &&
          $.urlParam('release').length > 0) return true;
-    else return false;    
+    else return false;
 }
 
 function composeSideBar(project_id){
@@ -434,7 +435,7 @@ function composeSideBar(project_id){
     var mele = Report.getMenuElements();
     /*html += '<li><a href="' + Utils.createLink('index.html') + '">';
     html += '<i class="fa fa-home"></i> Home</a></li>';*/
-    
+
     if (project_id === 'root'){
         if (mele.hasOwnProperty('scm')){
             aux = mele.scm;
@@ -498,10 +499,10 @@ function composeSideBar(project_id){
             }
             html += '</ul></li>';
         }
-        
+
         html += '<li><a href="data_sources.html"><i class="fa fa-database"></i> Data sources</a></li>';
         html += '<li><a href="project_map.html"><i class="fa fa-icon fa-sitemap"></i> Project map</a></li>';
-        
+
         if (mele.hasOwnProperty('extra')){
             aux = mele.extra;
             html_extra += '<li class="sidemenu-divider"></li>';
@@ -512,7 +513,7 @@ function composeSideBar(project_id){
         }
         html += html_extra;
     }
-    
+
     html += '</ul>';
     return html;
 }
@@ -527,7 +528,7 @@ Convert.convertSideBar = function(project_id){
             //project_id will be empty for root project
             var label;
             if(project_id){
-                label = Report.cleanLabel(project_id); 
+                label = Report.cleanLabel(project_id);
             }
             var htmlaux = composeSideBar(label);
             $("#"+div.id).append(htmlaux);
@@ -540,7 +541,7 @@ Convert.convertSideBar = function(project_id){
             if(Utils.isReleasePage())
                 $(".report_name").attr("href", "./?release=" + $.urlParam('release'));
         });
-    }    
+    }
 };
 
 Convert.convertProjectNavBar = function (project_id){
@@ -552,12 +553,12 @@ Convert.convertProjectNavBar = function (project_id){
             //project_id will be empty for root project
             var label;
             if(project_id){
-                label = Report.cleanLabel(project_id); 
+                label = Report.cleanLabel(project_id);
             }
             var htmlaux = composeProjectBreadcrumbs(label);
             $("#"+div.id).append(htmlaux);
         });
-    }    
+    }
 };
 
 Convert.convertNavbar = function() {
@@ -568,10 +569,10 @@ Convert.convertNavbar = function() {
         Convert.convertReleaseSelector();
         Convert.convertSideBar(project_id);
         /**
-         // Could this break the support of different JSON directories?         
+         // Could this break the support of different JSON directories?
            displayReportData();
         Report.displayActiveMenu();
-        var addURL = Report.addDataDir(); 
+        var addURL = Report.addDataDir();
         if (addURL) {
             var $links = $("#Navbar a");
             $.each($links, function(index, value){
@@ -633,12 +634,12 @@ function composeSectionBreadCrumb(project_id){
         else{
             html += '<li class="active">Project Overview</li>';
         }
-        
+
     }else{
         //subprojects have no sections yet
         html += '<li> ' + getSectionName() + '</li>';
     }
-    
+
     html += '</ol>';
     return html;
 }
@@ -720,7 +721,7 @@ function composeDropDownRepo(DS){
 
     //FIXME this should be in a method DS.getLabel('repository') or similar
     /*var label_repo = 'repository';
-    if (dsname === 'its'){ 
+    if (dsname === 'its'){
         label_repo = 'tracker';
     }else if (dsname === 'mls'){
         label_repo = 'mailing list';
@@ -948,11 +949,11 @@ function loadHTMLEvolParameters(htmldiv, config_viz){
     if (start) config_viz.start_time = start;
     var end = $(htmldiv).data('end');
     if (end) config_viz.end_time = end;
-    
-    var remove_last_point = $(htmldiv).data('remove-last-point');
-    if (remove_last_point) config_viz.remove_last_point = true;    
 
-    return config_viz;    
+    var remove_last_point = $(htmldiv).data('remove-last-point');
+    if (remove_last_point) config_viz.remove_last_point = true;
+
+    return config_viz;
 }
 
 Convert.convertMetricsEvol = function() {
@@ -1048,7 +1049,7 @@ Convert.convertMetricsEvolSelector = function() {
      Having this function we avoid slowing down the load of MetricsEvol when
      it is not needed to wait for repository data.
      **/
-    // FIXME: this code and convertMetricsEvol is 90% the same. 
+    // FIXME: this code and convertMetricsEvol is 90% the same.
     var config_metric = {};
 
     config_metric.show_desc = false;
@@ -1106,7 +1107,7 @@ Convert.convertMetricsEvolSet = function() {
             var ds = $(this).data('data-source');
             var DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
-            DS.displayEnvision(div.id, relative, legend, summary_graph); 
+            DS.displayEnvision(div.id, relative, legend, summary_graph);
         });
     }
 };
@@ -1114,7 +1115,7 @@ Convert.convertMetricsEvolSet = function() {
 
 Convert.convertTimeTo = function() {
     var div_tt = "TimeTo";
-    divs = $("."+div_tt); 
+    divs = $("."+div_tt);
     if (divs.length > 0) {
         $.each(divs, function(id, div) {
             $(this).empty();
@@ -1158,7 +1159,7 @@ Convert.convertLastActivity = function() {
         $.each(Report.getDataSources(), function(index, DS) {
             var data = DS.getGlobalData();
             $.each(data, function (key,val) {
-                var suffix = "_"+period; 
+                var suffix = "_"+period;
                 if (key.indexOf(suffix, key.length - suffix.length) !== -1) {
                     var metric = key.substring(0, key.length - suffix.length);
                     label = metric;
@@ -1274,17 +1275,17 @@ Convert.convertPersonData = function (upeople_id, upeople_identifier) {
 
 
 Convert.personSummaryBlock = function(upeople_id){
-    /* 
-     Two steps conversion: 
+    /*
+     Two steps conversion:
      Converts this id into a block with PersonSummary + PersonMetrics
      */
     var divs = $(".PersonSummaryBlock");
     if (divs.length > 0){
-        $.each(divs, function(id, div) {            
+        $.each(divs, function(id, div) {
             /*workaround to avoid being called again when redrawing*/
             if (div.id.indexOf('Parsed') >= 0 ) return;
-            
-            ds_name = $(this).data('data-source');            
+
+            ds_name = $(this).data('data-source');
             metric_name = $(this).data('metrics');
             DS = Report.getDataSourceByName(ds_name);
             if (DS === null) return;
@@ -1362,17 +1363,17 @@ function dataFilterAvailable(filter_name, item_name){
 }
 
 Convert.repositoryDSBlock = function(repo_id){
-    /*      
-     Two steps conversion: 
-     Converts this id into a block with FilterItemSummary + FilterItemMetricsEvol.     
+    /*
+     Two steps conversion:
+     Converts this id into a block with FilterItemSummary + FilterItemMetricsEvol.
      */
     var divs = $(".FilterDSBlock");
     if (divs.length > 0){
-        $.each(divs, function(id, div) {            
+        $.each(divs, function(id, div) {
             /*workaround to avoid being called again when redrawing*/
             if (div.id.indexOf('Parsed') >= 0 ) return;
-            
-            ds_name = $(this).data('data-source');            
+
+            ds_name = $(this).data('data-source');
             filter_name = $(this).data('filter');
             aux = $(this).data('metrics');
             metric_names = aux.split(',');
@@ -1382,8 +1383,8 @@ Convert.repositoryDSBlock = function(repo_id){
             DS = Report.getDataSourceByName(ds_name);
             if (DS === null) return;
             if (DS.getData().length === 0) return; /* no data for data source*/
-            
-            if (dataFilterAvailable(filter_name, repo_id)){ 
+
+            if (dataFilterAvailable(filter_name, repo_id)){
                 var html = HTMLComposer.filterDSBlock(ds_name, filter_name, metric_names);
                 if (!div.id) div.id = "Parsed" + getRandomId();
                 $("#"+div.id).append(html);
@@ -1393,16 +1394,16 @@ Convert.repositoryDSBlock = function(repo_id){
 };
 
 Convert.convertDSSummaryBlock = function(upeople_id){
-    /* 
-     Two steps conversion: 
+    /*
+     Two steps conversion:
      Converts this id into a block with PersonSummary + PersonMetrics
      */
     var divs = $(".DSSummaryBlock");
     if (divs.length > 0){
-        $.each(divs, function(id, div) {            
+        $.each(divs, function(id, div) {
             /*workaround to avoid being called again when redrawing*/
             if (div.id.indexOf('Parsed') >= 0 ) return;
-            
+
             ds_name = $(this).data('data-source');
             box_labels = $(this).data('box-labels');
             box_metrics = $(this).data('box-metrics');
@@ -1422,9 +1423,9 @@ Convert.convertDSSummaryBlock = function(upeople_id){
 Convert.convertOverallSummaryBlock = function (){
     var divs = $(".OverallSummaryBlock");
     if (divs.length > 0){
-        $.each(divs, function(id, div) {            
+        $.each(divs, function(id, div) {
             /*workaround to avoid being called again when redrawing*/
-            if (div.id.indexOf('Parsed') >= 0 ) return;            
+            if (div.id.indexOf('Parsed') >= 0 ) return;
             var html = HTMLComposer.overallSummaryBlock();
             if (!div.id) div.id = "Parsed" + getRandomId();
             $("#"+div.id).append(html);
@@ -1499,7 +1500,7 @@ Convert.convertFilterItemsSummary = function(filter) {
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
             if (filter === undefined) filter = $(this).data('filter');
-            if (filter !== $(this).data('filter')) return;            
+            if (filter !== $(this).data('filter')) return;
             if (!filter) return;
             div.id = ds+"-"+divlabel;
             $(this).empty();
@@ -1702,7 +1703,7 @@ Convert.convertFilterItemData = function (filter, item) {
     /* FilterItemData displays the title of the panel (strange name BTW)*/
     var divs = $(".FilterItemData");
     //FIXME: replace this awful name
-    
+
     if (divs.length > 0) {
         $.each(divs, function(id, div) {
             $(this).empty();
@@ -1897,9 +1898,9 @@ Convert.convertFilterItemTop = function(filter, item) {
 Convert.convertSmartLinks = function (){
     var divs = $(".SmartLinks");
     if (divs.length > 0){
-        $.each(divs, function(id, div) {            
+        $.each(divs, function(id, div) {
             /*workaround to avoid being called again when redrawing*/
-            if (div.id.indexOf('Parsed') >= 0 ) return;            
+            if (div.id.indexOf('Parsed') >= 0 ) return;
             target_page = $(this).data('target');
             label = $(this).data('label');
             var html = HTMLComposer.smartLinks(target_page, label);
@@ -2015,7 +2016,7 @@ Convert.convertBasicDivs = function() {
     Convert.convertSectionBreadcrumb();
     Convert.convertProjectMap();
     //Convert.convertModalProjectMap();
-    Convert.convertFooter(); 
+    Convert.convertFooter();
     //Convert.convertRefcard(); //deprecated
     Convert.convertOverallSummaryBlock();
     Convert.convertDSSummaryBlock();
@@ -2069,7 +2070,7 @@ Convert.convertModifiedBasicMetrics = function(filter) {
 Convert.convertFilterTop = function(filter){
     /**
      Display top tables.
-     If item is provided through URL parameter it waits and display filtered 
+     If item is provided through URL parameter it waits and display filtered
      information, if not it displays total/global information.
      **/
     var item = Report.getParameterByName("repository");
