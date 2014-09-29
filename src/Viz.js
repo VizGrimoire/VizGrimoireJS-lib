@@ -576,9 +576,9 @@ if (Viz === undefined) var Viz = {};
             // recent -> review_time_pending_upload_ReviewsWaitingForReviewer_reviews
             if (metric_name) {
                 age = "";
-                if (metric_name.indexOf("Initial")>-1)
+                if (metric_name.indexOf("submission")>-1)
                     age = scr.getData().review_time_pending_ReviewsWaitingForReviewer_reviews[o.index];
-                else if (metric_name.indexOf("recent")>-1)
+                else if (metric_name.indexOf("last patchset")>-1)
                     age = scr.getData().review_time_pending_upload_ReviewsWaitingForReviewer_reviews[o.index];
                 label += "("+age+")";
             }
