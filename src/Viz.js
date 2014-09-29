@@ -605,13 +605,9 @@ if (Viz === undefined) var Viz = {};
                     label += lines_data[i].label +":";
             }
             label += "<strong>"+Report.formatValue(value) +"</strong>";
-            // companies[company_name].pending should be aggregated. 
-            // pending is the net value for a month.
             if (company_name) {
-                pending = 0;
-                for (var k=0; k<=o.index; k++) {
-                    pending += companies[company_name].pending[k];
-                }
+                var metric_name = 'review_time_pending_upload_ReviewsWaitingForReviewer_reviews';
+                var pending = companies[company_name][metric_name][o.index];
                 label += "("+pending+")";
             }
             label += "<br>";
