@@ -367,7 +367,9 @@ if (Viz === undefined) var Viz = {};
                         unit = desc_metrics[ds_name + "_" + metric].action;
                         //tables += '<thead><th>#</th><th>' +metric.capitalize()+'</th><th>'+unit.capitalize() +'</th></thead><tbody>';
                         metric_name = desc_metrics[ds_name + "_" + metric].name;
-                        tables += '<thead><th>#</th><th>' +metric_name.capitalize()+'</th><th>'+unit.capitalize() +'</th></thead><tbody>';
+                        tables += '<thead><th>#</th><th>' +metric_name.capitalize()+'</th>';
+                        if (unit !== undefined) tables += '<th>'+unit.capitalize()+'</th>';
+                        tables += '</thead><tbody>';
                         // end duplicated code
                         tables += composeTopRowsDownloads(data[key], limit, var_names);
                         //tables += '</tbody>';
@@ -375,7 +377,9 @@ if (Viz === undefined) var Viz = {};
                         unit = desc_metrics[ds_name + "_" + metric].action;
                         //tables += '<thead><th>#</th><th>' +metric.capitalize()+'</th><th>'+unit.capitalize() +'</th></thead><tbody>';
                         metric_name = desc_metrics[ds_name + "_" + metric].name;
-                        tables += '<thead><th>#</th><th>' +metric_name.capitalize()+'</th><th>'+unit.capitalize() +'</th></thead><tbody>';
+                        tables += '<thead><th>#</th><th>' +metric_name.capitalize()+'</th>';
+                        if (unit !== undefined) tables += '<th>'+unit.capitalize()+'</th>';
+                        tables += '</thead><tbody>';
                         tables += composeTopRowsPeople(data[key], limit, people_links, var_names);
                         tables += '</tbody>';
                     }
@@ -392,12 +396,16 @@ if (Viz === undefined) var Viz = {};
             }else if (metric === "packages" || metric === "ips"){
                 // duplicated code, see next "else"
                 unit = desc_metrics[ds_name + "_" + metric].action;
-                tables += '<thead><th>#</th><th>' +metric.capitalize()+'</th><th>'+unit.capitalize()+'</th></thead><tbody>';
+                tables += '<thead><th>#</th><th>' +metric.capitalize()+'</th>';
+                if (unit !== undefined) tables += '<th>'+unit.capitalize()+'</th>';
+                tables += '</thead><tbody>';
                 // end duplicated code
                 tables += composeTopRowsDownloads(data, limit, var_names);
             }else{
                 unit = desc_metrics[ds_name + "_" + metric].action;
-                tables += '<thead><th>#</th><th>' +metric.capitalize()+'</th><th>'+unit.capitalize()+'</th></thead><tbody>';
+                tables += '<thead><th>#</th><th>' +metric.capitalize()+'</th>';
+                if (unit !== undefined) tables += '<th>'+unit.capitalize()+'</th>';
+                tables += '</thead><tbody>';
                 tables += composeTopRowsPeople(data, limit, people_links, var_names);
                 tables += '</tbody>';
             }
