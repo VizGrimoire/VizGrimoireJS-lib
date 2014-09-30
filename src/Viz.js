@@ -1106,7 +1106,7 @@ if (Viz === undefined) var Viz = {};
             }
             if (config_metric.xnoticks) config.xaxis.noTicks = config_metric.xnoticks;
             // value box on top
-            config.mouse.position = 'nw';
+            config.mouse.position = 'n';
             config.mouse.margin = 20;
         }
 
@@ -1273,7 +1273,7 @@ if (Viz === undefined) var Viz = {};
 
             if (config_metric && config_metric.show_legend !== false)
                 // config.legend = {show:true, position: 'n', 
-                config.legend = {show:true, position: 'nw', 
+                config.legend = {show:true, position: 'n', 
                     container: legend_div};
 
             // TODO: Color management should be defined
