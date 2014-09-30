@@ -111,6 +111,12 @@ function SCR() {
             "name" : "Reviews submitted",
             "desc" : "Reviews submitted"
         },
+        "scr_submitters" : {
+            "divid" : "scr_submitters",
+            "column" : "submitters",
+            "name" : "Reviews submitters",
+            "desc" : "Number of people submitting review processes."
+        },
         "scr_sent" : {
             "divid" : "scr_sent",
             "column" : "sent",
@@ -154,7 +160,14 @@ function SCR() {
             "name" : "Openers",
             "desc" : "Reviews openers",
             "action" : "opened"
-        }
+        },
+        "scr_reviewers" : {
+            "divid" : "scr_reviewers",
+            "column" : "reviewers",
+            "name" : "Reviewers",
+            "desc" : "Number of people reviewing contributions"
+     }
+
     };
 
     this.getMainMetric = function() {

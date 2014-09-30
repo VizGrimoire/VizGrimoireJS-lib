@@ -1,4 +1,4 @@
- /* 
+ /*
  * Copyright (C) 2013-2014 Bitergia
  *
  * This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,7 @@
  *
  * Authors:
  *   Alvaro del Castillo San Felix <acs@bitergia.com>
+ *   Luis Cañas-Díaz <lcanas@bitergia.com>
  */
 
 var Convert = {};
@@ -37,10 +38,10 @@ Convert.convertMicrodashText = function () {
             var ds = Report.getMetricDS(metric)[0];
             if (ds === undefined) return;
             var total = ds.getGlobalData()[metric];
-            var html = '<div class="row-fluid">';
+            var html = '<div class="row">';
 
             if(show_name){ //if name is shown we'll have four columns
-                html += '<div class="span3">';
+                html += '<div class="col-md-3">';
                 html += '<span class="dayschange">' + ds.basic_metrics[metric].name + '</span>';
                 html += '</div>';
             }
@@ -57,28 +58,35 @@ Convert.convertMicrodashText = function () {
                 percentagevalue = Math.round(percentagevalue*10)/10;  // round "original" to 1 decimal
                 if (value === undefined) return;
                 var str_percentagevalue = '';
-                if (netvalue > 0) str_percentagevalue = '+' + percentagevalue;
-                if (netvalue < 0) str_percentagevalue = '-' + Math.abs(percentagevalue);
+
+                // if % is 0 the output is 0, if not it depends on the netvalue
+                if (percentagevalue === 0){
+                    str_percentagevalue = Math.abs(percentagevalue);
+                }else if (netvalue > 0){
+                    str_percentagevalue = '+' + percentagevalue;
+                }else if (netvalue < 0){
+                    str_percentagevalue = '-' + Math.abs(percentagevalue);
+                }
 
                 if(show_name){
-                    html += '<div class="span3">';
+                    html += '<div class="col-md-3">';
                 }else{
-                    html += '<div class="span4">';
+                    html += '<div class="col-md-4">';
                 }
 
                 html += '<span class="dayschange">Last '+period+' days:</span>';
                 html += ' '+Report.formatValue(value) + '<br>';
-                if (netvalue === 0) {
+                if (percentagevalue === 0) {
                     html += '<i class="fa fa-arrow-circle-right"></i> <span class="zeropercent">&nbsp;'+str_percentagevalue+'%</span>&nbsp;';
                 } else if (netvalue > 0) {
                     html += '<i class="fa fa-arrow-circle-up"></i> <span class="pospercent">&nbsp;'+str_percentagevalue+'%</span>&nbsp;';
                 } else if (netvalue < 0) {
                     html += '<i class="fa fa-arrow-circle-down"></i> <span class="negpercent">&nbsp;'+str_percentagevalue+'%</span>&nbsp;';
                 }
-                html += '</div><!--span4-->';
+                html += '</div><!--col-md-4-->';
             });
 
-            html += '</div><!--row-fluid-->';
+            html += '</div><!--row-->';
             $(div).append(html);
         });
     }
@@ -129,20 +137,549 @@ Convert.convertMicrodash = function () {
     }
 };
 
+function getProjectTitle(project_id, hierarchy){
+    /**
+       Gets the title of the project based on the hierarchy
+    **/
+    if (hierarchy.hasOwnProperty(project_id) && hierarchy[project_id].title){
+        return hierarchy[project_id].title;
+    }else{
+        return undefined;
+    }
+}
+
+function compareProjectTitles(a, b){
+    if (a.project_id < b.project_id){
+	return -1;
+    }
+    else if (a.project_id > b.project_id){
+	return 1;
+    }
+    else{
+	return 0;
+    }
+}
+
+function getParentProjects(project_id, hierarchy){
+    /**
+        Gets the parent project based on the hierarchy
+    **/
+    var parent = [];
+    var iterate_p = project_id;
+    var parent_id = '';
+    var aux = {};
+
+    while (hierarchy[iterate_p].hasOwnProperty('parent_project')){
+        parent_id = hierarchy[iterate_p].parent_project;
+        aux = hierarchy[parent_id];
+        aux.project_id = parent_id;
+        parent.push(aux);
+        iterate_p = parent_id;
+    }
+    //parent.push(hierarchy[parent_id]);
+    return parent.reverse();
+}
+
+function getChildrenProjects(project_id, hierarchy){
+    /**
+       Gets the n children project name based on the hierarchy
+    **/
+    var children = [];
+    var aux ={};
+    $.each(hierarchy, function(id, p){
+        if (hierarchy[id].parent_project === project_id){
+            // we need the key so we keep it
+            aux = hierarchy[id];
+            aux.project_id = id;
+            children.push(aux);
+        }
+    });
+    children.sort(compareProjectTitles);
+    return children;
+}
+
+function composePBreadcrumbsHTMLlast(project_id, children, hierarchy){
+    var html = '';
+    var clen = children.length;
+    if(clen > 0){
+        html += '<li class="dropdown">';
+        html += '<span data-toggle="tooltip" title="Project name"> ' + getProjectTitle(project_id, hierarchy) + '</span>';
+        html += '&nbsp;<a class="dropdown-toggle" data-toggle="dropdown" href="#">';
+        html += '<span data-toggle="tooltip" title="Select subproject" class="badge"> ' + clen + ' Subprojects </span></a>';
+        html += '<ul class="dropdown-menu scrollable-menu">';
+        $.each(children, function(id,value){
+            gchildren = getChildrenProjects(value.project_id, hierarchy);
+            if (gchildren.length > 0){
+                html += '<li><a href="project.html?project='+ value.project_id +'">'+ value.title +'&nbsp;&nbsp;<span data-toggle="tooltip" title="Number of suprojects" class="badge">'+gchildren.length +'&nbsp;<i class="fa fa-rocket"></i></span></a></li>';
+            }else{
+                html += '<li><a href="project.html?project='+ value.project_id +'">'+ value.title +'</a></li>';
+            }
+        });
+        html += '<li class="divider"></li>';
+        html += '<li><a href="./project_map.html"><i class="fa fa-icon fa-sitemap"></i> Projects treemap</a></li>';
+        html += '</ul></li>';
+    }
+    else{
+        html += '<li>' + getProjectTitle(project_id, hierarchy) + '</li>';
+    }
+    return html;
+}
+
+function composeProjectBreadcrumbs(project_id) {
+    /**
+        compose the project navigation bar based on the hierarchy
+    **/
+    var html = '<ol class="breadcrumbtitle">';
+    var hierarchy = Report.getProjectsHierarchy();
+    if (hierarchy.length === 0){
+        // we don't have information about subprojects
+        return '';
+    }
+
+    if (project_id === undefined){
+        project_id = 'root';
+    }
+    var children = getChildrenProjects(project_id, hierarchy);
+    var parents = getParentProjects(project_id, hierarchy);
+    // parents
+    if (parents.length > 0){
+        $.each(parents, function(id,value){
+            if(value.parent_project){
+                html += '<li><a href="project.html?project='+value.project_id+'">' + value.title + '</a></li>';
+            }else{
+                html += '<li><a href="./">' + value.title + '</a></li>';
+            }
+        });
+    }
+    html += composePBreadcrumbsHTMLlast(project_id, children, hierarchy);
+    html += '</ol>';
+    return html;
+}
+
+function escapeString(string){
+    var aux = '';
+    aux = string.replace(' ','_');
+    aux = aux.toLowerCase();
+    return aux;
+}
+
+function composeHTMLNestedProjects(project_id, children, hierarchy){
+    var html = '';
+    var clen = children.length;
+    var epid = escapeString(project_id);
+    if(clen > 0){
+	html += '<li>';
+	html += '<a href="project.html?project='+epid+'">'+ getProjectTitle(project_id, hierarchy) + '</a>';
+        html += '&nbsp;<a data-toggle="collapse" data-parent="#accordion" href="#collapse'+epid+'"><span class="badge">'+clen+'&nbsp;subprojects</span></a><div id="collapse'+epid+'" class="panel-collapse collapse"><ul>';
+
+        $.each(children, function(id,value){
+            gchildren = getChildrenProjects(value.project_id, hierarchy);
+            html += composeHTMLNestedProjects(value.project_id, gchildren, hierarchy);
+        });
+        html += '</ul></li>';
+    }
+    else{
+        html += '<li><a href="project.html?project='+project_id+'">' + getProjectTitle(project_id, hierarchy) + '</a></li>';
+    }
+    return html;
+}
+
+function composeProjectMap() {
+    /**
+        compose the project navigation bar based on the hierarchy
+    **/
+    var html = '<ul>';
+    var hierarchy = Report.getProjectsHierarchy();
+    if (hierarchy.length === 0){
+        // we don't have information about subprojects
+        return '';
+    }
+
+    project_id = 'root';
+    var children = getChildrenProjects(project_id, hierarchy);
+    var parents = getParentProjects(project_id, hierarchy);
+    $.each(children, function(id,value){
+	grandchildren = getChildrenProjects(value.project_id, hierarchy);
+	html += composeHTMLNestedProjects(value.project_id, grandchildren, hierarchy);
+    });
+    html += '</ul>';
+    return html;
+}
+
+function getSectionName4Release(){
+    /*
+     This function bypass some of the conditions of getSectionName. It should
+     be deprecated as soon as we generate the same data for releases (the same
+     data we have for the normal dash)
+     */
+    var result = [];
+    var sections = {"data_sources":"Data sources",
+                    "project_map":"Project map",
+                    "people":"Contributor",
+                    "company":"Company",
+                    "country":"Country",
+                    "domain":"Domain",
+                    "scm-companies":"Activity on code repositories by companies",
+                    "mls-companies":"Activity on mailing lists by companies",
+                    "its-companies":"Activity on issue trackers by companies"
+                   };
+    url_no_params = document.URL.split('?')[0];
+    url_tokens = url_no_params.split('/');
+    var section = url_tokens[url_tokens.length-1].split('.')[0];
+    if (section === 'project' || section === 'index' || section === 'release' || section === ''){
+        //no sections are support for subprojects so far
+        return [];
+    }else{
+        if (sections.hasOwnProperty(section)){
+            result.push([section, sections[section]]);
+        }else{
+            return [['#','Unavailable section name']];
+        }
+        return result;
+    }
+
+}
+
+function getSectionName(){
+    /*
+     Return array with section name and section title
+     */
+    var result = [];
+    var sections = {"mls":"MLS overview",
+                    "irc":"IRC overview",
+                    "its":"ITS overview",
+                    "qaforums":"QA Forums overview",
+                    "scr":"Code Review overview",
+                    "scm":"SCM overview",
+                    "wiki":"Wiki overview",
+                    "downloads":"Downloads",
+                    "forge":"Forge releases",
+                    "data_sources":"Data sources",
+                    "project_map":"Project map",
+                    "people":"Contributor",
+                    "company":"Company",
+                    "country":"Country",
+                    "domain":"Domain",
+                    "release":"Companies analysis by release"
+                   };
+    var filters = {"companies":"Activity by companies",
+                   "contributors":"Activity by contributors",
+                   "countries":"Activity by companies",
+                   "domains":"Activity by domains",
+                   "projects":"Activity by project",
+                   "repos":"Activity by repositories",
+                   "states":"Activity by states",
+                   "tags":"Activity by tags"
+                  };
+    var filters2 = {"repository":"Repository",
+                   };
+
+    url_no_params = document.URL.split('?')[0];
+    url_tokens = url_no_params.split('/');
+    var section = url_tokens[url_tokens.length-1].split('.')[0];
+    if (section === 'project' || section === 'index' || section === ''){
+        //no sections are support for subprojects so far
+        return [];
+    }else{
+        //if it contains a - we return section + subsection
+        //it could be scm or scm-repos
+
+        var s_tokens = section.split('-');
+
+        //we generate the navigation hierarchy repository pages
+        if (s_tokens[0] === 'repository'){
+            ds_name = $.urlParam('ds');
+            s_tokens = [ds_name,'repos','repository'];
+        }
+
+        if (sections.hasOwnProperty(s_tokens[0])){
+            result.push([s_tokens[0], sections[s_tokens[0]]]);
+
+            if (s_tokens.length > 0){
+                if (filters.hasOwnProperty(s_tokens[1])){
+                result.push([s_tokens[0] + '-' + s_tokens[1], filters[s_tokens[1]]]);
+
+                    if (s_tokens.length > 2){
+                        if (filters2.hasOwnProperty(s_tokens[2])){
+                            result.push([s_tokens[0], filters2[s_tokens[2]]]);
+                        }
+                    }
+                }
+            }
+        }else{
+            return [['#','Unavailable section name']];
+        }
+        return result;
+    }
+}
+
+function isURLRelease(){
+    /*
+     Returns true when the URL received contains the values for a release
+
+     COMMENT: dup with Utils.isReleasePage()
+     */
+    if ( $.urlParam('release') !== null &&
+         $.urlParam('release').length > 0) return true;
+    else return false;
+}
+
+function composeSideBar(project_id){
+    if (project_id === undefined){
+        project_id = 'root';
+    }
+    var html='';
+    var html_extra='';
+    html += '<ul class="nav navmenu-nav">';
+
+    var mele = Report.getMenuElements();
+    /*html += '<li><a href="' + Utils.createLink('index.html') + '">';
+    html += '<i class="fa fa-home"></i> Home</a></li>';*/
+
+    if (project_id === 'root'){
+        if (mele.hasOwnProperty('scm')){
+            aux = mele.scm;
+            aux_html = HTMLComposer.sideBarLinks('fa-code','Source code management','scm', aux);
+            html += aux_html;
+        }
+        if (mele.hasOwnProperty('scr')){
+            aux = mele.scr;
+            aux_html = HTMLComposer.sideBarLinks('fa-check','Code review','scr', aux);
+            html += aux_html;
+        }
+        if (mele.hasOwnProperty('its')){
+            aux = mele.its;
+            aux_html = HTMLComposer.sideBarLinks('fa-ticket','Tickets','its', aux);
+            html += aux_html;
+        }
+        if (mele.hasOwnProperty('mls')){
+            aux = mele.mls;
+            aux_html = HTMLComposer.sideBarLinks('fa-envelope-o','Mailing lists','mls', aux);
+            html += aux_html;
+        }
+        if (mele.hasOwnProperty('qaforums') && Utils.isReleasePage() === false){
+            aux = mele.qaforums;
+            aux_html = HTMLComposer.sideBarLinks('fa-question','Q&A Forums','qaforums', aux);
+            html += aux_html;
+        }
+        if (mele.hasOwnProperty('irc') && Utils.isReleasePage() === false){
+            aux = mele.irc;
+            aux_html = HTMLComposer.sideBarLinks('fa-comment-o','IRC','irc', aux);
+            html += aux_html;
+        }
+        if (mele.hasOwnProperty('downloads') && Utils.isReleasePage() === false){
+            aux = mele.downloads;
+            aux_html = HTMLComposer.sideBarLinks('fa-download','Downloads','downloads', aux);
+            html += aux_html;
+        }
+        if (mele.hasOwnProperty('forge') && Utils.isReleasePage() === false){
+            aux = mele.forge;
+            aux_html = HTMLComposer.sideBarLinks('fa-umbrella','Forge releases','forge', aux);
+            html += aux_html;
+        }
+        if (mele.hasOwnProperty('wiki') && Utils.isReleasePage() === false){
+            aux = mele.wiki;
+            aux_html = HTMLComposer.sideBarLinks('fa-pencil-square-o','Wiki','wiki', aux);
+            html += aux_html;
+        }
+        if (mele.hasOwnProperty('studies') && Utils.isReleasePage() === false){
+            aux = mele.studies;
+            html += '<li class="dropdown">';
+            html += '<a href="#" class="dropdown-toggle" data-toggle="dropdown">';
+            html += '<i class="fa fa-lightbulb-o"></i>&nbsp;Studies <b class="caret"></b></a>';
+            html += '<ul class="dropdown-menu navmenu-nav">';
+            if (aux.indexOf('demographics') >= 0){
+                html += '<li><a href="demographics.html">&nbsp;Demographics</a></li>';
+            }
+            if (aux.indexOf('release') >= 0){
+                //we link by the default the latest release (first in the list)
+                aux = Report.getReleaseNames().reverse();
+                latest_release = aux[0];
+                html += '<li><a href="release.html?release='+ latest_release +'">&nbsp;Companies by release</a></li>';
+            }
+            html += '</ul></li>';
+        }
+
+        html += '<li><a href="data_sources.html"><i class="fa fa-database"></i> Data sources</a></li>';
+        html += '<li><a href="project_map.html"><i class="fa fa-icon fa-sitemap"></i> Project map</a></li>';
+
+        if (mele.hasOwnProperty('extra')){
+            aux = mele.extra;
+            html_extra += '<li class="sidemenu-divider"></li>';
+            html_extra += '<li class="sidemenu-smallheader">More links:</li>';
+            $.each(aux, function(id,value){
+                html_extra += '<li><a href="'+ value[1]+'">&nbsp;' + value[0] + '</a></li>';
+            });
+        }
+        html += html_extra;
+    }
+
+    html += '</ul>';
+    return html;
+}
+
+
+Convert.convertSideBar = function(project_id){
+    var divs = $(".SideNavBar");
+    if (divs.length > 0){
+        $.each(divs, function(id, div){
+            $(this).empty();
+            if (!div.id) div.id = "SideNavBar";// + getRandomId();
+            //project_id will be empty for root project
+            var label;
+            if(project_id){
+                label = Report.cleanLabel(project_id);
+            }
+            var htmlaux = composeSideBar(label);
+            $("#"+div.id).append(htmlaux);
+
+            data = Report.getProjectData();
+            //document.title = data.project_name + ' Report by Bitergia';
+            //if (data.title) document.title = data.title;
+            //$(".report_date").text(data.date);
+            $(".report_name").text(data.project_name);
+            if(Utils.isReleasePage())
+                $(".report_name").attr("href", "./?release=" + $.urlParam('release'));
+        });
+    }
+};
+
+Convert.convertProjectNavBar = function (project_id){
+    var divs = $(".ProjectNavBar");
+    if (divs.length > 0){
+        $.each(divs, function(id, div){
+            $(this).empty();
+            if (!div.id) div.id = "ProjectNavBar";// + getRandomId();
+            //project_id will be empty for root project
+            var label;
+            if(project_id){
+                label = Report.cleanLabel(project_id);
+            }
+            var htmlaux = composeProjectBreadcrumbs(label);
+            $("#"+div.id).append(htmlaux);
+        });
+    }
+};
+
 Convert.convertNavbar = function() {
     $.get(Report.getHtmlDir()+"navbar.html", function(navigation) {
         $("#Navbar").html(navigation);
-        displayReportData();
+        var project_id = Report.getParameterByName("project");
+        Convert.convertProjectNavBar(project_id);
+        Convert.convertReleaseSelector();
+        Convert.convertSideBar(project_id);
+        /**
+         // Could this break the support of different JSON directories?
+           displayReportData();
         Report.displayActiveMenu();
-        var addURL = Report.addDataDir(); 
+        var addURL = Report.addDataDir();
         if (addURL) {
             var $links = $("#Navbar a");
             $.each($links, function(index, value){
                 if (value.href.indexOf("data_dir")!==-1) return;
                 value.href += "?"+addURL;
             });
-        }
+        }**/
     });
+};
+
+Convert.convertReleaseSelector = function (){
+    var releases = Report.getReleaseNames();
+    if (releases.length > 0){       // if no releases, we don't print HTML
+        var divs = $(".ReleaseSelector");
+        if (divs.length > 0){
+            $.each(divs, function(id, div){
+                $(this).empty();
+                if (!div.id) div.id = "ReleaseSelector" + getRandomId();
+                var htmlaux = HTMLComposer.releaseSelector($.urlParam('release'), releases);
+                $("#"+div.id).append(htmlaux);
+            });
+        }
+    }
+
+};
+
+
+function composeSectionBreadCrumb(project_id){
+    /*
+     Returns HTML for the breadcrumb shown on top (horizontal) with the section
+     names
+     */
+    var html = '<ol class="breadcrumb">';
+
+    if (project_id === undefined){
+        //main project enters here
+        var subsects_b = getSectionName();
+        var params = Utils.paramsInURL();
+        if (subsects_b.length > 0){
+            html += '<li><a href="./';
+            if(Utils.isReleasePage()) html += '?release=' + $.urlParam('release');
+            html += '">Project Overview</a></li>';
+            var cont_b = 1;
+            $.each(subsects_b, function(id,value){
+                if (subsects_b.length === cont_b){
+                    html += '<li class="active">' + value[1] + '</li>';
+                }else{
+                    if(Utils.isReleasePage()){
+                        html += '<li><a href="'+ value[0] +'.html';
+                        html += '?release=' + $.urlParam('release') + '">';
+                        html += value[1] + '</a></li>';
+                    }else{
+                        html += '<li><a href="'+ value[0] +'.html">' + value[1] + '</a></li>';
+                    }
+                }
+                cont_b += 1;
+            });
+        }
+        else{
+            html += '<li class="active">Project Overview</li>';
+        }
+
+    }else{
+        //subprojects have no sections yet
+        html += '<li> ' + getSectionName() + '</li>';
+    }
+
+    html += '</ol>';
+    return html;
+}
+
+Convert.convertSectionBreadcrumb = function (project_id){
+    var divs = $(".SectionBreadcrumb");
+    if (divs.length > 0){
+        $.each(divs, function(id, div){
+            $(this).empty();
+            if (!div.id) div.id = "SectionBreadcrumb";// + getRandomId();
+            //project_id will be empty for root project
+            var label;
+            if(project_id){
+                label = Report.cleanLabel(project_id);
+            }
+            var htmlaux = composeSectionBreadCrumb(label);
+            $("#"+div.id).append(htmlaux);
+        });
+    }
+};
+
+/* DEPRECATED
+Convert.convertModalProjectMap = function(){
+    $.get(Report.getHtmlDir() + "modal_projects", function(modal_html){
+        $("#ModalProjectMap").html(modal_html);
+    });
+};*/
+
+Convert.convertProjectMap = function (){
+    var divs = $(".ProjectMap");
+    if (divs.length >0){
+        $.each(divs, function(id, div){
+            $(this).empty();
+            if (!div.id) div.id = "ProjectMap";// is this needed??;
+            //project_id will be empty for root project
+            var label;
+            var htmlaux = composeProjectMap();//composeSectionBreadCrumb(label);
+            $("#"+div.id).append(htmlaux);
+        });
+    }
 };
 
 Convert.convertFooter = function() {
@@ -163,6 +700,66 @@ Convert.convertSummary = function() {
             if (DS === null) return;
             div.id = ds+'-Summary';
             DS.displayGlobalSummary(div.id);
+        });
+    }
+};
+
+function composeDropDownRepo(DS){
+    var repository = Report.getParameterByName("repository");
+    if (repository && $.inArray(repository, DS.getReposData()) < 0) return '';
+    var dsname = DS.getName();
+    var section = '';
+    var label_repo = DS.getLabelForRepository();
+    var label_repo_plural = DS.getLabelForRepositories();
+
+    if (repository !== undefined){
+        section = repository;
+    }else{
+        section = 'All ' + label_repo_plural;
+    }
+    html = '<div class="row"><span class="col-md-12">';
+
+    //FIXME this should be in a method DS.getLabel('repository') or similar
+    /*var label_repo = 'repository';
+    if (dsname === 'its'){
+        label_repo = 'tracker';
+    }else if (dsname === 'mls'){
+        label_repo = 'mailing list';
+    }*/
+    html = '<ol class="filterbar"><li>Filtered by '+ label_repo +':&nbsp;&nbsp;</li>';
+    html += '<li><div class="dropdown"><button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown"> '+ section + ' <span class="caret"></span></button>';
+    html += '<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">';
+
+    if (repository){
+        html += '<li role="presentation"><a role="menuitem" tabindex="-1" href="'+dsname+'-contributors.html">';
+        html += 'All ' + label_repo_plural;
+        html +='</a></li>';
+    }
+    $.each(DS.getReposData(), function(id, value){
+        if (value === repository) return;
+        html += '<li role="presentation"><a role="menuitem" tabindex="-1" href="?repository=';
+        html += value;
+        html +='">';
+        html += value;
+        html +='</a></li>';
+    });
+    html += '</ul></div></li></ol>';
+    html += '</span></div>'; //row + span12
+    return html;
+}
+
+Convert.convertRepositorySelector = function(){
+    var divs = $(".repository-selector");
+    if (divs.length > 0) {
+        $.each(divs, function(id, div) {
+            $(this).empty();
+            var ds = $(this).data('data-source');
+            var DS = Report.getDataSourceByName(ds);
+            if (DS === null) return;
+            div.id = ds+'-repository-selector';
+            var htmlaux = composeDropDownRepo(DS);
+            $("#"+div.id).append(htmlaux);
+            //DS.displayGlobalSummary(div.id);
         });
     }
 };
@@ -343,16 +940,20 @@ function loadHTMLEvolParameters(htmldiv, config_viz){
     } else {
         config_viz.custom_help = "";
     }
+    // Repository filter used to display only certain repos in a chart
+    if ($(htmldiv).data('repo-filter')){
+        config_viz.repo_filter = $(htmldiv).data('repo-filter');
+    }
     // In unixtime
     var start = $(htmldiv).data('start');
     if (start) config_viz.start_time = start;
     var end = $(htmldiv).data('end');
     if (end) config_viz.end_time = end;
-    
-    var remove_last_point = $(htmldiv).data('remove-last-point');
-    if (remove_last_point) config_viz.remove_last_point = true;    
 
-    return config_viz;    
+    var remove_last_point = $(htmldiv).data('remove-last-point');
+    if (remove_last_point) config_viz.remove_last_point = true;
+
+    return config_viz;
 }
 
 Convert.convertMetricsEvol = function() {
@@ -369,11 +970,12 @@ Convert.convertMetricsEvol = function() {
             config_metric[key] = value;
         });
     }
-
     var div_param = "MetricsEvol";
     var divs = $("." + div_param);
     if (divs.length > 0) {
         $.each(divs, function(id, div) {
+            // FIXME add check of "repository" var to avoid being executed
+            //if present. See convertMetricsEvolSelector
             var config_viz = {};
             $.each(config_metric, function(key, value) {
                 config_viz[key] = value;
@@ -381,6 +983,51 @@ Convert.convertMetricsEvol = function() {
             $(this).empty();
             var metrics = $(this).data('metrics');
             var ds = $(this).data('data-source');
+            //FIXME title is duplicated with custom-title
+            config_viz.title = $(this).data('title');
+            var DS = Report.getDataSourceByName(ds);
+            if (DS === null) return;
+
+            config_viz = loadHTMLEvolParameters(div, config_viz);
+
+            div.id = metrics.replace(/,/g,"-")+"-"+ds+"-metrics-evol-"+this.id;
+            div.id = div.id.replace(/\n|\s/g, "");
+            DS.displayMetricsEvol(metrics.split(","),div.id,
+                    config_viz, $(this).data('convert'));
+        });
+    }
+};
+
+Convert.convertMetricsEvolCustomized = function(filter) {
+    // General config for metrics viz
+    var config_metric = {};
+
+    config_metric.show_desc = false;
+    config_metric.show_title = true;
+    config_metric.show_labels = true;
+
+    var config = Report.getVizConfig();
+    if (config) {
+        $.each(config, function(key, value) {
+            config_metric[key] = value;
+        });
+    }
+    var div_param = "MetricsEvolCustomized";
+    var divs = $("." + div_param);
+    if (divs.length > 0) {
+        $.each(divs, function(id, div) {
+            // FIXME add check of "repository" var to avoid being executed
+            //if present. See convertMetricsEvolSelector
+            if (filter !== $(this).data('filter')) return;
+            var config_viz = {};
+            $.each(config_metric, function(key, value) {
+                config_viz[key] = value;
+            });
+            $(this).empty();
+            var metrics = $(this).data('metrics');
+            var ds = $(this).data('data-source');
+            //FIXME title is duplicated with custom-title
+            config_viz.title = $(this).data('title');
             var DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
             config_viz.mouse_tracker = $(this).data('mouse_tracker');
@@ -394,6 +1041,53 @@ Convert.convertMetricsEvol = function() {
         });
     }
 };
+
+
+Convert.convertMetricsEvolSelector = function() {
+    /**
+     This function compose the HTML when "repository" GET parameter is passed
+     via URL. In that case convertMetricsEvolSelector is not executed.
+     Having this function we avoid slowing down the load of MetricsEvol when
+     it is not needed to wait for repository data.
+     **/
+    // FIXME: this code and convertMetricsEvol is 90% the same.
+    var config_metric = {};
+
+    config_metric.show_desc = false;
+    config_metric.show_title = true;
+    config_metric.show_labels = true;
+
+    var config = Report.getVizConfig();
+    if (config) {
+        $.each(config, function(key, value) {
+            config_metric[key] = value;
+        });
+    }
+    var div_param = "MetricsEvol";
+    var divs = $("." + div_param);
+    if (divs.length > 0) {
+        $.each(divs, function(id, div) {
+            var config_viz = {};
+            $.each(config_metric, function(key, value) {
+                config_viz[key] = value;
+            });
+            $(this).empty();
+            var metrics = $(this).data('metrics');
+            var ds = $(this).data('data-source');
+            var DS = Report.getDataSourceByName(ds);
+            if (DS === null) return;
+            var repository = Report.getParameterByName("repository");
+
+            config_viz = loadHTMLEvolParameters(div, config_viz);
+
+            div.id = metrics.replace(/,/g,"-")+"-"+ds+"-metrics-evol-"+this.id;
+            div.id = div.id.replace(/\n|\s/g, "");
+            DS.displayMetricsEvol(metrics.split(","),div.id,
+                    config_viz, $(this).data('convert'), repository);
+        });
+    }
+};
+
 
 Convert.convertMetricsEvolSet = function() {
     div_param = "MetricsEvolSet";
@@ -414,7 +1108,7 @@ Convert.convertMetricsEvolSet = function() {
             var ds = $(this).data('data-source');
             var DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
-            DS.displayEnvision(div.id, relative, legend, summary_graph); 
+            DS.displayEnvision(div.id, relative, legend, summary_graph);
         });
     }
 };
@@ -422,7 +1116,7 @@ Convert.convertMetricsEvolSet = function() {
 
 Convert.convertTimeTo = function() {
     var div_tt = "TimeTo";
-    divs = $("."+div_tt); 
+    divs = $("."+div_tt);
     if (divs.length > 0) {
         $.each(divs, function(id, div) {
             $(this).empty();
@@ -466,7 +1160,7 @@ Convert.convertLastActivity = function() {
         $.each(Report.getDataSources(), function(index, DS) {
             var data = DS.getGlobalData();
             $.each(data, function (key,val) {
-                var suffix = "_"+period; 
+                var suffix = "_"+period;
                 if (key.indexOf(suffix, key.length - suffix.length) !== -1) {
                     var metric = key.substring(0, key.length - suffix.length);
                     label = metric;
@@ -508,6 +1202,7 @@ Convert.convertTop = function() {
             var threads_links = $(this).data('threads_links');
             var period = $(this).data('period');
             var period_all = $(this).data('period_all');
+            var repository = Report.getParameterByName("repository");
             div.id = ds + "-" + div_id_top + (unique++);
             if (graph){
                 div.id += "-"+graph;
@@ -519,7 +1214,7 @@ Convert.convertTop = function() {
                 limit = 10;
             }
             DS.displayTop(div.id, show_all, top_metric, period, period_all,
-                          graph, limit, people_links, threads_links);
+                          graph, limit, people_links, threads_links, repository);
         });
     }
 };
@@ -539,6 +1234,8 @@ Convert.convertPersonMetrics = function (upeople_id, upeople_identifier) {
             if (DS === null) return;
             var metrics = $(this).data('metrics');
             config_metric.show_legend = false;
+            config_metric.help = false;
+            if ($(this).data('frame-time')) config_metric.frame_time = true;
             if ($(this).data('legend')) config_metric.show_legend = true;
             if ($(this).data('person_id')) upeople_id = $(this).data('person_id');
             if ($(this).data('person_name')) upeople_identifier = $(this).data('person_name');
@@ -571,7 +1268,33 @@ Convert.convertPersonData = function (upeople_id, upeople_identifier) {
                 else name = upeople_id;
                 email = "";
             }
-            $("#"+div.id).append("<h1><small>"+name + " "+ email + "</small></h1>");
+            html = HTMLComposer.personName(name, email);
+            $("#"+div.id).append(html);
+        });
+    }
+};
+
+
+Convert.personSummaryBlock = function(upeople_id){
+    /*
+     Two steps conversion:
+     Converts this id into a block with PersonSummary + PersonMetrics
+     */
+    var divs = $(".PersonSummaryBlock");
+    if (divs.length > 0){
+        $.each(divs, function(id, div) {
+            /*workaround to avoid being called again when redrawing*/
+            if (div.id.indexOf('Parsed') >= 0 ) return;
+
+            ds_name = $(this).data('data-source');
+            metric_name = $(this).data('metrics');
+            DS = Report.getDataSourceByName(ds_name);
+            if (DS === null) return;
+            if (DS.getData().length === 0) return; /* no data for data source*/
+            if (DS.getPeopleMetricsData()[upeople_id].length === 0) return; /* no data for this person */
+            var html = HTMLComposer.personDSBlock(ds_name, metric_name);
+            if (!div.id) div.id = "Parsed" + getRandomId();
+            $("#"+div.id).append(html);
         });
     }
 };
@@ -608,11 +1331,107 @@ Convert.convertPeople = function(upeople_id, upeople_identifier) {
         return;
     }
 
+    Convert.personSummaryBlock(upeople_id);
     Convert.convertPersonData(upeople_id, upeople_identifier);
     Convert.convertPersonSummary(upeople_id, upeople_identifier);
     Convert.convertPersonMetrics(upeople_id, upeople_identifier);
 
     Convert.activateHelp();
+};
+
+function dataFilterAvailable(filter_name, item_name){
+    /*
+     filter_name: repos, companies, countries and domains
+     item_name: name of the repo, company, etc ..
+
+     Returns true when data is available. False if not available
+     */
+    if (filter_name === 'repos'){
+        if (DS.getReposGlobalData()[item_name] === undefined ||
+            DS.getReposGlobalData()[item_name].length === 0) return false;
+    }else if(filter_name === 'companies'){
+        if (DS.getCompaniesGlobalData()[item_name] === undefined ||
+            DS.getCompaniesGlobalData()[item_name].length === 0) return false;
+    }else if(filter_name === 'countries'){
+        if (DS.getCountriesGlobalData()[item_name] === undefined ||
+            DS.getCountriesGlobalData()[item_name].length === 0) return false;
+    }else if(filter_name === 'companies'){
+        if (DS.getDomainsGlobalData()[item_name] === undefined ||
+            DS.getDomainsGlobalData()[item_name].length === 0) return false;
+    }
+
+    return true;
+}
+
+Convert.repositoryDSBlock = function(repo_id){
+    /*
+     Two steps conversion:
+     Converts this id into a block with FilterItemSummary + FilterItemMetricsEvol.
+     */
+    var divs = $(".FilterDSBlock");
+    if (divs.length > 0){
+        $.each(divs, function(id, div) {
+            /*workaround to avoid being called again when redrawing*/
+            if (div.id.indexOf('Parsed') >= 0 ) return;
+
+            ds_name = $(this).data('data-source');
+            filter_name = $(this).data('filter');
+            aux = $(this).data('metrics');
+            metric_names = aux.split(',');
+            $.each(metric_names, function(id, value){
+                metric_names[id] = metric_names[id].replace(/:/g,',');
+            });
+            DS = Report.getDataSourceByName(ds_name);
+            if (DS === null) return;
+            if (DS.getData().length === 0) return; /* no data for data source*/
+
+            if (dataFilterAvailable(filter_name, repo_id)){
+                var html = HTMLComposer.filterDSBlock(ds_name, filter_name, metric_names);
+                if (!div.id) div.id = "Parsed" + getRandomId();
+                $("#"+div.id).append(html);
+            }
+        });
+    }
+};
+
+Convert.convertDSSummaryBlock = function(upeople_id){
+    /*
+     Two steps conversion:
+     Converts this id into a block with PersonSummary + PersonMetrics
+     */
+    var divs = $(".DSSummaryBlock");
+    if (divs.length > 0){
+        $.each(divs, function(id, div) {
+            /*workaround to avoid being called again when redrawing*/
+            if (div.id.indexOf('Parsed') >= 0 ) return;
+
+            ds_name = $(this).data('data-source');
+            box_labels = $(this).data('box-labels');
+            box_metrics = $(this).data('box-metrics');
+            ts_metrics = $(this).data('ts-metrics');
+            //metric_name = $(this).data('metrics');
+            DS = Report.getDataSourceByName(ds_name);
+            if (DS === null) return;
+            if (DS.getData().length === 0) return; /* no data for data source*/
+            var html = HTMLComposer.DSBlock(ds_name,box_labels,box_metrics,
+                                            ts_metrics);
+            if (!div.id) div.id = "Parsed" + getRandomId();
+            $("#"+div.id).append(html);
+        });
+    }
+};
+
+Convert.convertOverallSummaryBlock = function (){
+    var divs = $(".OverallSummaryBlock");
+    if (divs.length > 0){
+        $.each(divs, function(id, div) {
+            /*workaround to avoid being called again when redrawing*/
+            if (div.id.indexOf('Parsed') >= 0 ) return;
+            var html = HTMLComposer.overallSummaryBlock();
+            if (!div.id) div.id = "Parsed" + getRandomId();
+            $("#"+div.id).append(html);
+        });
+    }
 };
 
 Convert.convertDemographics = function() {
@@ -674,6 +1493,7 @@ Convert.getRealItem = function(ds, filter, item) {
 
 Convert.convertFilterItemsSummary = function(filter) {
     var divlabel = "FilterItemsSummary";
+    /*watch out! there is FilterItemsSummary and FilterItemSummary!!*/
     divs = $("."+divlabel);
     if (divs.length > 0) {
         $.each(divs, function(id, div) {
@@ -681,7 +1501,7 @@ Convert.convertFilterItemsSummary = function(filter) {
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
             if (filter === undefined) filter = $(this).data('filter');
-            if (filter !== $(this).data('filter')) return;            
+            if (filter !== $(this).data('filter')) return;
             if (!filter) return;
             div.id = ds+"-"+divlabel;
             $(this).empty();
@@ -720,6 +1540,8 @@ Convert.convertFilterItemsGlobal = function(filter) {
                 container: $(this).data('legend-div')};
             } else config_metric.legend = {container: null};
             config_metric.graph = $(this).data('graph');
+            config_metric.title = $(this).data('title');
+            config_metric.show_title = 1;
             div.id = metric+"-"+divlabel;
             $(this).empty();
             if (filter === "repos")
@@ -746,6 +1568,7 @@ Convert.convertFilterItemsNav = function(filter, page) {
     var divlabel = "FilterItemsNav";
     divs = $("."+divlabel);
     if (divs.length > 0) {
+        var cont = 0;
         $.each(divs, function(id, div) {
             ds = $(this).data('data-source');
             DS = Report.getDataSourceByName(ds);
@@ -755,7 +1578,8 @@ Convert.convertFilterItemsNav = function(filter, page) {
             if (!filter) return;
             if ($(this).data('page')) page = $(this).data('page');
             order_by = $(this).data('order-by');
-            div.id = ds+"-"+divlabel;
+            div.id = ds+"-"+divlabel + "-" + cont;
+            cont += 1;
             $(this).empty();
             if (filter === "repos")
                 DS.displayItemsNav(div.id, filter, page, order_by);
@@ -849,7 +1673,8 @@ Convert.convertFilterItemsMiniCharts = function(filter, page) {
             var start = $(this).data('start');
             var end = $(this).data('end');
             var convert = $(this).data('convert');
-
+            if ($(this).data('frame-time')) //FIXME we should check the value
+                config_metric.frame_time = true;
             var remove_last_point = $(this).data('remove-last-point');
             if (remove_last_point) config_metric.remove_last_point = true;
 
@@ -874,60 +1699,28 @@ Convert.convertFilterItemsMiniCharts = function(filter, page) {
     }
 };
 
+
 Convert.convertFilterItemData = function (filter, item) {
+    /* FilterItemData displays the title of the panel (strange name BTW)*/
     var divs = $(".FilterItemData");
+    //FIXME: replace this awful name
+
     if (divs.length > 0) {
         $.each(divs, function(id, div) {
             $(this).empty();
             var label = Report.cleanLabel(item);
+            //var ds_name = $.urlParam('ds'); // urlParam is defined in Utils.js
             if (!div.id) div.id = "FilterItemData" + getRandomId();
-            $("#"+div.id).append("<h1><small>"+label + "</small></h1>");
+            html = HTMLComposer.itemName(label, filter);
+            $("#"+div.id).append(html);
         });
     }
 };
 
-
-function composeProjectBreadcrumbs(project_id){
-    //project id could be eclipe or eclipse.whatever
-    var html = '<ul class="breadcrumb"> Project:&nbsp;&nbsp;';
-    var aux = '';
-    var tokens = [];
-    var lentokens = 0;
-    tokens = project_id.split('.');
-    lentokens = tokens.length;
-    /*html += '<li><a href="/">Summary</a> <span class="divider">/</span></li>';
-    html += '<li><a href="projects.html">List of projects</a> <span class="divider">/</span></li>';*/
-    $.each(tokens, function(key,value){
-        if (key === 0){ //first
-            aux += value;
-        }else{
-            aux += '.' + value;}
-
-        if (key === lentokens - 1 ) { //if last
-            html += '<li class="active">' + value + '</li>';
-        }else{
-            html += '<li><a href="project.html?project=' + aux +' ">' + value + '</a> <span class="divider">/</span></li>';
-        }
-    });
-    html += '</ul>';
-    return html;
-}
-
-Convert.convertProjectBreadcrumbs = function (filter, item) {
-    //based on FilterItemData
-    var divs = $(".ProjectBreadcrumbs");
-    if (divs.length > 0) {
-        $.each(divs, function(id, div) {
-            $(this).empty();
-            var label = Report.cleanLabel(item);
-            if (!div.id) div.id = "ProjectBreadcrumbs" + getRandomId();
-            $("#"+div.id).append(composeProjectBreadcrumbs(label));
-        });
-    }
-};
 
 Convert.convertFilterItemSummary = function(filter, item) {
     var divlabel = "FilterItemSummary";
+    /*watch out! there is FilterItemsSummary and FilterItemSummary!!*/
     divs = $("."+divlabel);
     if (item !== null && divs.length > 0) {
         $.each(divs, function(id, div) {
@@ -942,8 +1735,10 @@ Convert.convertFilterItemSummary = function(filter, item) {
             div.id = ds+"-"+filter+"-"+divlabel;
             $(this).empty();
             if (filter === "repos") {
-                real_item = Convert.getRealItem(DS, filter, real_item);
-                if (real_item) DS.displayRepoSummary(div.id, real_item, DS);
+                // Repos map for repository.html page disabled
+                /*real_item = Convert.getRealItem(DS, filter, real_item);
+                if (real_item) DS.displayRepoSummary(div.id, real_item, DS);*/
+                DS.displayRepoSummary(div.id, real_item, DS);
             }
             else if (filter === "countries")
                 DS.displayCountrySummary(div.id, real_item, DS);
@@ -956,6 +1751,72 @@ Convert.convertFilterItemSummary = function(filter, item) {
         });
     }
 };
+
+Convert.convertFilterItemMicrodashText = function (filter, item) {
+    /* composes the HTML for trends with number about diff and percentages*/
+    var divs = $(".FilterItemMicrodashText");
+    if (divs.length > 0) {
+        $.each(divs, function(id, div) {
+            $(this).empty();
+            var real_item = item; // project, repo, company, etc ..
+            var metric = $(this).data('metric');
+            var show_name = $(this).data('name');
+            var ds = Report.getMetricDS(metric)[0];
+            if (ds === undefined) return;
+            if (filter === "projects")
+                var global_data = ds.getProjectsGlobalData()[item];
+            else
+                return; //so far only project filter is supported
+            var html = '<div class="row">';
+
+            if(show_name){ //if name is shown we'll have four columns
+                html += '<div class="col-md-3">';
+                html += '<span class="dayschange">' + ds.basic_metrics[metric].name + '</span>';
+                html += '</div>';
+            }
+
+            // $.each({7:'week',30:'month',365:'year'}, function(period, name) {
+            $.each([365,30,7], function(index, period) {
+                var column = ds.getMetrics()[metric].column;
+                // value -> items for this period
+                // netvalue -> change with previous period
+                // percentagevalue -> % changed with previous
+                var value = global_data[metric+"_"+period];
+                var netvalue = global_data["diff_net"+column+"_"+period];
+                var percentagevalue = global_data["percentage_"+column+"_"+period];
+                percentagevalue = Math.round(percentagevalue*10)/10;  // round "original" to 1 decimal
+                if (value === undefined) return;
+                var str_percentagevalue = '';
+                if (netvalue > 0) str_percentagevalue = '+' + percentagevalue;
+                if (netvalue < 0) str_percentagevalue = '-' + Math.abs(percentagevalue);
+
+                if(show_name){
+                    html += '<div class="col-md-3">';
+                }else{
+                    html += '<div class="col-md-4">';
+                }
+
+                html += '<span class="dayschange">Last '+period+' days:</span>';
+                html += ' '+Report.formatValue(value) + '<br>';
+                if (netvalue === 0) {
+                    html += '<i class="fa fa-arrow-circle-right"></i> <span class="zeropercent">&nbsp;'+str_percentagevalue+'%</span>&nbsp;';
+                } else if (netvalue > 0) {
+                    html += '<i class="fa fa-arrow-circle-up"></i> <span class="pospercent">&nbsp;'+str_percentagevalue+'%</span>&nbsp;';
+                } else if (netvalue < 0) {
+                    html += '<i class="fa fa-arrow-circle-down"></i> <span class="negpercent">&nbsp;'+str_percentagevalue+'%</span>&nbsp;';
+                }
+                html += '</div><!--col-md-4-->';
+            });
+
+            html += '</div><!--row-->';
+            $(div).append(html);
+        });
+    }
+};
+
+
+
+
 
 Convert.convertFilterItemMetricsEvol = function(filter, item) {
     var config_metric = filterItemsConfig();
@@ -978,12 +1839,15 @@ Convert.convertFilterItemMetricsEvol = function(filter, item) {
             div.id += metrics.replace(/,/g,"-")+"-"+ds+"-"+filter+"-"+divlabel;
             $(this).empty();
             if (filter === "repos") {
-                real_item = Convert.getRealItem(DS, filter, real_item);
+                // Repos map for repository.html page disabled
+                /*real_item = Convert.getRealItem(DS, filter, real_item);
                 if (real_item) {
                     DS.displayMetricsRepo(real_item, metrics.split(","),
                             div.id, config_metric);
                 }
-                else $(this).hide();
+                else $(this).hide();*/
+                DS.displayMetricsRepo(real_item, metrics.split(","),
+                    div.id, config_metric);
             }
             else if (filter === "countries") {
                 DS.displayMetricsCountry(real_item, metrics.split(","),
@@ -1032,6 +1896,22 @@ Convert.convertFilterItemTop = function(filter, item) {
     }
 };
 
+Convert.convertSmartLinks = function (){
+    var divs = $(".SmartLinks");
+    if (divs.length > 0){
+        $.each(divs, function(id, div) {
+            /*workaround to avoid being called again when redrawing*/
+            if (div.id.indexOf('Parsed') >= 0 ) return;
+            target_page = $(this).data('target');
+            label = $(this).data('label');
+            var html = HTMLComposer.smartLinks(target_page, label);
+            if (!div.id) div.id = "Parsed" + getRandomId();
+            $("#"+div.id).append(html);
+        });
+    }
+};
+
+
 Convert.convertFilterStudyItem = function (filter, item) {
     // Control convert is not called several times per filter
     var convertfn = Convert.convertFilterStudyItem;
@@ -1053,14 +1933,17 @@ Convert.convertFilterStudyItem = function (filter, item) {
 
     if (Loader.FilterItemCheck(item, filter) === false) return;
 
+    Convert.repositoryDSBlock(item);
     Convert.convertFilterItemData(filter, item);
-    Convert.convertProjectBreadcrumbs(filter, item);
     Convert.convertFilterItemSummary(filter, item);
     Convert.convertFilterItemMetricsEvol(filter, item);
     Convert.convertFilterItemTop(filter, item);
+    Convert.convertFilterItemMicrodashText(filter, item);
     Convert.convertProjectData();
 
     Convert.activateHelp();
+
+    Convert.convertMetricsEvolSelector();
 
     convertfn.done[filter] = true;
 };
@@ -1095,6 +1978,7 @@ Convert.convertFilterStudy = function(filter) {
     // repositories comes from Automator config
     if (filter === "repositories") filter = "repos";
 
+
     // If data is not available load them and cb this function
     if (Loader.check_filter_page (page, filter) === false) {
         $.each(Report.getDataSources(), function(index, DS) {
@@ -1102,6 +1986,7 @@ Convert.convertFilterStudy = function(filter) {
         });
         return;
     }
+
 
     Convert.convertFilterItemsSummary(filter);
     Convert.convertFilterItemsGlobal(filter);
@@ -1127,8 +2012,15 @@ Convert.convertDSTable = function() {
 
 Convert.convertBasicDivs = function() {
     Convert.convertNavbar();
-    Convert.convertFooter(); 
+    Convert.convertSmartLinks();
+    //Convert.convertProjectNavBar();
+    Convert.convertSectionBreadcrumb();
+    Convert.convertProjectMap();
+    //Convert.convertModalProjectMap();
+    Convert.convertFooter();
     //Convert.convertRefcard(); //deprecated
+    Convert.convertOverallSummaryBlock();
+    Convert.convertDSSummaryBlock();
     Convert.convertDSTable();
     Convert.convertGlobalData();
     //Convert.convertProjectData();
@@ -1143,9 +2035,51 @@ Convert.convertBasicDivsMisc = function() {
 };
 
 Convert.convertBasicMetrics = function(config) {
-    Convert.convertMetricsEvol();
+    var item = Report.getParameterByName("repository");
+    if (item === undefined) Convert.convertMetricsEvol();
     Convert.convertTimeTo();
     Convert.convertMarkovTable();
+};
+
+Convert.convertModifiedBasicMetrics = function(filter) {
+    /*
+     The functions call here display the basic charts with more info from repos
+
+     Controls the load of data and put the callback waiting until it's ready.
+     */
+
+    // repositories comes from Automator config
+    var page = 1; // FIXME just to get it work, useless
+
+    // If data is not available load them and cb this function
+    if (Loader.check_filter_page (page, filter) === false) {
+        $.each(Report.getDataSources(), function(index, DS) {
+            if (filter !== "repos") return;
+            if (filter === "repos") total = DS.getReposData().length;
+            for (var i=0;i<total;i++) {
+                var repo = DS.getReposData()[i];
+                Loader.data_load_item(repo, DS, page, Convert.convertModifiedBasicMetrics, filter);
+            }
+
+        });
+        return;
+    }
+    Convert.convertMetricsEvolCustomized(filter);
+};
+
+
+Convert.convertFilterTop = function(filter){
+    /**
+     Display top tables.
+     If item is provided through URL parameter it waits and display filtered
+     information, if not it displays total/global information.
+     **/
+    var item = Report.getParameterByName("repository");
+    // If data is not available load them and cb this function
+    if (Loader.filterTopCheck(item, filter) === false) return;
+    Convert.convertTop();
+    Convert.convertRepositorySelector();
+
 };
 
 })();

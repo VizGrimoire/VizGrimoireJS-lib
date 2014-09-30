@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2012-2013 Bitergia
+ * Copyright (C) 2012-2014 Bitergia
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
  *
  * Authors:
  *   Alvaro del Castillo San Felix <acs@bitergia.com>
+ *   Luis Cañas-Díaz <lcanas@bitergia.com>
  */
 
 if (Loader === undefined) var Loader = {};
@@ -29,7 +30,12 @@ if (Loader === undefined) var Loader = {};
     var data_repos_callbacks = [];
     var check_companies = false, check_repos = false, check_countries = false;
     var ds_not_supported_company_top = ['scr','irc','mediawiki'];
+    var ds_supporting_top_repos = ['scm','mls','its']; //filter by repo in contributors panel
 
+    /**
+     This two functionsa are used to push methods to an array of callbacks. That
+     array is used to wait until some sets of JSON files are loaded
+     **/
     Loader.data_ready = function(callback) {
         data_callbacks.push(callback);
     };
@@ -37,6 +43,7 @@ if (Loader === undefined) var Loader = {};
     Loader.data_ready_global = function(callback) {
         data_global_callbacks.push(callback);
     };
+    //
 
     function fillProjectInfo(data, dir) {
         if (data.project_name === undefined) {
@@ -50,6 +57,7 @@ if (Loader === undefined) var Loader = {};
     Loader.data_load = function() {
         // If we have a config file just load what is configured
         if (Report.getConfig() !== null &&
+
             Report.getConfig().project_info !== undefined) {
             Report.setProjectData(Report.getConfig().project_info);
             if (Report.getConfig().markers)
@@ -71,6 +79,12 @@ if (Loader === undefined) var Loader = {};
             var prj_file = Report.getDataDir() + "/project-info.json";
             data_load_file(prj_file, fillProjectInfo, data_dir);
         }
+
+        // Loads also the project hierarchy
+        data_load_file(Report.getProjectsHierarchyFile(), Report.setProjectsHierarchy);
+
+	// Loads the side menu elements
+	data_load_file(Report.getMenuElementsFile(), Report.setMenuElements);
 
         data_load_file(Report.getVizConfigFile(),
                 function(data, self) {Report.setVizConfig(data);});
@@ -115,6 +129,10 @@ if (Loader === undefined) var Loader = {};
     };
 
     function data_load_file(file, fn_data_set, self) {
+        /**
+           If file is fetched via HTTP then it executes the fn_data_set
+           function with the data
+         **/
         $.when($.getJSON(file)).done(function(history) {
             fn_data_set(history, self);
             end_data_load();
@@ -140,11 +158,12 @@ if (Loader === undefined) var Loader = {};
         var ds_not_supported = ['mediawiki'];
         var data_sources = Report.getDataSources();
         $.each(data_sources, function(i, DS) {
-            if ($.inArray(DS.getName(), ds_not_supported) >-1) 
+            if ($.inArray(DS.getName(), ds_not_supported) >-1) {
                 DS.setReposData([]);
-            else
-                data_load_file(DS.getReposDataFile(), 
-                        DS.setReposData, DS);
+            }
+            else{
+                data_load_file(DS.getReposDataFile(), DS.setReposData, DS);
+            }
         });
         // Repositories mapping between data sources
         data_load_file(Report.getReposMapFile(), Report.setReposMap);
@@ -345,6 +364,35 @@ if (Loader === undefined) var Loader = {};
         return ds;
     }
 
+    //Fixme: filterTopCheck and FilterItemCheck should be merged
+    Loader.filterTopCheck = function(item,filter) {
+        /**
+         Returns true if data if data for repos + top + item is available.
+         If not it adds the callback function to the list of functions to be
+         executed when data available
+         **/
+        var check = true;
+        //FIXME we are using "top" as optional filter: "repos" as first + "top"
+
+        if (filter === "repos") {
+            if (Loader.check_item (item, filter, "top") === false) {
+                ds = getItemDS(item, filter);
+                if (ds === null) {
+                    Report.log("Can't find data source for " + item);
+                    return true;
+                }
+                // load top for repos
+                if ($.inArray(ds.getName(),ds_supporting_top_repos) >= 0){
+                    Loader.data_load_item_top (item, ds, null,
+                                                Convert.convertFilterTop, filter, "top");
+                }
+                return false;
+            }
+        }
+        return check;
+    };
+
+
     // Check for top data for companies (TODO: add others when supported)
     Loader.FilterItemCheck = function(item, filter) {
         var check = true, ds;
@@ -359,6 +407,11 @@ if (Loader === undefined) var Loader = {};
                 }
                 Loader.data_load_item (item, ds, null,
                         Convert.convertFilterStudyItem, filter, null);
+                // load top for repos
+                if ($.inArray(ds.getName(),ds_supporting_top_repos) >= 0){
+                    Loader.data_load_item_top (item, ds, null,
+                                               Convert.convertFilterStudyItem, filter);
+                }
                 return false;
             }
 
@@ -406,16 +459,26 @@ if (Loader === undefined) var Loader = {};
 
     // Check the item in one data source for repos
     // Check the item for all data sources for countries, companies, domains and projects
-    Loader.check_item = function(item, filter) {
+    Loader.check_item = function(item, filter, optional_filter) {
         var check = false;
         $.each(Report.getDataSources(), function(index, DS) {
             if (filter === "repos") {
-                // Check item data. item name is unique in all data sources
-                // Ok if item find in any data source
-                if (DS.getReposGlobalData()[item] !== undefined &&
-                    DS.getReposMetricsData()[item] !== undefined) {
-                    check = true;
-                    return false;
+                if (optional_filter === "top"){
+                    if ($.inArray(DS.getName(), ds_supporting_top_repos) >= 0 &&
+                        $.inArray(item, DS.getReposData()) >= 0 &&
+                        DS.getRepositoriesTopData()[item] !== undefined){
+                        //DS supported and repository name part of getReposData()
+                        check = true;
+                        return false;
+                    }
+                }else{
+                    // Check item data. item name is unique in all data sources
+                    // Ok if item find in any data source
+                    if (DS.getReposGlobalData()[item] !== undefined &&
+                        DS.getReposMetricsData()[item] !== undefined) {
+                        check = true;
+                        return false;
+                    }
                 }
             }
             else if (filter === "companies") {
@@ -591,7 +654,7 @@ if (Loader === undefined) var Loader = {};
     }
 
     // TODO: Only companies supported yet, but ready for all items!
-    Loader.data_load_item_top = function (item, DS, page, cb, filter) {
+    Loader.data_load_item_top = function (item, DS, page, cb, filter, optional_filter) {
         var file_top = DS.getDataDir() + "/"+ item +"-" + DS.getName();
         file_top += "-" + getFilterSuffix(filter) + "-top-";
         if (DS.getName() === "scm") file_top += "authors";
@@ -603,13 +666,18 @@ if (Loader === undefined) var Loader = {};
         $.when($.getJSON(file_top)).done(function(top) {
             if (filter === "companies") {
                 DS.addCompanyTopData(item, top);
+            }else if (filter === "repos"){
+                //why we don't use here the "top" filter? <-- passed by optional_filter
+                DS.addRepositoryTopData(item, top);
             }
         }).fail(function() {
             if (filter === "companies") {
                 DS.addCompanyTopData(item, []);
+            }else if (filter === "repos"){
+                DS.addRepositoryTopData(item, []);
             }
         }).always(function() {
-            if (Loader.check_item (item, filter)) {
+            if (Loader.check_item (item, filter, optional_filter)) {
                 if (!cb.called_item) cb(filter);
                 cb.called_item = true;
             }
@@ -744,7 +812,7 @@ if (Loader === undefined) var Loader = {};
     }
 
     function data_load_metrics_definition() {
-        data_load_file("VizGrimoireJS/data/metrics.json", Report.setMetricsDefinition);
+        data_load_file("data/metrics.json", Report.setMetricsDefinition);
     }
 
     function data_load_people() {
@@ -794,6 +862,9 @@ if (Loader === undefined) var Loader = {};
     }
 
     function check_data_loaded_global() {
+        /**
+         Checks if global data is loaded for every data source available
+         **/
         var check = true;
         if (Report.getProjectData() === null || Report.getVizConfig() === null)
             return false;
@@ -853,6 +924,11 @@ if (Loader === undefined) var Loader = {};
 
     // Two steps data loading
     function end_data_load()  {
+        /** 
+         Every time data is loaded (file read and loaded) this function
+         is called in order to execute the callbacks. It uses two different
+         checks which return true when all data is available 
+         **/
         if (check_data_loaded_global()) {
             for (var i = 0; i < data_global_callbacks.length; i++) {
                 data_global_callbacks[i]();

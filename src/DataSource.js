@@ -325,6 +325,22 @@ function DataSource(name, basic_metrics) {
         return this.repos_global_data;
     };
 
+    // Repos + top
+    this.repositories_top_data = {};
+    this.addRepositoryTopData = function(repository, data, self) {
+        if (self === undefined) self = this;
+        if (self.repositories_top_data[repository] === undefined)
+            self.repositories_top_data[repository] = {};
+        self.repositories_top_data[repository] = data;
+    };
+    this.getRepositoriesTopData = function() {
+        return this.repositories_top_data;
+    };
+    this.setRepositoriesTopData = function(data, self) {
+        if (self === undefined) self = this;
+        self.repositories_top_data = data;
+    };
+
     // Countries data
     this.countries_data_file = 
         this.data_dir+'/'+ this.name +'-countries.json';
@@ -645,9 +661,29 @@ function DataSource(name, basic_metrics) {
 
     // TODO: support multiproject
     this.displayMetricsEvol = function(metric_ids, div_target, config, convert) {
-        var data = this.getData();
+        var data = {};
+        var repositories;
+        //if we get a repo name, we display its history
+        if (config.repo_filter){
+            repositories = config.repo_filter.split(',');
+            var self = this; //we need it for the loop $.each
+            $.each(repositories, function(id, value){
+                if (($.inArray(value, self.getReposData()) >= 0)){
+                    if (self.getName() === 'mls'){
+                        //var mls_name = self.displayMLSListName(value);
+                        var mls_name = MLS.displayMLSListName(value);
+                        data[mls_name] = self.getReposMetricsData()[value];
+                    }else{
+                        data[value] = self.getReposMetricsData()[value];
+                    }
+                }
+            });
+        }
+        else{
+            data = this.getData();
+        }
         if (convert) data = DataProcess.convert(data, convert, metric_ids);
-        Viz.displayMetricsEvol(this, metric_ids, data, div_target, config);
+        Viz.displayMetricsEvol(this, metric_ids, data, div_target, config, repositories);
     };
 
     this.isPageDisplayed = function (visited, linked, total, displayed) {
@@ -848,14 +884,19 @@ function DataSource(name, basic_metrics) {
         });
         list += '</tr>';
         $.each(sorted, function(id, item) {
-            list += "<tr><td class='span2 repository-name'>";
+            list += "<tr><td class='col-md-2 repository-name'>";
             list += "#" + cont + "&nbsp;";
             cont++;
             var addURL = null;
             if (Report.addDataDir()) addURL = Report.addDataDir();
             if (show_links) {
+                var release_var = '';
+                if (Utils.isReleasePage()) 
+                    release_var = '&release=' + $.urlParam('release');
+
                 if (report === "companies") { 
                     list += "<a href='company.html?company="+item;
+                    list += release_var;
                     if (addURL) list += "&"+addURL;
                     list += "'>";
                 }
@@ -863,21 +904,26 @@ function DataSource(name, basic_metrics) {
                     list += "<a href='";
                     list += "repository.html";
                     list += "?repository=" + encodeURIComponent(item);
+                    list += release_var;
+                    list += "&ds=" + ds.getName();
                     if (addURL) list += "&"+addURL;
                     list += "'>";
                 }
                 else if (report === "countries") {
                     list += "<a href='country.html?country="+item;
+                    list += release_var;
                     if (addURL) list += "&"+addURL;
                     list += "'>";
                 }
                 else if (report === "domains") {
                     list += "<a href='domain.html?domain="+item;
+                    list += release_var;
                     if (addURL) list += "&"+addURL;
                     list += "'>";
                 }
                 else if (report === "projects") {
                     list += "<a href='project.html?project="+item;
+                    list += release_var;
                     if (addURL) list += "&"+addURL;
                     list += "'>";
                 }
@@ -888,8 +934,11 @@ function DataSource(name, basic_metrics) {
             if (show_links) list += "</a>";
             //list += "<br><a href='#nav'>^</a>";
             list += "</td>";
+            // The columns depends in the number of metrics
+            var free_columns = 12 - 2; // 2 columns for the metric name. 12 BS3 max.
+            var len_column = Math.floor(free_columns/metrics.length);
             $.each(metrics, function(id, metric) {
-                list += "<td class='span5'>";
+                list += "<td class='col-md-"+len_column+"'>";
                 list += "<div id='"+report+"-"+item+"-"+metric+"'";
                 list +=" class='subreport-list-item'>";
             });
@@ -928,6 +977,7 @@ function DataSource(name, basic_metrics) {
                 var items = {};
                 items[item] = item_data;
                 var title = '';
+                config_metric.xnoticks = 3; // small viz, use few ticks to avoid overlap
                 Viz.displayMetricSubReportLines(div_id, metric, items, title, 
                         config_metric, mstart , mend, mconvert); 
                 i++;
@@ -962,25 +1012,8 @@ function DataSource(name, basic_metrics) {
     this.displayPeopleSummary = function(divid, upeople_id, 
             upeople_identifier, ds) {
         var history = ds.getPeopleGlobalData()[upeople_id];
-
         if (history === undefined || history instanceof Array) return;
-
-        html = "<h6>" + ds.getTitle() + "</h6>";
-
-        html += "<table class='table-condensed table-hover'>";
-        html += "<tr><td>";
-        html += "Start</td><td>"+history.first_date;
-        html += "</td></tr><tr><td>";
-        html += "End</td><td>"+ history.last_date;
-        html += "</td></tr><tr><td>";
-        if (ds.getName() == "scm") html += "Commits</td><td>" + history.scm_commits;
-        else if (ds.getName() == "its") html += "Closed</td><td>" + history.its_closed;
-        else if (ds.getName() == "mls") html += "Sent</td><td>" + history.mls_sent;
-        else if (ds.getName() == "irc") html += "Sent</td><td>" + history.irc_sent;
-        else if (ds.getName() == "scr") html += "Closed</td><td>" + history.scr_closed;
-        html += "</td></tr>";
-        html += "</table>";
-
+        html = HTMLComposer.personSummaryTable(ds.getName(), history);
         $("#"+divid).append(html);
     };
 
@@ -1002,9 +1035,16 @@ function DataSource(name, basic_metrics) {
     // Return labels to be shown in the summary
     this.getSummaryLabels = function () {};
 
+    this.getLabelForRepository = function(){
+        return 'repository';
+    };
+    this.getLabelForRepositories = function(){
+        return 'repositories';
+    };
+
+
     this.displaySummary = function(report, divid, item, ds) {
         // Prints all the keys:values for an item
-        // This function is no longer used on the dash
         if (!item) item = "";
         var html = "<h6>" + ds.getTitle()+ "</h6>";
         var id_label = this.getSummaryLabels();
@@ -1022,22 +1062,8 @@ function DataSource(name, basic_metrics) {
         else global_data = ds.getGlobalData();
 
         if (!global_data) return;
-
-        var self = this;
-        html += "<table class='table-condensed table-hover'>";
-        var html_irow = '<tr><td>';
-        var html_erow = '</td></tr>';
-        $.each(global_data,function(id,value) {
-            // if (id_label[id] === undefined) return;
-            if (self.getMetrics()[id]) {
-                html += html_irow + self.getMetrics()[id].name + "</td><td>" + Report.formatValue(value) + html_erow;
-            } else if (id_label[id]) { 
-                html += html_irow + id_label[id] + "</td><td>" + Report.formatValue(value) + html_erow;
-            } /*else {
-                if (report) html += id + "</td><td>" + Report.formatValue(value);
-            }*/
-        });
-        html += "</table>";
+        
+        html = HTMLComposer.repositorySummaryTable(ds, global_data, id_label);
         $("#"+divid).append(html);
     };
 
@@ -1099,10 +1125,10 @@ function DataSource(name, basic_metrics) {
         Viz.displayMarkovTable(div_id, data, title);
     };
 
-    this.displayTop = function(div, all, show_metric, period, period_all, graph, limit, people_links, threads_links) {
+    this.displayTop = function(div, all, show_metric, period, period_all, graph, limit, people_links, threads_links, repository) {
         if (all === undefined) all = true;
         var titles = null;
-        Viz.displayTop(div, this, all, show_metric, period, period_all, null, null, limit, people_links, threads_links);
+        Viz.displayTop(div, this, all, show_metric, period, period_all, null, null, limit, people_links, threads_links, repository);
 /*
         if ( (this.getName() == "mls") && (show_metric == "threads") ){
             Viz.displayTopThreads(div, this, all, show_metric, period, period_all, limit, people_links, threads_links);

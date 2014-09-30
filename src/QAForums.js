@@ -33,10 +33,41 @@ function QAForums() {
     */
 
     this.basic_metrics = {
-        "qaforums_qsent" : {
+	"qaforums_sent" : {
+            "name" : "Messages posted",
+            "desc" : "Number of messages posted to Q&A forums(s)",
+            "column" : "sent"
+	},
+	"qaforums_qsent" : {
             "name" : "Questions posted",
             "desc" : "Number of questions posted to Q&A forums(s)",
             "column": "qsent"
+	},
+	"qaforums_asent" : {
+            "name" : "Answers posted",
+            "desc" : "Number of answers posted to Q&A forums(s)",
+            "column" : "asent"
+	},
+	"qaforums_senders" : {
+            "name" : "Persons posting messages",
+            "desc" : "Number of persons posting messages to Q&A forums(s)",
+            "column" : "senders"
+	},
+	"qaforums_asenders" : {
+            "name" : "Persons posting answers",
+            "desc" : "Number of persons answering in Q&A forums(s)",
+            "column" : "asenders"
+	},
+	"qaforums_qsenders" : {
+            "divid" : "qaforums_qsenders",
+            "name" : "Persons posting questions",
+            "desc" : "Number of persons asking questions in Q&A forums(s)",
+            "column" : "qsenders"
+	},
+        "qaforums_participants" : {
+            "name" : "Participants",
+            "desc" : "Number of persons posting messages",
+            "column" : "participants"
         }
     };
 

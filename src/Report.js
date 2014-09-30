@@ -32,16 +32,19 @@ if (Report === undefined) var Report = {};
     var project_data = null, markers = null, viz_config = null, 
         gridster = {}, data_sources = [], report_config = null, html_dir="";
     var data_dir = "data/json";
+    var config_dir = "config";
     var default_data_dir = "data/json";
     var default_html_dir = "";
     var projects_dirs = [default_data_dir];
     var projects_data = {};
     var projects_datasources = {};
     var repos_map;
-    var project_file = data_dir + "/project-info.json",
-        viz_config_file = data_dir + "/viz_cfg.json",
-        markers_file = data_dir + "/markers.json",
-        repos_map_file = data_dir + "/repos-map.json";
+    var project_file = config_dir + "/project-info.json",
+    viz_config_file = data_dir + "/viz_cfg.json",
+    markers_file = data_dir + "/markers.json",
+    repos_map_file = data_dir + "/repos-map.json",
+    projects_hierarchy_file = data_dir + "/projects_hierarchy.json";
+    menu_elements_file = config_dir + "/menu-elements.json";
     var page_size = 10, page = null;
     var project_people_identities = {};
 
@@ -50,6 +53,9 @@ if (Report === undefined) var Report = {};
     Report.getAllMetrics = getAllMetrics;
     Report.getMarkers = getMarkers;
     Report.getVizConfig = getVizConfig;
+    Report.getProjectsHierarchy = getProjectsHierarchy;
+    Report.getMenuElements = getMenuElements;
+    Report.getReleaseNames = getReleaseNames;
     Report.getMetricDS = getMetricDS;
     Report.getGridster = getGridster;
     Report.setGridster = setGridster;
@@ -85,6 +91,7 @@ if (Report === undefined) var Report = {};
         config_file = dataDir + "/viz_cfg.json";
         markers_file = dataDir + "/markers.json";
         repos_mapping_file = data_dir + "/repos-mapping.json";
+        projects_hierarchy_file = data_dir + "/projects_hierarchy.json";
     };
 
     function getMarkers() {
@@ -118,6 +125,30 @@ if (Report === undefined) var Report = {};
 
     Report.getVizConfigFile = function() {
         return viz_config_file;
+    };
+
+    function getProjectsHierarchy (){
+        return projects_hierarchy;
+    }
+    Report.setProjectsHierarchy = function(data){
+        projects_hierarchy = data;
+    };
+    Report.getProjectsHierarchyFile = function() {
+        return projects_hierarchy_file;
+    };
+
+    /** menu_elements contains JSON for side menu**/
+    function getMenuElements(){
+	return menu_elements.menu;
+    }
+    function getReleaseNames() {
+        return menu_elements.releases;
+    }    
+    Report.setMenuElements = function(data){
+	menu_elements = data;
+    };
+    Report.getMenuElementsFile = function() {
+	return menu_elements_file;
     };
 
     function getGridster() {
@@ -317,8 +348,9 @@ if (Report === undefined) var Report = {};
 
     function checkDynamicConfig() {
         var data_sources = [];
-
-        function getDataDirs(dirs_config) {
+        
+        /*
+         function getDataDirs(dirs_config) {
             var full_params = dirs_config.split ("&");
             var dirs_param = $.grep(full_params,function(item, index) {
                 return (item.indexOf("data_dir=") === 0);
@@ -335,6 +367,14 @@ if (Report === undefined) var Report = {};
         if (querystr && querystr.indexOf("data_dir")>=0) {
             getDataDirs(querystr);
             if (data_sources.length>0)
+                Report.setProjectsDirs(data_sources);
+        }*/
+        
+        var release = $.urlParam('release');
+        if (release !== null && release.length > 0 ){
+            data_sources.push('data/json/' + release);
+            Report.setDataDir('data/json/' + release);
+            if (data_sources.length>0)                
                 Report.setProjectsDirs(data_sources);
         }
     }
@@ -484,9 +524,6 @@ if (Report === undefined) var Report = {};
     };
 
     Report.convertGlobal = function() {
-        // Templates markup divs
-        Convert.convertMicrodash();
-        Convert.convertMicrodashText();
         // Normal markup divs
         Convert.convertBasicDivs();
         Convert.convertBasicDivsMisc();
@@ -494,6 +531,9 @@ if (Report === undefined) var Report = {};
         Convert.convertDemographics();
         Convert.convertMetricsEvolSet();
         Convert.convertLastActivity();
+        // Templates markup divs
+        Convert.convertMicrodash();
+        Convert.convertMicrodashText();
     };
 
     Report.getActiveStudies = function() {
@@ -514,7 +554,7 @@ if (Report === undefined) var Report = {};
 
     // Data available in global
     Report.convertStudiesGlobal = function() {
-        Convert.convertTop();
+        //Convert.convertTop();
         Convert.convertPeople(); // using on demand file loading
     };
 
@@ -543,6 +583,15 @@ Loader.data_ready_global(function() {
     Report.configDataSources();
     Report.convertGlobal();
     Report.convertStudiesGlobal();
+});
+
+
+Loader.data_ready(function(){
+    // when this is triggered, the scm-repos has been already read
+    // but .. are the tops by repos already assigned? -> we need a check
+    study = "repos";
+    Convert.convertFilterTop(study);
+    // Convert.convertModifiedBasicMetrics(study);
 });
 
 Loader.data_ready(function() {

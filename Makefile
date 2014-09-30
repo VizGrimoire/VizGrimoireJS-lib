@@ -26,9 +26,12 @@ vizgrimoire.deps.js: \
     src/jquery.gridster.js
 
 vizgrimoire.core.js: \
+    src/version.js \
     src/Envision_Report.js \
     src/Loader.js \
     src/DataProcess.js \
+    src/Utils.js \
+    src/HTMLComposer.js \
     src/Convert.js \
     src/Report.js \
     src/DataSource.js \
@@ -56,14 +59,14 @@ vizgrimoire.core.css: \
 
 %.min.js: %.js Makefile
 	@rm -f $@
-        # $(JS_UGLIFY) -o $@ -c -m $<
-	$(JS_UGLIFY) -o $@ $<  
+	#$(JS_UGLIFY) -o $@ -c --max-line-len $<
+	$(JS_UGLIFY) -o $@ $<
 
 vizgrimoire%js: Makefile
 	echo $@
 	@rm -f $@
 	@cat $(filter %.js,$^) > $@
-        # @cat $(filter %.js,$^) > $@.tmp
+        #@cat $(filter %.js,$^) > $@.tmp
         # $(JS_UGLIFY) -o $@  $@.tmp
         # @rm $@.tmp
         # @chmod a-w $@
@@ -74,6 +77,8 @@ version: vizgrimoire.core.js
 	@echo "vizjslib_git_tag='"`git describe --tags`"';" >> $<
 	@echo "vizjslib_git_revision='"`git rev-parse HEAD`"';" > "test/jasmine/version.js"
 	@echo "vizjslib_git_tag='"`git describe --tags`"';" >> "test/jasmine/version.js"
+	@echo "vizjslib_git_revision='"`git rev-parse HEAD`"';" > "src/version.js"
+	@echo "vizjslib_git_tag='"`git describe --tags`"';" >> "src/version.js"
 
 jshint: vizgrimoire.core.js
 	@echo "JSHINT Checking ..."
@@ -84,7 +89,8 @@ test: all
 	cd ../..
 
 testci: all
-	cd test/jasmine; xvfb-run jasmine-headless-webkit -j jasmine.yml -c
+	cd test/jasmine
+	xvfb-run jasmine-headless-webkit -j jasmine.yml -c
 	cd ../..
 
 vizgrimoire%css: Makefile

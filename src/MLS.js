@@ -109,6 +109,14 @@ function MLS() {
         };
         return labels;
     };
+    
+    this.getLabelForRepository = function(){
+        return 'mailing list';
+    };
+    this.getLabelForRepositories = function(){
+        return 'mailing lists';
+    };
+
 
     this.displayData = function(divid) {
         var div_id = "#" + divid;
