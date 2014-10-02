@@ -256,7 +256,7 @@ var HTMLComposer = {};
         if (label === null) 
             label = ah_label;
         else{
-            label = '&nbsp; ' + label[0].toUpperCase() + label.substring(1) + ' release &nbsp;';
+            label = '&nbsp; ' + label[0].toUpperCase() + decodeURIComponent(label.substring(1)) + ' release &nbsp;';
             release_names.reverse().push(ah_label);
             release_names.reverse();
         }
