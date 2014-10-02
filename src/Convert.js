@@ -202,6 +202,24 @@ function composePBreadcrumbsHTMLlast(project_id, children, hierarchy){
     var html = '';
     var clen = children.length;
     if(clen > 0){
+        // Sort subprojects alphabetically: children array
+        children_sort = [];
+        children_names = []; // To be sorted
+        $.each(children, function(id,value){
+            children_names.push(value.title);
+        });
+        children_names = children_names.sort();
+        $.each(children_names, function(id, name){
+            $.each(children, function(id,value){
+                if (name === value.title) {
+                    children_sort.push(value);
+                    return false;
+                }
+            });
+        });
+        children = children_sort;
+        // end sorting
+
         html += '<li class="dropdown">';
         html += '<span data-toggle="tooltip" title="Project name"> ' + getProjectTitle(project_id, hierarchy) + '</span>';
         html += '&nbsp;<a class="dropdown-toggle" data-toggle="dropdown" href="#">';
