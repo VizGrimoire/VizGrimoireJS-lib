@@ -987,6 +987,7 @@ Convert.convertMetricsEvol = function() {
             config_viz.title = $(this).data('title');
             var DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
+            config_viz.mouse_tracker = $(this).data('mouse_tracker');
 
             config_viz = loadHTMLEvolParameters(div, config_viz);
 
