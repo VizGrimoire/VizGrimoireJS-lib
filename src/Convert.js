@@ -372,6 +372,7 @@ function getSectionName(){
                     "wiki":"Wiki overview",
                     "downloads":"Downloads",
                     "forge":"Forge releases",
+                    "demographics":"Demographics",
                     "data_sources":"Data sources",
                     "project_map":"Project map",
                     "people":"Contributor",
