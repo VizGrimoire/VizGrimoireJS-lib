@@ -284,7 +284,10 @@ function escapeString(string){
 function composeHTMLNestedProjects(project_id, children, hierarchy){
     var html = '';
     var clen = children.length;
+    /*
     var epid = escapeString(project_id);
+    */
+    var epid = project_id; // See error #4208 
     if(clen > 0){
 	html += '<li>';
 	html += '<a href="project.html?project='+epid+'">'+ getProjectTitle(project_id, hierarchy) + '</a>';
@@ -524,7 +527,7 @@ function composeSideBar(project_id){
             html += '<li><a href="data_sources.html?release=' + current_release
                     +'"><i class="fa fa-database"></i> Data sources</a></li>';
             html += '<li><a href="project_map.html?release=' + current_release
-                    +'"><i class="fa fa-icon fa-sitemap"></i> Project map</a></li>';            
+                    +'"><i class="fa fa-icon fa-sitemap"></i> Project map</a></li>';
         }else{
             html += '<li><a href="data_sources.html"><i class="fa fa-database"></i> Data sources</a></li>';
             html += '<li><a href="project_map.html"><i class="fa fa-icon fa-sitemap"></i> Project map</a></li>';
