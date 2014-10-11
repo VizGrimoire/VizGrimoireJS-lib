@@ -287,7 +287,7 @@ function composeHTMLNestedProjects(project_id, children, hierarchy){
     /*
     var epid = escapeString(project_id);
     */
-    var epid = project_id; // See error #4208 
+    var epid = project_id; // See error #4208
     if(clen > 0){
 	html += '<li>';
 	html += '<a href="project.html?project='+epid+'">'+ getProjectTitle(project_id, hierarchy) + '</a>';
@@ -1106,13 +1106,14 @@ Convert.convertMetricsEvolSelector = function() {
             var DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
             var repository = Report.getParameterByName("repository");
+            config_viz.repo_filter = repository;
 
             config_viz = loadHTMLEvolParameters(div, config_viz);
 
-            div.id = metrics.replace(/,/g,"-")+"-"+ds+"-metrics-evol-"+this.id;
+            div.id = metrics.replace(/,/g,"-")+"-"+ds+"-metrics-evol-"+repository;//this.id;
             div.id = div.id.replace(/\n|\s/g, "");
             DS.displayMetricsEvol(metrics.split(","),div.id,
-                    config_viz, $(this).data('convert'), repository);
+                    config_viz, $(this).data('convert'));
         });
     }
 };
