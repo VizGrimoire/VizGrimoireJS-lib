@@ -37,7 +37,7 @@ var Openstack = {};
 
         $.getJSON(json_file, null, function(data) {
             var count = 0;
-            var links = "";
+            var links = "&nbsp;&nbsp;&nbsp;";
 
             /*
             Workaround here:
@@ -55,8 +55,9 @@ var Openstack = {};
                 if (company === "Others") return true;
                 if (company.match("^\-")) return true;
 
-                link = '<a href="company.html?company=' + company +
-                       '&data_dir=' + Report.getDataDir() + '">' + company + '</a> | ';
+                position = count +1;
+                link = '#'+position +'&nbsp;<a href="company.html?company=' + company +
+                       '&data_dir=' + Report.getDataDir() + '">' + company + '</a>&nbsp;&nbsp;&nbsp;';
                 links = links + link;
 
                 ++count;
