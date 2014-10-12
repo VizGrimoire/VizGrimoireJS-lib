@@ -757,15 +757,19 @@ function composeDropDownRepo(DS){
         label_repo = 'mailing list';
     }*/
     html = '<ol class="filterbar"><li>Filtered by '+ label_repo +':&nbsp;&nbsp;</li>';
-    html += '<li><div class="dropdown"><button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown"> '+ section + ' <span class="caret"></span></button>';
-    html += '<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">';
-
+    html += '<li><div class="dropdown"><button class="btn btn-default dropdown-toggle" ';
+    html += 'type="button" id="dropdownMenu1" data-toggle="dropdown"> '+ section + ' ';
+    html += '<span class="caret"></span></button>';
+    html += '<ul class="dropdown-menu scroll-menu" role="menu" aria-labelledby="dropdownMenu1">';
+    //html += '<ul class="dropdown-menu scroll-menu">';
     if (repository){
         html += '<li role="presentation"><a role="menuitem" tabindex="-1" href="'+dsname+'-contributors.html">';
         html += 'All ' + label_repo_plural;
         html +='</a></li>';
     }
-    $.each(DS.getReposData(), function(id, value){
+    var repo_names = DS.getReposData();
+    repo_names.sort();
+    $.each(repo_names, function(id, value){
         if (value === repository) return;
         html += '<li role="presentation"><a role="menuitem" tabindex="-1" href="?repository=';
         html += value;
