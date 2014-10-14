@@ -219,6 +219,11 @@ if (Report === undefined) var Report = {};
             aux = item.split(" ");
             label = aux[0];
         }
+        else if (item.lastIndexOf("https:__api.github.com_repos_") === 0) {
+            // github tickets: https:__api.github.com_repos_owncloud_core_issues
+            label = label.replace('https:__api.github.com_repos_', '');
+            label = label.split("_")[1];
+        }
         else if (item.lastIndexOf("http") === 0 || item.split("_").length > 3) {
             aux = item.split("_");
             label = aux.pop();
