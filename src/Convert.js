@@ -378,7 +378,8 @@ function getSectionName(){
                     "company":"Company",
                     "country":"Country",
                     "domain":"Domain",
-                    "release":"Companies analysis by release"
+                    "release":"Companies analysis by release",
+                    "demographics":"Demographics"
                    };
     var filters = {"companies":"Activity by companies",
                    "contributors":"Activity by contributors",
