@@ -1489,7 +1489,8 @@ if (Viz === undefined) var Viz = {};
         // Aging
         for (i = 0; i < data.aging.persons.age.length; i++) {
             age = data.aging.persons.age[i];
-            age = age.split(" ")[0];
+            // With some sqlalchemy the format is "1091 days, 9:49:55"
+            age = age.toString().split(" ")[0];
             index = parseInt(age / period, 10);
             if (!period_data_aging[index])
                 period_data_aging[index] = 0;
@@ -1498,6 +1499,8 @@ if (Viz === undefined) var Viz = {};
         // Birth
         for (i = 0; i < data.birth.persons.age.length; i++) {
             age = data.birth.persons.age[i];
+            // With some sqlalchemy the format is "1091 days, 9:49:55"
+            age = age.toString().split(" ")[0];
             age = age.split(" ")[0];
             index = parseInt(age / period, 10);
             if (!period_data_birth[index])
