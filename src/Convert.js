@@ -41,7 +41,7 @@ Convert.convertMicrodashText = function () {
             var html = '<div class="row">';
 
             if(show_name){ //if name is shown we'll have four columns
-                html += '<div class="col-md-3">';
+                html += '<div class="col-xs-3">';
                 html += '<span class="dayschange">' + ds.basic_metrics[metric].name + '</span>';
                 html += '</div>';
             }
@@ -69,9 +69,9 @@ Convert.convertMicrodashText = function () {
                 }
 
                 if(show_name){
-                    html += '<div class="col-md-3">';
+                    html += '<div class="col-xs-3">';
                 }else{
-                    html += '<div class="col-md-4">';
+                    html += '<div class="col-xs-4">';
                 }
 
                 html += '<span class="dayschange">Last '+period+' days:</span>';
@@ -83,7 +83,7 @@ Convert.convertMicrodashText = function () {
                 } else if (netvalue < 0) {
                     html += '<i class="fa fa-arrow-circle-down"></i> <span class="negpercent">&nbsp;'+str_percentagevalue+'%</span>&nbsp;';
                 }
-                html += '</div><!--col-md-4-->';
+                html += '</div><!--col-xs-4-->';
             });
 
             html += '</div><!--row-->';
