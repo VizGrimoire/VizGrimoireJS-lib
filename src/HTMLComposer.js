@@ -345,7 +345,7 @@ var HTMLComposer = {};
     function summaryCell(width, label, ds_name, metric){
         /* Compose small cell used by the DS summary box*/
         html = '';
-        html += '<div class="col-md-'+ width+'">';
+        html += '<div class="col-xs-'+ width+'">';
         html += '<div class="row thin-border">';
         html += '<div class="col-md-12">' + label + '</div>';
         html += '</div>';
