@@ -879,6 +879,7 @@ Convert.convertProjectData = function (){
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
             var data = DS.getProjectsGlobalData()[p];
+            if (data === undefined) {return;}
             var key = $(this).data('field');
             $(this).text(Report.formatValue(data[key], key));
         });
