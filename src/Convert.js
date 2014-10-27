@@ -1792,15 +1792,19 @@ Convert.convertFilterItemMicrodashText = function (filter, item) {
     if (divs.length > 0) {
         $.each(divs, function(id, div) {
             $(this).empty();
+            var global_data;
             var real_item = item; // project, repo, company, etc ..
             var metric = $(this).data('metric');
             var show_name = $(this).data('name');
             var ds = Report.getMetricDS(metric)[0];
             if (ds === undefined) return;
-            if (filter === "projects")
-                var global_data = ds.getProjectsGlobalData()[item];
-            else
+            if (filter === "projects") {
+                global_data = ds.getProjectsGlobalData()[item];
+                if (global_data === undefined) {return;}
+            }
+            else {
                 return; //so far only project filter is supported
+            }
             var html = '<div class="row">';
 
             if(show_name){ //if name is shown we'll have four columns
