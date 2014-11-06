@@ -39,10 +39,11 @@ if (Report === undefined) var Report = {};
     var projects_data = {};
     var projects_datasources = {};
     var repos_map;
-    var project_file = config_dir + "/project-info.json",
-    viz_config_file = data_dir + "/viz_cfg.json",
-    markers_file = data_dir + "/markers.json",
-    repos_map_file = data_dir + "/repos-map.json",
+    Report.all_json_file = data_dir + "/all.json";
+    var project_file = config_dir + "/project-info.json";
+    viz_config_file = data_dir + "/viz_cfg.json";
+    markers_file = data_dir + "/markers.json";
+    repos_map_file = data_dir + "/repos-map.json";
     projects_hierarchy_file = data_dir + "/projects_hierarchy.json";
     menu_elements_file = config_dir + "/menu-elements.json";
     var page_size = 10, page = null;
@@ -620,7 +621,14 @@ $(document).ready(function() {
             Report.log("Can't read global config file " + filename);
     }).always(function (data) {
         Report.createDataSources();
-        Loader.data_load();
+        $.getJSON(Report.all_json_file, function(data) {
+            if (window.console) {
+                Report.log("Loaded all JSON data from " + Report.all_json_file);
+            }
+            Loader.set_all_data(data);
+        }).always(function (data) {
+            Loader.data_load();        
+        });
         $("body").css("cursor", "progress");
     });
 });

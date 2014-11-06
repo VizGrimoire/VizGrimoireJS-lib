@@ -31,6 +31,7 @@ if (Loader === undefined) var Loader = {};
     var check_companies = false, check_repos = false, check_countries = false;
     var ds_not_supported_company_top = ['scr','irc','mediawiki'];
     var ds_supporting_top_repos = ['scm','mls','its']; //filter by repo in contributors panel
+    var all_data; // Support for loading all data in one JSON file
 
     /**
      This two functionsa are used to push methods to an array of callbacks. That
@@ -43,7 +44,10 @@ if (Loader === undefined) var Loader = {};
     Loader.data_ready_global = function(callback) {
         data_global_callbacks.push(callback);
     };
-    //
+
+    Loader.set_all_data = function(data) {
+        all_data = data;
+    };
 
     function fillProjectInfo(data, dir) {
         if (data.project_name === undefined) {
@@ -54,10 +58,12 @@ if (Loader === undefined) var Loader = {};
         projects_data[data.project_name] = {dir:dir,url:data.project_url};
     }
 
+    /**
+     * Main function that starts all data loading activity
+     */
     Loader.data_load = function() {
         // If we have a config file just load what is configured
         if (Report.getConfig() !== null &&
-
             Report.getConfig().project_info !== undefined) {
             Report.setProjectData(Report.getConfig().project_info);
             if (Report.getConfig().markers)
@@ -72,6 +78,7 @@ if (Loader === undefined) var Loader = {};
                     function(data, self) {Report.setMarkers(data);});
         }
 
+        // Old feature not well maintained
         // Multiproject not tested with config.json
         var projects_dirs = Report.getProjectsDirs();
         for (var i=0;  i<projects_dirs.length; i++) {
@@ -83,12 +90,13 @@ if (Loader === undefined) var Loader = {};
         // Loads also the project hierarchy
         data_load_file(Report.getProjectsHierarchyFile(), Report.setProjectsHierarchy);
 
-	// Loads the side menu elements
-	data_load_file(Report.getMenuElementsFile(), Report.setMenuElements);
+        // Loads the side menu elements
+        data_load_file(Report.getMenuElementsFile(), Report.setMenuElements);
 
         data_load_file(Report.getVizConfigFile(),
                 function(data, self) {Report.setVizConfig(data);});
 
+        // Common metrics
         data_load_metrics_definition();
         data_load_metrics();
         data_load_tops('authors');
@@ -97,6 +105,7 @@ if (Loader === undefined) var Loader = {};
         data_load_demographics();
         data_load_markov_table();
 
+        // Per filter metrics
         if (Report.getConfig() !== null && Report.getConfig().reports !== undefined) {
             var active_reports = Report.getConfig().reports;
             if ($.inArray('companies', active_reports) > -1) data_load_companies();
@@ -121,6 +130,7 @@ if (Loader === undefined) var Loader = {};
 
     // Load just one file to viz it in a div
     Loader.get_file_data_div = function (file, cb, div) {
+        // First check cache 
         $.when($.getJSON(file)).done(function(history) {
             cb (div, file, history);
         }).fail(function() {
@@ -128,7 +138,28 @@ if (Loader === undefined) var Loader = {};
         });
     };
 
+    function get_data_from_all(file, fn_data_set, self) {
+        all_data_found = false;
+        /** If we have already all data, just use it */
+        if (all_data) {
+            file_no_path = file.replace(Report.getDataDir()+"/","");
+            data = all_data[file_no_path];
+            if (data) {
+                fn_data_set(data, self);
+                end_data_load();
+                all_data_found = true;
+            } else {
+                if (window.console) {
+                    Report.log("Can't find in " + Report.all_json_file + " " +file);
+                }
+            }
+        }
+        return all_data_found;
+    }
+
     function data_load_file(file, fn_data_set, self) {
+        if (get_data_from_all(file, fn_data_set, self)) return;
+
         /**
            If file is fetched via HTTP then it executes the fn_data_set
            function with the data
@@ -242,7 +273,10 @@ if (Loader === undefined) var Loader = {};
     function data_load_tops(metric) {
         var data_sources = Report.getDataSources();
         $.each(data_sources, function(i, DS) {
-            var file_all = DS.getTopDataFile(); 
+            var file_all = DS.getTopDataFile();
+
+            if (get_data_from_all(file_all, DS.setGlobalTopData, DS)) return;
+
             $.when($.getJSON(file_all)).done(function(history) {
                 DS.setGlobalTopData(history);
                 end_data_load();
@@ -621,6 +655,20 @@ if (Loader === undefined) var Loader = {};
         var file = DS.getDataDir() + "/people-"+upeople_id+"-"+DS.getName();
         var file_evo = file + "-evolutionary.json";
         var file_static = file + "-static.json";
+        // Check data already available
+        if (all_data) {
+            file_evo_no_path = file_evo.replace(Report.getDataDir()+"/","");
+            file_static_no_path = file_static.replace(Report.getDataDir()+"/","");
+            data_evo = all_data[file_evo_no_path];
+            data_static = all_data[file_static_no_path];
+            if (data_evo && data_static) {
+                DS.addPeopleMetricsData(upeople_id, data_evo, DS);
+                DS.addPeopleGlobalData(upeople_id, data_static, DS);
+                if (Loader.check_people_item(upeople_id)) cb(upeople_id);
+                return;
+            }
+        }
+
         $.when($.getJSON(file_evo),$.getJSON(file_static)
             ).done(function(evo, global) {
             DS.addPeopleMetricsData(upeople_id, evo[0], DS);
@@ -663,6 +711,23 @@ if (Loader === undefined) var Loader = {};
         // scr, irc, mediawiki not supported yet
         else return;
         file_top += ".json";
+
+        // Try to load the data from the all json file
+        if (all_data) {
+            file_no_path = file_top.replace(Report.getDataDir()+"/","");
+            data = all_data[file_no_path];
+            if (data) {
+                if (filter === "companies") DS.addCompanyTopData(item, data);
+                else if (filter === "repos") DS.addRepositoryTopData(item, data);
+
+                if (Loader.check_item (item, filter, optional_filter)) {
+                    if (!cb.called_item) cb(filter);
+                    cb.called_item = true;
+                }
+                return;
+            }
+        } 
+
         $.when($.getJSON(file_top)).done(function(top) {
             if (filter === "companies") {
                 DS.addCompanyTopData(item, top);
@@ -734,26 +799,27 @@ if (Loader === undefined) var Loader = {};
         file += DS.getName() + "-" + getFilterSuffix(filter);
         var file_evo = file +"-evolutionary.json";
         var file_static = file +"-static.json";
-        $.when($.getJSON(file_evo),$.getJSON(file_static)
-                ).done(function(evo, global) {
-            if (filter === "repos") {
-                DS.addRepoMetricsData(item, evo[0], DS);
-                DS.addRepoGlobalData(item, global[0], DS);
-            } else if (filter === "companies") {
-                DS.addCompanyMetricsData(item, evo[0], DS);
-                DS.addCompanyGlobalData(item, global[0], DS);
-            } else if (filter === "countries") {
-                DS.addCountryMetricsData(item, evo[0], DS);
-                DS.addCountryGlobalData(item, global[0], DS);
-            } else if (filter === "domains") {
-                DS.addDomainMetricsData(item, evo[0], DS);
-                DS.addDomainGlobalData(item, global[0], DS);
-            } else if (filter === "projects") {
-                DS.addProjectMetricsData(item, evo[0], DS);
-                DS.addProjectGlobalData(item, global[0], DS);
-            }
 
-        }).always(function() {
+        function addData(item, evo, global, DS) {
+            if (filter === "repos") {
+                DS.addRepoMetricsData(item, evo, DS);
+                DS.addRepoGlobalData(item, global, DS);
+            } else if (filter === "companies") {
+                DS.addCompanyMetricsData(item, evo, DS);
+                DS.addCompanyGlobalData(item, global, DS);
+            } else if (filter === "countries") {
+                DS.addCountryMetricsData(item, evo, DS);
+                DS.addCountryGlobalData(item, global, DS);
+            } else if (filter === "domains") {
+                DS.addDomainMetricsData(item, evo, DS);
+                DS.addDomainGlobalData(item, global, DS);
+            } else if (filter === "projects") {
+                DS.addProjectMetricsData(item, evo, DS);
+                DS.addProjectGlobalData(item, global, DS);
+            }
+        }
+
+        function check_data() {
             // Check all items for a page
             if (page !== null) {
                 if (Loader.check_filter_page (page, filter)) {
@@ -796,6 +862,25 @@ if (Loader === undefined) var Loader = {};
                     }
                 }
             }
+        }
+
+        if (all_data) {
+            file_evo_no_path = decodeURIComponent(file_evo.replace(Report.getDataDir()+"/",""));
+            file_static_no_path = decodeURIComponent(file_static.replace(Report.getDataDir()+"/",""));
+            data_evo = all_data[file_evo_no_path];
+            data_static = all_data[file_static_no_path];
+            if (data_evo && data_static) {
+                addData(item, data_evo, data_static, DS);
+                check_data();
+                return;
+            }
+        }
+
+        $.when($.getJSON(file_evo),$.getJSON(file_static)
+                ).done(function(evo, global) {
+            addData(item, evo[0], global[0], DS);
+        }).always(function() {
+            check_data();
         });
     };
 
