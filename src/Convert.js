@@ -1456,6 +1456,36 @@ Convert.convertDSSummaryBlock = function(upeople_id){
     }
 };
 
+Convert.convertDSSummaryBlockProjectFiltered = function(upeople_id){
+    /*
+     Two steps conversion:
+     Converts this id into a block with PersonSummary + PersonMetrics
+     */
+    var divs = $(".DSSummaryBlockProjectFiltered");
+    var pname = Report.getParameterByName("project");
+    if (divs.length > 0){
+        $.each(divs, function(id, div) {
+            /*workaround to avoid being called again when redrawing*/
+            if (div.id.indexOf('Parsed') >= 0 ) return;
+
+            ds_name = $(this).data('data-source');
+            box_labels = $(this).data('box-labels');
+            box_metrics = $(this).data('box-metrics');
+            ts_metrics = $(this).data('ts-metrics');
+            //metric_name = $(this).data('metrics');
+            DS = Report.getDataSourceByName(ds_name);
+            if (DS === null) return;
+            if (DS.getProjectsGlobalData()[pname] === undefined) return; /* no data for data source*/
+            if (DS.getProjectsGlobalData()[pname].length === 0) return; /* no data for data source*/
+            //var data = DS.getProjectsGlobalData()[pname];
+            var html = HTMLComposer.DSBlockProject(ds_name,box_labels,box_metrics,
+                                            ts_metrics,pname);
+            if (!div.id) div.id = "Parsed" + getRandomId();
+            $("#"+div.id).append(html);
+        });
+    }
+};
+
 Convert.convertOverallSummaryBlock = function (){
     var divs = $(".OverallSummaryBlock");
     if (divs.length > 0){
@@ -1973,13 +2003,13 @@ Convert.convertFilterStudyItem = function (filter, item) {
     if (Loader.FilterItemCheck(item, filter) === false) return;
 
     Convert.repositoryDSBlock(item);
+    Convert.convertDSSummaryBlockProjectFiltered();
     Convert.convertFilterItemData(filter, item);
     Convert.convertFilterItemSummary(filter, item);
     Convert.convertFilterItemMetricsEvol(filter, item);
     Convert.convertFilterItemTop(filter, item);
     Convert.convertFilterItemMicrodashText(filter, item);
     Convert.convertProjectData();
-
     Convert.activateHelp();
 
     Convert.convertMetricsEvolSelector();
