@@ -246,8 +246,31 @@ var HTMLComposer = {};
          release_names: releases set up in config file
          */
 
+        function get_label(url, labels) {
+            label = '';
+            $.each(labels, function(pos, data) {
+                if (data[1] === url) {
+                    label = data[0];
+                    return false;
+                }
+            });
+            return label;
+        }
+
         // if no releases, we don't print HTML
         if(release_names.length === 0) return '';
+
+        var release_names_labels = null;
+        if (release_names[0] instanceof Array) {
+            // The logic on this function is pretty complex
+            // Surgical change to support [label, url] format
+            var old_relase_names = [];
+            $.each(release_names, function(pos, data) {
+                old_relase_names.push(data[1]);
+            });
+            release_names_labels = release_names;
+            release_names = old_relase_names;
+        }
 
         // sections which don't support releases
         unsupported =  ['irc.html','qaforums.html','project.html'];
@@ -256,8 +279,14 @@ var HTMLComposer = {};
         label = current_release;
         if (label === null)
             label = ah_label;
-        else{
-            label = '&nbsp; ' + label[0].toUpperCase() + decodeURIComponent(label.substring(1)) + ' release &nbsp;';
+        else {
+            label = decodeURIComponent(label);
+            if (release_names_labels !== null) {
+                label =  get_label(label, release_names_labels);
+                label = '&nbsp; ' + label + ' &nbsp;';
+            } else {
+                label = '&nbsp; ' + label[0].toUpperCase() + label.substring(1) + ' release &nbsp;';
+            }
             release_names.reverse().push(ah_label);
             release_names.reverse();
         }
@@ -294,9 +323,14 @@ var HTMLComposer = {};
             }
 
             if (value === ah_label){
-                html += '<li><a href="'+ page_name +'?'+ final_p.join('&') +'" data-value="'+value+'">  '+value+'</a></li>';
-            }else{
-                html += '<li><a href="'+ page_name +'?'+ final_p.join('&') +'" data-value="'+value+'">  '+ value[0].toUpperCase() + value.substring(1)+' release</a></li>';
+                    html += '<li><a href="'+ page_name +'?'+ final_p.join('&') +'" data-value="'+value+'">  '+value+'</a></li>';
+            } else {
+                html += '<li><a href="'+ page_name +'?'+ final_p.join('&') +'" data-value="'+value+'">  ';
+                if (release_names_labels !== null) {
+                    html +=  get_label(value, release_names_labels)+'</li>';
+                } else {
+                    html +=  value[0].toUpperCase() + value.substring(1)+' release</a></li>';
+                }
             }
         });
         }else{
