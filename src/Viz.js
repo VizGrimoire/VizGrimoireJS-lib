@@ -231,9 +231,9 @@ if (Viz === undefined) var Viz = {};
                 get_params = Utils.paramsInURL();
                 if (get_params.length > 0) rows_html += '&' + get_params;
                 rows_html += '">';
-                rows_html += people_data[var_names.name][j] +"</a>";
+                rows_html += DataProcess.hideEmail(people_data[var_names.name][j]) +"</a>";
             }else{
-                rows_html += people_data[var_names.name][j];
+                rows_html += DataProcess.hideEmail(people_data[var_names.name][j]);
             }
             rows_html += "</td>";
             rows_html += "<td>"+ metric_value + '</td></tr>';
