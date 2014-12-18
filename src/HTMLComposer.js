@@ -40,6 +40,7 @@ var HTMLComposer = {};
     HTMLComposer.sideBarLinks = sideBarLinks;
     HTMLComposer.overallSummaryBlock = overallSummaryBlock;
     HTMLComposer.smartLinks = smartLinks;
+    HTMLComposer.TopByPeriod = TopByPeriod;
 
     function personDSBlock(ds_name, metric_name){
         /* Display block with PersonSummary and PersonMetrics divs.
@@ -634,6 +635,35 @@ var HTMLComposer = {};
         }catch(err){
             html = label;
         }
+        return html;
+    }
+
+    /**
+    * Composes table for Top persons by a given metric. If a release
+    * page is being displayed, it only shows the total for that release.
+    * @constructor
+    * @param {string} ds_name - Short name of the data source
+    * @param {string} metric - Metric name avaiable in JSON file
+    * @param {integer} npeople - Number of people to be displayed in the table(s)
+    * @param {boolean} is_release - True if we are in a release page
+    */
+    function TopByPeriod(ds_name, metric, npeople, is_release){
+        if (is_release){
+            periods = [''];
+        }
+        else{            
+            periods = ['last month','last year',''];
+        }
+        width = 12 / periods.length;
+        html = '<div class="row">';
+        $.each(periods, function(id,value){
+            html += '<div class="col-md-' + width + '">';
+            //we force people_links to be set to true
+            html += '<div class="Top" data-data-source="' + ds_name + '" data-metric="' + metric + '"';
+            html += 'data-period="' + value + '" data-limit="' + npeople + '" data-people_links="true"></div>';
+            html += '</div>';
+        });
+        html += '</div>';
         return html;
     }
 
