@@ -632,10 +632,12 @@ Convert.convertReleaseSelector = function (){
 
 function composeSectionBreadCrumb(project_id){
     /*
-     Returns HTML for the breadcrumb shown on top (horizontal) with the section
-     names
+     Returns HTML for the horizontal breadcrumb shown on top (horizontal)
+     with the section names
      */
     var html = '<ol class="breadcrumb">';
+    data = Report.getProjectData();
+    document.title = data.project_name + ' Dashboard';
 
     if (project_id === undefined){
         //main project enters here
@@ -649,6 +651,7 @@ function composeSectionBreadCrumb(project_id){
             $.each(subsects_b, function(id,value){
                 if (subsects_b.length === cont_b){
                     html += '<li class="active">' + value[1] + '</li>';
+                    document.title = value[1] + ' | ' + data.project_name + ' Dashboard';
                 }else{
                     if(Utils.isReleasePage()){
                         html += '<li><a href="'+ value[0] +'.html';
@@ -663,11 +666,14 @@ function composeSectionBreadCrumb(project_id){
         }
         else{
             html += '<li class="active">Project Overview</li>';
+            document.title = 'Project Overview | ' + data.project_name + ' Dashboard';
         }
 
     }else{
         //subprojects have no sections yet
         html += '<li> ' + getSectionName() + '</li>';
+        document.title = getSectionName() + ' | ' + data.project_name + ' Dashboard';
+
     }
 
     html += '</ol>';
