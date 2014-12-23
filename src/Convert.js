@@ -804,6 +804,9 @@ Convert.convertRepositorySelector = function(){
     }
 };
 
+/**
+* Deprecated function
+*/
 function displayReportData() {
     data = Report.getProjectData();
     document.title = data.project_name + ' Report by Bitergia';
