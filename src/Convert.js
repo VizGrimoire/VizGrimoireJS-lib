@@ -1225,6 +1225,30 @@ Convert.convertLastActivity = function() {
         });
 };
 
+Convert.convertTopByPeriod = function() {
+    var div_id_top = "TopByPeriod";
+    var divs = $("." + div_id_top);
+    var DS, ds;
+    if (divs.length > 0) {
+        var unique = 0;
+        $.each(divs, function(id, div) {
+            $(this).empty();
+            ds = $(this).data('data-source');
+            DS = Report.getDataSourceByName(ds);
+            if (DS === null) return;
+            if (DS.getData().length === 0) return;
+            var show_all = false;
+            if ($(this).data('show_all')) show_all = true;
+            var top_metric = $(this).data('metric');
+            var npeople = $(this).data('limit');
+            var is_release = Utils.isReleasePage();
+            var html = HTMLComposer.TopByPeriod(ds, top_metric, npeople, is_release);
+            if (!div.id) div.id = "Parsed" + getRandomId();
+            $("#"+div.id).append(html);
+        });
+    }
+};
+
 Convert.convertTop = function() {
     var div_id_top = "Top";
     var divs = $("." + div_id_top);
@@ -2103,6 +2127,7 @@ Convert.convertBasicDivs = function() {
     Convert.convertGlobalData();
     //Convert.convertProjectData();
     Convert.convertSummary();
+    Convert.convertTopByPeriod();
 };
 
 Convert.convertBasicDivsMisc = function() {

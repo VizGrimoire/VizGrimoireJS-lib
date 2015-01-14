@@ -660,7 +660,7 @@ var HTMLComposer = {};
             html += '<div class="col-md-' + width + '">';
             //we force people_links to be set to true
             html += '<div class="Top" data-data-source="' + ds_name + '" data-metric="' + metric + '"';
-            html += 'data-period="' + value + '" data-limit="' + npeople + '" data-people_links="true"></div>';
+            html += ' data-period="' + value + '" data-limit="' + npeople + '" data-people_links="true"></div>';
             html += '</div>';
         });
         html += '</div>';
