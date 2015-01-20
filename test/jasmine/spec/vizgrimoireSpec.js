@@ -1,3 +1,14 @@
+describe ("Timezone widgets", function(){
+    it("displays chart for scm", function(){
+        $('body').append('<div class="TimezonesBlock" data-data-source="scm" data-metric="commits"></div>');
+        Timezones.widget();
+        waitsFor(function() {
+            var loaded = document.getElementsByClassName('TimeZones');
+            return (loaded.length > 0);
+        }, "It took too long to convert into TZ widget", 1000);
+    });
+});
+
 describe( "VizGrimoireJS library", function () {
     beforeEach(function() {
         // Logs make jasmine test exit to be error
@@ -47,7 +58,7 @@ describe( "VizGrimoireJS library", function () {
                         ('envision-visualization');
                     expect(envisionCreated.length).toEqual
                         (Report.getDataSources().length);
-                });        
+                });
             });
             it("html MetricsEvol should be displayed", function () {
                 runs(function() {
@@ -62,7 +73,7 @@ describe( "VizGrimoireJS library", function () {
                     });
                     Convert.convertMetricsEvol();
                     $.each(Report.getDataSources(), function(index, DS) {
-                        var ds_metrics = DS.getData(); 
+                        var ds_metrics = DS.getData();
                         $.each(DS.getMetrics(), function(name, metric) {
                             if (ds_metrics[name] === undefined) return true;
                             var div_id = DS.getName()+"-MetricsEvol-"+metric.column;
@@ -97,7 +108,7 @@ describe( "VizGrimoireJS library", function () {
                 runs(function() {
                     var unique = 0;
                     $.each(Report.getDataSources(), function(index, DS) {
-                        if (DS.getName() === "scr" || DS.getName() === "people" ||  
+                        if (DS.getName() === "scr" || DS.getName() === "people" ||
                             DS.getName() === "downloads") {
                             unique = unique + 3;
                             return;
@@ -127,12 +138,12 @@ describe( "VizGrimoireJS library", function () {
                     // scr, irc, mediawiki, people, downloads and qaforums do not support bubbles
                     var bubbles_ds = Report.getDataSources().length - 6;
                     expect(new_ncanvas-ncanvas).toEqual(bubbles_ds);
-                });        
+                });
             });*/
             it("html demographics should be displayed", function () {
                 function buildNodesDemographic(type) {
                     $.each(Report.getDataSources(), function(index, DS) {
-                        if (DS.getName() !== "scr" && DS.getName() !== "irc" && 
+                        if (DS.getName() !== "scr" && DS.getName() !== "irc" &&
                             DS.getName() !== "mediawiki" && DS.getName() !== "people" &&
                             DS.getName() !== "downloads" && DS.getName() !== "qaforums" &&
                             DS.getName() !== "releases")
@@ -176,7 +187,7 @@ describe( "VizGrimoireJS library", function () {
 //                // TODO: Move JSON loading to global loading
 //                waitsFor(function() {
 //                        return (document.getElementById("form_mls_selector") != null);
-//                    }, "It took too long to load data", 100);               
+//                    }, "It took too long to load data", 100);
 //                runs(function() {
 //                    $.each(Report.getDataSources(), function(index, DS) {
 //                        if (DS.getName() === "mls")
@@ -202,13 +213,13 @@ describe( "VizGrimoireJS library", function () {
 //            it("html gridster should be displayed", function () {
 //                runs(function() {
 //                    buildNode("gridster","gridster");
-//                    Report.getBasicDivs()["gridster"].convert(); 
+//                    Report.getBasicDivs()["gridster"].convert();
 //                    var grids = document.getElementsByClassName
 //                        ('gs_w').length;
 //                    expect(grids).toEqual(18);
 //                });
 //            });
-            it("html Treemap should be displayed", function () {               
+            it("html Treemap should be displayed", function () {
                 runs(function() {
                     buildNode("Treemap","treemap",
                             {'data-file':'data/json/treemap.json'});
@@ -409,7 +420,7 @@ describe( "VizGrimoireJS library", function () {
                 if (ds_name === "irc") metrics = "irc_sent,irc_senders";
                 if (ds_name === "scr") metrics = "scr_submitted,scr_merged";
                 if (ds_name === "mediawiki") metrics = "mediawiki_reviews";
-                
+
                 if ( ($.inArray(report,['companies','countries', 'domains']) > -1) &&
                      ($.inArray(ds_name, ['irc','people','downloads','qaforums','mediawiki']) > -1 )){
                     //we skip tests for features not used yet
@@ -474,7 +485,7 @@ describe( "VizGrimoireJS library", function () {
     });
 
     describe("People checking", function() {
-        var people_id = null; 
+        var people_id = null;
         it("Top 1 SCM developer should have Evol and Global metrics", function () {
             var ncanvas = 0, nds = 0;
             runs(function() {
@@ -483,7 +494,7 @@ describe( "VizGrimoireJS library", function () {
                 var metrics = null;
                 // Find developer with ITS, MLS, SCM and SCR activity
                 $.each(data_sources, function(index, DS) {
-                    if (DS.getName() === 'irc' || DS.getName() === "mediawiki" || 
+                    if (DS.getName() === 'irc' || DS.getName() === "mediawiki" ||
                         DS.getName() === "people" || DS.getName() === "downloads"
                         || DS.getName() === "qaforums" || DS.getName() === "releases")
                         return;
@@ -493,8 +504,8 @@ describe( "VizGrimoireJS library", function () {
                 });
                 for (var i=0; i<max_people_index; i++) {
                     var dev_found = true;
-                    $.each(data_sources, function(index, DS) { 
-                        if (DS.getName() === 'irc' || DS.getName() === "mediawiki" || 
+                    $.each(data_sources, function(index, DS) {
+                        if (DS.getName() === 'irc' || DS.getName() === "mediawiki" ||
                             DS.getName() === "people" || DS.getName() === "downloads"
                             || DS.getName() === "qaforums" || DS.getName() === "releases")
                             return;
