@@ -57,6 +57,7 @@ if (Viz === undefined) var Viz = {};
     Viz.displayDataSourcesTable = displayDataSourcesTable;
     Viz.getEnvisionOptions = getEnvisionOptions;
     Viz.checkBasicConfig = checkBasicConfig;
+    Viz.displayTimeZone = displayTimeZone;
 
 
     function findMetricDoer(history, metric_id) {
@@ -1154,6 +1155,88 @@ if (Viz === undefined) var Viz = {};
         });
 
     }
+
+    /**
+    * Displays bar chart with timezones and a given metric.
+    * @constructor
+    * @param {string} divid - Id of the div
+    * @param {integer[]} labels - Array of labels for X axis
+    * @param {integer[data]} npeople - Array of values (y axis)
+    * @param {string} metric_name - Name of the charted metric
+    */
+    function displayTimeZone(divid, labels, data, metric_name){
+        var title = 'Time zones for ' + metric_name;
+        var container = document.getElementById(divid);
+        var chart_data = [], i;
+        var legend_div = null;
+        for (i = 0; i < data.length; i++) {
+                chart_data.push({
+                /* why such array in data? */
+                data : [ [ labels[i], data[i] ] ],
+                label : i
+            });
+        }
+        var config = {
+            subtitle : title,
+            grid : {
+                verticalLines : false,
+                outlineWidth : 0,
+                horizontalLines : true
+            },
+            xaxis : {
+                tickFormatter : function (value) {
+                    var label = 'UTC ';
+                    if (value > 0)
+                        label += '+' + value;
+                    else
+                        label += value;
+                    return label;
+                },
+                color : '#000000',
+                tickDecimals : 0
+            },
+            yaxis : {
+                showLabels : true,
+                min : 0,
+                noTicks: 2,
+                color : '#000000'
+            },
+            mouse : {
+                track : true,
+                trackY : false,
+                relative: true,
+                position: 'n',
+                trackDecimals: 0,
+                trackFormatter : function(tuple) {
+                    var label = 'UTC ';
+                    if (tuple.x > 0)
+                        label += '+' + tuple.x;
+                    else
+                        label += tuple.x;
+                    pretty_name = metric_name.charAt(0).toUpperCase()
+                            + metric_name.slice(1);
+                    label += '<br/> '+ pretty_name +': <strong>' + tuple.y
+                            +'</strong>';
+                    return label;
+                }
+            },
+            legend : {
+                show: false
+            },
+            bars :{
+                show: true,
+                color: '#008080',
+                fillColor: '#008080',
+                fillOpacity: 0.6
+            }
+        };
+        graph = Flotr.draw(container, chart_data, config);
+        $(window).resize(function(){
+            graph = Flotr.draw(container, chart_data, config);
+        });
+    }
+
+
 
     function displayBasicChart
         (divid, labels, data, graph, title, config_metric, rotate, fixColor,
