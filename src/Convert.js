@@ -526,11 +526,15 @@ function composeSideBar(project_id){
             current_release = $.urlParam('release');
             html += '<li><a href="data_sources.html?release=' + current_release
                     +'"><i class="fa fa-database"></i> Data sources</a></li>';
-            html += '<li><a href="project_map.html?release=' + current_release
+            if (mele.hasOwnProperty('project_map')){
+                html += '<li><a href="project_map.html?release=' + current_release
                     +'"><i class="fa fa-icon fa-sitemap"></i> Project map</a></li>';
+            }
         }else{
             html += '<li><a href="data_sources.html"><i class="fa fa-database"></i> Data sources</a></li>';
-            html += '<li><a href="project_map.html"><i class="fa fa-icon fa-sitemap"></i> Project map</a></li>';
+            if (mele.hasOwnProperty('project_map')){
+                html += '<li><a href="project_map.html"><i class="fa fa-icon fa-sitemap"></i> Project map</a></li>';
+            }
         }
 
         if (mele.hasOwnProperty('extra')){
