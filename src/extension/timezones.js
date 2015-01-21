@@ -87,7 +87,7 @@ var Timezones = {};
         var html = '<div class="row">';
         html += '<div class="col-md-12"><div class="well">';
         html +='<div class="TimeZones" style="height: 150px"';
-        html += 'data-metric="commits" data-data-source="scm"></div>';
+        html += 'data-metric="'+metric_name+'" data-data-source="'+ds_name+'"></div>';
         html += '</div></div></div>';
         return html;
     }
