@@ -563,10 +563,21 @@ var HTMLComposer = {};
         html += '<a href="#" class="dropdown-toggle" data-toggle="dropdown">';
         html += '<i class="fa ' + icon_text + '"></i>&nbsp;' + title + ' <b class="caret"></b></a>';
         html += '<ul class="dropdown-menu navmenu-nav">';
-        var target_page = Utils.createLink(ds_name +'.html');
+        var target_page = '';
+        if(Utils.isReleasePage()){
+            target_page = Utils.createReleaseLink(ds_name +'.html');
+        }
+        else{
+            target_page = ds_name +'.html';
+        }
         html += '<li><a href="' + target_page + '">&nbsp;Overview</a></li>';
         $.each(elements, function(id,value){
-            target_page = Utils.createLink(ds_name + '-' + value + '.html');
+            if(Utils.isReleasePage()){
+                target_page = Utils.createReleaseLink(ds_name + '-' + value +'.html');
+            }
+            else{
+                target_page = ds_name + '-' + value +'.html';
+            }
             if (text.hasOwnProperty(value)){
                 var label = text[value];
                 if (value === 'repos'){
@@ -651,7 +662,7 @@ var HTMLComposer = {};
         if (is_release){
             periods = [''];
         }
-        else{            
+        else{
             periods = ['last month','last year',''];
         }
         width = 12 / periods.length;
