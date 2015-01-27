@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2012 Bitergia
  *
  * This program is free software; you can redistribute it and/or modify
@@ -53,7 +53,18 @@ function SCM() {
             'envision' : {
                 gtype : 'whiskers'
             }
-        }/*,
+        },
+        'scm_newauthors' : {
+            'divid' : 'scm_newauthors',
+            'column' : 'newauthors',
+            'name' : 'New Authors',
+            'desc' : 'Number of new people authoring commits (changes to source code)',
+            'action' : 'commits',
+            'envision' : {
+                gtype : 'whiskers'
+            }
+        },
+        /*,
         'scm_authors_rev' : {
             'divid' : "scm_authors-rev",
             'column' : "authors_rev",
@@ -83,7 +94,7 @@ function SCM() {
             'envision' : {
                 gtype : 'whiskers'
             }
-        }*/,
+        }*/
         'scm_branches' : {
             'divid' : "scm_branches",
             'column' : "branches",
