@@ -60,6 +60,12 @@ function ITS() {
                 gtype : 'whiskers'
             }
         },
+        'its_bmitickets' : {
+            'divid' : 'its_bmitickets',
+            'column' : "bmitickets",
+            'name' : "Efficiency",
+            'desc' : "Efficiency closing tickets: number of closed ticket out of the opened ones in a given period"
+        },
         'its_changed' : {
             'divid' : 'its_changed',
             'column' : "changed",
