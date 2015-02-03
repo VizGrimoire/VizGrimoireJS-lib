@@ -556,7 +556,7 @@ if (Viz === undefined) var Viz = {};
 
         $.each(metrics, function(id, metric) {
             if (!history[metric]) return;
-            var mdata = [[],[]];
+            var mdata = [];
             $.each(history[metric], function (i, value) {
                 mdata[i] = [history.id[i], history[metric][i]];
             });
@@ -827,6 +827,9 @@ if (Viz === undefined) var Viz = {};
 
     function addEmptyValue(lines_data){
         // add empty value at the end to avoid drawing an incomplete point
+
+        // In one point series don't add empty value. It is already centered.
+        if (lines_data[0].data.length == 1) {return;}
 
         var step = lines_data[0].data[1][0] - lines_data[0].data[0][0];
         var narrays = lines_data.length;
