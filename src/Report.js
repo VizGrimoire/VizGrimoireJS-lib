@@ -634,6 +634,7 @@ $(document).ready(function() {
 });
 
 function resizedw(){
+     if (true) {return;}
      Report.convertGlobal();
      Report.convertStudiesGlobal();
      Report.convertStudies();

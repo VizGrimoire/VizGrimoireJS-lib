@@ -1157,6 +1157,9 @@ if (Viz === undefined) var Viz = {};
             drawGraph();
         });
 
+        $(window).resize(function(){
+            drawGraph();
+        });
     }
 
     /**
