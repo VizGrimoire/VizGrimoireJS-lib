@@ -253,6 +253,8 @@ if (Report === undefined) var Report = {};
     Report.formatValue = function(number, field) {
         if (number === undefined) return '-';
         var date_fields = ['last_date','first_date'];
+        // TODO: read available reports from config.json when used in all dashboards
+        var reports = ['repositories','companies','countries','domains','projects'];
         var value = number;
         try {
             // value = parseFloat(number).toFixed(2).toString().replace(/\.00$/, '');
@@ -269,6 +271,13 @@ if (Report === undefined) var Report = {};
         // Don't convert date number (2012)
         if (field !== undefined && $.inArray(field, date_fields)>-1)
             value = number.toString();
+        if (value === "0") {
+            $.each(reports, function (i, report) {
+                if (field.indexOf(report) != 1) {
+                    value = "-";
+                }
+            });
+        }
         return value;
     };
 
