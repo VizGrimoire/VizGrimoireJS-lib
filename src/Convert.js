@@ -619,6 +619,7 @@ Convert.convertNavbar = function() {
 
 Convert.convertReleaseSelector = function (){
     var releases = Report.getReleaseNames();
+    if (releases === undefined) {return;}
     if (releases.length > 0){       // if no releases, we don't print HTML
         var divs = $(".ReleaseSelector");
         if (divs.length > 0){
