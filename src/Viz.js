@@ -1117,7 +1117,7 @@ if (Viz === undefined) var Viz = {};
             // Return a new graph.
             return Flotr.draw(container, lines_data, o);
         }
-        console.log(config);
+
         // Actually draw the graph.
         graph = drawGraph();
 
