@@ -324,6 +324,11 @@ if (Viz === undefined) var Viz = {};
         var div = $("#" + div_id);
         var ds_name = div.attr('data-data-source'); //we need it to map the vars
 
+        if (Report.getParameterByName("repository") !== undefined) {
+            // We don't have yet top people per repository data
+            people_links = false;
+        }
+
         // instead of iterating the data, we use the sorted periods
         periods = getSortedPeriods();
 
