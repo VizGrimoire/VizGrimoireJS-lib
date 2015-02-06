@@ -770,19 +770,38 @@ function DataSource(name, basic_metrics) {
             // Bootstrap
             nav += "<ul class='pagination'>";
             if (page>1) {
-                nav += "<li><a href='?page="+(page-1)+"'>&laquo;</a></li>";
+                if(Utils.isReleasePage()) {
+                    nav += "<li><a href='" + Utils.createReleaseLink("?page="+(page-1)) + "'>&laquo;</a></li>";
+                }
+                else{
+                    nav += "<li><a href='?page="+(page-1)+"'>&laquo;</a></li>";
+                }
             }
             else{
-                nav += "<li class='disabled'><a href='?page="+(page)+"'>&laquo;</a></li>";
+                if(Utils.isReleasePage()) {
+                    nav += "<li class='disabled'><a href='" + Utils.createReleaseLink("?page="+(page)) + "'>&laquo;</a></li>";
+                }
+                else{
+                    nav += "<li class='disabled'><a href='?page="+(page)+"'>&laquo;</a></li>";
+                }
             }
 
             for (var j=0; j*Report.getPageSize()<total; j++) {
                 if (this.isPageDisplayed(page, (j+1), number_pages, displayed_pages) === true){
                     if (page === (j+1)) {
-                        nav += "<li class='active'><a href='?page="+(j+1)+"'>" + (j+1) + "</a></li>";
+                        if(Utils.isReleasePage()) {
+                            nav += "<li class='active'><a href='" + Utils.createReleaseLink("?page="+(j+1))+"'>" + (j+1) + "</a></li>";
+                        }
+                        else{
+                            nav += "<li class='active'><a href='?page="+(j+1)+"'>" + (j+1) + "</a></li>";
+                        }
                     }
                     else {
-                        nav += "<li><a href='?page="+(j+1)+"'>" + (j+1) + "</a></li>";
+                        if(Utils.isReleasePage()){
+                            nav += "<li><a href='" + Utils.createReleaseLink("?page="+(j+1))+"'>" + (j+1) + "</a></li>";
+                        }else{
+                            nav += "<li><a href='?page="+(j+1)+"'>" + (j+1) + "</a></li>";
+                        }
                     }
                 }
                 else {
@@ -793,7 +812,12 @@ function DataSource(name, basic_metrics) {
                 }
             }
             if (page*Report.getPageSize()<items.length) {
-                nav += "<li><a href='?page="+(parseInt(page,null)+1)+"'>";
+                if(Utils.isReleasePage()){
+                    nav += "<li><a href='" + Utils.createReleaseLink("?page="+(parseInt(page,null)+1)) + "'>";
+                }
+                else{
+                    nav += "<li><a href='?page="+(parseInt(page,null)+1)+"'>";
+                }
                 nav += "&raquo;</a></li>";
             }
             nav += "</ul>";

@@ -85,7 +85,14 @@ var Utils = {};
          Return the URL appending the GET variable for the release
          */
         url = target;
-        if (isReleasePage()) url+= '?release=' + $.urlParam('release');
+        if (isReleasePage()){
+            if (url.indexOf('?') >= 0){
+                url+= '&release=' + $.urlParam('release');
+            }
+            else{
+                url+= '?release=' + $.urlParam('release');
+            }
+        }
         return url;
     }
     
