@@ -424,6 +424,9 @@ var HTMLComposer = {};
         html += '<div class="row">';
         html += '<div class="col-md-12 medium-fp-number">';
         target_page = Utils.createLink(ds_name + '.html');
+        if (ds_name === 'releases') {
+            target_page = Utils.createLink('forge.html');
+        }
         if (project_flag){
             html += '<span class="'+ widget_name +'"';
             html += 'data-data-source="' + ds_name + '" data-field="' + metric + '"></span>';
@@ -464,7 +467,9 @@ var HTMLComposer = {};
         html += '<div class="col-md-12 big-fp-number">';
         target_page = Utils.createLink(ds_name + '.html');
         /* we overwrite this for the forge */
-        if (ds_name === 'releases') target_page = Utils.createLink('forge.html');
+        if (ds_name === 'releases') {
+            target_page = Utils.createLink('forge.html');
+        }
         if (project_flag){
             html += '<span class="' + widget_name + '"';
             html += 'data-data-source="' + ds_name + '" data-field="' + metrics[0]+ '"></span>';
