@@ -48,6 +48,11 @@ function QAForums() {
             "desc" : "Number of answers posted to Q&A forums(s)",
             "column" : "asent"
 	},
+	"qaforums_unanswered" : {
+            "name" : "Unanswered questions",
+            "desc" : "Backlog of unanswered questions",
+            "column" : "unanswered"
+	},
 	"qaforums_senders" : {
             "name" : "Persons posting messages",
             "desc" : "Number of persons posting messages to Q&A forums(s)",
@@ -130,6 +135,7 @@ function QAForums() {
             sent:'Messages posted',
             qsent:'Questions posted',
             asent:'Answers posted',
+            qunanswered:'Unanswered questions',
             senders:'Persons posting messages',
             asenders: 'Persons posting answers',
             qsenders:'Persons posting questions'
