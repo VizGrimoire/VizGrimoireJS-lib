@@ -455,6 +455,13 @@ function composeSideBar(project_id){
     html += '<ul class="nav navmenu-nav">';
 
     var mele = Report.getMenuElements();
+    if (Utils.isReleasePage()) {
+        if (Report.getMenuElementsReleases() !== undefined) {
+            // Specific menu defined for releases
+            mele = Report.getMenuElementsReleases();
+        }
+    }
+
     /*html += '<li><a href="' + Utils.createLink('index.html') + '">';
     html += '<i class="fa fa-home"></i> Home</a></li>';*/
 
@@ -479,32 +486,32 @@ function composeSideBar(project_id){
             aux_html = HTMLComposer.sideBarLinks('fa-envelope-o','Mailing lists','mls', aux);
             html += aux_html;
         }
-        if (mele.hasOwnProperty('qaforums') && Utils.isReleasePage() === false){
+        if (mele.hasOwnProperty('qaforums')){
             aux = mele.qaforums;
             aux_html = HTMLComposer.sideBarLinks('fa-question','Q&A Forums','qaforums', aux);
             html += aux_html;
         }
-        if (mele.hasOwnProperty('irc') && Utils.isReleasePage() === false){
+        if (mele.hasOwnProperty('irc')){
             aux = mele.irc;
             aux_html = HTMLComposer.sideBarLinks('fa-comment-o','IRC','irc', aux);
             html += aux_html;
         }
-        if (mele.hasOwnProperty('downloads') && Utils.isReleasePage() === false){
+        if (mele.hasOwnProperty('downloads')){
             aux = mele.downloads;
             aux_html = HTMLComposer.sideBarLinks('fa-download','Downloads','downloads', aux);
             html += aux_html;
         }
-        if (mele.hasOwnProperty('forge') && Utils.isReleasePage() === false){
+        if (mele.hasOwnProperty('forge')){
             aux = mele.forge;
             aux_html = HTMLComposer.sideBarLinks('fa-umbrella','Forge releases','forge', aux);
             html += aux_html;
         }
-        if (mele.hasOwnProperty('wiki') && Utils.isReleasePage() === false){
+        if (mele.hasOwnProperty('wiki')){
             aux = mele.wiki;
             aux_html = HTMLComposer.sideBarLinks('fa-pencil-square-o','Wiki','wiki', aux);
             html += aux_html;
         }
-        if (mele.hasOwnProperty('studies') && Utils.isReleasePage() === false){
+        if (mele.hasOwnProperty('studies')){
             aux = mele.studies;
             html += '<li class="dropdown">';
             html += '<a href="#" class="dropdown-toggle" data-toggle="dropdown">';

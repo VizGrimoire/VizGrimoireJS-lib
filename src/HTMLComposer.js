@@ -35,7 +35,6 @@ var HTMLComposer = {};
     HTMLComposer.personSummaryTable = personSummaryTable;
     HTMLComposer.personName = personName;
     HTMLComposer.itemName = itemName;
-    HTMLComposer.sideMenu4Release = sideMenu4Release;
     HTMLComposer.releaseSelector = releaseSelector;
     HTMLComposer.sideBarLinks = sideBarLinks;
     HTMLComposer.overallSummaryBlock = overallSummaryBlock;
@@ -225,20 +224,6 @@ var HTMLComposer = {};
         return title;
     }
 
-    function sideMenu4Release(){
-        /* Returns HTML for release side menu
-         */
-        html = '';
-        params = '?data_dir='+ $.urlParam('data_dir') +'&release=' + $.urlParam('release');
-        html += '<li><a href="./"><i class="fa fa-home"></i> Home</a></li>';
-        //html += '<li><a href="./release.html'+ params +'"> ' +$.urlParam('release') +' release</a></li>';
-        html += '<li><a href="./scm-companies.html'+ params +'"><i class="fa fa-code"></i> Source code repositories by companies</a></li>';
-        html += '<li><a href="./mls-companies.html' + params + '"><i class="fa fa-envelope-o"></i> Mailing Lists by companies</a></li>';
-        html += '<li><a href="./its-companies.html' + params + '"><i class="fa fa-ticket"></i> Tickets by companies</a></li>';
-
-        return html;
-    }
-
     function releaseSelector(current_release, release_names){
         /*
          Compose HTML for dropdown selector for releases
@@ -424,9 +409,6 @@ var HTMLComposer = {};
         html += '<div class="row">';
         html += '<div class="col-md-12 medium-fp-number">';
         target_page = Utils.createLink(ds_name + '.html');
-        if (ds_name === 'releases') {
-            target_page = Utils.createLink('forge.html');
-        }
         if (project_flag){
             html += '<span class="'+ widget_name +'"';
             html += 'data-data-source="' + ds_name + '" data-field="' + metric + '"></span>';
@@ -467,9 +449,7 @@ var HTMLComposer = {};
         html += '<div class="col-md-12 big-fp-number">';
         target_page = Utils.createLink(ds_name + '.html');
         /* we overwrite this for the forge */
-        if (ds_name === 'releases') {
-            target_page = Utils.createLink('forge.html');
-        }
+        if (ds_name === 'releases') target_page = Utils.createLink('forge.html');
         if (project_flag){
             html += '<span class="' + widget_name + '"';
             html += 'data-data-source="' + ds_name + '" data-field="' + metrics[0]+ '"></span>';
