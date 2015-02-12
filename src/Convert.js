@@ -386,7 +386,7 @@ function getSectionName(){
                    };
     var filters = {"companies":"Activity by companies",
                    "contributors":"Activity by contributors",
-                   "countries":"Activity by companies",
+                   "countries":"Activity by countries",
                    "domains":"Activity by domains",
                    "projects":"Activity by project",
                    "repos":"Activity by repositories",
@@ -394,6 +394,7 @@ function getSectionName(){
                    "tags":"Activity by tags"
                   };
     var filters2 = {"repository":"Repository",
+                    "countries":"Activity by countries"
                    };
 
     url_no_params = document.URL.split('?')[0];
@@ -402,7 +403,18 @@ function getSectionName(){
     if (section === 'project' || section === 'index' || section === ''){
         //no sections are support for subprojects so far
         return [];
-    }else{
+    }
+    else if(section === 'filter'){
+        var filter_by = $.urlParam('filter_by_item');
+        var filter_names = $.urlParam('filter_names');
+        switch(filter_names){
+            case 'company+country':
+                result = [['company','Company'],
+                        ['Activity by country and company','Activity by country and company']];
+        }
+        return result;
+    }
+    else{
         //if it contains a - we return section + subsection
         //it could be scm or scm-repos
 
@@ -662,7 +674,14 @@ function composeSectionBreadCrumb(project_id){
                         html += '?release=' + $.urlParam('release') + '">';
                         html += value[1] + '</a></li>';
                     }else{
-                        html += '<li><a href="'+ value[0] +'.html">' + value[1] + '</a></li>';
+                        if(value[0] === "company"){
+                            var get_param = $.urlParam('filter_item');
+                            html += '<li><a href="'+ value[0] +'.html?company='
+                            + get_param +'">' + get_param[0].toUpperCase()
+                            + get_param.slice(1) + '</a></li>';
+                        }else{
+                            html += '<li><a href="'+ value[0] +'.html">' + value[1] + '</a></li>';
+                        }
                     }
                 }
                 cont_b += 1;
