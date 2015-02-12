@@ -46,7 +46,8 @@ vizgrimoire.core.js: \
     src/Downloads.js \
     src/QAForums.js \
     src/Releases.js \
-    src/Identity.js
+    src/Identity.js \
+	src/Charts.js
 
 vizgrimoire.deps.css: \
     src/envision.min.css \
@@ -60,7 +61,8 @@ vizgrimoire.core.css: \
 %.min.js: %.js Makefile
 	@rm -f $@
 	#$(JS_UGLIFY) -o $@ -c --max-line-len $<
-	$(JS_UGLIFY) -o $@ $<
+	#$(JS_UGLIFY) -o $@ $<
+	$(JS_UGLIFY) -o $@ vizgrimoire.js
 
 vizgrimoire%js: Makefile
 	echo $@
