@@ -2017,6 +2017,23 @@ Convert.convertSmartLinks = function (){
     }
 };
 
+/*
+* Display company filters available depending on config file
+*/
+Convert.companyFilters = function(){
+    var divs = $(".CompanyFilters");
+    if (divs.length > 0){
+        $.each(divs, function(id, div) {
+            /*workaround to avoid being called again when redrawing*/
+            if (div.id.indexOf('Parsed') >= 0 ) return;
+            company_name = Report.getParameterByName("company");
+            var html = HTMLComposer.companyFilters(company_name);
+            if (!div.id) div.id = "Parsed" + getRandomId();
+            $("#"+div.id).append(html);
+        });
+    }
+};
+
 
 Convert.convertFilterStudyItem = function (filter, item) {
     // Control convert is not called several times per filter
@@ -2132,6 +2149,7 @@ Convert.convertBasicDivs = function() {
     //Convert.convertProjectData();
     Convert.convertSummary();
     Convert.convertTopByPeriod();
+    Convert.companyFilters();
 };
 
 Convert.convertBasicDivsMisc = function() {
