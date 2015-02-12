@@ -56,6 +56,7 @@ if (Report === undefined) var Report = {};
     Report.getVizConfig = getVizConfig;
     Report.getProjectsHierarchy = getProjectsHierarchy;
     Report.getMenuElements = getMenuElements;
+    Report.getMenuElementsReleases = getMenuElementsReleases;
     Report.getReleaseNames = getReleaseNames;
     Report.getMetricDS = getMetricDS;
     Report.getGridster = getGridster;
@@ -140,7 +141,10 @@ if (Report === undefined) var Report = {};
 
     /** menu_elements contains JSON for side menu**/
     function getMenuElements(){
-	return menu_elements.menu;
+	    return menu_elements.menu;
+    }
+    function getMenuElementsReleases(){
+        return menu_elements.menu_releases;
     }
     function getReleaseNames() {
         return menu_elements.releases;
