@@ -141,7 +141,7 @@ if (Report === undefined) var Report = {};
 
     /** menu_elements contains JSON for side menu**/
     function getMenuElements(){
-	    return menu_elements.menu;
+        return menu_elements.menu;
     }
     function getMenuElementsReleases(){
         return menu_elements.menu_releases;
