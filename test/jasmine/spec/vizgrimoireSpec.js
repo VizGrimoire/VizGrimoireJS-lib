@@ -11,9 +11,10 @@ describe ("Timezone widgets", function(){
 });
 
 describe( "VizGrimoireJS library", function () {
+    // Logs make jasmine test exit to be error
+    Report.setLog(false);
+
     beforeEach(function() {
-        // Logs make jasmine test exit to be error
-        Report.setLog(false);
         waitsFor(function() {
             return Loader.check_data_loaded();
         }, "It took too long to load data", 500);
