@@ -288,10 +288,13 @@ function composeHTMLNestedProjects(project_id, children, hierarchy){
     var epid = escapeString(project_id);
     */
     var epid = project_id; // See error #4208
+    var divid = epid.replace(".",""); // div ids could not have .
     if(clen > 0){
-	html += '<li>';
-	html += '<a href="project.html?project='+epid+'">'+ getProjectTitle(project_id, hierarchy) + '</a>';
-        html += '&nbsp;<a data-toggle="collapse" data-parent="#accordion" href="#collapse'+epid+'"><span class="badge">'+clen+'&nbsp;subprojects</span></a><div id="collapse'+epid+'" class="panel-collapse collapse"><ul>';
+        html += '<li>';
+        html += '<a href="project.html?project='+epid+'">'+ getProjectTitle(project_id, hierarchy) + '</a>';
+        html += '&nbsp;<a data-toggle="collapse" data-parent="#accordion" href="#collapse'+divid+'">';
+        html += '<span class="badge">'+clen+'&nbsp;subprojects</span></a>';
+        html += '<div id="collapse'+divid+'" class="panel-collapse collapse"><ul>';
 
         $.each(children, function(id,value){
             gchildren = getChildrenProjects(value.project_id, hierarchy);
@@ -320,8 +323,8 @@ function composeProjectMap() {
     var children = getChildrenProjects(project_id, hierarchy);
     var parents = getParentProjects(project_id, hierarchy);
     $.each(children, function(id,value){
-	grandchildren = getChildrenProjects(value.project_id, hierarchy);
-	html += composeHTMLNestedProjects(value.project_id, grandchildren, hierarchy);
+        grandchildren = getChildrenProjects(value.project_id, hierarchy);
+        html += composeHTMLNestedProjects(value.project_id, grandchildren, hierarchy);
     });
     html += '</ul>';
     return html;

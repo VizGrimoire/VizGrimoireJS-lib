@@ -1,2 +1,2 @@
-vizjslib_git_revision='6626f8ff7ef0e52d02173c8c77d1049dee1a329b';
-vizjslib_git_tag='14.12-29-g6626f8f';
+vizjslib_git_revision='75314c28cdd50ba10f1d3b8bf689d9c8ff8ef856';
+vizjslib_git_tag='14.12-37-g75314c2';
