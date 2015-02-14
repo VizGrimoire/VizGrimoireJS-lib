@@ -91,8 +91,7 @@ test: all
 	cd ../..
 
 testci: all
-	cd test/jasmine
-	xvfb-run jasmine-headless-webkit -j jasmine.yml -c
+	cd test/jasmine; xvfb-run jasmine-headless-webkit -j jasmine.yml -c
 	cd ../..
 
 vizgrimoire%css: Makefile
