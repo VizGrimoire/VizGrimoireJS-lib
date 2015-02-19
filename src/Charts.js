@@ -32,7 +32,7 @@ var Charts = {};
     * @constructor
     * @param {string} divid - Id of the div
     * @param {string[]} lines_names - Array of strings with friendly unit names
-    * @param {integer[]} raw_data - Array of arrays with [unixtime, value]
+    * @param {object {}} raw_data - Object with unixtime, strdate and the lines_data[integer[]]
     */
     function plotLinesChart(div_id, line_names, raw_data){
         var flt_data = buildFlotrData(line_names, raw_data);
