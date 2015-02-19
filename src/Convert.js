@@ -288,10 +288,13 @@ function composeHTMLNestedProjects(project_id, children, hierarchy){
     var epid = escapeString(project_id);
     */
     var epid = project_id; // See error #4208
+    var divid = epid.replace(".",""); // div ids could not have .
     if(clen > 0){
-	html += '<li>';
-	html += '<a href="project.html?project='+epid+'">'+ getProjectTitle(project_id, hierarchy) + '</a>';
-        html += '&nbsp;<a data-toggle="collapse" data-parent="#accordion" href="#collapse'+epid+'"><span class="badge">'+clen+'&nbsp;subprojects</span></a><div id="collapse'+epid+'" class="panel-collapse collapse"><ul>';
+        html += '<li>';
+        html += '<a href="project.html?project='+epid+'">'+ getProjectTitle(project_id, hierarchy) + '</a>';
+        html += '&nbsp;<a data-toggle="collapse" data-parent="#accordion" href="#collapse'+divid+'">';
+        html += '<span class="badge">'+clen+'&nbsp;subprojects</span></a>';
+        html += '<div id="collapse'+divid+'" class="panel-collapse collapse"><ul>';
 
         $.each(children, function(id,value){
             gchildren = getChildrenProjects(value.project_id, hierarchy);
@@ -320,8 +323,8 @@ function composeProjectMap() {
     var children = getChildrenProjects(project_id, hierarchy);
     var parents = getParentProjects(project_id, hierarchy);
     $.each(children, function(id,value){
-	grandchildren = getChildrenProjects(value.project_id, hierarchy);
-	html += composeHTMLNestedProjects(value.project_id, grandchildren, hierarchy);
+        grandchildren = getChildrenProjects(value.project_id, hierarchy);
+        html += composeHTMLNestedProjects(value.project_id, grandchildren, hierarchy);
     });
     html += '</ul>';
     return html;
@@ -386,7 +389,7 @@ function getSectionName(){
                    };
     var filters = {"companies":"Activity by companies",
                    "contributors":"Activity by contributors",
-                   "countries":"Activity by companies",
+                   "countries":"Activity by countries",
                    "domains":"Activity by domains",
                    "projects":"Activity by project",
                    "repos":"Activity by repositories",
@@ -394,6 +397,7 @@ function getSectionName(){
                    "tags":"Activity by tags"
                   };
     var filters2 = {"repository":"Repository",
+                    "countries":"Activity by countries"
                    };
 
     url_no_params = document.URL.split('?')[0];
@@ -402,7 +406,18 @@ function getSectionName(){
     if (section === 'project' || section === 'index' || section === ''){
         //no sections are support for subprojects so far
         return [];
-    }else{
+    }
+    else if(section === 'filter'){
+        var filter_by = $.urlParam('filter_by_item');
+        var filter_names = $.urlParam('filter_names');
+        switch(filter_names){
+            case 'company+country':
+                result = [['company','Company'],
+                        ['Activity by country and company','Activity by country and company']];
+        }
+        return result;
+    }
+    else{
         //if it contains a - we return section + subsection
         //it could be scm or scm-repos
 
@@ -455,6 +470,13 @@ function composeSideBar(project_id){
     html += '<ul class="nav navmenu-nav">';
 
     var mele = Report.getMenuElements();
+    if (Utils.isReleasePage()) {
+        if (Report.getMenuElementsReleases() !== undefined) {
+            // Specific menu defined for releases
+            mele = Report.getMenuElementsReleases();
+        }
+    }
+
     /*html += '<li><a href="' + Utils.createLink('index.html') + '">';
     html += '<i class="fa fa-home"></i> Home</a></li>';*/
 
@@ -479,32 +501,32 @@ function composeSideBar(project_id){
             aux_html = HTMLComposer.sideBarLinks('fa-envelope-o','Mailing lists','mls', aux);
             html += aux_html;
         }
-        if (mele.hasOwnProperty('qaforums') && Utils.isReleasePage() === false){
+        if (mele.hasOwnProperty('qaforums')){
             aux = mele.qaforums;
             aux_html = HTMLComposer.sideBarLinks('fa-question','Q&A Forums','qaforums', aux);
             html += aux_html;
         }
-        if (mele.hasOwnProperty('irc') && Utils.isReleasePage() === false){
+        if (mele.hasOwnProperty('irc')){
             aux = mele.irc;
             aux_html = HTMLComposer.sideBarLinks('fa-comment-o','IRC','irc', aux);
             html += aux_html;
         }
-        if (mele.hasOwnProperty('downloads') && Utils.isReleasePage() === false){
+        if (mele.hasOwnProperty('downloads')){
             aux = mele.downloads;
             aux_html = HTMLComposer.sideBarLinks('fa-download','Downloads','downloads', aux);
             html += aux_html;
         }
-        if (mele.hasOwnProperty('forge') && Utils.isReleasePage() === false){
+        if (mele.hasOwnProperty('forge')){
             aux = mele.forge;
             aux_html = HTMLComposer.sideBarLinks('fa-umbrella','Forge releases','forge', aux);
             html += aux_html;
         }
-        if (mele.hasOwnProperty('wiki') && Utils.isReleasePage() === false){
+        if (mele.hasOwnProperty('wiki')){
             aux = mele.wiki;
             aux_html = HTMLComposer.sideBarLinks('fa-pencil-square-o','Wiki','wiki', aux);
             html += aux_html;
         }
-        if (mele.hasOwnProperty('studies') && Utils.isReleasePage() === false){
+        if (mele.hasOwnProperty('studies')){
             aux = mele.studies;
             html += '<li class="dropdown">';
             html += '<a href="#" class="dropdown-toggle" data-toggle="dropdown">';
@@ -619,6 +641,7 @@ Convert.convertNavbar = function() {
 
 Convert.convertReleaseSelector = function (){
     var releases = Report.getReleaseNames();
+    if (releases === undefined) {return;}
     if (releases.length > 0){       // if no releases, we don't print HTML
         var divs = $(".ReleaseSelector");
         if (divs.length > 0){
@@ -662,7 +685,14 @@ function composeSectionBreadCrumb(project_id){
                         html += '?release=' + $.urlParam('release') + '">';
                         html += value[1] + '</a></li>';
                     }else{
-                        html += '<li><a href="'+ value[0] +'.html">' + value[1] + '</a></li>';
+                        if(value[0] === "company"){
+                            var get_param = $.urlParam('filter_item');
+                            html += '<li><a href="'+ value[0] +'.html?company='
+                            + get_param +'">' + get_param[0].toUpperCase()
+                            + get_param.slice(1) + '</a></li>';
+                        }else{
+                            html += '<li><a href="'+ value[0] +'.html">' + value[1] + '</a></li>';
+                        }
                     }
                 }
                 cont_b += 1;
@@ -2017,6 +2047,23 @@ Convert.convertSmartLinks = function (){
     }
 };
 
+/*
+* Display company filters available depending on config file
+*/
+Convert.companyFilters = function(){
+    var divs = $(".CompanyFilters");
+    if (divs.length > 0){
+        $.each(divs, function(id, div) {
+            /*workaround to avoid being called again when redrawing*/
+            if (div.id.indexOf('Parsed') >= 0 ) return;
+            company_name = Report.getParameterByName("company");
+            var html = HTMLComposer.companyFilters(company_name);
+            if (!div.id) div.id = "Parsed" + getRandomId();
+            $("#"+div.id).append(html);
+        });
+    }
+};
+
 
 Convert.convertFilterStudyItem = function (filter, item) {
     // Control convert is not called several times per filter
@@ -2132,6 +2179,7 @@ Convert.convertBasicDivs = function() {
     //Convert.convertProjectData();
     Convert.convertSummary();
     Convert.convertTopByPeriod();
+    Convert.companyFilters();
 };
 
 Convert.convertBasicDivsMisc = function() {
@@ -2146,32 +2194,6 @@ Convert.convertBasicMetrics = function(config) {
     if (item === undefined) Convert.convertMetricsEvol();
     Convert.convertTimeTo();
     Convert.convertMarkovTable();
-};
-
-Convert.convertModifiedBasicMetrics = function(filter) {
-    /*
-     The functions call here display the basic charts with more info from repos
-
-     Controls the load of data and put the callback waiting until it's ready.
-     */
-
-    // repositories comes from Automator config
-    var page = 1; // FIXME just to get it work, useless
-
-    // If data is not available load them and cb this function
-    if (Loader.check_filter_page (page, filter) === false) {
-        $.each(Report.getDataSources(), function(index, DS) {
-            if (filter !== "repos") return;
-            if (filter === "repos") total = DS.getReposData().length;
-            for (var i=0;i<total;i++) {
-                var repo = DS.getReposData()[i];
-                Loader.data_load_item(repo, DS, page, Convert.convertModifiedBasicMetrics, filter);
-            }
-
-        });
-        return;
-    }
-    Convert.convertMetricsEvolCustomized(filter);
 };
 
 

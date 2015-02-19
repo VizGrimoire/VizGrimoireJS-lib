@@ -35,12 +35,12 @@ var HTMLComposer = {};
     HTMLComposer.personSummaryTable = personSummaryTable;
     HTMLComposer.personName = personName;
     HTMLComposer.itemName = itemName;
-    HTMLComposer.sideMenu4Release = sideMenu4Release;
     HTMLComposer.releaseSelector = releaseSelector;
     HTMLComposer.sideBarLinks = sideBarLinks;
     HTMLComposer.overallSummaryBlock = overallSummaryBlock;
     HTMLComposer.smartLinks = smartLinks;
     HTMLComposer.TopByPeriod = TopByPeriod;
+    HTMLComposer.companyFilters = companyFilters;
 
     function personDSBlock(ds_name, metric_name){
         /* Display block with PersonSummary and PersonMetrics divs.
@@ -223,20 +223,6 @@ var HTMLComposer = {};
         else if(ds_name === "releases")
             title = '<i class="fa fa-umbrella"></i> Forge Releases';
         return title;
-    }
-
-    function sideMenu4Release(){
-        /* Returns HTML for release side menu
-         */
-        html = '';
-        params = '?data_dir='+ $.urlParam('data_dir') +'&release=' + $.urlParam('release');
-        html += '<li><a href="./"><i class="fa fa-home"></i> Home</a></li>';
-        //html += '<li><a href="./release.html'+ params +'"> ' +$.urlParam('release') +' release</a></li>';
-        html += '<li><a href="./scm-companies.html'+ params +'"><i class="fa fa-code"></i> Source code repositories by companies</a></li>';
-        html += '<li><a href="./mls-companies.html' + params + '"><i class="fa fa-envelope-o"></i> Mailing Lists by companies</a></li>';
-        html += '<li><a href="./its-companies.html' + params + '"><i class="fa fa-ticket"></i> Tickets by companies</a></li>';
-
-        return html;
     }
 
     function releaseSelector(current_release, release_names){
@@ -678,4 +664,50 @@ var HTMLComposer = {};
         return html;
     }
 
+    var defaultFilterValues = {
+        'scm':{
+            'metric_names':'commits+authors',
+            'order_by':'commits_365'
+        }
+    };
+
+    /*
+    * Returns HTML for available filters for company panel.
+    * @param {string} company_name - The name of the company
+    */
+    function companyFilters(company_name){
+        var html = '<ul class="nav nav-pills" role="tablist">';
+        var mele = Report.getMenuElements();
+        var filters = mele.filter;
+        $.each(filters, function(id, value){
+            //value = scm:company+country
+            var ds_name = value.split(':')[0];
+            var combo = value.split(':')[1].split('+');
+            if (combo.indexOf('company') >= 0){
+                var aux = combo.join('').replace('company','');
+                var html_link = '';
+                switch(aux){
+                    case 'country':
+                        //filter.html?filter_by_item=company
+                        //&filter_item=Liferay&filter_ds_name=scm
+                        //&filter_names=company+country
+                        //&filter_metric_names=commits+authors
+                        //&filter_order_by=authors_7
+                        var l = 'filter.html?filter_by_item=company&filter_item='
+                            + company_name
+                            + '&filter_ds_name=' + ds_name
+                            + '&filter_names=' + combo.join('+')
+                            + '&filter_metric_names=' + defaultFilterValues[ds_name].metric_names
+                            + '&filter_order_by=' + defaultFilterValues[ds_name].order_by;
+
+                        html_link = '<li><i class="fa fa-globe"> <a href="'+l
+                            +'">code development by country</a></i></li>';
+                }
+                html += ' ' + html_link + ' ';
+            }
+
+        });
+        html += '</ul>';
+        return html;
+    }
 })();

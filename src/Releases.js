@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2014 Bitergia
  *
  * This program is free software; you can redistribute it and/or modify
@@ -27,9 +27,9 @@ function Releases() {
 
     /* These basic metrics are overwritten by the metrics.json file but they are needed
        for instance by the function viz.displayTop and viz.displaytopmetric.
-       It the metric is present in basic_metrics, the key of the dict will be used from 
+       It the metric is present in basic_metrics, the key of the dict will be used from
        the div when using it.
-       
+
     */
 
     this.basic_metrics = {
@@ -37,6 +37,16 @@ function Releases() {
             "name" : "Modules created",
             "desc" : "Number of modules created on the forge",
             "column": "modules"
+        },
+        "releases_authors":{
+            "name" : "Module authors",
+            "desc" : "Module authors",
+            "column": "authors"
+        },
+        "releases_releases":{
+            "name" : "Number of module releases",
+            "desc" : "Number of module releases",
+            "column": "releases"
         }
     };
 
@@ -70,7 +80,7 @@ function Releases() {
             $(div_id + ' #irc_name').text("IRC " + this.global_data.type);
         } else {
             $(div_id + ' #irc_url').attr("href", Report.getProjectData().irc_url);
-            $(div_id + ' #irc_name').text(Report.getProjectData().irc_name);            
+            $(div_id + ' #irc_name').text(Report.getProjectData().irc_name);
             $(div_id + ' #irc_type').text(Report.getProjectData().irc_type);
         }
 
@@ -86,7 +96,7 @@ function Releases() {
 
     this.displayBubbles = function(divid, radius) {
         /* only for testing purposes */
-        if (false)    
+        if (false)
             Viz.displayBubbles(divid, "releases_modules", "releases_releases", radius);
     };
 
