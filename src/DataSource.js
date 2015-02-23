@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2012-2014 Bitergia
  *
  * This program is free software; you can redistribute it and/or modify
@@ -53,7 +53,7 @@ function DataSource(name, basic_metrics) {
 
     function nameSpaceMetrics(plain_metrics, ds) {
         // If array, no data available
-        if (plain_metrics instanceof Array) 
+        if (plain_metrics instanceof Array)
             return plain_metrics;
         var metrics = {};
         $.each(plain_metrics, function (name, value) {
@@ -61,7 +61,7 @@ function DataSource(name, basic_metrics) {
             // commits_7, commits_30 ....
             var aux = name.split("_");
             if (isNaN(aux[aux.length-1]) === false)
-                basic_name = aux.slice(0,aux.length-1).join("_"); 
+                basic_name = aux.slice(0,aux.length-1).join("_");
             var ns_basic_name = ds.getName()+"_"+basic_name;
             var ns_name = ds.getName()+"_"+name;
             if (ds.getMetrics()[ns_basic_name] === undefined)
@@ -140,7 +140,7 @@ function DataSource(name, basic_metrics) {
         if (self === undefined) self = this;
         self.global_top_data = data;
     };
-    this.name = name;    
+    this.name = name;
     this.getName = function() {
         return this.name;
     };
@@ -158,7 +158,7 @@ function DataSource(name, basic_metrics) {
         self.people = people;
     };
 
-    this.time_to_fix_data_file = this.data_dir + '/'+this.name 
+    this.time_to_fix_data_file = this.data_dir + '/'+this.name
             + '-quantiles-month-time_to_fix_hour.json';
     this.getTimeToFixDataFile = function() {
         return this.time_to_fix_data_file;
@@ -172,7 +172,7 @@ function DataSource(name, basic_metrics) {
         self.time_to_fix_data = data;
     };
 
-    this.time_to_attention_data_file = this.data_dir + '/'+this.name 
+    this.time_to_attention_data_file = this.data_dir + '/'+this.name
             + '-quantiles-month-time_to_attention_hour.json';
     this.getTimeToAttentionDataFile = function() {
         return this.time_to_attention_data_file;
@@ -228,10 +228,54 @@ function DataSource(name, basic_metrics) {
         }
         return items;
     };
+
+    /*
+    * Returns an object filtering out the companies that are not included in
+    * the configuration of the dash
+    * @param {object()} com_data - Object with keys name and metrics name
+    */
+    function filterOutCompanies (com_data){
+        var aux = Report.getMenuElements();
+        var active_companies = aux.filter_companies;
+        if (active_companies && active_companies.length > 0){
+            var keys = Object.keys(com_data); //one of them is name
+            // first we get the position where enabled companies are
+            var positions = [];
+            $.each(com_data.name, function(pos, name){
+                //is name in array
+                if (active_companies.indexOf(name) >= 0){
+                    positions[positions.length] = pos;
+                }
+            });
+
+            var new_obj = {};
+            $.each(keys, function(id, k){
+                new_obj[k] = [];
+                $.each(positions, function(subid, pos){
+                    var l = new_obj[k].length;
+                    new_obj[k][l] = com_data[k][pos];
+                });
+            });
+            com_data = new_obj;
+        }
+        return com_data;
+    }
+
+    /*
+    * WARNING: strange code. Companies can be an object or an array.
+    * We are filtering the companies based on configuration file,
+    * it seems it is enough filtering when 'companies' is an object.
+    * What the hell is the array? Pretty good question.
+    */
     this.setCompaniesData = function(companies, self) {
         if (companies === null) companies = [];
         if (self === undefined) self = this;
-        self.companies = companies;
+        if (Array.isArray(companies)){
+            self.companies = companies;
+        }
+        else if(typeof(companies) === 'object'){
+            self.companies = filterOutCompanies(companies);
+        }
     };
 
     this.companies_metrics_data = {};
@@ -268,7 +312,7 @@ function DataSource(name, basic_metrics) {
     };
 
     // Repos data
-    this.repos_data_file = 
+    this.repos_data_file =
         this.data_dir+'/'+ this.name +'-repos.json';
     this.getReposDataFile = function() {
         return this.repos_data_file;
@@ -342,7 +386,7 @@ function DataSource(name, basic_metrics) {
     };
 
     // Countries data
-    this.countries_data_file = 
+    this.countries_data_file =
         this.data_dir+'/'+ this.name +'-countries.json';
     this.getCountriesDataFile = function() {
         return this.countries_data_file;
@@ -741,7 +785,7 @@ function DataSource(name, basic_metrics) {
             title = "List of companies";
         } else if (type === "repos") {
             items = this.getReposData();
-            if (order_by) 
+            if (order_by)
                 items = DataProcess.sortGlobal(this, order_by, type);
         } else if (type === "countries") {
             items = this.getCountriesData();
@@ -848,21 +892,21 @@ function DataSource(name, basic_metrics) {
         $("#"+div_links).append(links);
     };
 
-    this.displayCompaniesList = function (metrics,div_id, 
+    this.displayCompaniesList = function (metrics,div_id,
             config_metric, sort_metric, page, show_links, start, end, convert) {
-        this.displaySubReportList("companies",metrics,div_id, 
+        this.displaySubReportList("companies",metrics,div_id,
                 config_metric, sort_metric, page, show_links, start, end, convert);
     };
 
-    this.displayReposList = function (metrics,div_id, 
+    this.displayReposList = function (metrics,div_id,
             config_metric, sort_metric, page, show_links, start, end, convert) {
-        this.displaySubReportList("repos",metrics,div_id, 
+        this.displaySubReportList("repos",metrics,div_id,
                 config_metric, sort_metric, page, show_links, start, end, convert);
     };
 
-    this.displayCountriesList = function (metrics,div_id, 
+    this.displayCountriesList = function (metrics,div_id,
             config_metric, sort_metric, page, show_links, start, end, convert) {
-        this.displaySubReportList("countries",metrics,div_id, 
+        this.displaySubReportList("countries",metrics,div_id,
                 config_metric, sort_metric, page, show_links, start, end, convert);
     };
 
@@ -878,7 +922,7 @@ function DataSource(name, basic_metrics) {
                 config_metric, sort_metric, page, show_links, start, end, convert);
     };
 
-    this.displaySubReportList = function (report, metrics,div_id, 
+    this.displaySubReportList = function (report, metrics,div_id,
             config_metric, sort_metric, page_str, show_links, start, end, convert) {
 
         var page = parseInt(page_str, null);
@@ -931,10 +975,10 @@ function DataSource(name, basic_metrics) {
             if (Report.addDataDir()) addURL = Report.addDataDir();
             if (show_links) {
                 var release_var = '';
-                if (Utils.isReleasePage()) 
+                if (Utils.isReleasePage())
                     release_var = '&release=' + $.urlParam('release');
-                
-                if (report === "companies") { 
+
+                if (report === "companies") {
                     list += "<a href='company.html?company="+item;
                     list += release_var;
                     if (addURL) list += "&"+addURL;
@@ -1014,8 +1058,8 @@ function DataSource(name, basic_metrics) {
                 var items = {};
                 items[item] = item_data;
                 var title = '';
-                Viz.displayMetricSubReportLines(div_id, metric, items, title, 
-                        config_metric, mstart , mend, mconvert); 
+                Viz.displayMetricSubReportLines(div_id, metric, items, title,
+                        config_metric, mstart , mend, mconvert);
                 i++;
             });
         });
@@ -1045,7 +1089,7 @@ function DataSource(name, basic_metrics) {
         this.displaySummary("projects",divid, project, ds);
     };
 
-    this.displayPeopleSummary = function(divid, upeople_id, 
+    this.displayPeopleSummary = function(divid, upeople_id,
             upeople_identifier, ds) {
         var history = ds.getPeopleGlobalData()[upeople_id];
         if (history === undefined || history instanceof Array) return;
@@ -1098,7 +1142,7 @@ function DataSource(name, basic_metrics) {
         else global_data = ds.getGlobalData();
 
         if (!global_data) return;
-        
+
         html = HTMLComposer.repositorySummaryTable(ds, global_data, id_label);
         $("#"+divid).append(html);
     };
