@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2012-2014 Bitergia
  *
  * This program is free software; you can redistribute it and/or modify
@@ -62,6 +62,9 @@ if (Loader === undefined) var Loader = {};
      * Main function that starts all data loading activity
      */
     Loader.data_load = function() {
+        // Loads the side menu elements
+        data_load_file(Report.getMenuElementsFile(), Report.setMenuElements);
+
         // If we have a config file just load what is configured
         if (Report.getConfig() !== null &&
             Report.getConfig().project_info !== undefined) {
@@ -89,9 +92,6 @@ if (Loader === undefined) var Loader = {};
 
         // Loads also the project hierarchy
         data_load_file(Report.getProjectsHierarchyFile(), Report.setProjectsHierarchy);
-
-        // Loads the side menu elements
-        data_load_file(Report.getMenuElementsFile(), Report.setMenuElements);
 
         data_load_file(Report.getVizConfigFile(),
                 function(data, self) {Report.setVizConfig(data);});
@@ -130,7 +130,7 @@ if (Loader === undefined) var Loader = {};
 
     // Load just one file to viz it in a div
     Loader.get_file_data_div = function (file, cb, div) {
-        // First check cache 
+        // First check cache
         $.when($.getJSON(file)).done(function(history) {
             cb (div, file, history);
         }).fail(function() {
@@ -177,7 +177,7 @@ if (Loader === undefined) var Loader = {};
         var ds_not_supported = ['irc','mediawiki'];
         var data_sources = Report.getDataSources();
         $.each(data_sources, function(i, DS) {
-            if ($.inArray(DS.getName(), ds_not_supported) >-1) 
+            if ($.inArray(DS.getName(), ds_not_supported) >-1)
                 DS.setCompaniesData([]);
             else
                 data_load_file(DS.getCompaniesDataFile(),
@@ -204,9 +204,9 @@ if (Loader === undefined) var Loader = {};
         var ds_not_supported = ['irc','mediawiki'];
         var data_sources = Report.getDataSources();
         $.each(data_sources, function(i, DS) {
-            if ($.inArray(DS.getName(), ds_not_supported) >-1) 
+            if ($.inArray(DS.getName(), ds_not_supported) >-1)
                 DS.setCountriesData([]);
-            else 
+            else
                 data_load_file(DS.getCountriesDataFile(), DS.setCountriesData, DS);
         });
     }
@@ -255,7 +255,7 @@ if (Loader === undefined) var Loader = {};
         var data_sources = Report.getDataSources();
         $.each(data_sources, function(i, DS) {
             if (DS.getName() === "mls")
-                data_load_file(DS.getTimeToAttentionDataFile(), 
+                data_load_file(DS.getTimeToAttentionDataFile(),
                         DS.setTimeToAttentionData, DS);
         });
     }
@@ -478,7 +478,7 @@ if (Loader === undefined) var Loader = {};
             $.each(Report.getDataSources(), function(index, DS) {
                 if (Loader.check_item (item, filter) === false) {
                     check = false;
-                    Loader.data_load_item (item, DS, null, 
+                    Loader.data_load_item (item, DS, null,
                         Convert.convertFilterStudyItem, filter, null);
                     if (filter === "companies") {
                         if ($.inArray(DS.getName(),ds_not_supported_company_top) === -1)
@@ -726,7 +726,7 @@ if (Loader === undefined) var Loader = {};
                 }
                 return;
             }
-        } 
+        }
 
         $.when($.getJSON(file_top)).done(function(top) {
             if (filter === "companies") {
@@ -833,7 +833,7 @@ if (Loader === undefined) var Loader = {};
                         cb.called_page[filter] = true;
                     }
                 }
-            } 
+            }
             // Check all items for repositories mapping
             else if (items_map !== null) {
                 if (Loader.check_items (items_map, filter)) {
@@ -990,7 +990,7 @@ if (Loader === undefined) var Loader = {};
             active_reports = Report.getConfig().reports;
         $.each(data_sources, function(index, DS) {
             if (DS.getPeopleData() === null) {check = false; return false;}
-            if ($.inArray('companies', active_reports) > -1) 
+            if ($.inArray('companies', active_reports) > -1)
                 if (!check_companies_loaded(DS)) {check = false; return false;}
             if ($.inArray('repositories', active_reports) > -1)
                 if (!check_repos_loaded(DS)) {check = false; return false;}
@@ -1009,10 +1009,10 @@ if (Loader === undefined) var Loader = {};
 
     // Two steps data loading
     function end_data_load()  {
-        /** 
+        /**
          Every time data is loaded (file read and loaded) this function
          is called in order to execute the callbacks. It uses two different
-         checks which return true when all data is available 
+         checks which return true when all data is available
          **/
         if (check_data_loaded_global()) {
             for (var i = 0; i < data_global_callbacks.length; i++) {
