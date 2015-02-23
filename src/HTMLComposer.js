@@ -668,8 +668,33 @@ var HTMLComposer = {};
         'scm':{
             'metric_names':'commits+authors',
             'order_by':'commits_365'
+        },
+        'its':{
+            'metric_names':'closed+closers',
+            'order_by':'closed_365'
         }
     };
+
+    /*
+    * Returns string with pretty name for double filter
+    * @param {string} ds_name - name of the data source
+    * @param {string} metric_one - name of the first metric
+    * @param {string} metric_two - name of the second metric
+    */
+    function getFilterName (ds_name, metric_one, metric_two){
+        filters = {'scm':{
+            'company':{
+                'country': 'SCM by country'
+                }
+            },
+            'its':{
+                'company':{
+                    'country': 'ITS by country'
+                }
+            }
+        };
+        return filters[ds_name][metric_one][metric_two];
+    }
 
     /*
     * Returns HTML for available filters for company panel.
@@ -700,8 +725,10 @@ var HTMLComposer = {};
                             + '&filter_metric_names=' + defaultFilterValues[ds_name].metric_names
                             + '&filter_order_by=' + defaultFilterValues[ds_name].order_by;
 
-                        html_link = '<li><i class="fa fa-globe"> <a href="'+l
-                            +'">code development by country</a></i></li>';
+                        html_link = '<li><button class="btn btn-primary" type="button"><i class="fa fa-globe">'
+                            +' <a href="'+l
+                            +'" style="color: #FFFFFF;">'+ getFilterName(ds_name, combo[0], combo[1])
+                            +'</a></i></button></li>';
                 }
                 html += ' ' + html_link + ' ';
             }
