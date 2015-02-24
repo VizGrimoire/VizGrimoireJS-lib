@@ -127,8 +127,21 @@ function DataSource(name, basic_metrics) {
     this.getGlobalData = function() {
         return this.global_data;
     };
+    /*
+    * Stores data object in self.global_data. If companies are being filtered
+    * out via dashboard configuration, it modifies the number of companies.
+    * @param {object()} data - Object based on [ds_name]-static.json
+    */
     this.setGlobalData = function(data, self) {
         if (self === undefined) self = this;
+
+        var aux = Report.getMenuElements();
+        var active_companies = aux.filter_companies;
+        if (active_companies && (active_companies.length > 0)
+            && (Object.keys(data).indexOf('companies') >=0)){
+            data.companies = active_companies.length;
+        }
+
         self.global_data = nameSpaceMetrics(data, self);
     };
 
