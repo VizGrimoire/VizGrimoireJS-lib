@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2012-2014 Bitergia
  *
  * This program is free software; you can redistribute it and/or modify
@@ -49,7 +49,7 @@ var Utils = {};
          Can be improved checking the conf file with the release names, in order
          to check if the release name is correct.
          */
-        
+
         if ($.urlParam('release') === null) return false;
         else return true;
     }
@@ -58,7 +58,7 @@ var Utils = {};
     /*
      Return raw string with the GET params in the current URL
      */
-    params = '';    
+    params = '';
     if (document.URL.split('?').length > 1){
         params = document.URL.split('?')[1];
     }
@@ -95,7 +95,14 @@ var Utils = {};
         }
         return url;
     }
-    
-    
-    
+
+
+
 })();
+
+String.prototype.supplant = function(o) {
+  return this.replace(/{([^{}]*)}/g,function(a, b) {
+    var r = o[b];
+    return typeof r === 'string' || typeof r === 'number' ? r : a;
+  });
+};
