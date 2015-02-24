@@ -701,40 +701,63 @@ var HTMLComposer = {};
     * @param {string} company_name - The name of the company
     */
     function companyFilters(company_name){
-        var html = '<ul class="nav nav-pills" role="tablist">';
-        var mele = Report.getMenuElements();
-        var filters = mele.filter;
-        $.each(filters, function(id, value){
-            //value = scm:company+country
-            var ds_name = value.split(':')[0];
-            var combo = value.split(':')[1].split('+');
-            if (combo.indexOf('company') >= 0){
-                var aux = combo.join('').replace('company','');
-                var html_link = '';
-                switch(aux){
-                    case 'country':
-                        //filter.html?filter_by_item=company
-                        //&filter_item=Liferay&filter_ds_name=scm
-                        //&filter_names=company+country
-                        //&filter_metric_names=commits+authors
-                        //&filter_order_by=authors_7
-                        var l = 'filter.html?filter_by_item=company&filter_item='
-                            + company_name
-                            + '&filter_ds_name=' + ds_name
-                            + '&filter_names=' + combo.join('+')
-                            + '&filter_metric_names=' + defaultFilterValues[ds_name].metric_names
-                            + '&filter_order_by=' + defaultFilterValues[ds_name].order_by;
+        var html = '',
+            mele = Report.getMenuElements(),
+            menu_filters = mele.filter,
+            filter_ds = {};
 
-                        html_link = '<li><button class="btn btn-primary" type="button"><i class="fa fa-globe">'
-                            +' <a href="'+l
-                            +'" style="color: #FFFFFF;">'+ getFilterName(ds_name, combo[0], combo[1])
-                            +'</a></i></button></li>';
-                }
-                html += ' ' + html_link + ' ';
+        $.each(menu_filters, function(id, value){
+            var ds_name = value.split(':')[0],
+                combo = value.split(':')[1],
+                mylen;
+            if (Object.keys(filter_ds).indexOf(combo) < 0){
+                filter_ds[combo] = [];
             }
-
+            mylen = filter_ds[combo].length;
+            filter_ds[combo][mylen] = ds_name;
         });
-        html += '</ul>';
+
+        $.each(Object.keys(filter_ds), function(id, value){
+            //value = scm:company+country
+            switch(value){
+                case 'company+country':
+                    //filter.html?filter_by_item=company
+                    //&filter_item=Liferay&filter_ds_name=scm
+                    //&filter_names=company+country
+                    //&filter_metric_names=commits+authors
+                    //&filter_order_by=authors_7
+                    $.each(filter_ds[value], function (subid, ds_name){
+                        if (subid === 0){
+                            html = '<div class="btn-group">' +
+                            '<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">'+
+                            '<i class="fa fa-globe"></i> Activity by country <span class="caret"></span>'+
+                            '</button>'+
+                            '<ul class="dropdown-menu" role="menu">';
+                        }
+
+                        var aux_obj = {};
+                        aux_obj.company_name = company_name;
+                        aux_obj.ds_name = ds_name;
+                        aux_obj.value = value;
+                        aux_obj.metric_names = defaultFilterValues[ds_name].metric_names;
+                        aux_obj.order_by = defaultFilterValues[ds_name].order_by;
+                        aux_obj.filter_name = getFilterName(ds_name, value.split('+')[0], value.split('+')[1]);
+                        var aux_html = '<li><a href="' +
+                                'filter.html?filter_by_item=company&filter_item=' +
+                                '{company_name}' +
+                                '&filter_ds_name={ds_name}' +
+                                '&filter_names={value}' +
+                                '&filter_metric_names={metric_names}' +
+                                '&filter_order_by={order_by}' +
+                                '">{filter_name}</a></button></li>';
+                        html += aux_html.supplant(aux_obj);
+
+                        if (subid === (filter_ds[value].length - 1)){
+                            html += '</ul></div>';
+                        }
+                    });
+            }
+        });
         return html;
     }
 })();
