@@ -37,6 +37,9 @@ var Charts = {};
     function plotLinesChart(div_id, line_names, raw_data){
         var flt_data = buildFlotrData(line_names, raw_data);
         var config = getChartConfig(flt_data, raw_data.strdate);
+        if (raw_data.max){
+            config.yaxis.max = raw_data.max;
+        }
         // we force the legend when several lines are plotted
         if (flt_data.length > 1) config.legend.show = true;
         config.subtitle = composeTitle(line_names);
