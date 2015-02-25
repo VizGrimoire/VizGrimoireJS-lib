@@ -29,16 +29,71 @@ String.prototype.supplant = function(o) {
   });
 };
 
-// GenericTable
-
-// MessagesTable
-
 // PeopleTable
 var Table = {};
 
 (function() {
 
     Table.displayTopTable = displayTopTable;
+    Table.simpleTable = displaySimpleTable;
+
+    /*
+    * Display a raw bootstrap table with headers and rows
+    * @param {object()} div - html object where table will be appended
+    * @param {object()} data - Contains array of columns
+    */
+    function displaySimpleTable(div, data, headers, cols){
+        var tables,
+            aux_html;
+
+        tables= '<table class="table table-striped">';
+        aux_html = '<thead><th>#</th>';
+        $.each(headers, function(id,value){
+            aux_html += '<th>' + value + '</th>';
+        });
+        aux_html += '</thead><tbody>';
+        aux_html += '<tbody>';
+
+        /*
+        * This snippet was added to fix an error in the JSON
+        */
+        var first_col,
+            aux_col;
+        if ( typeof(data[cols[0]]) !== 'object'){
+            aux_col = [];
+            aux_col[0] = data[cols[0]];
+            first_col = aux_col;
+        }else{
+            first_col = data[cols[0]];
+        }
+        /* end of the snippet */
+
+        $.each(first_col, function(id, value){
+            aux_html += '<tr>';
+            var cont = id + 1;
+            aux_html += '<td>' + cont + '</td>';
+            $.each(cols, function(subid, name){
+                if (typeof(data[name]) !== 'object'){
+                    /*
+                    * FIXME: this hack is to survive a malformed JSON
+                    */
+                    aux_html += '<td>'+data[name]+'</td>';
+                }else{
+                    aux_html += '<td>'+data[name][id]+'</td>';
+                }
+            });
+            aux_html += '</tr>';
+        });
+        aux_html += '</tbody>';
+        tables += aux_html;
+        tables += '</table>';
+
+        //return tables;
+        $("#"+div.id).append(tables);
+
+    }
+
+
 
     /*
     * Displays table based on data and opts
@@ -225,4 +280,4 @@ var Table = {};
 
          return var_names;
      }
- })();
+})();
