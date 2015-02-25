@@ -136,7 +136,13 @@ function DataSource(name, basic_metrics) {
         if (self === undefined) self = this;
 
         var aux = Report.getMenuElements();
-        var active_companies = aux.filter_companies;
+        var active_companies = null;
+
+        if (aux && typeof aux.filter_companies !== undefined) {
+            console.log("YES");
+            active_companies = aux.filter_companies;
+        }
+
         if (active_companies && (active_companies.length > 0)
             && (Object.keys(data).indexOf('companies') >=0)){
             data.companies = active_companies.length;
@@ -249,7 +255,12 @@ function DataSource(name, basic_metrics) {
     */
     function filterOutCompanies (com_data){
         var aux = Report.getMenuElements();
-        var active_companies = aux.filter_companies;
+        var active_companies = null;
+
+        if (aux && typeof aux.filter_companies !== undefined) {
+            active_companies = aux.filter_companies;
+        }
+
         if (active_companies && active_companies.length > 0){
             var keys = Object.keys(com_data); //one of them is name
             // first we get the position where enabled companies are
