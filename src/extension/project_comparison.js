@@ -28,8 +28,26 @@ var ProjectsComparison = {};
 
     var ts_project = {},
         top_project = {},
-        static_project = {};
+        static_project = {},
+        max_metrics = {},
+        compare_func = function(a, b){return a-b;};
 
+    /*
+    * Store max of metrics from both projects in max_metrics
+    */
+    function getMaxMetrics(metrics){
+        var aux = [],
+            temp_max = [];
+
+        $.each(metrics, function(id, m){
+            temp_max = [];
+            $.each(Object.keys(ts_project), function(subid, p){
+                aux = ts_project[p][m].slice(); // we have to copy the array
+                temp_max[temp_max.length] = aux.sort(compare_func)[aux.length-1];
+            });
+            max_metrics[m] = temp_max.sort(compare_func)[temp_max.length-1];
+        });
+    }
 
     ProjectsComparison.Title = function(){
         var divs = $(".ProjectComparisonTitle");
@@ -38,7 +56,12 @@ var ProjectsComparison = {};
                 projects_aux = Report.getParameterByName('projects');
                 projects = projects_aux.split(',');
                 var aux_obj = {'project_a': projects[0], 'project_b': projects[1]};
-                html = '<div class="row"><div class="col-md-6 text-left">Project name: {project_a}</div><div class="col-md-6 text-left">Project name:{project_b}</div></div>';
+                html = '<div class="row">'+
+                    '<div class="col-md-6 text-left"><div class="well">' +
+                    '<strong>&nbsp;Project name: {project_a}</strong></div></div>' +
+                    '<div class="col-md-6 text-left"><div class="well">' +
+                    '<strong>&nbsp;Project name: {project_b}</strong></div></div>' +
+                    '</div>';
                 $(div).append(html.supplant(aux_obj));
             });
         }
@@ -85,6 +108,7 @@ var ProjectsComparison = {};
                     ts_project[projects[1]] = p2[0];
                     static_project[projects[0]] = p3[0];
                     static_project[projects[1]] = p4[0];
+                    getMaxMetrics(ts_metrics);
                     displayProjectsComparison(div, DS, ds_name, ts_metrics, projects);
                 }).fail(function(){
                     console.log('Error loading data from ProjectsComparisonTS widget');
@@ -118,6 +142,35 @@ var ProjectsComparison = {};
                         projects, period);}
                 ).fail( function() {
                     console.log('Error loading data from ProjectsComparisonTop widget');
+                });
+            });
+        }
+    };
+
+    ProjectsComparison.TopOrgWidget = function (){
+        var divs = $(".ProjectsComparisonTopOrgs");
+        if (divs.length > 0){
+            $.each(divs, function(id, div) {
+                var ds_name = $(this).data('data-source');
+                var metric = $(this).data('metric');
+                var period = $(this).data('period');
+                if (period === undefined) {period = 'all';}
+                projects_aux = Report.getParameterByName('projects');
+                projects = projects_aux.split(',');
+
+                //metric_name = $(this).data('metric');
+                /* this is a typical check, should be moved to a generic funct*/
+                DS = Report.getDataSourceByName(ds_name);
+                if (DS === null) return;
+                if (DS.getData().length === 0) return; /* no data for data source*/
+
+                // We need the same code used by widget ProjectsComparisonTopOrg
+                getDataFor('ProjectsComparisonTop', ds_name, projects).done(function(p1,p2){
+                    top_project[projects[0]] = p1[0];
+                    top_project[projects[1]] = p2[0];
+                    displayProjectsComparisonTopOrg(div, ds_name, metric, projects);}
+                ).fail( function() {
+                    console.log('Error loading data from ProjectsComparisonTopOrg widget');
                 });
             });
         }
@@ -184,6 +237,22 @@ var ProjectsComparison = {};
         });
     }
 
+    function displayProjectsComparisonTopOrg(div, ds_name, metric, projects){
+        var html = HTMLPrjComparisonTopOrg(ds_name, projects, metric);
+        if (!div.id) div.id = "Parsed69";
+        $("#"+div.id).append(html);
+        $.each(projects, function(id, pro){
+            var class_name = pro + metric + 'org';
+            class_name = class_name.toLowerCase().replace(/\s+/g, '');
+            var divs = $("#Top" + class_name);
+            if (divs.length > 0) {
+                $.each(divs, function(id, div2) {
+                    Table.simpleTable(div2, top_project[pro], ['Companies','Commits'], ['companies','company_commits']);
+                });
+            }
+        });
+    }
+
     function displayProjectsComparisonTotalNumbers(div, DS, ds_name, projects){
         var html = HTMLPrjComparisonTN(projects);
         if (!div.id) div.id = "Parsed";
@@ -194,11 +263,11 @@ var ProjectsComparison = {};
         var html = '<span class="row">';
         $.each(projects, function(id, myprj){
             var html_table;
-            html_table = '<span class="col-md-6"><table class="table table-striped">';
+            html_table = '<div class="col-md-6"><table class="table table-striped">';
             html_table += '<tr class="row"><td class="col-md-6">Number of repositories: {repositories}</td><td class="col-md-6">Total number of code developers: {authors}</td></tr>';
             html_table += '<tr class="row"><td class="col-md-6">Active code developers last year: {authors_365}</td><td class="col-md-6">New code developers last year: {newauthors_365}</td></tr>';
             html_table += '<tr class="row"><td class="col-md-6">Active code developers last month: {authors_30}</td><td class="col-md-6">New code developers last month: {newauthors_30}</td></tr>';
-            html_table += '</table></span>';
+            html_table += '</table></div>';
             html += html_table.supplant(static_project[myprj]);
         });
         html += '</html>';
@@ -209,6 +278,19 @@ var ProjectsComparison = {};
         var html = '<div class="row">';
         $.each(projects, function(id, pro){
             class_name = pro + metric;
+            class_name = class_name.toLowerCase().replace(/\s+/g, '');
+            html += '<div class="col-md-6"><div class="well">';
+            html += '<div id="Top' +class_name+'">';
+            html += '</div></div></div>';
+        });
+        html += '</div>';
+        return html;
+    }
+
+    function HTMLPrjComparisonTopOrg(ds_name, projects, metric){
+        var html = '<div class="row">';
+        $.each(projects, function(id, pro){
+            class_name = pro + metric + 'org';
             class_name = class_name.toLowerCase().replace(/\s+/g, '');
             html += '<div class="col-md-6"><div class="well">';
             html += '<div id="Top' +class_name+'">';
@@ -237,6 +319,12 @@ var ProjectsComparison = {};
                         selected_data.strdate = ts_project[pro].date;
                         selected_data.lines_data = [];
                         selected_data.lines_data[0] = ts_project[pro][metric];
+                        if (Object.keys(max_metrics).indexOf(metric) >= 0){
+                            selected_data.max = max_metrics[metric];
+                            // we increase it for the Y axis
+                            selected_data.max = selected_data.max +
+                                                selected_data.max * 0.3;
+                        }
                         Charts.plotLinesChart(div2.id, [metric], selected_data);//ts_project[pro]);
                     });
                 }
@@ -318,4 +406,5 @@ Loader.data_ready(function() {
     ProjectsComparison.Topwidget();
     ProjectsComparison.SummaryNumbersWidget();
     ProjectsComparison.Title();
+    ProjectsComparison.TopOrgWidget();
 });

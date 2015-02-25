@@ -385,7 +385,8 @@ function getSectionName(){
                     "company":"Company",
                     "country":"Country",
                     "domain":"Domain",
-                    "release":"Companies analysis by release"
+                    "release":"Companies analysis by release",
+                    "project_comparison":"Project comparison"
                    };
     var filters = {"companies":"Activity by companies",
                    "contributors":"Activity by contributors",
