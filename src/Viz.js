@@ -119,7 +119,7 @@ if (Viz === undefined) var Viz = {};
             var_names.name = "authors";
             var_names.action = "commits";
         }
-        if (metric === "closers" && ds_name === "its"){
+        if (metric === "closers" && (ds_name === "its" || ds_name === "its_1")){
             var_names.name = "closers";
             var_names.action = "closed";
         }

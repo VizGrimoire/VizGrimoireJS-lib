@@ -50,6 +50,7 @@ describe( "VizGrimoireJS library", function () {
             it("html MetricsEvolSet should be displayed", function () {
                 runs(function() {
                     $.each(Report.getDataSources(), function(index, DS) {
+                        if (DS.getName() === "its_1") {return;}
                         buildNode(DS.getName()+"-MetricsEvolSet", 'MetricsEvolSet',
                             {
                                 'data-data-source': DS.getName(),
@@ -59,12 +60,13 @@ describe( "VizGrimoireJS library", function () {
                     var envisionCreated = document.getElementsByClassName
                         ('envision-visualization');
                     expect(envisionCreated.length).toEqual
-                        (Report.getDataSources().length);
+                        (Report.getDataSources().length-1);
                 });
             });
             it("html MetricsEvol should be displayed", function () {
                 runs(function() {
                     $.each(Report.getDataSources(), function(index, DS) {
+                        if (DS.getName() === "its_1") {return;}
                         $.each(DS.getMetrics(), function(i, metric) {
                             buildNode(DS.getName()+"-MetricsEvol-"+metric.column, 'MetricsEvol',
                               {
@@ -75,6 +77,7 @@ describe( "VizGrimoireJS library", function () {
                     });
                     Convert.convertMetricsEvol();
                     $.each(Report.getDataSources(), function(index, DS) {
+                        if (DS.getName() === "its_1") {return;}
                         var ds_metrics = DS.getData();
                         $.each(DS.getMetrics(), function(name, metric) {
                             if (ds_metrics[name] === undefined) return true;
@@ -127,7 +130,7 @@ describe( "VizGrimoireJS library", function () {
                         if (DS.getName() !== "scr" && DS.getName() !== "irc" &&
                             DS.getName() !== "mediawiki" && DS.getName() !== "people" &&
                             DS.getName() !== "downloads" && DS.getName() !== "qaforums" &&
-                            DS.getName() !== "releases")
+                            DS.getName() !== "releases" && DS.getName() !== "its_1" )
                             buildNode(DS.getName()+"-demographics-"+type,
                                       'Demographics',
                                     {
@@ -477,7 +480,8 @@ describe( "VizGrimoireJS library", function () {
                 $.each(data_sources, function(index, DS) {
                     if (DS.getName() === 'irc' || DS.getName() === "mediawiki" ||
                         DS.getName() === "people" || DS.getName() === "downloads"
-                        || DS.getName() === "qaforums" || DS.getName() === "releases")
+                        || DS.getName() === "qaforums" || DS.getName() === "releases"
+                        || DS.getName() === "its_1" )
                         return;
                     var np = DS.getPeopleData().length;
                     if (np > max_people_index) max_people_index = np;
@@ -488,7 +492,8 @@ describe( "VizGrimoireJS library", function () {
                     $.each(data_sources, function(index, DS) {
                         if (DS.getName() === 'irc' || DS.getName() === "mediawiki" ||
                             DS.getName() === "people" || DS.getName() === "downloads"
-                            || DS.getName() === "qaforums" || DS.getName() === "releases")
+                            || DS.getName() === "qaforums" || DS.getName() === "releases"
+                            || DS.getName() === "its_1" )
                             return;
                         if ($.inArray(i,DS.getPeopleData())===-1) {
                             dev_found = false;
@@ -500,7 +505,8 @@ describe( "VizGrimoireJS library", function () {
                 $.each(data_sources, function(index, DS) {
                     if (DS.getName() === 'irc' || DS.getName() === "mediawiki" ||
                        DS.getName() === "people" || DS.getName() === "downloads"
-                        || DS.getName() === "qaforums" || DS.getName() === "releases")
+                        || DS.getName() === "qaforums" || DS.getName() === "releases"
+                        || DS.getName() === "its_1" )
                         return;
                     if (DS.getName() === 'scm') metrics = 'scm_commits';
                     else if (DS.getName() === 'its') metrics = 'its_closed';

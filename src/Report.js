@@ -403,13 +403,15 @@ if (Report === undefined) var Report = {};
         checkDynamicConfig();
 
         var projects_dirs = Report.getProjectsDirs();
-        var scm, its, mls, scr, irc, mediawiki, people, downloads, qaforums, releases;
+        var scm, its, its_1, mls, scr, irc, mediawiki, people, downloads, qaforums, releases;
 
         $.each(projects_dirs, function (i, project) {
             if (Report.getConfig() === null ||
                 Report.getConfig()['data-sources'] === undefined) {
                 its = new ITS();
                 Report.registerDataSource(its);
+                its_1 = new ITS_1();
+                Report.registerDataSource(its_1);
                 mls = new MLS();
                 Report.registerDataSource(mls);
                 scm = new SCM();
@@ -435,6 +437,10 @@ if (Report === undefined) var Report = {};
                     if (name === "its") {
                         its = new ITS();
                         Report.registerDataSource(its);
+                    }
+                    else if (name === "its_1") {
+                        its_1 = new ITS_1();
+                        Report.registerDataSource(its_1);
                     }
                     else if (name === "mls") {
                         mls = new MLS();
@@ -477,6 +483,7 @@ if (Report === undefined) var Report = {};
                 });
             }
             if (its) its.setDataDir(project);
+            if (its_1) its_1.setDataDir(project);
             if (mls) mls.setDataDir(project);
             if (scm) scm.setDataDir(project);
             if (scr) scr.setDataDir(project);
