@@ -2205,7 +2205,9 @@ Convert.convertFilterTop = function(filter){
      **/
     var item = Report.getParameterByName("repository");
     // If data is not available load them and cb this function
-    if (Loader.filterTopCheck(item, filter) === false) return;
+    if (item !== undefined) {
+        if (Loader.filterTopCheck(item, filter) === false) return;
+    }
     Convert.convertTop();
     Convert.convertRepositorySelector();
 
