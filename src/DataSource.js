@@ -248,6 +248,30 @@ function DataSource(name, basic_metrics) {
     };
 
     /*
+    * Returns an Array filtering out the companies not included in the dash
+    * conf.
+    * @param {string[]} com_data - list of company names
+    */
+    function filterOutCompaniesArray(com_data){
+        var aux = Report.getMenuElements(),
+            active_companies = null,
+            result = [];
+
+        if (aux && typeof(aux.filter_companies) !== undefined) {
+            active_companies = aux.filter_companies;
+        }
+        if (active_companies && active_companies.length > 0){
+            $.each(com_data, function(pos, name){
+                //is name in array
+                if (active_companies.indexOf(name) >= 0){
+                    result[result.length] = name;
+                }
+            });
+        }
+        return result;
+    }
+
+    /*
     * Returns an object filtering out the companies that are not included in
     * the configuration of the dash
     * @param {object()} com_data - Object with keys name and metrics name
@@ -256,7 +280,7 @@ function DataSource(name, basic_metrics) {
         var aux = Report.getMenuElements();
         var active_companies = null;
 
-        if (aux && typeof aux.filter_companies !== undefined) {
+        if (aux && typeof(aux.filter_companies) !== undefined) {
             active_companies = aux.filter_companies;
         }
 
@@ -294,7 +318,8 @@ function DataSource(name, basic_metrics) {
         if (companies === null) companies = [];
         if (self === undefined) self = this;
         if (Array.isArray(companies)){
-            self.companies = companies;
+            //JSON API is broken for SCR data source so we need this hack
+            self.companies = filterOutCompaniesArray(companies);
         }
         else if(typeof(companies) === 'object'){
             self.companies = filterOutCompanies(companies);
