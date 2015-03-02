@@ -139,7 +139,6 @@ function DataSource(name, basic_metrics) {
         var active_companies = null;
 
         if (aux && typeof aux.filter_companies !== undefined) {
-            console.log("YES");
             active_companies = aux.filter_companies;
         }
 
