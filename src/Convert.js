@@ -497,6 +497,11 @@ function composeSideBar(project_id){
             aux_html = HTMLComposer.sideBarLinks('fa-ticket','Tickets','its', aux);
             html += aux_html;
         }
+        if (mele.hasOwnProperty('its_1')){
+            aux = mele.its_1;
+            aux_html = HTMLComposer.sideBarLinks('fa-ticket','Tickets 1','its_1', aux);
+            html += aux_html;
+        }
         if (mele.hasOwnProperty('mls')){
             aux = mele.mls;
             aux_html = HTMLComposer.sideBarLinks('fa-envelope-o','Mailing lists','mls', aux);
