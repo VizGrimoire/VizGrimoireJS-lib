@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2012-2014 Bitergia
  *
  * This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ if (Report === undefined) var Report = {};
 (function() {
 
     // Shared config
-    var project_data = null, markers = null, viz_config = null, 
+    var project_data = null, markers = null, viz_config = null,
         gridster = {}, data_sources = [], report_config = null, html_dir="";
     var data_dir = "data/json";
     var config_dir = "config";
@@ -75,7 +75,7 @@ if (Report === undefined) var Report = {};
     Report.registerDataSource = function(backend) {
         data_sources.push(backend);
     };
-    
+
     Report.setHtmlDir = function (dir) {
         html_dir = dir;
     };
@@ -148,7 +148,7 @@ if (Report === undefined) var Report = {};
     }
     function getReleaseNames() {
         return menu_elements.releases;
-    }    
+    }
     Report.setMenuElements = function(data){
 	menu_elements = data;
     };
@@ -202,7 +202,7 @@ if (Report === undefined) var Report = {};
 
     Report.setMetricsDefinition = function(metrics) {
         $.each(Report.getDataSources(), function(i, DS) {
-           DS.setMetricsDefinition(metrics[DS.getName()]); 
+           DS.setMetricsDefinition(metrics[DS.getName()]);
         });
     };
 
@@ -251,7 +251,7 @@ if (Report === undefined) var Report = {};
         return parts.join(".");
     }
 
-    // Format: 
+    // Format:
     // numbers: 2 decimals, and ,. separators
     // strings: no format
     Report.formatValue = function(number, field) {
@@ -297,7 +297,7 @@ if (Report === undefined) var Report = {};
     // http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values
     Report.getParameterByName = function(name) {
         // _jshint_ does not like it
-        // name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]"); 
+        // name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
         name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
         var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
             results = regex.exec(location.search);
@@ -336,7 +336,7 @@ if (Report === undefined) var Report = {};
         var page = active.substr(active.lastIndexOf("/")+1,active.length);
         page = page.split(".html")[0];
         if (page.indexOf('scm') === 0) {
-            $(".scm-menu")[0].className = $(".scm-menu")[0].className + " active"; 
+            $(".scm-menu")[0].className = $(".scm-menu")[0].className + " active";
         } else if (page.indexOf('its') === 0) {
             $(".its-menu")[0].className = $(".its-menu")[0].className + " active";
         } else if (page.indexOf('mls') === 0) {
@@ -360,14 +360,14 @@ if (Report === undefined) var Report = {};
             $(".summary-menu")[0].className =  $(".summary-menu")[0].className + " active";
         } else {
             if ($(".experimental-menu")[0])
-                $(".experimental-menu")[0].className = 
+                $(".experimental-menu")[0].className =
                 $(".experimental-menu")[0].className + " active";
         }
     };
 
     function checkDynamicConfig() {
         var data_sources = [];
-        
+
         /*
          function getDataDirs(dirs_config) {
             var full_params = dirs_config.split ("&");
@@ -388,12 +388,12 @@ if (Report === undefined) var Report = {};
             if (data_sources.length>0)
                 Report.setProjectsDirs(data_sources);
         }*/
-        
+
         var release = $.urlParam('release');
         if (release !== null && release.length > 0 ){
             data_sources.push('data/json/' + release);
             Report.setDataDir('data/json/' + release);
-            if (data_sources.length>0)                
+            if (data_sources.length>0)
                 Report.setProjectsDirs(data_sources);
         }
     }
@@ -507,7 +507,7 @@ if (Report === undefined) var Report = {};
         $.each(Report.getDataSources(), function (index, ds) {
             if (ds.getData() instanceof Array) return;
             $.each(projects_data, function (name, project) {
-                if (project.dir === ds.getDataDir()) {                    
+                if (project.dir === ds.getDataDir()) {
                     if (prjs_dss[name] === undefined) prjs_dss[name] = [];
                     // Support data reloading. Each project has instance per DS
                     $.each(prjs_dss[name], function (prj, prjds) {
@@ -623,14 +623,12 @@ Loader.data_ready(function() {
 });
 
 $(document).ready(function() {
-    // var filename = Report.getDataDir()+'/config.json';
-    // Config file loaded from root dir
-    var filename = './config.json';
-    $.getJSON(filename, function(data) {
-        Report.setConfig(data);
+    $.getJSON(Report.getMenuElementsFile(), function(data) {
+        Report.setMenuElements(data);
     }).fail(function() {
         if (window.console)
-            Report.log("Can't read global config file " + filename);
+            Report.log("Can't read global config file " +
+                        Report.getMenuElementsFile());
     }).always(function (data) {
         Report.createDataSources();
         $.getJSON(Report.all_json_file, function(data) {
@@ -639,7 +637,7 @@ $(document).ready(function() {
             }
             Loader.set_all_data(data);
         }).always(function (data) {
-            Loader.data_load();        
+            Loader.data_load();
         });
         $("body").css("cursor", "progress");
     });
