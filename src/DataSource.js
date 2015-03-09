@@ -267,6 +267,8 @@ function DataSource(name, basic_metrics) {
                     result[result.length] = name;
                 }
             });
+        }else{
+            result = com_data;
         }
         return result;
     }
