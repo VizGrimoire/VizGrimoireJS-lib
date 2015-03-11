@@ -31,6 +31,7 @@ var Utils = {};
     Utils.filenameInURL = filenameInURL;
     Utils.createLink = createLink;
     Utils.createReleaseLink = createReleaseLink;
+    Utils.getParameter = getParameter;
 
     $.urlParam = function(name){
         var results = new RegExp('[?&]' + name + '=([^&#]*)').exec(window.location.href);
@@ -96,8 +97,11 @@ var Utils = {};
         return url;
     }
 
-
-
+    function getParameter(param){
+        if ($.urlParam(param) === null) return false;
+        return $.urlParam(param);
+    }
+    
 })();
 
 String.prototype.supplant = function(o) {
