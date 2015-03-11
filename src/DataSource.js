@@ -1227,7 +1227,7 @@ function DataSource(name, basic_metrics) {
 
     this.displayDemographics = function(divid, period) {
         var data = this.getDemographicsData();
-        Viz.displayDemographicsChart(divid, this, data, period);
+        Viz.displayDemographicsChart(divid, data, period);
     };
 
     this.displayTimeToAttention = function(div_id, column, labels, title) {
