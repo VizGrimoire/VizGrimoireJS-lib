@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2013 Bitergia
  *
  * This program is free software; you can redistribute it and/or modify
@@ -166,7 +166,31 @@ function SCR() {
             "column" : "reviewers",
             "name" : "Reviewers",
             "desc" : "Number of people reviewing contributions"
-     }
+        },
+        "scr_timeto_merge_avg":{
+            "divid" : "scr_timeto_merge_avg",
+            "column" : "timeto_merge_avg",
+            "name" : "Time to merge (average days)",
+            "desc" : "Number of average days a contribution waits to be merged"
+        },
+        "scr_timeto_merge_median":{
+            "divid" : "scr_timeto_merge_median",
+            "column" : "timeto_merge_median",
+            "name" : "Time to merge (median of the days)",
+            "desc" : "Median of the number of days a contribution waits to be merged"
+        },
+        "scr_timeto_close_avg":{
+            "divid" : "scr_timeto_close_avg",
+            "column" : "timeto_close_avg",
+            "name" : "Time to close (average days)",
+            "desc" : "Number of average days a contribution waits to be closed"
+        },
+        "scr_timeto_close_median":{
+            "divid" : "scr_timeto_close_median",
+            "column" : "timeto_close_median",
+            "name" : "Time to close (median of the days)",
+            "desc" : "Median of the number of days a contribution waits to be closed"
+        }
 
     };
 
@@ -213,7 +237,7 @@ function SCR() {
             $(div_id + ' #scr_name').text("SCR " + this.global_data.type);
         } else {
             $(div_id + ' #scr_url').attr("href", Report.getProjectData().mls_url);
-            $(div_id + ' #scr_name').text(Report.getProjectData().scr_name);            
+            $(div_id + ' #scr_name').text(Report.getProjectData().scr_name);
             $(div_id + ' #scr_type').text(Report.getProjectData().scr_type);
         }
 
@@ -230,7 +254,7 @@ function SCR() {
 
     this.displayBubbles = function(divid, radius) {
         // TODO: we don't have people metrics data
-        if (false)    
+        if (false)
             Viz.displayBubbles(divid, "scr_opened", "scr_openers", radius);
     };
 
@@ -238,7 +262,7 @@ function SCR() {
     // <allura-dev.incubator.apache.org>
     SCR.displaySCRListName = function (listinfo) {
         var list_name_tokens = listinfo.split("_");
-        var list_name = ''; 
+        var list_name = '';
         if (list_name_tokens.length > 1) {
             list_name = list_name_tokens[list_name_tokens.length - 1];
             if (list_name === "")
@@ -252,6 +276,6 @@ function SCR() {
         return list_name;
     };
 
-    this.getTitle = function() {return "Source Code Review";};    
+    this.getTitle = function() {return "Source Code Review";};
 }
 SCR.prototype = new DataSource("scr");
