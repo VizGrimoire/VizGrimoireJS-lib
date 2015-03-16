@@ -147,11 +147,20 @@ var DataProcess = {};
 
     // Select longest name from identities
     DataProcess.selectPersonName = function(person) {
-        var name = "", cname, ctype;
-        for (var i=0; i<person.identity.length; i++) {
-            cname = person.identity[i];
-            ctype = person.type[i];
-            if (ctype === "name") {
+        var name = "", cname, ctype, i;
+        if (person.identity) {
+            for (i=0; i<person.identity.length; i++) {
+                cname = person.identity[i];
+                ctype = person.type[i];
+                if (ctype === "name") {
+                    if (cname.length>name.length) name = cname;
+                }
+            }
+        }
+        // New format in Sortinghat. Just "name" field.
+        else if (person.name) {
+            for (i=0; i<person.name.length; i++) {
+                cname = person.name[i];
                 if (cname.length>name.length) name = cname;
             }
         }
@@ -161,6 +170,7 @@ var DataProcess = {};
     // Select first email from identities
     DataProcess.selectPersonEmail = function(person) {
         var email = "", cemail, ctype;
+        if (person.identity === undefined) return;
         for (var i=0; i<person.identity.length; i++) {
             cemail = person.identity[i];
             ctype = person.type[i];
