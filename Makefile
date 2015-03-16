@@ -50,6 +50,7 @@ vizgrimoire.core.js: \
     src/Identity.js \
 	src/Charts.js \
 	src/Tables.js
+    src/extension/demographics.js
 
 vizgrimoire.deps.css: \
     src/envision.min.css \

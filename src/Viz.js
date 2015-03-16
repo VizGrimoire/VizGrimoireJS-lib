@@ -1568,7 +1568,7 @@ if (Viz === undefined) var Viz = {};
         Flotr.draw(container, bdata, config);
     }
 
-    function displayDemographicsChart(divid, ds, data, period_year) {
+    function displayDemographicsChart(divid, data, period_year) {
         if (!data) return;
         if (!period_year) period_year = 0.25;
         else period = 365*period_year;

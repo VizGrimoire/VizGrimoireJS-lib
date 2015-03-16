@@ -547,6 +547,15 @@ function composeSideBar(project_id){
                 latest_release = aux[0];
                 html += '<li><a href="release.html?release='+ latest_release +'">&nbsp;Companies by release</a></li>';
             }
+            var e_studies = mele.studies_extra;
+            if (e_studies){
+                $.each(e_studies, function(id, value){
+                    var name, url;
+                    name = value[0];
+                    url = value[1];
+                    html += '<li><a href="' + url + '">&nbsp;' + name + '</a></li>';
+                });
+            }
             html += '</ul></li>';
         }
 

@@ -62,9 +62,6 @@ if (Loader === undefined) var Loader = {};
      * Main function that starts all data loading activity
      */
     Loader.data_load = function() {
-        // Loads the side menu elements
-        data_load_file(Report.getMenuElementsFile(), Report.setMenuElements);
-
         // If we have a config file just load what is configured
         if (Report.getConfig() !== null &&
             Report.getConfig().project_info !== undefined) {
