@@ -701,10 +701,11 @@ var HTMLComposer = {};
     * @param {string} company_name - The name of the company
     */
     function companyFilters(company_name){
-        var html = '',
-            mele = Report.getMenuElements(),
-            menu_filters = mele.filter,
-            filter_ds = {};
+        var html = '', filter_ds = {};
+        var mele = Report.getMenuElements();
+        var menu_filters = mele.filter;
+
+        if (menu_filters === undefined) {return html;}
 
         $.each(menu_filters, function(id, value){
             var ds_name = value.split(':')[0],
