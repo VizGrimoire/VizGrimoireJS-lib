@@ -30,7 +30,8 @@ if (Report === undefined) var Report = {};
 
     // Shared config
     var project_data = null, markers = null, viz_config = null,
-        gridster = {}, data_sources = [], report_config = null, html_dir="";
+        gridster = {}, data_sources = [], report_config = null, html_dir="",
+        menu_elements;
     var data_dir = "data/json";
     var config_dir = "config";
     var default_data_dir = "data/json";
@@ -141,19 +142,31 @@ if (Report === undefined) var Report = {};
 
     /** menu_elements contains JSON for side menu**/
     function getMenuElements(){
-        return menu_elements.menu;
+        var elements;
+        if (menu_elements !== undefined) {
+            elements = menu_elements.menu;
+        }
+        return elements;
     }
     function getMenuElementsReleases(){
-        return menu_elements.menu_releases;
+        var releases;
+        if (menu_elements !== undefined) {
+            releases = menu_elements.menu_releases;
+        }
+        return releases;
     }
     function getReleaseNames() {
-        return menu_elements.releases;
+        var names;
+        if (menu_elements !== undefined) {
+            names = menu_elements.releases;
+        }
+        return names;
     }
     Report.setMenuElements = function(data){
-	menu_elements = data;
+	    menu_elements = data;
     };
     Report.getMenuElementsFile = function() {
-	return menu_elements_file;
+	    return menu_elements_file;
     };
 
     function getGridster() {

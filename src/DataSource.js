@@ -56,6 +56,9 @@ function DataSource(name, basic_metrics) {
         if (plain_metrics instanceof Array)
             return plain_metrics;
         var metrics = {};
+        if (plain_metrics === null) {
+            return metrics;
+        }
         $.each(plain_metrics, function (name, value) {
             var basic_name = name;
             // commits_7, commits_30 ....

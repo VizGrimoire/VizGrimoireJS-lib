@@ -188,6 +188,7 @@ var DataProcess = {};
         var offset_end = -1;
         var new_offset = 0;
         if (metrics.length === 0) return history;
+        if (history[metrics[0]] === undefined) return history;
         var total = history[metrics[0]].length;
         var i = 0;
         // Detect 0s start
