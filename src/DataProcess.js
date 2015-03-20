@@ -159,6 +159,9 @@ var DataProcess = {};
         }
         // New format in Sortinghat. Just "name" field.
         else if (person.name) {
+            if (person.name.constructor !== Array) {
+                person.name = [person.name];
+            }
             for (i=0; i<person.name.length; i++) {
                 cname = person.name[i];
                 if (cname.length>name.length) name = cname;

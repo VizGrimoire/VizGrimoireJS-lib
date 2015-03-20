@@ -165,7 +165,10 @@ var HTMLComposer = {};
         else if (ds_name == "its") html += "Closed:</br>&nbsp;&nbsp;" + history.its_closed;
         else if (ds_name == "mls") html += "Sent:</br>&nbsp;&nbsp;" + history.mls_sent;
         else if (ds_name == "irc") html += "Sent:</br>&nbsp;&nbsp;" + history.irc_sent;
-        else if (ds_name == "scr") html += "Closed:</br>&nbsp;&nbsp;" + history.scr_closed;
+        else if (ds_name == "scr") {
+            if (history.scr_closed !== undefined) {html += "Closed:</br>&nbsp;&nbsp;" + history.scr_closed;}
+            if (history.scr_submissions !== undefined) {html += "Submissions:</br>&nbsp;&nbsp;" + history.scr_submissions;}
+        }
         html += "</td></tr>";
         html += "</table>";
 
