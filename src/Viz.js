@@ -136,6 +136,14 @@ if (Viz === undefined) var Viz = {};
                 var_names.name = "reviewers";
                 var_names.action = "reviews";
             }
+            if (metric === "active_core_reviewers"){
+                var_names.name = "identifier";
+                var_names.action = "reviews";
+            }
+            if (metric === "participants"){
+                var_names.name = "identifier";
+                var_names.action = "events";
+            }
         }
         if (ds_name === "downloads"){
             if (metric === "ips"){
