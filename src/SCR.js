@@ -190,8 +190,21 @@ function SCR() {
             "column" : "timeto_close_median",
             "name" : "Time to close (median of the days)",
             "desc" : "Median of the number of days a contribution waits to be closed"
+        },
+        "scr_participants":{
+            "divid" : "scr_participants",
+            "column" : "participants",
+            "name" : "Participants",
+            "desc" : "Number of participants in the review process",
+            "action": "events"
+        },
+        "scr_active_core_reviewers":{
+            "divid" : "scr_active_core_reviewers",
+            "column" : "active_core_reviewers",
+            "name" : "Active core reviewers",
+            "desc" : "Number of active core reviewers",
+            "action": "reviews"
         }
-
     };
 
     this.getMainMetric = function() {
