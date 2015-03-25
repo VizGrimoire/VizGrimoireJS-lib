@@ -165,7 +165,10 @@ var HTMLComposer = {};
         else if (ds_name == "its") html += "Closed:</br>&nbsp;&nbsp;" + history.its_closed;
         else if (ds_name == "mls") html += "Sent:</br>&nbsp;&nbsp;" + history.mls_sent;
         else if (ds_name == "irc") html += "Sent:</br>&nbsp;&nbsp;" + history.irc_sent;
-        else if (ds_name == "scr") html += "Closed:</br>&nbsp;&nbsp;" + history.scr_closed;
+        else if (ds_name == "scr") {
+            if (history.scr_closed !== undefined) {html += "Closed:</br>&nbsp;&nbsp;" + history.scr_closed;}
+            if (history.scr_submissions !== undefined) {html += "Submissions:</br>&nbsp;&nbsp;" + history.scr_submissions;}
+        }
         html += "</td></tr>";
         html += "</table>";
 
@@ -701,10 +704,11 @@ var HTMLComposer = {};
     * @param {string} company_name - The name of the company
     */
     function companyFilters(company_name){
-        var html = '',
-            mele = Report.getMenuElements(),
-            menu_filters = mele.filter,
-            filter_ds = {};
+        var html = '', filter_ds = {};
+        var mele = Report.getMenuElements();
+        var menu_filters = mele.filter;
+
+        if (menu_filters === undefined) {return html;}
 
         $.each(menu_filters, function(id, value){
             var ds_name = value.split(':')[0],

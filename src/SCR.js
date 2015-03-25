@@ -32,6 +32,12 @@ function SCR() {
             "name" : "Reviews opened",
             "desc" : "Reviews in status new or inprogress"
         },
+        "scr_submissions" : {
+            "divid" : "scr_submissions",
+            "column" : "submissions",
+            "name" : "Reviews submitted",
+            "desc" : "Reviews submitted"
+        },
         "scr_closed" : {
             "divid" : "scr_closed",
             "column" : "closed",
