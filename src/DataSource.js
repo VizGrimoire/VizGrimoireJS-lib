@@ -1068,8 +1068,19 @@ function DataSource(name, basic_metrics) {
             if (show_links) list += "</a>";
             //list += "<br><a href='#nav'>^</a>";
             list += "</td>";
+
+            var width = Math.floor(10/metrics.length);
+            //we are not using the remainder!
+            //var rem = 10 % metrics.length;
+            //var first = false;
+
             $.each(metrics, function(id, metric) {
-                list += "<td class='col-md-5'>";
+                var mywidth = width;
+                /*if (first){
+                    mywidth = width + rem;
+                    first = false;
+                }*/
+                list += "<td class='col-md-" + mywidth + "'>";
                 list += "<div id='"+report+"-"+item+"-"+metric+"'";
                 list +=" class='subreport-list-item'>";
             });
