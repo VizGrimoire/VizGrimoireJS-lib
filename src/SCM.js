@@ -104,7 +104,7 @@ function SCM() {
         'scm_files' : {
             'divid' : "scm_files",
             'column' : "files",
-            'name' : "Files",
+            'name' : "Modified Files",
             'desc' : "Evolution of the number of unique files handled by the community"
         },
         'scm_added_lines' : {
