@@ -1184,7 +1184,8 @@ if (Viz === undefined) var Viz = {};
     * @param {string} metric_name - Name of the charted metric
     */
     function displayTimeZone(divid, labels, data, metric_name){
-        var title = 'Time zones for ' + metric_name;
+        var pretty_mname = metric_name.charAt(0).toUpperCase() + metric_name.slice(1);
+        var title = pretty_mname + ' by Time Zone';
         var container = document.getElementById(divid);
         var chart_data = [], i;
         var legend_div = null;
