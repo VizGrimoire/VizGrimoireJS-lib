@@ -722,7 +722,7 @@ if (Viz === undefined) var Viz = {};
                         if (value === undefined) continue;
                         if (lines_data.length > 1) {
                             if (lines_data[i].label !== undefined) {
-                                value_name = lines_data[i].label;
+                                value_name = abbreviateLabel(lines_data[i].label);
                                 //label += value_name.substring(0,9) +":";
                                 label += value_name + ":";
                             }
@@ -877,6 +877,17 @@ if (Viz === undefined) var Viz = {};
         }
     }
 
+    /*Trim string if length is bigger than 17*/
+    function abbreviateLabel(string){
+        if (string.length >= 18){
+            var l = string.length;
+            return '..' + string.slice(string.length-16);
+        }
+        else{
+            return string;
+        }
+    }
+
     function displayDSLinesStacked(div_id, history, lines_data, title, config_metric) {
         /// this is the former displayDSLines function that is being used to draw the stacked
         var container = document.getElementById(div_id);
@@ -925,7 +936,7 @@ if (Viz === undefined) var Viz = {};
                         if (value === undefined) continue;
                         if (lines_data.length > 1) {
                             if (lines_data[i].label !== undefined)
-                                label += lines_data[i].label +":";
+                                label += abbreviateLabel(lines_data[i].label) + ":";
                         }
                         label += Report.formatValue(value) +"<br>";
                     }
