@@ -42,25 +42,34 @@ var HTMLComposer = {};
     HTMLComposer.TopByPeriod = TopByPeriod;
     HTMLComposer.companyFilters = companyFilters;
 
-    function personDSBlock(ds_name, metric_name){
+    function personDSBlock(ds_name, metric_name, ds_realname){
         /* Display block with PersonSummary and PersonMetrics divs.
          This block is used in the people.html page
+
+         ds_realname contains the 'fake' ds we want to use, for instance
+         'storyboard'
          */
         var html = '<div class="col-md-12">';
         html += '<div class="well well-small">';
         html += '<div class="row">';
-	html += '<div class="col-md-12">';
-	html += '<p>' + title4DS(ds_name) + '</p>';
-	html += '</div>';
-	html += '<div class="col-md-3">';
-	html += '<div class="PersonSummary" data-data-source="'+ ds_name +'"></div>';
-	html += '</div>';
-	html += '<div class="col-md-9">';
-	html += '<div class="PersonMetrics" data-data-source="'+ds_name+'"';
+        html += '<div class="col-md-12">';
+
+        if (ds_realname === undefined){
+            html += '<p>' + title4DS(ds_name) + '</p>';
+        }else{
+            html += '<p>' + title4DS(ds_realname) + '</p>';
+        }
+        html += '</div>';
+
+        html += '<div class="col-md-3">';
+        html += '<div class="PersonSummary" data-data-source="'+ ds_name +'"></div>';
+        html += '</div>';
+        html += '<div class="col-md-9">';
+        html += '<div class="PersonMetrics" data-data-source="'+ds_name+'"';
         html += 'data-metrics="'+metric_name+'" data-min="true"';
-	//html += 'style="height: 140px;" data-frame-time="true"></div>';
+        //html += 'style="height: 140px;" data-frame-time="true"></div>';
         html += 'data-frame-time="true"></div>';
-	html += '</div>';
+        html += '</div>';
         html += '</div>';
         html += '</div>';
         html += '</div>';
@@ -217,6 +226,8 @@ var HTMLComposer = {};
             title = '<i class="fa fa-check"></i> Source Code Review';
         else if(ds_name === "its")
             title = '<i class="fa fa-ticket"></i> Issue tracking system';
+        else if(ds_name === "storyboard")
+            title = '<i class="fa fa-ticket"></i> StoryBoard';
         else if(ds_name === "mls")
             title = '<i class="fa fa-envelope-o"></i> Mailing Lists';
         else if(ds_name === "irc")
@@ -347,15 +358,15 @@ var HTMLComposer = {};
         //summary box here
         blabels = box_labels.split(',');
         bmetrics = box_metrics.split(',');
-        html += DSSummaryBox(ds_name, blabels, bmetrics, false);
+        html += DSSummaryBox(ds_name, blabels, bmetrics, false, ds_realname);
 
         html += '<div class="col-md-5">';
         tsm = ts_metrics.split(',');
-        html += DSTimeSerie(ds_name, tsm[0], false);
+        html += DSTimeSerie(ds_name, tsm[0], false, ds_realname);
         html += '</div>';
 
         html += '<div class="col-md-5">';
-        html += DSTimeSerie(ds_name, tsm[1], false);
+        html += DSTimeSerie(ds_name, tsm[1], false, ds_realname);
         html += '</div>';
 
         html += '</div>';
@@ -398,9 +409,21 @@ var HTMLComposer = {};
          return html;
      }
 
+    /* Returns the link to the panel with translation if data_source_name
+    is present in configuration file for ds_name data source*/
+    function linkToPanel(ds_name, ds_realname){
+        if (ds_realname === undefined){
+            target_page = Utils.createLink(ds_name + '.html');
+        }else{
+            target_page = Utils.createLink(ds_realname + '.html');
+        }
+        return target_page;
+    }
 
-    function summaryCell(width, label, ds_name, metric, project_flag){
+    function summaryCell(width, label, ds_name, metric, project_flag, ds_realname){
         /* Compose small cell used by the DS summary box*/
+        var target_page = linkToPanel(ds_name, ds_realname);
+
         if (project_flag){
             widget_name = 'ProjectData';}
         else{
@@ -412,7 +435,6 @@ var HTMLComposer = {};
         html += '</div>';
         html += '<div class="row">';
         html += '<div class="col-md-12 medium-fp-number">';
-        target_page = Utils.createLink(ds_name + '.html');
         if (project_flag){
             html += '<span class="'+ widget_name +'"';
             html += 'data-data-source="' + ds_name + '" data-field="' + metric + '"></span>';
@@ -427,12 +449,14 @@ var HTMLComposer = {};
         return html;
 
     }
-    function DSSummaryBox(ds_name, labels, metrics, project_flag){
+    function DSSummaryBox(ds_name, labels, metrics, project_flag, ds_realname){
+        var target_page = linkToPanel(ds_name, ds_realname);
         /* Compose HTML for DS summary box.
 
          ds_name: string
          labels: array of strings
          metrics: array of strings
+         ds_realname: string
          */
 
         if (project_flag){
@@ -451,7 +475,7 @@ var HTMLComposer = {};
         html += '</div>';
         html += '<div class="row grey-border">';
         html += '<div class="col-md-12 big-fp-number">';
-        target_page = Utils.createLink(ds_name + '.html');
+
         /* we overwrite this for the forge */
         if (ds_name === 'releases') target_page = Utils.createLink('forge.html');
         if (project_flag){
@@ -468,14 +492,14 @@ var HTMLComposer = {};
         html += '<div class="row" style="padding: 5px 0px 0px 0px;">';
 
         if (labels.length === 2 && metrics.length === 2){
-            html += summaryCell('12', labels[1], ds_name, metrics[1], project_flag);
+            html += summaryCell('12', labels[1], ds_name, metrics[1], project_flag, ds_realname);
         } else if (labels.length === 3 && metrics.length === 3){
-            html += summaryCell('6', labels[1], ds_name, metrics[1], project_flag);
-            html += summaryCell('6', labels[2], ds_name, metrics[2], project_flag);
+            html += summaryCell('6', labels[1], ds_name, metrics[1], project_flag, ds_realname);
+            html += summaryCell('6', labels[2], ds_name, metrics[2], project_flag, ds_realname);
         } else if (labels.length === 4 && metrics.length === 4){
-            html += summaryCell('4', labels[1], ds_name, metrics[1], project_flag);
-            html += summaryCell('4', labels[2], ds_name, metrics[2], project_flag);
-            html += summaryCell('4', labels[3], ds_name, metrics[3], project_flag);
+            html += summaryCell('4', labels[1], ds_name, metrics[1], project_flag, ds_realname);
+            html += summaryCell('4', labels[2], ds_name, metrics[2], project_flag, ds_realname);
+            html += summaryCell('4', labels[3], ds_name, metrics[3], project_flag, ds_realname);
         }
 
         html += '</div>';
@@ -486,7 +510,7 @@ var HTMLComposer = {};
 
     }
 
-    function DSTimeSerie(ds_name, metric, project_flag){
+    function DSTimeSerie(ds_name, metric, project_flag, ds_realname){
         /*
          ds_name: string
          metric: string
@@ -517,7 +541,11 @@ var HTMLComposer = {};
             html += ' data-metric="' + metric+ '"></span>';
         }
         else{
-            html += '<a href="'+ ds_name + '.html" style="color: black;">';
+            if (ds_realname === undefined){
+                html += '<a href="'+ ds_name + '.html" style="color: black;">';
+            }else{
+                html += '<a href="'+ ds_realname + '.html" style="color: black;">';
+            }
             html += ' <span class="' + trend_widget_name + '"';
             html += ' data-filter="'+ filter_name+'"';
             html += ' data-metric="' + metric+ '"></span>';
@@ -570,6 +598,9 @@ var HTMLComposer = {};
             if (text.hasOwnProperty(value)){
                 var label = text[value];
                 if (value === 'repos'){
+                    if (ds_name == 'storyboard'){
+                        ds_name = 'its';
+                    }
                     var DS = Report.getDataSourceByName(ds_name);
                     label = DS.getLabelForRepositories();
                     label = label.charAt(0).toUpperCase() + label.slice(1);

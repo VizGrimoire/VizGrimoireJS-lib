@@ -372,6 +372,7 @@ function getSectionName(){
     var sections = {"mls":"MLS overview",
                     "irc":"IRC overview",
                     "its":"ITS overview",
+                    "storyboard":"Storyboard overview",
                     "qaforums":"QA Forums overview",
                     "scr":"Code Review overview",
                     "scm":"SCM overview",
@@ -500,6 +501,11 @@ function composeSideBar(project_id){
         if (mele.hasOwnProperty('its_1')){
             aux = mele.its_1;
             aux_html = HTMLComposer.sideBarLinks('fa-ticket','Tickets 1','its_1', aux);
+            html += aux_html;
+        }
+        if (mele.hasOwnProperty('storyboard')){
+            aux = mele.storyboard;
+            aux_html = HTMLComposer.sideBarLinks('fa-ticket','Storyboard','storyboard', aux);
             html += aux_html;
         }
         if (mele.hasOwnProperty('mls')){
@@ -1404,12 +1410,13 @@ Convert.personSummaryBlock = function(upeople_id){
             if (div.id.indexOf('Parsed') >= 0 ) return;
 
             ds_name = $(this).data('data-source');
+            ds_realname = $(this).data('data-realname');
             metric_name = $(this).data('metrics');
             DS = Report.getDataSourceByName(ds_name);
             if (DS === null) return;
             if (DS.getData().length === 0) return; /* no data for data source*/
             if (DS.getPeopleMetricsData()[upeople_id].length === 0) return; /* no data for this person */
-            var html = HTMLComposer.personDSBlock(ds_name, metric_name);
+            var html = HTMLComposer.personDSBlock(ds_name, metric_name, ds_realname);
             if (!div.id) div.id = "Parsed" + getRandomId();
             $("#"+div.id).append(html);
         });
@@ -1523,6 +1530,7 @@ Convert.convertDSSummaryBlock = function(upeople_id){
             if (div.id.indexOf('Parsed') >= 0 ) return;
 
             ds_name = $(this).data('data-source');
+            ds_realname = $(this).data('data-realname');
             box_labels = $(this).data('box-labels');
             box_metrics = $(this).data('box-metrics');
             ts_metrics = $(this).data('ts-metrics');
@@ -1531,7 +1539,7 @@ Convert.convertDSSummaryBlock = function(upeople_id){
             if (DS === null) return;
             if (DS.getData().length === 0) return; /* no data for data source*/
             var html = HTMLComposer.DSBlock(ds_name,box_labels,box_metrics,
-                                            ts_metrics);
+                                            ts_metrics, ds_realname);
             if (!div.id) div.id = "Parsed" + getRandomId();
             $("#"+div.id).append(html);
         });
