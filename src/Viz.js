@@ -208,7 +208,10 @@ if (Viz === undefined) var Viz = {};
             rows_html += "<td>";
             if (threads_links === true){
                 var url = "http://www.google.com/search?output=search&q=X&btnI=1";
-                if (threads_data.hasOwnProperty('url') && threads_data.url[i].length > 0){
+                if (Report.getThreadsSite() !== undefined){
+                    url = "http://www.google.com/search?output=search&q=X%20site%3AY&btnI=1";
+                    url = url.replace(/Y/g, Report.getThreadsSite());
+                }else if(threads_data.hasOwnProperty('url') && threads_data.url[i].length > 0){
                     url = "http://www.google.com/search?output=search&q=X%20site%3AY&btnI=1";
                     url = url.replace(/Y/g, threads_data.url[i]);
                 }

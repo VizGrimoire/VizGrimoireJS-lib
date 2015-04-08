@@ -59,6 +59,7 @@ if (Report === undefined) var Report = {};
     Report.getMenuElements = getMenuElements;
     Report.getMenuElementsReleases = getMenuElementsReleases;
     Report.getReleaseNames = getReleaseNames;
+    Report.getThreadsSite = getThreadsSite;
     Report.getMetricDS = getMetricDS;
     Report.getGridster = getGridster;
     Report.setGridster = setGridster;
@@ -161,6 +162,13 @@ if (Report === undefined) var Report = {};
             names = menu_elements.releases;
         }
         return names;
+    }
+    function getThreadsSite(){
+        var site;
+        if (menu_elements !== undefined) {
+            site = menu_elements.threads_site;
+        }
+        return site;
     }
     Report.setMenuElements = function(data){
 	    menu_elements = data;
