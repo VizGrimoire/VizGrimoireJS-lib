@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2013 Bitergia
  *
  * This program is free software; you can redistribute it and/or modify
@@ -87,7 +87,7 @@ var DataProcess = {};
         if (metrics_data === null) return data;
 
         // Change the order using the new metric
-        if (metrics_data instanceof Array  || metric_id in metrics_data === false) 
+        if (metrics_data instanceof Array  || metric_id in metrics_data === false)
             return data;
 
         for (var i=0; i<metrics_data[metric_id].length; i++ ) {
@@ -164,7 +164,9 @@ var DataProcess = {};
             }
             for (i=0; i<person.name.length; i++) {
                 cname = person.name[i];
-                if (cname.length>name.length) name = cname;
+                if (cname !== null && cname.length>name.length){
+                    name = cname;
+                }
             }
         }
         return name;
@@ -227,7 +229,7 @@ var DataProcess = {};
                 new_history[key].push(history[key][i]);
             }
         }
-        return new_history;  
+        return new_history;
     };
 
     DataProcess.filterDates = function(start_id, end_id, history) {
@@ -286,7 +288,7 @@ var DataProcess = {};
         }
 
         // Push newer dates
-        if (dates_orig[0][dates_orig[0].length-1] < 
+        if (dates_orig[0][dates_orig[0].length-1] <
                 more_dates[0][more_dates[0].length-1]) {
             for (i=0; i< more_dates[0].length; i++) {
                 pos = new_dates[0].indexOf(more_dates[0][i]);
@@ -317,7 +319,7 @@ var DataProcess = {};
     };
 
     // Envision and Flotr2 formats are different.
-    DataProcess.fillHistoryLines = function(hist_complete_id, hist_partial) {        
+    DataProcess.fillHistoryLines = function(hist_complete_id, hist_partial) {
         // [ids, values]
         var old_history = [ [], [] ];
         var new_history = [ [], [] ];
@@ -382,7 +384,7 @@ var DataProcess = {};
             } else {
                 new_data[metric] = data[metric];
             }
-        }); 
+        });
         return new_data;
     };
 
