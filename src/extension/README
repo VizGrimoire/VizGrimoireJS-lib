@@ -1,0 +1,6 @@
+scm-events panel uses:
+- mustache.js
+- events.js
+- moment.min.js
+timezones panel uses:
+- timezones.js
