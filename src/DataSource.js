@@ -447,7 +447,14 @@ function DataSource(name, basic_metrics) {
 
     this.countries = null;
     this.getCountriesData = function() {
-        return this.countries;
+        var items = this.countries;
+        if  (items instanceof Array === false) {
+            // New format with names and metrics
+            if (this.countries !== null) {
+                items = this.countries.name;
+            }
+        }
+        return items;
     };
     this.setCountriesData = function(countries, self) {
         if (self === undefined) self = this;
