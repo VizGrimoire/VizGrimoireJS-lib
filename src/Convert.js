@@ -379,6 +379,7 @@ function getSectionName(){
                     "wiki":"Wiki overview",
                     "downloads":"Downloads",
                     "forge":"Forge releases",
+                    "meetup":"Meetup",
                     "demographics":"Demographics",
                     "data_sources":"Data sources",
                     "project_map":"Project map",
@@ -396,7 +397,8 @@ function getSectionName(){
                    "projects":"Activity by project",
                    "repos":"Activity by repositories",
                    "states":"Activity by states",
-                   "tags":"Activity by tags"
+                   "tags":"Activity by tags",
+                   "past_events":"Past events"
                   };
     var filters2 = {"repository":"Repository",
                     "countries":"Activity by countries"
@@ -536,6 +538,11 @@ function composeSideBar(project_id){
         if (mele.hasOwnProperty('wiki')){
             aux = mele.wiki;
             aux_html = HTMLComposer.sideBarLinks('fa-pencil-square-o','Wiki','wiki', aux);
+            html += aux_html;
+        }
+        if (mele.hasOwnProperty('meetup')){
+            aux = mele.meetup;
+            aux_html = HTMLComposer.sideBarLinks('fa-users','Meetup','meetup', aux);
             html += aux_html;
         }
         if (mele.hasOwnProperty('studies')){
@@ -1336,8 +1343,43 @@ Convert.convertTop = function() {
             if (limit === undefined){
                 limit = 10;
             }
-            DS.displayTop(div.id, show_all, top_metric, period, period_all,
+            DS.displayTop(div, show_all, top_metric, period, period_all,
                           graph, limit, people_links, threads_links, repository);
+        });
+    }
+};
+
+
+Convert.convertTopMultiColumn = function() {
+    var div_id_top = "TopMultiColumn";
+    var divs = $("." + div_id_top);
+    var DS, ds;
+    if (divs.length > 0) {
+        var unique = 0;
+        $.each(divs, function(id, div) {
+            $(this).empty();
+            ds = $(this).data('data-source');
+            if (ds !== 'meetup') return; //so far only supported by Meetup
+            DS = Report.getDataSourceByName(ds);
+            if (DS === null) return;
+            if (DS.getData().length === 0) return;
+            var show_all = false;
+            var top_metric = $(this).data('metric');
+            var period = $(this).data('period');
+            var period_all = $(this).data('period_all');
+            var headers = $(this).data('headers');
+            var columns = $(this).data('columns');
+            var limit = $(this).data('limit');
+            div.id = ds + "-" + div_id_top + (unique++);
+            if (period === undefined && period_all === undefined){
+                period_all = true;
+            }
+            if (limit === undefined){
+                limit = 500;
+            }
+            /*DS.displayTop(div, show_all, top_metric, period, period_all,
+                          graph, limit, people_links, threads_links, repository);*/
+            DS.displayTopMultiColumn(div, headers.split(','), columns.split(','));
         });
     }
 };
@@ -2232,6 +2274,7 @@ Convert.convertFilterTop = function(filter){
         if (Loader.filterTopCheck(item, filter) === false) return;
     }
     Convert.convertTop();
+    Convert.convertTopMultiColumn();
     Convert.convertRepositorySelector();
 
 };

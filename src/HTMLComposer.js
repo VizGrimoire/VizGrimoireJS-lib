@@ -236,6 +236,8 @@ var HTMLComposer = {};
             title = '<i class="fa fa-pencil-square-o"></i> Wiki';
         else if(ds_name === "releases")
             title = '<i class="fa fa-umbrella"></i> Forge Releases';
+        else if(ds_name === "meetup")
+            title = '<i class="fa fa-users"></i> Meetup';
         return title;
     }
 
@@ -574,7 +576,8 @@ var HTMLComposer = {};
                 'projects': 'Projects',
                 'repos': 'Repositories',
                 'tags': 'Tags',
-                'states': 'States'};
+                'states': 'States',
+                'past_events': 'Past Events'};
         html = '';
         html += '<li class="dropdown">';
         html += '<a href="#" class="dropdown-toggle" data-toggle="dropdown">';
