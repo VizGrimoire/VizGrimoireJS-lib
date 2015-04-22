@@ -1804,7 +1804,14 @@ if (Viz === undefined) var Viz = {};
                     filtered_history[key] = history[key];
                 }
             });
-            displayTopMetric_new(div, filtered_history, selected_metric, limit, desc_metrics, people_links, threads_links);
+
+            var classname = ds.getName() + selected_metric;
+            var opts = {'metric': selected_metric, 'class_name': classname,
+                    'links_enabled': people_links, 'limit': limit,
+                    'period': 'all', 'ds_name': ds.getName(),
+                    'desc_metrics': desc_metrics};
+            Table.displayTopTable(div, filtered_history, opts);
+
         }else{
             $.each(history, function(key, value) {
                 // ex: commits.all
@@ -1814,7 +1821,13 @@ if (Viz === undefined) var Viz = {};
                 if (selected_metric && selected_metric !== data_metric) return true;
                 if ((period !== undefined) && (period !== data_period)) return true;
                 // at this point the key is the one we're looking for, time to draw it
-                displayTopMetric_new(div, history[key], selected_metric, limit, desc_metrics, people_links, threads_links, period);
+
+                var classname = ds.getName() + selected_metric;
+                var opts = {'metric': selected_metric, 'class_name': classname,
+                        'links_enabled': people_links, 'limit': limit,
+                        'period': data_period, 'ds_name': ds.getName(),
+                        'desc_metrics': desc_metrics};
+                Table.displayTopTable(div, history, opts);
             });
         }
     }

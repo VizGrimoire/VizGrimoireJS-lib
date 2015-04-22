@@ -44,9 +44,12 @@ var Table = {};
     */
     function displaySimpleTable(div, data, headers, cols){
         var tables,
-            aux_html;
+            aux_html,
+            random_id;
 
-        tables= '<table class="table table-striped">';
+        random_id = "myTable" + Math.floor((Math.random() * 9999) + 1);
+
+        tables= '<table id="' + random_id +'" class="table table-striped tablesorter">';
         aux_html = '<thead><th>#</th>';
         $.each(headers, function(id,value){
             aux_html += '<th>' + value + '</th>';
@@ -88,6 +91,9 @@ var Table = {};
         tables += aux_html;
         tables += '</table>';
 
+        tables += '<script>$(document).ready(function(){'+
+                '$("#' + random_id + '").tablesorter();}'+
+                '); </script>';
         //return tables;
         $("#"+div.id).append(tables);
 
@@ -148,12 +154,12 @@ var Table = {};
 
         tables += '</div>';
         $("#"+div.id).append(tabs + tables);
-        /*
+
         if (gen_tabs === true){
             script = "<script>$('#myTab a').click(function (e) {e.preventDefault();$(this).tab('show');});</script>";
             $("#"+div.id).append(script);
         }
-        */
+
      }
 
      function composeTopRowsPeople(people_data, limit, people_links, var_names){
@@ -275,6 +281,18 @@ var Table = {};
              if (metric === "authors"){
                  var_names.name = "username";
                  var_names.action = "releases";
+             }
+         }
+         if (ds_name === "meetup"){
+             if (metric === "cities"){
+                 var_names.name = "city";
+                 var_names.action = "events";
+             }else if (metric === "events"){
+                 var_names.name = "event";
+                 var_names.action = "attendees";
+             }else if (metric === "groups"){
+                 var_names.name = "group";
+                 var_names.action = "events";
              }
          }
 
