@@ -248,7 +248,15 @@ if (Viz === undefined) var Viz = {};
                 rows_html += DataProcess.hideEmail(people_data[var_names.name][j]);
             }
             rows_html += "</td>";
-            rows_html += "<td>"+ metric_value + '</td></tr>';
+            rows_html += "<td>"+ metric_value + '</td>';
+            if (people_data.organization !== undefined) {
+                org = people_data.organization[j];
+                if (org === null) {
+                    org = "-";
+                }
+                rows_html += "<td>"+ org + "</td>";
+            }
+            rows_html += '</tr>';
         }
         return(rows_html);
     }
@@ -396,6 +404,9 @@ if (Viz === undefined) var Viz = {};
                         metric_name = desc_metrics[ds_name + "_" + metric].name;
                         tables += '<thead><th>#</th><th>' +metric_name.capitalize()+'</th>';
                         if (unit !== undefined) tables += '<th>'+unit.capitalize()+'</th>';
+                        if (data[key].organization !== undefined) {
+                            tables += '<th>Organization</th>';
+                        }
                         tables += '</thead><tbody>';
                         tables += composeTopRowsPeople(data[key], limit, people_links, var_names);
                         tables += '</tbody>';
@@ -677,7 +688,15 @@ if (Viz === undefined) var Viz = {};
                     label += lines_data[i].label +":";
             }
             label += "<strong>"+Report.formatValue(value) +"</strong>";
-            if (company_name) label += "("+companies[company_name].pending[o.index]+")";
+            if (company_name) {
+                var pending;
+                if (companies[company_name].pending !== undefined) {
+                    pending = companies[company_name].pending[o.index];
+                } else {
+                    pending = companies[company_name].scr_pending[o.index];
+                }
+                label += "("+pending+")";
+            }
             label += "<br>";
         }
         return label;
