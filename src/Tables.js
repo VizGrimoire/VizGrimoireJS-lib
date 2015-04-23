@@ -246,9 +246,17 @@ var Table = {};
                  var_names.name = "openers";
                  var_names.action = "opened";
              }
+             if (metric === "submitters"){
+                 var_names.name = "openers";
+                 var_names.action = "opened";
+             }
              if (metric === "reviewers"){
                  var_names.name = "reviewers";
                  var_names.action = "reviews";
+             }
+             if (metric === "participants"){
+                 var_names.name = "identifier";
+                 var_names.action = "events";
              }
          }
          if (ds_name === "downloads"){
