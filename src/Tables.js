@@ -141,11 +141,22 @@ var Table = {};
                 tables += '<table class="table table-striped">';
 
                 unit = opts.desc_metrics[opts.ds_name + "_" + opts.metric].action;
-                tables += '<thead><th>#</th><th>' +opts.metric.capitalize()+'</th>';
-                if (unit !== undefined) tables += '<th>'+unit.capitalize()+'</th>';
-                tables += '</thead><tbody>';
-                tables += composeTopRowsPeople(data[key], opts.limit, opts.links_enabled, var_names);
-                tables += '</tbody>';
+
+                if (opts.metric === "threads" && opts.ds_name === "mls"){
+                    tables += '<thead><th>#</th>';
+                    tables += '<th> Subject </th>';
+                    tables += '<th> Creator </th>';
+                    tables += '<th> Length </th>';
+                    tables += '</thead><tbody>';
+                    tables += composeTopRowsThreads(data[key], opts.limit, opts.links_enabled);
+                    tables += '</tbody>';
+                }else{
+                    tables += '<thead><th>#</th><th>' +opts.metric.capitalize()+'</th>';
+                    if (unit !== undefined) tables += '<th>'+unit.capitalize()+'</th>';
+                    tables += '</thead><tbody>';
+                    tables += composeTopRowsPeople(data[key], opts.limit, opts.links_enabled, var_names);
+                    tables += '</tbody>';
+                }
 
                 tables += "</table>";
                 tables += "</div>";
@@ -181,6 +192,36 @@ var Table = {};
              }
              rows_html += "</td>";
              rows_html += "<td>"+ metric_value + '</td></tr>';
+         }
+         return(rows_html);
+     }
+
+     function composeTopRowsThreads(threads_data, limit, threads_links){
+         var rows_html = "";
+         for (var i = 0; i < threads_data.subject.length; i++) {
+             if (limit && limit <= i) break;
+             rows_html += "<tr><td>" + (i+1) + "</td>";
+             //rows_html += "<td>";
+             if (threads_links === true){
+                 var url = "http://www.google.com/search?output=search&q=X&btnI=1";
+                 if (Report.getThreadsSite() !== undefined){
+                     url = "http://www.google.com/search?output=search&q=X%20site%3AY&btnI=1";
+                     url = url.replace(/Y/g, Report.getThreadsSite());
+                 }else if(threads_data.hasOwnProperty('url') && threads_data.url[i].length > 0){
+                     url = "http://www.google.com/search?output=search&q=X%20site%3AY&btnI=1";
+                     url = url.replace(/Y/g, threads_data.url[i]);
+                 }
+                 url = url.replace(/X/g, threads_data.subject[i]);
+                 rows_html += "<td>";
+                 rows_html += '<a target="_blank" href="'+url+ '">';
+                 rows_html += threads_data.subject[i] + "</a>";
+                 rows_html += "&nbsp;<i class=\"fa fa-external-link\"></i></td>";
+             }else{
+                 rows_html += "<td>" + threads_data.subject[i] + "</td>";
+             }
+             rows_html += "<td>" + threads_data.initiator_name[i] + "</td>";
+             rows_html += "<td>" + threads_data.length[i] + "</td>";
+             rows_html += "</tr>";
          }
          return(rows_html);
      }
