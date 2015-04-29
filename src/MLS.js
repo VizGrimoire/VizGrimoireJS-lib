@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2012 Bitergia
  *
  * This program is free software; you can redistribute it and/or modify
@@ -74,13 +74,11 @@ function MLS() {
             'column' : "domains",
             'name' : "Domains",
             'desc' : "Number of active domains"
-        }/*,
-        'mls_people' : {
-            'divid' : 'mls_people',
-            'column' : "people",
-            'name' : "People",
-            'desc' : "Number of active people"
-        }*/
+        },
+        "unanswered_posts" : {
+            "name" : "Unanswered Threads",
+            "desc" : "Unanswered Threads"
+        }
     };
 
     this.data_lists_file = this.data_dir + '/mls-lists.json';
@@ -101,7 +99,7 @@ function MLS() {
     this.getMainMetric = function() {
         return "mls_sent";
     };
-    
+
     this.getSummaryLabels = function () {
         var labels = {
             first_date : "Start",
@@ -109,7 +107,7 @@ function MLS() {
         };
         return labels;
     };
-    
+
     this.getLabelForRepository = function(){
         return 'mailing list';
     };
@@ -141,7 +139,7 @@ function MLS() {
             $(div_id + ' #mls_name').text("MLS " + this.global_data.type);
         } else {
             $(div_id + ' #mls_url').attr("href", Report.getProjectData().mls_url);
-            $(div_id + ' #mls_name').text(Report.getProjectData().mls_name);            
+            $(div_id + ' #mls_name').text(Report.getProjectData().mls_name);
             $(div_id + ' #mls_type').text(Report.getProjectData().mls_type);
         }
 
@@ -165,7 +163,7 @@ function MLS() {
     // <allura-dev.incubator.apache.org>
     MLS.displayMLSListName = function (listinfo) {
         var list_name_tokens = listinfo.split("_");
-        var list_name = ''; 
+        var list_name = '';
         if (list_name_tokens.length > 1) {
             list_name = list_name_tokens[list_name_tokens.length - 1];
             if (list_name === "")
@@ -221,7 +219,7 @@ function MLS() {
         var lists = this.getListsData();
 
         lists_hide = Report.getConfig().mls_hide_lists;
-        lists = lists.mailing_list;        
+        lists = lists.mailing_list;
         if (lists === undefined) return null;
 
         var user_pref = false;
@@ -329,7 +327,7 @@ function MLS() {
     }
 
     this.getDefaultLists = function () {
-        var default_lists = [];        
+        var default_lists = [];
         var hide_lists = Report.getConfig().mls_hide_lists;
         $.each(this.getListsData().mailing_list, function(index,list) {
             if ($.inArray(list, hide_lists) === -1) default_lists.push(list);
@@ -416,7 +414,7 @@ function MLS() {
         Report.displayBasicUser = this.displayBasicUser;
         Report.displayBasicUserAll = this.displayBasicUserAll;
         Report.displayBasicDefault = this.displayBasicDefault;
-        Report.displayEvoDefault = this.displayEvoDefault;            
+        Report.displayEvoDefault = this.displayEvoDefault;
         Report.displayEvoUser = this.displayEvoUser;
         Report.displayEvoUserAll = this.displayEvoUserAll;
 
@@ -502,14 +500,14 @@ function MLS() {
     this.displayEvoList = function(list_label, id, mls_file) {
         var self = this;
         $.getJSON(mls_file, function(history) {
-            // TODO: Support multiproject          
+            // TODO: Support multiproject
             self.envisionEvoList(list_label, id, history);
         });
     };
 
     this.envisionEvoList = function (list_label, div_id, history) {
         var config = Report.getConfig();
-        var options = Viz.getEnvisionOptionsMin(div_id, history,  
+        var options = Viz.getEnvisionOptionsMin(div_id, history,
                 config.mls_hide);
         options.data.list_label = MLS.displayMLSListName(list_label);
         new envision.templates.Envision_Report(options, [ this ]);
