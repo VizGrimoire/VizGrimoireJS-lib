@@ -141,6 +141,7 @@ var Table = {};
                 tables += '<table class="table table-striped">';
 
                 unit = opts.desc_metrics[opts.ds_name + "_" + opts.metric].action;
+                title = opts.desc_metrics[opts.ds_name + "_" + opts.metric].name;
 
                 if (opts.metric === "threads" && opts.ds_name === "mls"){
                     tables += '<thead><th>#</th>';
@@ -151,7 +152,7 @@ var Table = {};
                     tables += composeTopRowsThreads(data[key], opts.limit, opts.links_enabled);
                     tables += '</tbody>';
                 }else{
-                    tables += '<thead><th>#</th><th>' +opts.metric.capitalize()+'</th>';
+                    tables += '<thead><th>#</th><th>' +title.capitalize()+'</th>';
                     if (unit !== undefined) tables += '<th>'+unit.capitalize()+'</th>';
                     if (data[key].organization !== undefined) {
                         tables += '<th>Organization</th>';
@@ -310,6 +311,10 @@ var Table = {};
              if (metric === "participants"){
                  var_names.name = "identifier";
                  var_names.action = "events";
+             }
+             if (metric === "active_core_reviewers"){
+                 var_names.name = "identifier";
+                 var_names.action = "reviews";
              }
          }
          if (ds_name === "downloads"){
