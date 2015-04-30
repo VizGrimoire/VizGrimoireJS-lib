@@ -153,6 +153,9 @@ var Table = {};
                 }else{
                     tables += '<thead><th>#</th><th>' +opts.metric.capitalize()+'</th>';
                     if (unit !== undefined) tables += '<th>'+unit.capitalize()+'</th>';
+                    if (data[key].organization !== undefined) {
+                        tables += '<th>Organization</th>';
+                    }
                     tables += '</thead><tbody>';
                     tables += composeTopRowsPeople(data[key], opts.limit, opts.links_enabled, var_names);
                     tables += '</tbody>';
@@ -191,7 +194,16 @@ var Table = {};
                  rows_html += DataProcess.hideEmail(people_data[var_names.name][j]);
              }
              rows_html += "</td>";
-             rows_html += "<td>"+ metric_value + '</td></tr>';
+             //rows_html += "<td>"+ metric_value + '</td></tr>';
+             rows_html += "<td>"+ metric_value + '</td>';
+             if (people_data.organization !== undefined) {
+                org = people_data.organization[j];
+                if (org === null) {
+                    org = "-";
+                }
+                rows_html += "<td>"+ org + "</td>";
+             }
+             rows_html += '</tr>';
          }
          return(rows_html);
      }
