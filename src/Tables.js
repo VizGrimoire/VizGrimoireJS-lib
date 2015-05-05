@@ -112,15 +112,19 @@ var Table = {};
         var first = true,
             gen_tabs = true,
             tabs = '',
-            tables = '';
+            tables = '',
+            periods;
         if (opts.period !== 'all'){
              gen_tabs = false;
+             periods = [opts.period];
+             tables += getHTMLTitleFromPeriod(opts.period);
         }else{
             //FIXME gen_tabs should be checked before this point
             tabs += composeTopTabs(data, opts.metric, opts.class_name);
+            periods = getSortedPeriods(); //FIXME we should get this data from JSON
         }
 
-        periods = getSortedPeriods(); //FIXME we should get this data from JSON
+        //periods = getSortedPeriods(); //FIXME we should get this data from JSON
         tables += '<div class="tab-content">';
 
         var var_names = getTopVarsFromMetric(opts.metric, opts.ds_name);
@@ -242,6 +246,23 @@ var Table = {};
     function getSortedPeriods(){
         return ['last month','last year',''];
     }
+
+    function getTitleFromPeriod(period){
+        if (period === "last month"){
+            return "Last 30 days";
+        }
+        else if (period === "last year"){
+            return "Last 365 days";
+        }
+        else{
+            return "Complete history";
+        }
+    }
+
+    function getHTMLTitleFromPeriod(period){
+        return '<div class="toptable-title">' + getTitleFromPeriod(period) +
+        '</div>';
+    };
 
     function composeTopTabs(data, metric, class_name){
         var first = true,
