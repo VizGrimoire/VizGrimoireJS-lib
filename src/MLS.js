@@ -57,6 +57,12 @@ function MLS() {
             'name' : "Companies",
             'desc' : "Number of active companies"
         },
+        'mls_organizations' : {
+            'divid' : 'mls_organizations',
+            'column' : "companies",
+            'name' : "Companies",
+            'desc' : "Number of active companies"
+        },
         'mls_countries' : {
             'divid' : 'mls_countries',
             'column' : "countries",

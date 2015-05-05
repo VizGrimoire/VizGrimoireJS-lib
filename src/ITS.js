@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2012 Bitergia
  *
  * This program is free software; you can redistribute it and/or modify
@@ -84,6 +84,12 @@ function ITS() {
         },
         'its_companies' : {
             'divid' : 'its_companies',
+            'column' : "companies",
+            'name' : "Companies",
+            'desc' : "Number of active companies"
+        },
+        'its_organizations' : {
+            'divid' : 'its_organizations',
             'column' : "companies",
             'name' : "Companies",
             'desc' : "Number of active companies"
@@ -177,6 +183,6 @@ function ITS() {
     this.displayBubbles = function(divid, radius) {
         Viz.displayBubbles(divid, "its_opened", "its_openers", radius);
     };
-    
+
 }
 ITS.prototype = new DataSource("its");

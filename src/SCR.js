@@ -135,6 +135,12 @@ function SCR() {
             "name" : "Companies",
             "desc" : "Number of active companies"
         },
+        "scr_organizations" : {
+            "divid" : "scr_organizations",
+            "column" : "companies",
+            "name" : "Companies",
+            "desc" : "Number of active companies"
+        },
         "scr_countries" : {
             "divid" : "scr_countries",
             "column" : "countries",

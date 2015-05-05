@@ -134,6 +134,12 @@ function SCM() {
             'name' : "Companies",
             'desc' : "Number of active companies"
         },
+        'scm_organizations' : {
+            'divid' : 'scm_organizations',
+            'column' : "companies",
+            'name' : "Companies",
+            'desc' : "Number of active companies"
+        },
         'scm_countries' : {
             'divid' : 'scm_countries',
             'column' : "countries",
