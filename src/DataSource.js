@@ -536,11 +536,19 @@ function DataSource(name, basic_metrics) {
     this.getProjectsData = function() {
         return this.projects;
     };
+
+    /*
+    * WARNING: strange code. Projects can be an object or an array.
+    * We have the same issue with setCompaniesData
+    */
     this.setProjectsData = function(projects, self) {
-        if (projects === null) projects = [];
-        if (!(projects instanceof Array)) projects=[projects];
+        if (projects === null) self.projects = [];
         if (self === undefined) self = this;
-        self.projects = projects;
+        if (Array.isArray(projects)){
+            self.projects = projects;
+        }else if (typeof(projects) === 'object'){
+            self.projects = projects.name;
+        }
     };
 
     this.projects_metrics_data = {};
