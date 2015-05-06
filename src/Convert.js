@@ -371,6 +371,7 @@ function getSectionName(){
     var result = [];
     var sections = {"mls":"MLS overview",
                     "irc":"IRC overview",
+                    "slack":"Slack Overview",
                     "its":"ITS overview",
                     "storyboard":"Storyboard overview",
                     "qaforums":"QA Forums overview",
@@ -523,6 +524,11 @@ function composeSideBar(project_id){
         if (mele.hasOwnProperty('irc')){
             aux = mele.irc;
             aux_html = HTMLComposer.sideBarLinks('fa-comment-o','IRC','irc', aux);
+            html += aux_html;
+        }
+        if (mele.hasOwnProperty('slack')){
+            aux = mele.slack;
+            aux_html = HTMLComposer.sideBarLinks('fa-comment-o','Slack','slack', aux);
             html += aux_html;
         }
         if (mele.hasOwnProperty('downloads')){
@@ -1541,6 +1547,7 @@ Convert.repositoryDSBlock = function(repo_id){
             if (div.id.indexOf('Parsed') >= 0 ) return;
 
             ds_name = $(this).data('data-source');
+            ds_realname = $(this).data('data-realname');
             filter_name = $(this).data('filter');
             aux = $(this).data('metrics');
             metric_names = aux.split(',');
@@ -1552,7 +1559,8 @@ Convert.repositoryDSBlock = function(repo_id){
             if (DS.getData().length === 0) return; /* no data for data source*/
 
             if (dataFilterAvailable(filter_name, repo_id)){
-                var html = HTMLComposer.filterDSBlock(ds_name, filter_name, metric_names);
+                var html = HTMLComposer.filterDSBlock(ds_name, filter_name,
+                                                    metric_names, ds_realname);
                 if (!div.id) div.id = "Parsed" + getRandomId();
                 $("#"+div.id).append(html);
             }

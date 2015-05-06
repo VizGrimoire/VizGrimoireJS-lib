@@ -232,6 +232,8 @@ var HTMLComposer = {};
             title = '<i class="fa fa-envelope-o"></i> Mailing Lists';
         else if(ds_name === "irc")
             title = '<i class="fa fa-comment-o"></i> IRC Channels';
+        else if(ds_name === "slack")
+            title = '<i class="fa fa-comment-o"></i> Slack';    
         else if(ds_name === "mediawiki")
             title = '<i class="fa fa-pencil-square-o"></i> Wiki';
         else if(ds_name === "releases")
@@ -604,7 +606,17 @@ var HTMLComposer = {};
                     if (ds_name == 'storyboard'){
                         ds_name = 'its';
                     }
-                    var DS = Report.getDataSourceByName(ds_name);
+                    /*
+                    Workaround to handle aliases for data sources like:
+                    - irc -> slack
+                    */
+                    var DS;
+                    if (ds_name === 'slack'){
+                        DS = Report.getDataSourceByName('irc');
+                    }
+                    else{
+                        DS = Report.getDataSourceByName(ds_name);
+                    }
                     label = DS.getLabelForRepositories();
                     label = label.charAt(0).toUpperCase() + label.slice(1);
                 }
