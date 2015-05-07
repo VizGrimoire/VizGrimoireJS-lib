@@ -967,9 +967,11 @@ function DataSource(name, basic_metrics) {
     };
 
     this.displayReposList = function (metrics,div_id,
-            config_metric, sort_metric, page, show_links, start, end, convert) {
+            config_metric, sort_metric, page, show_links, start, end, convert,
+            ds_realname) {
         this.displaySubReportList("repos",metrics,div_id,
-                config_metric, sort_metric, page, show_links, start, end, convert);
+                config_metric, sort_metric, page, show_links, start, end, convert,
+                ds_realname);
     };
 
     this.displayCountriesList = function (metrics,div_id,
@@ -991,7 +993,8 @@ function DataSource(name, basic_metrics) {
     };
 
     this.displaySubReportList = function (report, metrics,div_id,
-            config_metric, sort_metric, page_str, show_links, start, end, convert) {
+            config_metric, sort_metric, page_str, show_links, start, end, convert,
+            ds_realname) {
 
         var page = parseInt(page_str, null);
         if (isNaN(page)) page = 1;
@@ -1057,7 +1060,11 @@ function DataSource(name, basic_metrics) {
                     list += "repository.html";
                     list += "?repository=" + encodeURIComponent(item);
                     list += release_var;
-                    list += "&ds=" + ds.getName();
+                    if (ds_realname){
+                        list += "&ds=" + ds_realname;
+                    }else{
+                        list += "&ds=" + ds.getName();
+                    }
                     if (addURL) list += "&"+addURL;
                     list += "'>";
                 }
@@ -1152,8 +1159,8 @@ function DataSource(name, basic_metrics) {
         this.displaySummary("companies",divid, company, ds);
     };
 
-    this.displayRepoSummary = function(divid, repo, ds) {
-        this.displaySummary("repositories",divid, repo, ds);
+    this.displayRepoSummary = function(divid, repo, ds, ds_realname) {
+        this.displaySummary("repositories",divid, repo, ds, ds_realname);
     };
 
     this.displayCountrySummary = function(divid, repo, ds) {
@@ -1202,7 +1209,7 @@ function DataSource(name, basic_metrics) {
     };
 
 
-    this.displaySummary = function(report, divid, item, ds) {
+    this.displaySummary = function(report, divid, item, ds, ds_realname) {
         // Prints all the keys:values for an item
         if (!item) item = "";
         var html = "<h6>" + ds.getTitle()+ "</h6>";
@@ -1222,7 +1229,8 @@ function DataSource(name, basic_metrics) {
 
         if (!global_data) return;
 
-        html = HTMLComposer.repositorySummaryTable(ds, global_data, id_label);
+        html = HTMLComposer.repositorySummaryTable(ds, global_data,
+            id_label, ds_realname);
         $("#"+divid).append(html);
     };
 

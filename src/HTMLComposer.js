@@ -85,7 +85,7 @@ var HTMLComposer = {};
         return filterDSBlock(ds_name, 'companies', metric_names);
     }*/
 
-    function filterDSBlock(ds_name, filter_name, metric_names){
+    function filterDSBlock(ds_name, filter_name, metric_names, ds_realname){
         /*
          Display block with FilterItemSummary and FilterItemMetricsEvol
          for a filter (repository, company, country), data source and
@@ -101,7 +101,14 @@ var HTMLComposer = {};
         html += '<div class="row">';
         html += '<div class="col-md-3">';
         html += '<div class="well">';
-        html += '<div class="FilterItemSummary" data-data-source="'+ ds_name +'" data-filter="'+ filter_name +'"></div>';
+        if (ds_realname){
+            html += '<div class="FilterItemSummary" data-data-source="'+ ds_name +
+            '" data-filter="'+ filter_name +'" data-data-realname="' +
+            ds_realname + '"></div>';
+        }else{
+            html += '<div class="FilterItemSummary" data-data-source="'+ ds_name +
+            '" data-filter="'+ filter_name +'"></div>';
+        }
         html += '</div></div>';
         html += '<div class="col-md-9">';
         html += '<div class="well">';
@@ -121,7 +128,7 @@ var HTMLComposer = {};
         return html;
     }
 
-    function repositorySummaryTable(ds, global_data, id_label){
+    function repositorySummaryTable(ds, global_data, id_label, ds_realname){
         /*
          Compose the HTML shown in the repository.html for the table with
          total data for the repository
@@ -131,8 +138,14 @@ var HTMLComposer = {};
          - ds: data source object
          */
         /*var html = '<p class="subsection-title"">' + title4DS(ds.getName()) + '</p>';*/
-        var html = "<table class='table-condensed table-hover'>";
-        html += '<tr><td colspan="2"><p class="subsection-title">' + title4DS(ds.getName()) + '</p></td></tr>';
+        var html = "<table class='table-condensed table-hover'>",
+            ds_title;
+        if (ds_realname){
+            ds_title = title4DS(ds_realname);
+        }else{
+            ds_title = title4DS(ds.getName());
+        }
+        html += '<tr><td colspan="2"><p class="subsection-title">' + ds_title + '</p></td></tr>';
         var html_irow = '<tr><td>';
         var html_erow = '</td></tr>';
         $.each(global_data,function(id,value) {
@@ -233,7 +246,7 @@ var HTMLComposer = {};
         else if(ds_name === "irc")
             title = '<i class="fa fa-comment-o"></i> IRC Channels';
         else if(ds_name === "slack")
-            title = '<i class="fa fa-comment-o"></i> Slack';    
+            title = '<i class="fa fa-comment-o"></i> Slack';
         else if(ds_name === "mediawiki")
             title = '<i class="fa fa-pencil-square-o"></i> Wiki';
         else if(ds_name === "releases")

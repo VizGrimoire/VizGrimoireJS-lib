@@ -1863,6 +1863,7 @@ Convert.convertFilterItemsMiniCharts = function(filter, page) {
     if (divs.length > 0) {
         $.each(divs, function(id, div) {
             ds = $(this).data('data-source');
+            ds_realname = $(this).data('data-realname');
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
             if (filter === undefined) filter = $(this).data('filter');
@@ -1887,7 +1888,8 @@ Convert.convertFilterItemsMiniCharts = function(filter, page) {
             $(this).empty();
             if (filter === "repos")
                 DS.displayReposList(metrics.split(","),div.id,
-                    config_metric, order_by, page, show_links, start, end, convert);
+                    config_metric, order_by, page, show_links,
+                    start, end, convert, ds_realname);
             else if (filter === "countries")
                 DS.displayCountriesList(metrics.split(","),div.id,
                     config_metric, order_by, page, show_links, start, end, convert);
@@ -1931,6 +1933,7 @@ Convert.convertFilterItemSummary = function(filter, item) {
         $.each(divs, function(id, div) {
             var real_item = item;
             ds = $(this).data('data-source');
+            ds_realname = $(this).data('data-realname');
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
             if (filter === undefined) filter = $(this).data('filter');
@@ -1943,7 +1946,7 @@ Convert.convertFilterItemSummary = function(filter, item) {
                 // Repos map for repository.html page disabled
                 /*real_item = Convert.getRealItem(DS, filter, real_item);
                 if (real_item) DS.displayRepoSummary(div.id, real_item, DS);*/
-                DS.displayRepoSummary(div.id, real_item, DS);
+                DS.displayRepoSummary(div.id, real_item, DS, ds_realname);
             }
             else if (filter === "countries")
                 DS.displayCountrySummary(div.id, real_item, DS);
