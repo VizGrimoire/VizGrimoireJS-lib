@@ -348,7 +348,9 @@ if (Viz === undefined) var Viz = {};
         var doer = metric.column;
         if (doer === undefined) doer = findMetricDoer(history, metric_id);
         var title = "Top " + top_metric_id + " " + metric_period;
-        var table = displayTopMetricTable(history, metric_id, doer, limit, people_links, title);
+        //var table = displayTopMetricTable(history, metric_id, doer, limit, people_links, title);
+
+
         // var doer = findMetricDoer(history, metric_id);
         var div = null;
 
@@ -1730,9 +1732,17 @@ if (Viz === undefined) var Viz = {};
         }
     }
 
-    function displayTopCompany(company, data, div, metric, period, titles) {
-        var graph = null;
-        displayTopMetric(div, metric, period, data, graph, titles);
+    function displayTopCompany(ds, company, data, div, selected_metric, period, titles, height, people_links) {
+        var graph = null,
+            limit = 0,
+            desc_metrics = ds.getMetrics();
+        //displayTopMetric(div, metric, period, data, graph, titles);
+        var classname = ds.getName() + selected_metric;
+        var opts = {'metric': selected_metric, 'class_name': classname,
+                'links_enabled': people_links, 'limit': limit,
+                'period': period, 'ds_name': ds.getName(),
+                'desc_metrics': desc_metrics, 'height': height};
+        Table.displayTopTable(div, data, opts);
     }
 
     function displayTopGlobal(div, data_source, metric_id, period, titles) {

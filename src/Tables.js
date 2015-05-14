@@ -124,8 +124,18 @@ var Table = {};
             periods = getSortedPeriods(); //FIXME we should get this data from JSON
         }
 
+<<<<<<< HEAD
         //periods = getSortedPeriods(); //FIXME we should get this data from JSON
         tables += '<div class="tab-content">';
+=======
+        periods = getSortedPeriods(); //FIXME we should get this data from JSON
+        if (opts.height !== undefined){
+            tables += '<div class="tab-content" style="height: ' + opts.height +'px !important;overflow: scroll;">';
+        }else{
+            tables += '<div class="tab-content">';
+        }
+
+>>>>>>> 291e4bf... Fix regression error with FilterItemTop widget and improve layout
 
         var var_names = getTopVarsFromMetric(opts.metric, opts.ds_name);
         for (var k=0; k< periods.length; k++){

@@ -1304,12 +1304,12 @@ function DataSource(name, basic_metrics) {
         }*/
     };
 
-    this.displayTopCompany = function(company, div, metric_id, period, titles) {
+    this.displayTopCompany = function(company, div, metric_id, period, titles, height, people_links) {
         var data = this.getCompaniesTopData()[company];
         if (data === undefined) return;
         var metric = this.getMetrics()[metric_id];
 
-        Viz.displayTopCompany(company, data, div, metric, period, titles);
+        Viz.displayTopCompany(this, company, data, div, metric_id, period, titles, height, people_links);
     };
 
     this.displayTopGlobal = function(div, metric, period, titles) {

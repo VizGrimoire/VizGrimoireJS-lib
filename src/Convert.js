@@ -2098,12 +2098,14 @@ Convert.convertFilterItemTop = function(filter, item) {
             var metric = $(this).data('metric');
             var period = $(this).data('period');
             var titles = $(this).data('titles');
+            var height = $(this).data('height');
+            var people_links = $(this).data('people_links');
             div.id = metric+"-"+ds+"-"+filter+"-"+divlabel+"-"+getRandomId();
             $(this).empty();
             div.className = "";
             // Only for Company yet
             if (filter === "companies")
-                DS.displayTopCompany(real_item,div.id,metric,period,titles);
+                DS.displayTopCompany(real_item,div,metric,period,titles, height, people_links);
         });
     }
 };
