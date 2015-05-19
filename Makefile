@@ -47,6 +47,7 @@ vizgrimoire.core.js: \
     src/Downloads.js \
     src/QAForums.js \
     src/Releases.js \
+    src/Meetup.js \
     src/Identity.js \
 	src/Charts.js \
 	src/Tables.js \

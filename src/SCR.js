@@ -135,6 +135,12 @@ function SCR() {
             "name" : "Companies",
             "desc" : "Number of active companies"
         },
+        "scr_organizations" : {
+            "divid" : "scr_organizations",
+            "column" : "companies",
+            "name" : "Companies",
+            "desc" : "Number of active companies"
+        },
         "scr_countries" : {
             "divid" : "scr_countries",
             "column" : "countries",
@@ -160,11 +166,11 @@ function SCR() {
             "desc" : "Reviews closers",
             "action" : "closed"
         },
-        "scr_openers" : {
-            "divid" : "scr_openers",
+        "scr_submitters" : {
+            "divid" : "scr_submitters",
             "column" : "openers",
-            "name" : "Openers",
-            "desc" : "Reviews openers",
+            "name" : "Submitters",
+            "desc" : "Reviews submitters",
             "action" : "opened"
         },
         "scr_reviewers" : {

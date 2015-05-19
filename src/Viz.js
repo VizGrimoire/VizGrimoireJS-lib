@@ -336,127 +336,6 @@ if (Viz === undefined) var Viz = {};
         return this.replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
     };
 
-    function displayTopMetric_new(div_id, data, metric, limit, desc_metrics, people_links, threads_links, selected_period){
-        /* This function will replace displayTopMetric + displayTopMetricTable */
-        // if selected_period is given it doesn't generate tabs
-        var tabs = "";
-        var tables = "";
-        var title = "";
-        var gen_tabs = true;
-        var div = $("#" + div_id);
-        var ds_name = div.attr('data-data-source'); //we need it to map the vars
-
-        if (Report.getParameterByName("repository") !== undefined) {
-            // We don't have yet top people per repository data
-            people_links = false;
-        }
-
-        // instead of iterating the data, we use the sorted periods
-        periods = getSortedPeriods();
-
-        if (selected_period !== undefined){
-            gen_tabs = false;
-        }
-
-        title += composeTitle(metric, ds_name, gen_tabs, desc_metrics, selected_period);
-
-        if (gen_tabs === true){
-            // prints tabs
-            tabs += composeTopTabs(periods, metric, data, ds_name);
-        }
-
-        tables += '<div class="tab-content">';
-
-        // first we get the var names for that metric to identify the field who and what
-        var var_names = getTopVarsFromMetric(metric, ds_name);
-        if (gen_tabs === true){
-            var first = true;
-            var html = "";
-            for (var k=0; k< periods.length; k++){
-                html = "";
-                var key = metric + '.' + periods[k];
-                if (data[key]){
-                    var data_period = periods[k];
-                    if (data_period === ""){
-                        data_period = "all";
-                    }
-                    var data_period_nows = data_period.replace(/\ /g, '');
-                    if (first === true){
-                        html = " active in";
-                        first = false;
-                    }
-                    tables += '<div class="tab-pane fade'+ html  +'" id="' + ds_name + metric + data_period_nows + '">';
-                    //tables += '<table class="table table-striped"><tbody>';
-                    tables += '<table class="table table-striped">';
-                    if (metric === "threads"){
-                        tables += composeTopRowsThreads(data[key], limit, threads_links);
-                    }else if (metric === "packages" || metric === "ips"){
-                        // duplicated code, see next "else"
-                        unit = desc_metrics[ds_name + "_" + metric].action;
-                        //tables += '<thead><th>#</th><th>' +metric.capitalize()+'</th><th>'+unit.capitalize() +'</th></thead><tbody>';
-                        metric_name = desc_metrics[ds_name + "_" + metric].name;
-                        tables += '<thead><th>#</th><th>' +metric_name.capitalize()+'</th>';
-                        if (unit !== undefined) tables += '<th>'+unit.capitalize()+'</th>';
-                        tables += '</thead><tbody>';
-                        // end duplicated code
-                        tables += composeTopRowsDownloads(data[key], limit, var_names);
-                        //tables += '</tbody>';
-                    }else{
-                        unit = desc_metrics[ds_name + "_" + metric].action;
-                        //tables += '<thead><th>#</th><th>' +metric.capitalize()+'</th><th>'+unit.capitalize() +'</th></thead><tbody>';
-                        metric_name = desc_metrics[ds_name + "_" + metric].name;
-                        tables += '<thead><th>#</th><th>' +metric_name.capitalize()+'</th>';
-                        if (unit !== undefined) tables += '<th>'+unit.capitalize()+'</th>';
-                        if (data[key].organization !== undefined) {
-                            tables += '<th>Organization</th>';
-                        }
-                        tables += '</thead><tbody>';
-                        tables += composeTopRowsPeople(data[key], limit, people_links, var_names);
-                        tables += '</tbody>';
-                    }
-                    //tables += "</tbody></table>";
-                    tables += "</table>";
-                    tables += '</div>';
-                }
-            }
-        }else{
-            //tables += '<div class="tab-pane fade'+ html  +'" id="' + metric + data_period_nows + '">';
-            tables += '<table class="table table-striped"><tbody>';
-            if (metric === "threads"){
-                tables += composeTopRowsThreads(data, limit, threads_links);
-            }else if (metric === "packages" || metric === "ips"){
-                // duplicated code, see next "else"
-                unit = desc_metrics[ds_name + "_" + metric].action;
-                tables += '<thead><th>#</th><th>' +metric.capitalize()+'</th>';
-                if (unit !== undefined) tables += '<th>'+unit.capitalize()+'</th>';
-                tables += '</thead><tbody>';
-                // end duplicated code
-                tables += composeTopRowsDownloads(data, limit, var_names);
-            }else{
-                unit = desc_metrics[ds_name + "_" + metric].action;
-                tables += '<thead><th>#</th><th>' +metric.capitalize()+'</th>';
-                if (unit !== undefined) tables += '<th>'+unit.capitalize()+'</th>';
-                tables += '</thead><tbody>';
-                tables += composeTopRowsPeople(data, limit, people_links, var_names);
-                tables += '</tbody>';
-            }
-            tables += "</tbody></table>";
-            //tables += '</div>';
-        }
-        tables += '</div>'; // this closes div tab-content
-
-        if (gen_tabs === false){
-            // prints tabs
-            div.append(title);
-        }
-        div.append(tabs);
-        div.append(tables);
-        if (gen_tabs === true){
-            script = "<script>$('#myTab a').click(function (e) {e.preventDefault();$(this).tab('show');});</script>";
-            div.append(script);
-        }
-    }
-
     function displayTopMetric
     (div_id, metric, metric_period, history, graph, titles, limit, people_links) {
         //
@@ -472,7 +351,9 @@ if (Viz === undefined) var Viz = {};
         var doer = metric.column;
         if (doer === undefined) doer = findMetricDoer(history, metric_id);
         var title = "Top " + top_metric_id + " " + metric_period;
-        var table = displayTopMetricTable(history, metric_id, doer, limit, people_links, title);
+        //var table = displayTopMetricTable(history, metric_id, doer, limit, people_links, title);
+
+
         // var doer = findMetricDoer(history, metric_id);
         var div = null;
 
@@ -1830,7 +1711,14 @@ if (Viz === undefined) var Viz = {};
                     filtered_history[key] = history[key];
                 }
             });
-            displayTopMetric_new(div, filtered_history, selected_metric, limit, desc_metrics, people_links, threads_links);
+
+            var classname = ds.getName() + selected_metric;
+            var opts = {'metric': selected_metric, 'class_name': classname,
+                    'links_enabled': people_links, 'limit': limit,
+                    'period': 'all', 'ds_name': ds.getName(),
+                    'desc_metrics': desc_metrics};
+            Table.displayTopTable(div, filtered_history, opts);
+
         }else{
             $.each(history, function(key, value) {
                 // ex: commits.all
@@ -1840,14 +1728,28 @@ if (Viz === undefined) var Viz = {};
                 if (selected_metric && selected_metric !== data_metric) return true;
                 if ((period !== undefined) && (period !== data_period)) return true;
                 // at this point the key is the one we're looking for, time to draw it
-                displayTopMetric_new(div, history[key], selected_metric, limit, desc_metrics, people_links, threads_links, period);
+
+                var classname = ds.getName() + selected_metric;
+                var opts = {'metric': selected_metric, 'class_name': classname,
+                        'links_enabled': people_links, 'limit': limit,
+                        'period': data_period, 'ds_name': ds.getName(),
+                        'desc_metrics': desc_metrics};
+                Table.displayTopTable(div, history, opts);
             });
         }
     }
 
-    function displayTopCompany(company, data, div, metric, period, titles) {
-        var graph = null;
-        displayTopMetric(div, metric, period, data, graph, titles);
+    function displayTopCompany(ds, company, data, div, selected_metric, period, titles, height, people_links) {
+        var graph = null,
+            limit = 0,
+            desc_metrics = ds.getMetrics();
+        //displayTopMetric(div, metric, period, data, graph, titles);
+        var classname = ds.getName() + selected_metric;
+        var opts = {'metric': selected_metric, 'class_name': classname,
+                'links_enabled': people_links, 'limit': limit,
+                'period': period, 'ds_name': ds.getName(),
+                'desc_metrics': desc_metrics, 'height': height};
+        Table.displayTopTable(div, data, opts);
     }
 
     function displayTopGlobal(div, data_source, metric_id, period, titles) {

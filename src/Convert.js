@@ -371,6 +371,7 @@ function getSectionName(){
     var result = [];
     var sections = {"mls":"MLS overview",
                     "irc":"IRC overview",
+                    "slack":"Slack Overview",
                     "its":"ITS overview",
                     "storyboard":"Storyboard overview",
                     "qaforums":"QA Forums overview",
@@ -379,6 +380,7 @@ function getSectionName(){
                     "wiki":"Wiki overview",
                     "downloads":"Downloads",
                     "forge":"Forge releases",
+                    "meetup":"Meetup",
                     "demographics":"Demographics",
                     "data_sources":"Data sources",
                     "project_map":"Project map",
@@ -396,7 +398,8 @@ function getSectionName(){
                    "projects":"Activity by project",
                    "repos":"Activity by repositories",
                    "states":"Activity by states",
-                   "tags":"Activity by tags"
+                   "tags":"Activity by tags",
+                   "past_events":"Past events"
                   };
     var filters2 = {"repository":"Repository",
                     "countries":"Activity by countries"
@@ -523,6 +526,11 @@ function composeSideBar(project_id){
             aux_html = HTMLComposer.sideBarLinks('fa-comment-o','IRC','irc', aux);
             html += aux_html;
         }
+        if (mele.hasOwnProperty('slack')){
+            aux = mele.slack;
+            aux_html = HTMLComposer.sideBarLinks('fa-comment-o','Slack','slack', aux);
+            html += aux_html;
+        }
         if (mele.hasOwnProperty('downloads')){
             aux = mele.downloads;
             aux_html = HTMLComposer.sideBarLinks('fa-download','Downloads','downloads', aux);
@@ -536,6 +544,11 @@ function composeSideBar(project_id){
         if (mele.hasOwnProperty('wiki')){
             aux = mele.wiki;
             aux_html = HTMLComposer.sideBarLinks('fa-pencil-square-o','Wiki','wiki', aux);
+            html += aux_html;
+        }
+        if (mele.hasOwnProperty('meetup')){
+            aux = mele.meetup;
+            aux_html = HTMLComposer.sideBarLinks('fa-users','Meetup','meetup', aux);
             html += aux_html;
         }
         if (mele.hasOwnProperty('studies')){
@@ -1336,8 +1349,43 @@ Convert.convertTop = function() {
             if (limit === undefined){
                 limit = 10;
             }
-            DS.displayTop(div.id, show_all, top_metric, period, period_all,
+            DS.displayTop(div, show_all, top_metric, period, period_all,
                           graph, limit, people_links, threads_links, repository);
+        });
+    }
+};
+
+
+Convert.convertTopMultiColumn = function() {
+    var div_id_top = "TopMultiColumn";
+    var divs = $("." + div_id_top);
+    var DS, ds;
+    if (divs.length > 0) {
+        var unique = 0;
+        $.each(divs, function(id, div) {
+            $(this).empty();
+            ds = $(this).data('data-source');
+            if (ds !== 'meetup') return; //so far only supported by Meetup
+            DS = Report.getDataSourceByName(ds);
+            if (DS === null) return;
+            if (DS.getData().length === 0) return;
+            var show_all = false;
+            var top_metric = $(this).data('metric');
+            var period = $(this).data('period');
+            var period_all = $(this).data('period_all');
+            var headers = $(this).data('headers');
+            var columns = $(this).data('columns');
+            var limit = $(this).data('limit');
+            div.id = ds + "-" + div_id_top + (unique++);
+            if (period === undefined && period_all === undefined){
+                period_all = true;
+            }
+            if (limit === undefined){
+                limit = 500;
+            }
+            /*DS.displayTop(div, show_all, top_metric, period, period_all,
+                          graph, limit, people_links, threads_links, repository);*/
+            DS.displayTopMultiColumn(div, headers.split(','), columns.split(','));
         });
     }
 };
@@ -1499,6 +1547,7 @@ Convert.repositoryDSBlock = function(repo_id){
             if (div.id.indexOf('Parsed') >= 0 ) return;
 
             ds_name = $(this).data('data-source');
+            ds_realname = $(this).data('data-realname');
             filter_name = $(this).data('filter');
             aux = $(this).data('metrics');
             metric_names = aux.split(',');
@@ -1510,7 +1559,8 @@ Convert.repositoryDSBlock = function(repo_id){
             if (DS.getData().length === 0) return; /* no data for data source*/
 
             if (dataFilterAvailable(filter_name, repo_id)){
-                var html = HTMLComposer.filterDSBlock(ds_name, filter_name, metric_names);
+                var html = HTMLComposer.filterDSBlock(ds_name, filter_name,
+                                                    metric_names, ds_realname);
                 if (!div.id) div.id = "Parsed" + getRandomId();
                 $("#"+div.id).append(html);
             }
@@ -1813,6 +1863,7 @@ Convert.convertFilterItemsMiniCharts = function(filter, page) {
     if (divs.length > 0) {
         $.each(divs, function(id, div) {
             ds = $(this).data('data-source');
+            ds_realname = $(this).data('data-realname');
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
             if (filter === undefined) filter = $(this).data('filter');
@@ -1837,7 +1888,8 @@ Convert.convertFilterItemsMiniCharts = function(filter, page) {
             $(this).empty();
             if (filter === "repos")
                 DS.displayReposList(metrics.split(","),div.id,
-                    config_metric, order_by, page, show_links, start, end, convert);
+                    config_metric, order_by, page, show_links,
+                    start, end, convert, ds_realname);
             else if (filter === "countries")
                 DS.displayCountriesList(metrics.split(","),div.id,
                     config_metric, order_by, page, show_links, start, end, convert);
@@ -1881,6 +1933,7 @@ Convert.convertFilterItemSummary = function(filter, item) {
         $.each(divs, function(id, div) {
             var real_item = item;
             ds = $(this).data('data-source');
+            ds_realname = $(this).data('data-realname');
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
             if (filter === undefined) filter = $(this).data('filter');
@@ -1893,7 +1946,7 @@ Convert.convertFilterItemSummary = function(filter, item) {
                 // Repos map for repository.html page disabled
                 /*real_item = Convert.getRealItem(DS, filter, real_item);
                 if (real_item) DS.displayRepoSummary(div.id, real_item, DS);*/
-                DS.displayRepoSummary(div.id, real_item, DS);
+                DS.displayRepoSummary(div.id, real_item, DS, ds_realname);
             }
             else if (filter === "countries")
                 DS.displayCountrySummary(div.id, real_item, DS);
@@ -2045,12 +2098,14 @@ Convert.convertFilterItemTop = function(filter, item) {
             var metric = $(this).data('metric');
             var period = $(this).data('period');
             var titles = $(this).data('titles');
+            var height = $(this).data('height');
+            var people_links = $(this).data('people_links');
             div.id = metric+"-"+ds+"-"+filter+"-"+divlabel+"-"+getRandomId();
             $(this).empty();
             div.className = "";
             // Only for Company yet
             if (filter === "companies")
-                DS.displayTopCompany(real_item,div.id,metric,period,titles);
+                DS.displayTopCompany(real_item,div,metric,period,titles, height, people_links);
         });
     }
 };
@@ -2232,6 +2287,7 @@ Convert.convertFilterTop = function(filter){
         if (Loader.filterTopCheck(item, filter) === false) return;
     }
     Convert.convertTop();
+    Convert.convertTopMultiColumn();
     Convert.convertRepositorySelector();
 
 };

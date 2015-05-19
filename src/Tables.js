@@ -44,9 +44,12 @@ var Table = {};
     */
     function displaySimpleTable(div, data, headers, cols){
         var tables,
-            aux_html;
+            aux_html,
+            random_id;
 
-        tables= '<table class="table table-striped">';
+        random_id = "myTable" + Math.floor((Math.random() * 9999) + 1);
+
+        tables= '<table id="' + random_id +'" class="table table-striped tablesorter">';
         aux_html = '<thead><th>#</th>';
         $.each(headers, function(id,value){
             aux_html += '<th>' + value + '</th>';
@@ -88,6 +91,9 @@ var Table = {};
         tables += aux_html;
         tables += '</table>';
 
+        tables += '<script>$(document).ready(function(){'+
+                '$("#' + random_id + '").tablesorter();}'+
+                '); </script>';
         //return tables;
         $("#"+div.id).append(tables);
 
@@ -106,16 +112,30 @@ var Table = {};
         var first = true,
             gen_tabs = true,
             tabs = '',
-            tables = '';
+            tables = '',
+            periods;
         if (opts.period !== 'all'){
              gen_tabs = false;
+             periods = [opts.period];
+             tables += getHTMLTitleFromPeriod(opts.period);
         }else{
             //FIXME gen_tabs should be checked before this point
             tabs += composeTopTabs(data, opts.metric, opts.class_name);
+            periods = getSortedPeriods(); //FIXME we should get this data from JSON
         }
 
-        periods = getSortedPeriods(); //FIXME we should get this data from JSON
+<<<<<<< HEAD
+        //periods = getSortedPeriods(); //FIXME we should get this data from JSON
         tables += '<div class="tab-content">';
+=======
+        periods = getSortedPeriods(); //FIXME we should get this data from JSON
+        if (opts.height !== undefined){
+            tables += '<div class="tab-content" style="height: ' + opts.height +'px !important;overflow: scroll;">';
+        }else{
+            tables += '<div class="tab-content">';
+        }
+
+>>>>>>> 291e4bf... Fix regression error with FilterItemTop widget and improve layout
 
         var var_names = getTopVarsFromMetric(opts.metric, opts.ds_name);
         for (var k=0; k< periods.length; k++){
@@ -135,11 +155,26 @@ var Table = {};
                 tables += '<table class="table table-striped">';
 
                 unit = opts.desc_metrics[opts.ds_name + "_" + opts.metric].action;
-                tables += '<thead><th>#</th><th>' +opts.metric.capitalize()+'</th>';
-                if (unit !== undefined) tables += '<th>'+unit.capitalize()+'</th>';
-                tables += '</thead><tbody>';
-                tables += composeTopRowsPeople(data[key], opts.limit, opts.links_enabled, var_names);
-                tables += '</tbody>';
+                title = opts.desc_metrics[opts.ds_name + "_" + opts.metric].name;
+
+                if (opts.metric === "threads" && opts.ds_name === "mls"){
+                    tables += '<thead><th>#</th>';
+                    tables += '<th> Subject </th>';
+                    tables += '<th> Creator </th>';
+                    tables += '<th> Length </th>';
+                    tables += '</thead><tbody>';
+                    tables += composeTopRowsThreads(data[key], opts.limit, opts.links_enabled);
+                    tables += '</tbody>';
+                }else{
+                    tables += '<thead><th>#</th><th>' +title.capitalize()+'</th>';
+                    if (unit !== undefined) tables += '<th>'+unit.capitalize()+'</th>';
+                    if (data[key].organization !== undefined) {
+                        tables += '<th>Organization</th>';
+                    }
+                    tables += '</thead><tbody>';
+                    tables += composeTopRowsPeople(data[key], opts.limit, opts.links_enabled, var_names);
+                    tables += '</tbody>';
+                }
 
                 tables += "</table>";
                 tables += "</div>";
@@ -148,12 +183,12 @@ var Table = {};
 
         tables += '</div>';
         $("#"+div.id).append(tabs + tables);
-        /*
+
         if (gen_tabs === true){
             script = "<script>$('#myTab a').click(function (e) {e.preventDefault();$(this).tab('show');});</script>";
             $("#"+div.id).append(script);
         }
-        */
+
      }
 
      function composeTopRowsPeople(people_data, limit, people_links, var_names){
@@ -174,7 +209,46 @@ var Table = {};
                  rows_html += DataProcess.hideEmail(people_data[var_names.name][j]);
              }
              rows_html += "</td>";
-             rows_html += "<td>"+ metric_value + '</td></tr>';
+             //rows_html += "<td>"+ metric_value + '</td></tr>';
+             rows_html += "<td>"+ metric_value + '</td>';
+             if (people_data.organization !== undefined) {
+                org = people_data.organization[j];
+                if (org === null) {
+                    org = "-";
+                }
+                rows_html += "<td>"+ org + "</td>";
+             }
+             rows_html += '</tr>';
+         }
+         return(rows_html);
+     }
+
+     function composeTopRowsThreads(threads_data, limit, threads_links){
+         var rows_html = "";
+         for (var i = 0; i < threads_data.subject.length; i++) {
+             if (limit && limit <= i) break;
+             rows_html += "<tr><td>" + (i+1) + "</td>";
+             //rows_html += "<td>";
+             if (threads_links === true){
+                 var url = "http://www.google.com/search?output=search&q=X&btnI=1";
+                 if (Report.getThreadsSite() !== undefined){
+                     url = "http://www.google.com/search?output=search&q=X%20site%3AY&btnI=1";
+                     url = url.replace(/Y/g, Report.getThreadsSite());
+                 }else if(threads_data.hasOwnProperty('url') && threads_data.url[i].length > 0){
+                     url = "http://www.google.com/search?output=search&q=X%20site%3AY&btnI=1";
+                     url = url.replace(/Y/g, threads_data.url[i]);
+                 }
+                 url = url.replace(/X/g, threads_data.subject[i]);
+                 rows_html += "<td>";
+                 rows_html += '<a target="_blank" href="'+url+ '">';
+                 rows_html += threads_data.subject[i] + "</a>";
+                 rows_html += "&nbsp;<i class=\"fa fa-external-link\"></i></td>";
+             }else{
+                 rows_html += "<td>" + threads_data.subject[i] + "</td>";
+             }
+             rows_html += "<td>" + threads_data.initiator_name[i] + "</td>";
+             rows_html += "<td>" + threads_data.length[i] + "</td>";
+             rows_html += "</tr>";
          }
          return(rows_html);
      }
@@ -182,6 +256,23 @@ var Table = {};
     function getSortedPeriods(){
         return ['last month','last year',''];
     }
+
+    function getTitleFromPeriod(period){
+        if (period === "last month"){
+            return "Last 30 days";
+        }
+        else if (period === "last year"){
+            return "Last 365 days";
+        }
+        else{
+            return "Complete history";
+        }
+    }
+
+    function getHTMLTitleFromPeriod(period){
+        return '<div class="toptable-title">' + getTitleFromPeriod(period) +
+        '</div>';
+    };
 
     function composeTopTabs(data, metric, class_name){
         var first = true,
@@ -240,8 +331,20 @@ var Table = {};
                  var_names.name = "openers";
                  var_names.action = "opened";
              }
+             if (metric === "submitters"){
+                 var_names.name = "openers";
+                 var_names.action = "opened";
+             }
              if (metric === "reviewers"){
                  var_names.name = "reviewers";
+                 var_names.action = "reviews";
+             }
+             if (metric === "participants"){
+                 var_names.name = "identifier";
+                 var_names.action = "events";
+             }
+             if (metric === "active_core_reviewers"){
+                 var_names.name = "identifier";
                  var_names.action = "reviews";
              }
          }
@@ -275,6 +378,18 @@ var Table = {};
              if (metric === "authors"){
                  var_names.name = "username";
                  var_names.action = "releases";
+             }
+         }
+         if (ds_name === "meetup"){
+             if (metric === "cities"){
+                 var_names.name = "city";
+                 var_names.action = "events";
+             }else if (metric === "events"){
+                 var_names.name = "event";
+                 var_names.action = "attendees";
+             }else if (metric === "groups"){
+                 var_names.name = "group";
+                 var_names.action = "events";
              }
          }
 
