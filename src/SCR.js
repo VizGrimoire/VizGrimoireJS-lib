@@ -117,12 +117,6 @@ function SCR() {
             "name" : "Reviews submitted",
             "desc" : "Reviews submitted"
         },
-        "scr_submitters" : {
-            "divid" : "scr_submitters",
-            "column" : "submitters",
-            "name" : "Reviews submitters",
-            "desc" : "Number of people submitting review processes."
-        },
         "scr_sent" : {
             "divid" : "scr_sent",
             "column" : "sent",
