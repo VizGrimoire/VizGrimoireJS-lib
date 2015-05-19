@@ -233,7 +233,7 @@ if (Viz === undefined) var Viz = {};
     function composeTopRowsPeople(people_data, limit, people_links, var_names){
         var rows_html = "";
         if (people_data[var_names.id] === undefined) {
-            return;
+            return rows_html;
         }
         for (var j = 0; j < people_data[var_names.id].length; j++) {
             if (limit && limit <= j) break;
