@@ -232,6 +232,9 @@ if (Viz === undefined) var Viz = {};
 
     function composeTopRowsPeople(people_data, limit, people_links, var_names){
         var rows_html = "";
+        if (people_data[var_names.id] === undefined) {
+            return;
+        }
         for (var j = 0; j < people_data[var_names.id].length; j++) {
             if (limit && limit <= j) break;
             var metric_value = people_data[var_names.action][j];
@@ -1623,25 +1626,29 @@ if (Viz === undefined) var Viz = {};
         var age, index;
 
         // Aging
-        for (i = 0; i < data.aging.persons.age.length; i++) {
-            age = data.aging.persons.age[i];
-            // With some sqlalchemy the format is "1091 days, 9:49:55"
-            age = age.toString().split(" ")[0];
-            index = parseInt(age / period, 10);
-            if (!period_data_aging[index])
-                period_data_aging[index] = 0;
-            period_data_aging[index] += 1;
+        if (data.aging.persons.age !== undefined) {
+            for (i = 0; i < data.aging.persons.age.length; i++) {
+                age = data.aging.persons.age[i];
+                // With some sqlalchemy the format is "1091 days, 9:49:55"
+                age = age.toString().split(" ")[0];
+                index = parseInt(age / period, 10);
+                if (!period_data_aging[index])
+                    period_data_aging[index] = 0;
+                period_data_aging[index] += 1;
+            }
         }
         // Birth
-        for (i = 0; i < data.birth.persons.age.length; i++) {
-            age = data.birth.persons.age[i];
-            // With some sqlalchemy the format is "1091 days, 9:49:55"
-            age = age.toString().split(" ")[0];
-            age = age.split(" ")[0];
-            index = parseInt(age / period, 10);
-            if (!period_data_birth[index])
-                period_data_birth[index] = 0;
-            period_data_birth[index] += 1;
+        if (data.birth.persons.age !== undefined) {
+            for (i = 0; i < data.birth.persons.age.length; i++) {
+                age = data.birth.persons.age[i];
+                // With some sqlalchemy the format is "1091 days, 9:49:55"
+                age = age.toString().split(" ")[0];
+                age = age.split(" ")[0];
+                index = parseInt(age / period, 10);
+                if (!period_data_birth[index])
+                    period_data_birth[index] = 0;
+                period_data_birth[index] += 1;
+            }
         }
 
         labels = ["Retained","Attracted"];

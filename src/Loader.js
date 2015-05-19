@@ -29,7 +29,7 @@ if (Loader === undefined) var Loader = {};
     var data_global_callbacks = [];
     var data_repos_callbacks = [];
     var check_companies = false, check_repos = false, check_countries = false;
-    var ds_not_supported_company_top = ['scr','irc','mediawiki'];
+    var ds_supporting_top_company = ['scm','mls','its'];
     var ds_supporting_top_repos = ['scm','mls','its']; //filter by repo in contributors panel
     var all_data; // Support for loading all data in one JSON file
 
@@ -478,7 +478,7 @@ if (Loader === undefined) var Loader = {};
                     Loader.data_load_item (item, DS, null,
                         Convert.convertFilterStudyItem, filter, null);
                     if (filter === "companies") {
-                        if ($.inArray(DS.getName(),ds_not_supported_company_top) === -1)
+                        if ($.inArray(DS.getName(),ds_supporting_top_company) > -1)
                             Loader.data_load_item_top (item, DS, null,
                                     Convert.convertFilterStudyItem, filter);
                     }
@@ -525,7 +525,7 @@ if (Loader === undefined) var Loader = {};
                     return false;
                 }
                 // Check item data top for all data sources supported
-                else if ($.inArray(DS.getName(),ds_not_supported_company_top) === -1 &&
+                else if ($.inArray(DS.getName(),ds_supporting_top_company) > -1 &&
                          DS.getCompaniesTopData()[item] === undefined) {
                     check = false;
                     return false;

@@ -534,11 +534,19 @@ function DataSource(name, basic_metrics) {
 
     this.projects = null;
     this.getProjectsData = function() {
-        return this.projects;
+        var items = this.projects;
+        if  (items instanceof Array === false) {
+            // New format with names and metrics
+            if (this.projects !== null) {
+                items = this.projects.name;
+            }
+        }
+        return items;
     };
     this.setProjectsData = function(projects, self) {
         if (projects === null) projects = [];
-        if (!(projects instanceof Array)) projects=[projects];
+        // Why this line? - acs
+        // if (!(projects instanceof Array)) projects=[projects];
         if (self === undefined) self = this;
         self.projects = projects;
     };
