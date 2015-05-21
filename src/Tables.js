@@ -135,7 +135,7 @@ var Table = {};
         for (var k=0; k< periods.length; k++){
             html = "";
             var key = opts.metric + '.' + periods[k];
-            if (periods[k] !== opts.period) {continue;}
+            if (periods[k] !== opts.period && opts.period !== 'all') {continue;}
             if (data[key]){
                 var data_period = periods[k];
                 if (data_period === ""){
