@@ -198,6 +198,7 @@ var DataProcess = {};
         var i = 0;
         // Detect 0s start
         $.each(metrics, function(id, metric) {
+            if (history[metric] === undefined) {return;}
             new_offset = 0;
             for (i =  0; i < history[metric].length; i++) {
                 if (history[metric][i] === 0) new_offset++;
@@ -210,6 +211,7 @@ var DataProcess = {};
         });
         // Detect 0s end
         $.each(metrics, function(id, metric) {
+            if (history[metric] === undefined) {return;}
             new_offset = 0;
             for (i = history[metric].length-1  ; i >=0; i--) {
                 if (history[metric][i] === 0) new_offset++;
