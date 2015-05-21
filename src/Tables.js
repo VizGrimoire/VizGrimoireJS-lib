@@ -126,7 +126,7 @@ var Table = {};
 
         periods = getSortedPeriods(); //FIXME we should get this data from JSON
         if (opts.height !== undefined){
-            tables += '<div class="tab-content" style="height: ' + opts.height +'px !important;overflow: scroll;">';
+            tables += '<div class="tab-content" style="height: ' + opts.height +'px !important;overflow-y: scroll;overflow-x: hidden;">';
         }else{
             tables += '<div class="tab-content">';
         }
