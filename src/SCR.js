@@ -295,6 +295,45 @@ function SCR() {
         return list_name;
     };
 
+    this.oldest_changesets = {};
+    this.ma_changesets = {};
+
+    this.displayOldestChangesets = function(div, headers, columns) {
+        loadOldestChangesets(function(data){
+            Table.gerritTable(div, data, headers, columns);
+            });
+    };
+
+    this.displayMostActiveChangesets = function(div, headers, columns) {
+        loadMostActiveChangesets(function(data){
+            Table.gerritTable(div, data, headers, columns);
+            });
+    };
+
+    // this function is only for Gerrit so far
+    function loadOldestChangesets (cb) {
+        var json_file = "data/json/scr-oldest_changesets.json";
+        $.when($.getJSON(json_file)
+                ).done(function(json_data) {
+                this.oldest_changesets = json_data;
+                cb(this.oldest_changesets);
+        }).fail(function() {
+            console.log("SCR oldest changesets disabled. Missing " + json_file);
+        });
+    }
+
+    // this function is only for Gerrit so far
+    function loadMostActiveChangesets (cb) {
+        var json_file = "data/json/scr-most_active_changesets.json";
+        $.when($.getJSON(json_file)
+                ).done(function(json_data) {
+                this.ma_changesets = json_data;
+                cb(this.ma_changesets);
+        }).fail(function() {
+            console.log("SCR most active changesets disabled. Missing " + json_file);
+        });
+    }
+
     this.getTitle = function() {return "Source Code Review";};
 }
 SCR.prototype = new DataSource("scr");
