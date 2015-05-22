@@ -167,6 +167,13 @@ function SCR() {
             "desc" : "Reviews submitters",
             "action" : "opened"
         },
+        "scr_openers" : {
+            "divid" : "scr_openers",
+            "column" : "openers",
+            "name" : "Submitters",
+            "desc" : "Reviews submitters",
+            "action" : "opened"
+        },
         "scr_reviewers" : {
             "divid" : "scr_reviewers",
             "column" : "reviewers",
