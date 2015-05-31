@@ -399,7 +399,8 @@ function getSectionName(){
                    "repos":"Activity by repositories",
                    "states":"Activity by states",
                    "tags":"Activity by tags",
-                   "past_events":"Past events"
+                   "past_events":"Past events",
+                   "backlog":"Backlog"
                   };
     var filters2 = {"repository":"Repository",
                     "countries":"Activity by countries"
@@ -1655,6 +1656,38 @@ Convert.convertDemographics = function() {
     }
 };
 
+Convert.convertOldestChangesets = function (){
+    var divs = $(".OldestChangesets");
+    if (divs.length > 0) {
+        $.each(divs, function(id, div) {
+            $(this).empty();
+            ds = $(this).data('data-source');
+            DS = Report.getDataSourceByName(ds);
+            if (DS === null) return;
+            div.id = "OldestChangesets" + "-" + ds+"-" + "-"+ getRandomId();
+            var headers = $(this).data('headers');
+            var columns = $(this).data('columns');
+            DS.displayOldestChangesets(div, headers.split(','), columns.split(','));
+        });
+    }
+};
+
+Convert.convertMostActiveChangesets = function (){
+    var divs = $(".MostActiveChangesets");
+    if (divs.length > 0) {
+        $.each(divs, function(id, div) {
+            $(this).empty();
+            ds = $(this).data('data-source');
+            DS = Report.getDataSourceByName(ds);
+            if (DS === null) return;
+            div.id = "MostActiveChangesets" + "-" + ds+"-" + "-"+ getRandomId();
+            var headers = $(this).data('headers');
+            var columns = $(this).data('columns');
+            DS.displayMostActiveChangesets(div, headers.split(','), columns.split(','));
+        });
+    }
+};
+
 function filterItemsConfig() {
     var config_metric = {};
     config_metric.show_desc = false;
@@ -2258,6 +2291,8 @@ Convert.convertBasicDivs = function() {
     Convert.convertSummary();
     Convert.convertTopByPeriod();
     Convert.companyFilters();
+    Convert.convertOldestChangesets();
+    Convert.convertMostActiveChangesets();
 };
 
 Convert.convertBasicDivsMisc = function() {

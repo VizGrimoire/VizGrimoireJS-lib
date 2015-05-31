@@ -36,6 +36,7 @@ var Table = {};
 
     Table.displayTopTable = displayTopTable;
     Table.simpleTable = displaySimpleTable;
+    Table.gerritTable = displayGerritTable;
 
     /*
     * Display a raw bootstrap table with headers and rows
@@ -50,16 +51,27 @@ var Table = {};
         random_id = "myTable" + Math.floor((Math.random() * 9999) + 1);
 
         tables= '<table id="' + random_id +'" class="table table-striped tablesorter">';
-        aux_html = '<thead><th>#</th>';
-        $.each(headers, function(id,value){
-            aux_html += '<th>' + value + '</th>';
-        });
-        aux_html += '</thead><tbody>';
-        aux_html += '<tbody>';
 
-        /*
-        * This snippet was added to fix an error in the JSON
-        */
+        aux_html = composeSimpleHeaders(headers);
+        aux_html += '<tbody>';
+        var first_col = handleWeirdJSON(data, cols);
+        aux_html += composeSimpleRows(first_col, aux_html, cols, data);
+        aux_html += '</tbody>';
+
+        tables += aux_html;
+        tables += '</table>';
+
+        tables += '<script>$(document).ready(function(){'+
+                '$("#' + random_id + '").tablesorter();}'+
+                '); </script>';
+        //return tables;
+        $("#"+div.id).append(tables);
+    }
+
+    /*
+    * This snippet was added to fix an error in the JSON
+    */
+    function handleWeirdJSON(data, cols){
         var first_col,
             aux_col;
         if ( typeof(data[cols[0]]) !== 'object'){
@@ -69,8 +81,10 @@ var Table = {};
         }else{
             first_col = data[cols[0]];
         }
-        /* end of the snippet */
+        return first_col;
+    }
 
+    function composeSimpleRows(first_col, aux_html, cols, data){
         $.each(first_col, function(id, value){
             aux_html += '<tr>';
             var cont = id + 1;
@@ -87,7 +101,70 @@ var Table = {};
             });
             aux_html += '</tr>';
         });
+        return aux_html;
+    }
+
+    /*
+    * Display a raw bootstrap table with headers and rows
+    * @param {object()} div - html object where table will be appended
+    * @param {object()} data - Contains array of columns
+    */
+    function displayGerritTable(div, data, headers, cols){
+        var tables,
+            aux_html,
+            random_id,
+            gerrit_site = Report.getGerritSite();
+
+
+        random_id = "myTable" + Math.floor((Math.random() * 9999) + 1);
+
+        tables= '<table id="' + random_id +'" class="table table-striped tablesorter">';
+
+        aux_html = composeSimpleHeaders(headers);
+        aux_html += '<tbody>';
+        var first_col = handleWeirdJSON(data, cols);
+        //aux_html += composeSimpleRows(first_col, aux_html, cols, data);
+        $.each(first_col, function(id, value){
+            aux_html += '<tr>';
+            var cont = id + 1,
+                get_var;
+            aux_html += '<td>' + cont + '</td>';
+            $.each(cols, function(subid, name){
+                if (typeof(data[name]) !== 'object'){
+                    /*
+                    * FIXME: this hack is to survive a malformed JSON
+                    */
+                    if (name === "gerrit_issue_id"){
+                        get_var = gerrit_site + '/r/#/c/' + data[name];
+                        aux_html += '<td><a href="' + get_var + '">' + data[name] + '</a></td>';
+                    }
+                    else if (name === "project_name"){
+                        get_var = data[name].replace(/\//g,'_');
+                        aux_html += '<td><a href="repository.html?repository='+ get_var +
+                        '&ds=scr">'+data[name]+'</a></td>';
+                    }
+                    else{
+                        aux_html += '<td>'+data[name]+'</td>';
+                    }
+                }else{
+                    if (name === "gerrit_issue_id"){
+                        get_var = gerrit_site + '/r/#/c/' + data[name][id];
+                        aux_html += '<td><a href="' + get_var + '">'+data[name][id]+'</a></td>';
+                    }
+                    else if (name === "project_name") {
+                        get_var = data[name][id].replace(/\//g,'_');
+                        aux_html += '<td><a href="repository.html?repository='+ get_var +
+                        '&ds=scr">'+data[name][id]+'</a></td>';
+                    }
+                    else {
+                        aux_html += '<td>'+data[name][id]+'</td>';
+                    }
+                }
+            });
+            aux_html += '</tr>';
+        });
         aux_html += '</tbody>';
+
         tables += aux_html;
         tables += '</table>';
 
@@ -96,9 +173,17 @@ var Table = {};
                 '); </script>';
         //return tables;
         $("#"+div.id).append(tables);
-
     }
 
+    function composeSimpleHeaders(headers){
+        var aux_html;
+        aux_html = '<thead><th>#</th>';
+        $.each(headers, function(id,value){
+            aux_html += '<th>' + value + '</th>';
+        });
+        aux_html += '</thead>';
+        return aux_html;
+    }
 
 
     /*

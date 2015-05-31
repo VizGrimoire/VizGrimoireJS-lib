@@ -583,7 +583,8 @@ var HTMLComposer = {};
         // 'states': '<i class="fa fa-code-fork"></i> States'};
         // html = '';
         // html += '<li><a href="' + ds_name + '.html"><i class="fa fa-tachometer"></i> Overview</a></li>';
-        text = {'companies': 'Companies',
+        text = {'backlog': 'Backlog',
+                'companies': 'Companies',
                 'companies-summary': 'Companies summary',
                 'contributors': 'Contributors',
                 'countries': 'Countries',

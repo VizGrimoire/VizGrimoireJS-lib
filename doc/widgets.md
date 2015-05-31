@@ -27,3 +27,22 @@ Output: two cols with summary data on the left and evolutionary charts on the ri
 ```
 
 Output: Top people for a company
+
+## OldestChangesets
+
+```
+<div class="OldestChangesets" data-data-source="scr"
+    data-headers="tracker URL,Submitted by,changeset URL,Summary,Submitted on"
+    data-columns="project_name,author_name,gerrit_issue_id,summary,first_upload"></div>
+```
+
+Output: Table with information about Gerrit backlog with links to changesets if gerrit_site variable is in config file.
+
+## MostActiveChangesets
+```
+<div class="MostActiveChangesets" data-data-source="scr"
+data-headers="Review number,Summary,Submitted on,Last update,Uploads"
+data-columns="gerrit_issue_id,summary,first_upload,last_upload,number_of_patchsets"></div>
+```
+
+Output: Table with information about Gerrit backlog with links to changesets if gerrit_site variable is in config file

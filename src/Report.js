@@ -60,6 +60,7 @@ if (Report === undefined) var Report = {};
     Report.getMenuElementsReleases = getMenuElementsReleases;
     Report.getReleaseNames = getReleaseNames;
     Report.getThreadsSite = getThreadsSite;
+    Report.getGerritSite = getGerritSite;
     Report.getMetricDS = getMetricDS;
     Report.getGridster = getGridster;
     Report.setGridster = setGridster;
@@ -167,6 +168,13 @@ if (Report === undefined) var Report = {};
         var site;
         if (menu_elements !== undefined) {
             site = menu_elements.threads_site;
+        }
+        return site;
+    }
+    function getGerritSite(){
+        var site;
+        if (menu_elements !== undefined) {
+            site = menu_elements.gerrit_site;
         }
         return site;
     }
