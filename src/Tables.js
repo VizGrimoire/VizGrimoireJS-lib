@@ -245,6 +245,25 @@ var Table = {};
                     tables += '</thead><tbody>';
                     tables += composeTopRowsThreads(data[key], opts.limit, opts.links_enabled);
                     tables += '</tbody>';
+                }else if ( opts.ds_name === "downloads" &&
+                            (opts.metric === "packages" || opts.metric === "ips" )){
+                    tables += '<thead><th>#</th>';
+
+                    if (opts.metric === "packages"){
+                        tables += '<th> IP Addresses </th>';
+                    }else{
+                        tables += '<th> Packages Downloaded </th>';
+                    }
+
+                    tables += '<th> Downloads </th>';
+                    tables += '</thead><tbody>';
+
+                    if (opts.metric === "packages"){
+                        tables += composeTopRowsPackages(data[key], opts.limit);
+                    }else{
+                        tables += composeTopRowsIPs(data[key], opts.limit);
+                    }
+                    tables += '</tbody>';
                 }else{
                     tables += '<thead><th>#</th><th>' +title.capitalize()+'</th>';
                     if (unit !== undefined) tables += '<th>'+unit.capitalize()+'</th>';
@@ -331,6 +350,32 @@ var Table = {};
              }
              rows_html += "<td>" + threads_data.initiator_name[i] + "</td>";
              rows_html += "<td>" + threads_data.length[i] + "</td>";
+             rows_html += "</tr>";
+         }
+         return(rows_html);
+     }
+
+     function composeTopRowsPackages(downloads_data, limit){
+         var rows_html = "";
+         for (var i = 0; i < downloads_data.downloads.length; i++) {
+             if (limit && limit <= i) break;
+             rows_html += "<tr><td>" + (i+1) + "</td>";
+             //rows_html += "<td>";
+             rows_html += "<td>" + downloads_data.packages[i] + "</td>";
+             rows_html += "<td>" + downloads_data.downloads[i] + "</td>";
+             rows_html += "</tr>";
+         }
+         return(rows_html);
+     }
+
+     function composeTopRowsIPs(downloads_data, limit){
+         var rows_html = "";
+         for (var i = 0; i < downloads_data.downloads.length; i++) {
+             if (limit && limit <= i) break;
+             rows_html += "<tr><td>" + (i+1) + "</td>";
+             //rows_html += "<td>";
+             rows_html += "<td>" + downloads_data.ips[i] + "</td>";
+             rows_html += "<td>" + downloads_data.downloads[i] + "</td>";
              rows_html += "</tr>";
          }
          return(rows_html);
