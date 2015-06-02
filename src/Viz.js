@@ -791,8 +791,17 @@ if (Viz === undefined) var Viz = {};
     /*Trim string if length is bigger than 17*/
     function abbreviateLabel(string){
         if (string.length >= 18){
-            var l = string.length;
-            return '..' + string.slice(string.length-16);
+            if ((string.indexOf(' ') > 0) && (string.split(' ').length == 2)){
+                // string with one whitespace
+                var slices = string.split(' ');
+                return slices[0] + '<br/>&nbsp;' + slices[1];
+            }
+            else{
+                // string with no whitespaces or with more than one. We print
+                // the first and last part with '...' in the middle
+                var l = string.length;
+                return string.slice(0,4) + '...' + string.slice(string.length-12);
+            }
         }
         else{
             return string;
