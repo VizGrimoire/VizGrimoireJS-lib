@@ -1391,6 +1391,62 @@ Convert.convertTopMultiColumn = function() {
     }
 };
 
+Convert.convertTopFilter = function() {
+    var div_id_top = "TopFilter";
+    var divs = $("." + div_id_top);
+    var DS;
+    if (divs.length > 0) {
+        var unique = 0;
+        $.each(divs, function(id, div) {
+            $(this).empty();
+            var opt = readHTMLOpts($(this));
+            DS = Report.getDataSourceByName(opt.ds);
+
+            if (DS === null) return;
+            if (DS.getData().length === 0) return;
+            div.id = opt.ds + "-" + div_id_top + (unique++);
+
+            if (opt.limit === undefined){
+                opt.limit = 10;
+            }
+
+            if (DS.getName() === "meetup"){
+                var desc_metrics = DS.getMetrics();
+                var data = DS.getReposDataFull();
+                $.each(data.name, function(id,value){
+                    data.name[id] = '<a href="./meetup-group.html?group=' +
+                                data.name[id] + '">' + data.name[id] + '</a>';
+                });
+                if (opt.ratio=== undefined){
+                    Table.meetupGroupsTable(div, data, opt.headers.split(','),
+                                            opt.cols.split(','));
+                }else{
+                    Table.meetupGroupsTable(div, data, opt.headers.split(','),
+                    opt.cols.split(','), opt.ratio.split(','),
+                    opt.ratio_header);
+                }
+            }
+
+        });
+    }
+};
+
+function readHTMLOpts(widget){
+    //FIXME dup with loadHTMLEvolParameters
+    var myobj = {};
+    myobj.ds = widget.data('data-source');
+    myobj.top_metric = widget.data('metric');
+    myobj.limit = widget.data('limit');
+    myobj.period = widget.data('period');
+    myobj.period_all = widget.data('period_all');
+    myobj.cols = widget.data('columns');
+    myobj.headers = widget.data('headers');
+    myobj.ratio = widget.data('ratio');
+    myobj.ratio_header = widget.data('ratio-header');
+
+    return myobj;
+}
+
 Convert.convertPersonMetrics = function (upeople_id, upeople_identifier) {
     var config_metric = {};
     config_metric.show_desc = false;
@@ -2324,7 +2380,7 @@ Convert.convertFilterTop = function(filter){
     Convert.convertTop();
     Convert.convertTopMultiColumn();
     Convert.convertRepositorySelector();
-
+    Convert.convertTopFilter();
 };
 
 })();
