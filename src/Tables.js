@@ -302,8 +302,6 @@ var Table = {};
                         tables += composeTopRowsIPs(data[key], opts.limit);
                     }
                     tables += '</tbody>';
-                }else if (opts.ds_name === "meetup" && opts.metric === "groups") {
-                    tables += composeTopRowsMeetupGroups(data);
                 }else{
                     tables += '<thead><th>#</th><th>' +title.capitalize()+'</th>';
                     if (unit !== undefined) tables += '<th>'+unit.capitalize()+'</th>';
