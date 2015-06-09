@@ -37,6 +37,7 @@ var Table = {};
     Table.displayTopTable = displayTopTable;
     Table.simpleTable = displaySimpleTable;
     Table.gerritTable = displayGerritTable;
+    Table.meetupGroupsTable = displayMeetupGroupsTable;
 
     /*
     * Display a raw bootstrap table with headers and rows
@@ -55,7 +56,7 @@ var Table = {};
         aux_html = composeSimpleHeaders(headers);
         aux_html += '<tbody>';
         var first_col = handleWeirdJSON(data, cols);
-        aux_html += composeSimpleRows(first_col, aux_html, cols, data);
+        aux_html += composeSimpleRows(first_col, cols, data);
         aux_html += '</tbody>';
 
         tables += aux_html;
@@ -84,7 +85,8 @@ var Table = {};
         return first_col;
     }
 
-    function composeSimpleRows(first_col, aux_html, cols, data){
+    function composeSimpleRows(first_col, cols, data){
+        var aux_html = '';
         $.each(first_col, function(id, value){
             aux_html += '<tr>';
             var cont = id + 1;
@@ -173,6 +175,42 @@ var Table = {};
                 '); </script>';
         //return tables;
         $("#"+div.id).append(tables);
+    }
+
+    /*
+    * Display a bootstrap table with headers and rows + a ratio for Meetup
+    * @param {object()} div - html object where table will be appended
+    * @param {object()} data - Contains array of columns
+    * @param {string[]]} headers - Array of strings
+    * @param {string[]} cols - Array of strings to be read from data
+    * @param {string[]} ratio - Optional array of strings to calculate a ratio from data
+    * @param {string[]} ratio - Optional string with header of table for ratio
+    */
+
+    function displayMeetupGroupsTable(div, data, headers, cols, ratio, ratio_header){
+        var ratio_array = [],
+            denominator,
+            numerator,
+            aux_ratio;
+        if (ratio !== undefined){
+            /* if ratio exist it should be a 2 item lenght array*/
+            numerator = ratio[0];
+            denominator = ratio[1];
+
+            $.each(data.name, function(id, value){
+                aux_ratio = data[numerator][id]/data[denominator][id];
+                aux_ratio = Math.round(aux_ratio * 10) / 10;
+                ratio_array.push(aux_ratio);
+            });
+            data.ratio = ratio_array;
+            if (ratio_header !== undefined){
+                headers.push(ratio_header);
+            }else{
+                headers.push("Ratio");
+            }
+            cols.push("ratio");
+        }
+        displaySimpleTable(div, data, headers, cols);
     }
 
     function composeSimpleHeaders(headers){
@@ -264,6 +302,8 @@ var Table = {};
                         tables += composeTopRowsIPs(data[key], opts.limit);
                     }
                     tables += '</tbody>';
+                }else if (opts.ds_name === "meetup" && opts.metric === "groups") {
+                    tables += composeTopRowsMeetupGroups(data);
                 }else{
                     tables += '<thead><th>#</th><th>' +title.capitalize()+'</th>';
                     if (unit !== undefined) tables += '<th>'+unit.capitalize()+'</th>';
@@ -515,8 +555,12 @@ var Table = {};
              }else if (metric === "events"){
                  var_names.name = "event";
                  var_names.action = "attendees";
-             }else if (metric === "groups"){
-                 var_names.name = "group";
+             }else if (metric === "repos"){
+                 var_names.name = "name";
+                 var_names.action = "attendees";
+             }
+             else if (metric === "attendees"){
+                 var_names.name = "attendees";
                  var_names.action = "events";
              }
          }
