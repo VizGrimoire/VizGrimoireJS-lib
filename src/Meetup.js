@@ -25,6 +25,7 @@ function Meetup() {
 
     var self = this;
     this.events = {};
+    this.top_groups = {};
 
     this.basic_metrics = {
         "meetup_events" : {
@@ -37,18 +38,26 @@ function Meetup() {
         "meetup_attendees" : {
             "divid" : "meetup_attendees",
             "column" : "attendees",
+            "action": "events",
             "name" : "Meetup attendees",
             "desc" : "Meetup attendees"
         },
+        "meetup_members" : {
+            "divid" : "meetup_members",
+            "column" : "members",
+            "name" : "Meetup members",
+            "desc" : "Meetup members"
+        },
         "meetup_cities": {
-            "name" : "city",
+            "name" : "Cities with Meetup events",
             "action" : "events",
             "desc": "Cities where events took place"
         },
-        "meetup_groups": {
-            "name" : "group",
-            "action" : "events",
-            "desc": "Meetup groups"
+        "meetup_groups" : {
+            "divid" : "meetup_groups",
+            "column" : "groups",
+            "name" : "Active Meetup groups",
+            "desc" : "Active Meetup groups"
         }
     };
 
