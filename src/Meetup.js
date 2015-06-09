@@ -93,8 +93,15 @@ function Meetup() {
                 data.event_name[id] = '<a href="http://www.meetup.com/' +
                 data.group_id[id] + '/events/' +
                 data.event_id[id] + '">' + data.event_name[id] +
-                '</a>';
+                '&nbsp;<i class="fa fa-external-link"></i></a>';
             });
+        }if (data.hasOwnProperty('group_name') &&
+                data.hasOwnProperty('group_id')){
+                $.each(data.event_name,function(id,value){
+                    data.group_name[id] = '<a href="./meetup-group.html?group=' +
+                    data.group_id[id] + '">' + data.group_name[id] +
+                    '</a>';
+                });
         }
         return data;
     }
