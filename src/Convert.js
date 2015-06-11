@@ -2148,7 +2148,7 @@ Convert.convertFilterItemMetricsEvol = function(filter, item) {
                 }
                 else $(this).hide();*/
                 DS.displayMetricsRepo(real_item, metrics.split(","),
-                    div.id, config_metric);
+                    div.id, config_metric, $(this).data('convert'));
             }
             else if (filter === "countries") {
                 DS.displayMetricsCountry(real_item, metrics.split(","),

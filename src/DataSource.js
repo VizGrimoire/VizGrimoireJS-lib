@@ -730,11 +730,30 @@ function DataSource(name, basic_metrics) {
         Viz.displayMetricsCompany(this, company, metrics, data, div_id, config);
     };
 
-    this.displayMetricsRepo = function (repo, metrics, div_id, config) {
+    this.displayMetricsRepo = function (repo, metrics, div_id, config, convert) {
         var data = this.getReposMetricsData()[repo];
         if (data === undefined) {
             $("#"+div_id).hide();
             return;
+        }
+        if (convert) {
+            data = DataProcess.convert(data, convert, metrics);
+            if (convert === "divide") {
+                mlabel = this.getMetrics()[metrics[0]].name+"/";
+                mlabel += this.getMetrics()[metrics[1]].name;
+                //metric_ids = ['divide'];
+                metrics = ['divide'];
+                // Add the new metric to the data source with its legend
+                this.getMetrics().divide = {"name":mlabel};
+            }
+            if (convert === "substract") {
+                mlabel = this.getMetrics()[metrics[0]].name+"-";
+                mlabel += this.getMetrics()[metrics[1]].name;
+                //metric_ids = ['substract'];
+                metrics = ['substract'];
+                // Add the new metric to the data source with its legend
+                this.getMetrics().substract = {"name":mlabel};
+            }
         }
         Viz.displayMetricsRepo(this, repo, metrics, data, div_id, config);
     };
