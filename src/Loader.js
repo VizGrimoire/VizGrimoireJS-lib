@@ -792,6 +792,9 @@ if (Loader === undefined) var Loader = {};
         }
         else return;
         var item_uri = encodeURIComponent(item);
+        // we have to tackle names like GNU/Linux which have this name
+        // in JSON: "GNU_Linux"
+        item_uri = item_uri.replace('%2F','_');
         var file = DS.getDataDir()+"/"+item_uri+"-";
         file += DS.getName() + "-" + getFilterSuffix(filter);
         var file_evo = file +"-evolutionary.json";
