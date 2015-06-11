@@ -32,15 +32,15 @@ function Meetup() {
             "divid" : "meetup_events",
             "action" : "attendees",
             "column" : "opened",
-            "name" : "Meetup events",
-            "desc" : "Meetup events"
+            "name" : "Meetup meetings",
+            "desc" : "Meetup meetings"
         },
         "meetup_attendees" : {
             "divid" : "meetup_attendees",
             "column" : "attendees",
             "action": "events",
-            "name" : "Meetup attendees",
-            "desc" : "Meetup attendees"
+            "name" : "Meetup RSVPs",
+            "desc" : "Meetup RSVPs"
         },
         "meetup_members" : {
             "divid" : "meetup_members",
