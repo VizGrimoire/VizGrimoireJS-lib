@@ -30,6 +30,7 @@ if (Viz === undefined) var Viz = {};
 
     Viz.displayTop = displayTop;
     Viz.displayTopCompany = displayTopCompany;
+    Viz.displayTopRepo = displayTopRepo;
     Viz.displayTopGlobal = displayTopGlobal;
     Viz.displayBasicChart = displayBasicChart;
     Viz.displayMetricCompanies = displayMetricCompanies;
@@ -1754,6 +1755,19 @@ if (Viz === undefined) var Viz = {};
     }
 
     function displayTopCompany(ds, company, data, div, selected_metric, period, titles, height, people_links) {
+        var graph = null,
+            limit = 0,
+            desc_metrics = ds.getMetrics();
+        //displayTopMetric(div, metric, period, data, graph, titles);
+        var classname = ds.getName() + selected_metric;
+        var opts = {'metric': selected_metric, 'class_name': classname,
+                'links_enabled': people_links, 'limit': limit,
+                'period': period, 'ds_name': ds.getName(),
+                'desc_metrics': desc_metrics, 'height': height};
+        Table.displayTopTable(div, data, opts);
+    }
+
+    function displayTopRepo(ds, repo, data, div, selected_metric, period, titles, height, people_links) {
         var graph = null,
             limit = 0,
             desc_metrics = ds.getMetrics();

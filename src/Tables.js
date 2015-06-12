@@ -302,6 +302,13 @@ var Table = {};
                         tables += composeTopRowsIPs(data[key], opts.limit);
                     }
                     tables += '</tbody>';
+                }else if ( opts.ds_name === "eventizer" && opts.metric === "attendees"){
+                    tables += '<thead><th>#</th><th>' +title.capitalize()+'</th>';
+                    tables += '<th>'+unit.capitalize()+'</th>';
+                    tables += '</thead><tbody>';
+                    tables += composeTopRowsMeetup(data[key], opts.limit, opts.links_enabled);
+                    tables += '</tbody>';
+
                 }else{
                     tables += '<thead><th>#</th><th>' +title.capitalize()+'</th>';
                     if (unit !== undefined) tables += '<th>'+unit.capitalize()+'</th>';
@@ -414,6 +421,19 @@ var Table = {};
              //rows_html += "<td>";
              rows_html += "<td>" + downloads_data.ips[i] + "</td>";
              rows_html += "<td>" + downloads_data.downloads[i] + "</td>";
+             rows_html += "</tr>";
+         }
+         return(rows_html);
+     }
+
+     function composeTopRowsMeetup(data, limit, people_links){
+         var rows_html = "";
+         for (var i = 0; i < data.name.length; i++) {
+             if (limit && limit !==0 && limit <= i) break;
+             rows_html += "<tr><td>" + (i+1) + "</td>";
+             //rows_html += "<td>";
+             rows_html += "<td>" + data.name[i] + "</td>";
+             rows_html += "<td>" + data.events[i] + "</td>";
              rows_html += "</tr>";
          }
          return(rows_html);
@@ -546,7 +566,7 @@ var Table = {};
                  var_names.action = "releases";
              }
          }
-         if (ds_name === "meetup"){
+         if (ds_name === "eventizer"){
              if (metric === "cities"){
                  var_names.name = "city";
                  var_names.action = "events";
@@ -558,7 +578,7 @@ var Table = {};
                  var_names.action = "attendees";
              }
              else if (metric === "attendees"){
-                 var_names.name = "attendees";
+                 var_names.name = "name";
                  var_names.action = "events";
              }
          }

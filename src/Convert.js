@@ -380,7 +380,7 @@ function getSectionName(){
                     "wiki":"Wiki overview",
                     "downloads":"Downloads",
                     "forge":"Forge releases",
-                    "meetup":"Meetup",
+                    "meetup":"Meetup overview",
                     "demographics":"Demographics",
                     "data_sources":"Data sources",
                     "project_map":"Project map",
@@ -395,11 +395,13 @@ function getSectionName(){
                    "contributors":"Activity by contributors",
                    "countries":"Activity by countries",
                    "domains":"Activity by domains",
+                   "group":"Meetup group",//this is breaking the idea of this dict
                    "projects":"Activity by project",
                    "repos":"Activity by repositories",
+                   "groups":"Activity by groups",
                    "states":"Activity by states",
                    "tags":"Activity by tags",
-                   "past_events":"Past events",
+                   "past_meetings":"Past meetings",
                    "backlog":"Backlog"
                   };
     var filters2 = {"repository":"Repository",
@@ -1366,7 +1368,7 @@ Convert.convertTopMultiColumn = function() {
         $.each(divs, function(id, div) {
             $(this).empty();
             ds = $(this).data('data-source');
-            if (ds !== 'meetup') return; //so far only supported by Meetup
+            if (ds !== 'eventizer') return; //so far only supported by Meetup
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
             if (DS.getData().length === 0) return;
@@ -1410,11 +1412,11 @@ Convert.convertTopFilter = function() {
                 opt.limit = 10;
             }
 
-            if (DS.getName() === "meetup"){
+            if (DS.getName() === "eventizer"){
                 var desc_metrics = DS.getMetrics();
                 var data = DS.getReposDataFull();
                 $.each(data.name, function(id,value){
-                    data.name[id] = '<a href="./meetup-group.html?group=' +
+                    data.name[id] = '<a href="./meetup-group.html?repository=' +
                                 data.name[id] + '">' + data.name[id] + '</a>';
                 });
                 if (opt.ratio=== undefined){
@@ -2063,11 +2065,13 @@ Convert.convertFilterItemMicrodashText = function (filter, item) {
             if (ds === undefined) return;
             if (filter === "projects") {
                 global_data = ds.getProjectsGlobalData()[item];
-                if (global_data === undefined) {return;}
-            }
-            else {
+            }else if(filter === "repos"){
+                global_data = ds.getReposGlobalData()[item];
+            }else {
                 return; //so far only project filter is supported
             }
+            if (global_data === undefined) {return;}
+
             var html = '<div class="row">';
 
             if(show_name){ //if name is shown we'll have four columns
@@ -2193,8 +2197,11 @@ Convert.convertFilterItemTop = function(filter, item) {
             $(this).empty();
             div.className = "";
             // Only for Company yet
-            if (filter === "companies")
+            if (filter === "companies"){
                 DS.displayTopCompany(real_item,div,metric,period,titles, height, people_links);
+            }else if(filter === "repos") {
+                DS.displayTopRepo(real_item,div,metric,period,titles, height, people_links);
+            }
         });
     }
 };

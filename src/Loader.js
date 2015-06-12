@@ -30,7 +30,7 @@ if (Loader === undefined) var Loader = {};
     var data_repos_callbacks = [];
     var check_companies = false, check_repos = false, check_countries = false;
     var ds_supporting_top_company = ['scm','mls','its'];
-    var ds_supporting_top_repos = ['scm','mls','its','meetup']; //filter by repo in contributors panel
+    var ds_supporting_top_repos = ['scm','mls','its','eventizer']; //filter by repo in contributors panel
     var all_data; // Support for loading all data in one JSON file
 
     /**
@@ -705,7 +705,7 @@ if (Loader === undefined) var Loader = {};
         if (DS.getName() === "scm") file_top += "authors";
         else if (DS.getName() === "its") file_top += "closers";
         else if (DS.getName() === "mls") file_top += "senders";
-        else if (DS.getName() === "meetup") file_top += "pepes";
+        else if (DS.getName() === "eventizer") file_top += "rsvps";
         // scr, irc, mediawiki not supported yet
         else return;
         file_top += ".json";

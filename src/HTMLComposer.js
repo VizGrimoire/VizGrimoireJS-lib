@@ -593,7 +593,7 @@ var HTMLComposer = {};
                 'repos': 'Repositories',
                 'tags': 'Tags',
                 'states': 'States',
-                'past_events': 'Past Events'};
+                'past_meetings': 'Past Meetings'};
         html = '';
         html += '<li class="dropdown">';
         html += '<a href="#" class="dropdown-toggle" data-toggle="dropdown">';
