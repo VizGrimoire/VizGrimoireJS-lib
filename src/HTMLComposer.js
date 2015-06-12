@@ -241,6 +241,8 @@ var HTMLComposer = {};
             title = '<i class="fa fa-ticket"></i> Issue tracking system';
         else if(ds_name === "storyboard")
             title = '<i class="fa fa-ticket"></i> StoryBoard';
+        else if(ds_name === "maniphest")
+            title = '<i class="fa fa-ticket"></i> Maniphest';
         else if(ds_name === "mls")
             title = '<i class="fa fa-envelope-o"></i> Mailing Lists';
         else if(ds_name === "irc")
@@ -618,6 +620,8 @@ var HTMLComposer = {};
                 var label = text[value];
                 if (value === 'repos'){
                     if (ds_name == 'storyboard'){
+                        ds_name = 'its';
+                    } else if (ds_name == 'maniphest'){
                         ds_name = 'its';
                     }
                     /*

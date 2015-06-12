@@ -450,6 +450,10 @@ var Table = {};
              var_names.name = "closers";
              var_names.action = "closed";
          }
+         if (metric === "closers" && ds_name === "its_1"){
+             var_names.name = "closers";
+             var_names.action = "closed";
+         }
          if (ds_name === "scr"){
              if (metric === "mergers"){
                  var_names.name = "mergers";
