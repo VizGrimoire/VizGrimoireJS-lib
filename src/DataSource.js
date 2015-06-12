@@ -1330,6 +1330,14 @@ function DataSource(name, basic_metrics) {
         Viz.displayTopCompany(this, company, data, div, metric_id, period, titles, height, people_links);
     };
 
+    this.displayTopRepo = function(repo, div, metric_id, period, titles, height, people_links) {
+        var data = this.getRepositoriesTopData()[repo];
+        if (data === undefined) return;
+        var metric = this.getMetrics()[metric_id];
+
+        Viz.displayTopRepo(this, repo, data, div, metric_id, period, titles, height, people_links);
+    };
+
     this.displayTopGlobal = function(div, metric, period, titles) {
         Viz.displayTopGlobal(div, this, metric, period, titles);
     };
