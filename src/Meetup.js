@@ -126,7 +126,7 @@ function Meetup() {
                 data.hasOwnProperty('group_id')){
                 $.each(data.event_name,function(id,value){
                     data.group_name[id] = '<a href="./meetup-group.html?repository=' +
-                    data.group_id[id] + '">' + data.group_name[id] +
+                    data.group_name[id] + '">' + data.group_name[id] +
                     '</a>';
                 });
         }
