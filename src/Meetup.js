@@ -79,11 +79,38 @@ function Meetup() {
 
     this.getTitle = function() {return "Meeetup events";};
 
-    this.displayTopMultiColumn = function(div, headers, columns) {
+    this.displayTopMultiColumn = function(div, headers, columns, limit) {
         loadMeetupEventsData(function(data){
+            data = applyLimit(data, limit);
             Table.simpleTable(div, data, headers, columns);
             });
     };
+
+    /*
+    * Returns copy of data object with its arrays cut to limit size
+    */
+    function applyLimit(data, limit){
+        var keys = Object.keys(data),
+            newobj = {},
+            myarray = [];
+
+        if (limit > data[keys[0]].length){
+            return data;
+        }
+
+        $.each(keys, function(id,value){
+            //for (i = 0; i < data[value].length; i++) {
+            myarray = [];
+            for (i = 0; i < limit; i++) {
+                myarray.push(data[value][i]);
+                if (limit === data[value].length - 1 ){
+                    break;
+                }
+            }
+            newobj[value] = myarray;
+        });
+        return newobj;
+    }
 
     function buildLink(data){
         if (data.hasOwnProperty('event_name') &&

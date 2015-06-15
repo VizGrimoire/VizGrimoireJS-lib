@@ -1384,11 +1384,11 @@ Convert.convertTopMultiColumn = function() {
                 period_all = true;
             }
             if (limit === undefined){
-                limit = 500;
+                limit = 100;
             }
             /*DS.displayTop(div, show_all, top_metric, period, period_all,
                           graph, limit, people_links, threads_links, repository);*/
-            DS.displayTopMultiColumn(div, headers.split(','), columns.split(','));
+            DS.displayTopMultiColumn(div, headers.split(','), columns.split(','), limit);
         });
     }
 };
