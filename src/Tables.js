@@ -303,12 +303,18 @@ var Table = {};
                     }
                     tables += '</tbody>';
                 }else if ( opts.ds_name === "eventizer" && opts.metric === "attendees"){
-                    tables += '<thead><th>#</th><th>' +title.capitalize()+'</th>';
-                    tables += '<th>'+unit.capitalize()+'</th>';
+                    tables += '<thead><th>#</th><th>' +title.capitalize()+'&nbsp;by number of meetings</th>';
+                    tables += '<th> Meetings </th>';
                     tables += '</thead><tbody>';
                     tables += composeTopRowsMeetup(data[key], opts.limit, opts.links_enabled);
                     tables += '</tbody>';
-
+                }else if( opts.ds_name === "eventizer" && opts.metric === "events"){
+                    tables += '<thead><th>#</th><th>' +title.capitalize()+'&nbsp;by number of RVSPs</th>';
+                    tables += '<th> RVSPs </th>';
+                    tables += '<th> Date </th>';
+                    tables += '</thead><tbody>';
+                    tables += composeTopRowsMeetup2(data[key], opts.limit, opts.links_enabled);
+                    tables += '</tbody>';
                 }else{
                     tables += '<thead><th>#</th><th>' +title.capitalize()+'</th>';
                     if (unit !== undefined) tables += '<th>'+unit.capitalize()+'</th>';
@@ -437,6 +443,38 @@ var Table = {};
              rows_html += "</tr>";
          }
          return(rows_html);
+     }
+
+     function composeTopRowsMeetup2(data, limit, people_links){
+         var rows_html = "";
+         data = fixArrayStringError(data);
+         for (var i = 0; i < data.name.length; i++) {
+             if (limit && limit !==0 && limit <= i) break;
+             rows_html += "<tr><td>" + (i+1) + "</td>";
+             //rows_html += "<td>";
+             rows_html += '<td><a href="' + data.url[i] + '">' + data.name[i] + '&nbsp;<i class="fa fa-external-link"></i></a></td>';
+             rows_html += "<td>" + data.rsvps[i] + "</td>";
+             rows_html += "<td>" + data.time[i] + "</td>";
+             rows_html += "</tr>";
+         }
+         return(rows_html);
+     }
+
+     /*
+     * Forces the object myobj to contain arrays
+     */
+     function fixArrayStringError(myobj){
+         var keys = Object.keys(myobj),
+            myarray = [];
+         if (typeof(myobj[keys[0]]) !== "object"){
+             console.log("Incorrect data. Expected an array and found an string, trying to convert ..");
+             $.each(keys, function(id, value){
+                 myarray = [];
+                 myarray.push(myobj[value]);
+                 myobj[value] = myarray;
+             });
+         }
+         return myobj;
      }
 
     function getSortedPeriods(){
@@ -571,8 +609,8 @@ var Table = {};
                  var_names.name = "city";
                  var_names.action = "events";
              }else if (metric === "events"){
-                 var_names.name = "event";
-                 var_names.action = "attendees";
+                 var_names.name = "name";
+                 var_names.action = "rsvps";
              }else if (metric === "repos"){
                  var_names.name = "name";
                  var_names.action = "attendees";
