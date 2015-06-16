@@ -966,6 +966,22 @@ Convert.convertProjectData = function (){
     }
 };
 
+Convert.convertRepositoryData = function (){
+    var divs = $(".RepositoryData");
+    var p = Report.getParameterByName("repository");
+    if (divs.length > 0) {
+        $.each(divs, function(id, div) {
+            ds = $(this).data('data-source');
+            DS = Report.getDataSourceByName(ds);
+            if (DS === null) return;
+            var data = DS.getReposGlobalData()[p];
+            if (data === undefined) {return;}
+            var key = $(this).data('field');
+            $(this).text(Report.formatValue(data[key], key));
+        });
+    }
+};
+
 Convert.convertRadarActivity = function() {
     var div_param = "RadarActivity";
     var divs = $("#" + div_param);
@@ -2268,6 +2284,7 @@ Convert.convertFilterStudyItem = function (filter, item) {
     Convert.convertFilterItemTop(filter, item);
     Convert.convertFilterItemMicrodashText(filter, item);
     Convert.convertProjectData();
+    Convert.convertRepositoryData();
     Convert.activateHelp();
 
     Convert.convertMetricsEvolSelector();
