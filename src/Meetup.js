@@ -42,6 +42,13 @@ function Meetup() {
             "name" : "Meetup RSVPs",
             "desc" : "Meetup RSVPs"
         },
+        "eventizer_rsvps" : {
+            "divid" : "eventizer_rsvps",
+            "column" : "rsvps",
+            "action": "events",
+            "name" : "Meetup RSVPs",
+            "desc" : "Meetup RSVPs"
+        },
         "eventizer_members" : {
             "divid" : "eventizer_members",
             "column" : "members",

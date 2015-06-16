@@ -302,15 +302,15 @@ var Table = {};
                         tables += composeTopRowsIPs(data[key], opts.limit);
                     }
                     tables += '</tbody>';
-                }else if ( opts.ds_name === "eventizer" && opts.metric === "attendees"){
+                }else if ( opts.ds_name === "eventizer" && opts.metric === "rsvps"){
                     tables += '<thead><th>#</th><th>' +title.capitalize()+'&nbsp;by number of meetings</th>';
                     tables += '<th> Meetings </th>';
                     tables += '</thead><tbody>';
                     tables += composeTopRowsMeetup(data[key], opts.limit, opts.links_enabled);
                     tables += '</tbody>';
                 }else if( opts.ds_name === "eventizer" && opts.metric === "events"){
-                    tables += '<thead><th>#</th><th>' +title.capitalize()+'&nbsp;by number of RVSPs</th>';
-                    tables += '<th> RVSPs </th>';
+                    tables += '<thead><th>#</th><th>' +title.capitalize()+'&nbsp;by number of RSVPs</th>';
+                    tables += '<th> RSVPs </th>';
                     tables += '<th> Date </th>';
                     tables += '</thead><tbody>';
                     tables += composeTopRowsMeetup2(data[key], opts.limit, opts.links_enabled);
@@ -613,9 +613,9 @@ var Table = {};
                  var_names.action = "rsvps";
              }else if (metric === "repos"){
                  var_names.name = "name";
-                 var_names.action = "attendees";
+                 var_names.action = "rsvps";
              }
-             else if (metric === "attendees"){
+             else if (metric === "rsvps"){
                  var_names.name = "name";
                  var_names.action = "events";
              }
