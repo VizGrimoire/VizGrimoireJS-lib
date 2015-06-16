@@ -304,13 +304,13 @@ if (Report === undefined) var Report = {};
         // Don't convert date number (2012)
         if (field !== undefined && $.inArray(field, date_fields)>-1)
             value = number.toString();
-        if (field !== undefined && value === "0") {
+        /*if (field !== undefined && value === "0") {
             $.each(reports, function (i, report) {
                 if (field.indexOf(report) != 1) {
                     value = "-";
                 }
             });
-        }
+        }*/
         return value;
     };
 
