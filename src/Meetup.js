@@ -25,35 +25,51 @@ function Meetup() {
 
     var self = this;
     this.events = {};
+    this.top_groups = {};
 
     this.basic_metrics = {
-        "meetup_events" : {
-            "divid" : "meetup_events",
+        "eventizer_events" : {
+            "divid" : "eventizer_events",
             "action" : "attendees",
-            "column" : "opened",
-            "name" : "Meetup events",
-            "desc" : "Meetup events"
+            "column" : "events",
+            "name" : "Meetup meetings",
+            "desc" : "Meetup meetings"
         },
-        "meetup_attendees" : {
-            "divid" : "meetup_attendees",
+        "eventizer_attendees" : {
+            "divid" : "eventizer_attendees",
             "column" : "attendees",
-            "name" : "Meetup attendees",
-            "desc" : "Meetup attendees"
+            "action": "events",
+            "name" : "Meetup RSVPs",
+            "desc" : "Meetup RSVPs"
         },
-        "meetup_cities": {
-            "name" : "city",
+        "eventizer_rsvps" : {
+            "divid" : "eventizer_rsvps",
+            "column" : "rsvps",
+            "action": "events",
+            "name" : "Meetup RSVPs",
+            "desc" : "Meetup RSVPs"
+        },
+        "eventizer_members" : {
+            "divid" : "eventizer_members",
+            "column" : "members",
+            "name" : "Meetup members",
+            "desc" : "Meetup members"
+        },
+        "eventizer_cities": {
+            "name" : "Cities with Meetup events",
             "action" : "events",
             "desc": "Cities where events took place"
         },
-        "meetup_groups": {
-            "name" : "group",
-            "action" : "events",
-            "desc": "Meetup groups"
+        "eventizer_groups" : {
+            "divid" : "eventizer_groups",
+            "column" : "groups",
+            "name" : "Active Meetup groups",
+            "desc" : "Active Meetup groups"
         }
     };
 
     this.getMainMetric = function() {
-        return "meetup_events";
+        return "eventizer_events";
     };
 
     this.getSummaryLabels = function () {
@@ -70,11 +86,38 @@ function Meetup() {
 
     this.getTitle = function() {return "Meeetup events";};
 
-    this.displayTopMultiColumn = function(div, headers, columns) {
+    this.displayTopMultiColumn = function(div, headers, columns, limit) {
         loadMeetupEventsData(function(data){
+            data = applyLimit(data, limit);
             Table.simpleTable(div, data, headers, columns);
             });
     };
+
+    /*
+    * Returns copy of data object with its arrays cut to limit size
+    */
+    function applyLimit(data, limit){
+        var keys = Object.keys(data),
+            newobj = {},
+            myarray = [];
+
+        if (limit > data[keys[0]].length){
+            return data;
+        }
+
+        $.each(keys, function(id,value){
+            //for (i = 0; i < data[value].length; i++) {
+            myarray = [];
+            for (i = 0; i < limit; i++) {
+                myarray.push(data[value][i]);
+                if (limit === data[value].length - 1 ){
+                    break;
+                }
+            }
+            newobj[value] = myarray;
+        });
+        return newobj;
+    }
 
     function buildLink(data){
         if (data.hasOwnProperty('event_name') &&
@@ -84,14 +127,21 @@ function Meetup() {
                 data.event_name[id] = '<a href="http://www.meetup.com/' +
                 data.group_id[id] + '/events/' +
                 data.event_id[id] + '">' + data.event_name[id] +
-                '</a>';
+                '&nbsp;<i class="fa fa-external-link"></i></a>';
             });
+        }if (data.hasOwnProperty('group_name') &&
+                data.hasOwnProperty('group_id')){
+                $.each(data.event_name,function(id,value){
+                    data.group_name[id] = '<a href="./meetup-group.html?repository=' +
+                    data.group_name[id] + '">' + data.group_name[id] +
+                    '</a>';
+                });
         }
         return data;
     }
 
     function loadMeetupEventsData (cb) {
-        var json_file = "data/json/meetup-events.json";
+        var json_file = "data/json/eventizer-events.json";
         $.when($.getJSON(json_file)
                 ).done(function(json_data) {
                 this.events = json_data;
@@ -102,4 +152,4 @@ function Meetup() {
         });
     }
 }
-Meetup.prototype = new DataSource("meetup");
+Meetup.prototype = new DataSource("eventizer");

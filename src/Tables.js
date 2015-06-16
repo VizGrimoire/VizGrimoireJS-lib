@@ -37,6 +37,7 @@ var Table = {};
     Table.displayTopTable = displayTopTable;
     Table.simpleTable = displaySimpleTable;
     Table.gerritTable = displayGerritTable;
+    Table.meetupGroupsTable = displayMeetupGroupsTable;
 
     /*
     * Display a raw bootstrap table with headers and rows
@@ -55,7 +56,7 @@ var Table = {};
         aux_html = composeSimpleHeaders(headers);
         aux_html += '<tbody>';
         var first_col = handleWeirdJSON(data, cols);
-        aux_html += composeSimpleRows(first_col, aux_html, cols, data);
+        aux_html += composeSimpleRows(first_col, cols, data);
         aux_html += '</tbody>';
 
         tables += aux_html;
@@ -84,7 +85,8 @@ var Table = {};
         return first_col;
     }
 
-    function composeSimpleRows(first_col, aux_html, cols, data){
+    function composeSimpleRows(first_col, cols, data){
+        var aux_html = '';
         $.each(first_col, function(id, value){
             aux_html += '<tr>';
             var cont = id + 1;
@@ -175,6 +177,42 @@ var Table = {};
         $("#"+div.id).append(tables);
     }
 
+    /*
+    * Display a bootstrap table with headers and rows + a ratio for Meetup
+    * @param {object()} div - html object where table will be appended
+    * @param {object()} data - Contains array of columns
+    * @param {string[]]} headers - Array of strings
+    * @param {string[]} cols - Array of strings to be read from data
+    * @param {string[]} ratio - Optional array of strings to calculate a ratio from data
+    * @param {string[]} ratio - Optional string with header of table for ratio
+    */
+
+    function displayMeetupGroupsTable(div, data, headers, cols, ratio, ratio_header){
+        var ratio_array = [],
+            denominator,
+            numerator,
+            aux_ratio;
+        if (ratio !== undefined){
+            /* if ratio exist it should be a 2 item lenght array*/
+            numerator = ratio[0];
+            denominator = ratio[1];
+
+            $.each(data.name, function(id, value){
+                aux_ratio = data[numerator][id]/data[denominator][id];
+                aux_ratio = Math.round(aux_ratio * 10) / 10;
+                ratio_array.push(aux_ratio);
+            });
+            data.ratio = ratio_array;
+            if (ratio_header !== undefined){
+                headers.push(ratio_header);
+            }else{
+                headers.push("Ratio");
+            }
+            cols.push("ratio");
+        }
+        displaySimpleTable(div, data, headers, cols);
+    }
+
     function composeSimpleHeaders(headers){
         var aux_html;
         aux_html = '<thead><th>#</th>';
@@ -263,6 +301,19 @@ var Table = {};
                     }else{
                         tables += composeTopRowsIPs(data[key], opts.limit);
                     }
+                    tables += '</tbody>';
+                }else if ( opts.ds_name === "eventizer" && opts.metric === "rsvps"){
+                    tables += '<thead><th>#</th><th>' +title.capitalize()+'&nbsp;by number of meetings</th>';
+                    tables += '<th> Meetings </th>';
+                    tables += '</thead><tbody>';
+                    tables += composeTopRowsMeetup(data[key], opts.limit, opts.links_enabled);
+                    tables += '</tbody>';
+                }else if( opts.ds_name === "eventizer" && opts.metric === "events"){
+                    tables += '<thead><th>#</th><th>' +title.capitalize()+'&nbsp;by number of RSVPs</th>';
+                    tables += '<th> RSVPs </th>';
+                    tables += '<th> Date </th>';
+                    tables += '</thead><tbody>';
+                    tables += composeTopRowsMeetup2(data[key], opts.limit, opts.links_enabled);
                     tables += '</tbody>';
                 }else{
                     tables += '<thead><th>#</th><th>' +title.capitalize()+'</th>';
@@ -379,6 +430,51 @@ var Table = {};
              rows_html += "</tr>";
          }
          return(rows_html);
+     }
+
+     function composeTopRowsMeetup(data, limit, people_links){
+         var rows_html = "";
+         for (var i = 0; i < data.name.length; i++) {
+             if (limit && limit !==0 && limit <= i) break;
+             rows_html += "<tr><td>" + (i+1) + "</td>";
+             //rows_html += "<td>";
+             rows_html += "<td>" + data.name[i] + "</td>";
+             rows_html += "<td>" + data.events[i] + "</td>";
+             rows_html += "</tr>";
+         }
+         return(rows_html);
+     }
+
+     function composeTopRowsMeetup2(data, limit, people_links){
+         var rows_html = "";
+         data = fixArrayStringError(data);
+         for (var i = 0; i < data.name.length; i++) {
+             if (limit && limit !==0 && limit <= i) break;
+             rows_html += "<tr><td>" + (i+1) + "</td>";
+             //rows_html += "<td>";
+             rows_html += '<td><a href="' + data.url[i] + '">' + data.name[i] + '&nbsp;<i class="fa fa-external-link"></i></a></td>';
+             rows_html += "<td>" + data.rsvps[i] + "</td>";
+             rows_html += "<td>" + data.time[i] + "</td>";
+             rows_html += "</tr>";
+         }
+         return(rows_html);
+     }
+
+     /*
+     * Forces the object myobj to contain arrays
+     */
+     function fixArrayStringError(myobj){
+         var keys = Object.keys(myobj),
+            myarray = [];
+         if (typeof(myobj[keys[0]]) !== "object"){
+             console.log("Incorrect data. Expected an array and found an string, trying to convert ..");
+             $.each(keys, function(id, value){
+                 myarray = [];
+                 myarray.push(myobj[value]);
+                 myobj[value] = myarray;
+             });
+         }
+         return myobj;
      }
 
     function getSortedPeriods(){
@@ -512,15 +608,19 @@ var Table = {};
                  var_names.action = "releases";
              }
          }
-         if (ds_name === "meetup"){
+         if (ds_name === "eventizer"){
              if (metric === "cities"){
                  var_names.name = "city";
                  var_names.action = "events";
              }else if (metric === "events"){
-                 var_names.name = "event";
-                 var_names.action = "attendees";
-             }else if (metric === "groups"){
-                 var_names.name = "group";
+                 var_names.name = "name";
+                 var_names.action = "rsvps";
+             }else if (metric === "repos"){
+                 var_names.name = "name";
+                 var_names.action = "rsvps";
+             }
+             else if (metric === "rsvps"){
+                 var_names.name = "name";
                  var_names.action = "events";
              }
          }

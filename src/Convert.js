@@ -381,7 +381,7 @@ function getSectionName(){
                     "wiki":"Wiki overview",
                     "downloads":"Downloads",
                     "forge":"Forge releases",
-                    "meetup":"Meetup",
+                    "meetup":"Meetup overview",
                     "demographics":"Demographics",
                     "data_sources":"Data sources",
                     "project_map":"Project map",
@@ -396,11 +396,13 @@ function getSectionName(){
                    "contributors":"Activity by contributors",
                    "countries":"Activity by countries",
                    "domains":"Activity by domains",
+                   "group":"Meetup group",//this is breaking the idea of this dict
                    "projects":"Activity by project",
                    "repos":"Activity by repositories",
+                   "groups":"Activity by groups",
                    "states":"Activity by states",
                    "tags":"Activity by tags",
-                   "past_events":"Past events",
+                   "past_meetings":"Past meetings",
                    "backlog":"Backlog"
                   };
     var filters2 = {"repository":"Repository",
@@ -970,6 +972,22 @@ Convert.convertProjectData = function (){
     }
 };
 
+Convert.convertRepositoryData = function (){
+    var divs = $(".RepositoryData");
+    var p = Report.getParameterByName("repository");
+    if (divs.length > 0) {
+        $.each(divs, function(id, div) {
+            ds = $(this).data('data-source');
+            DS = Report.getDataSourceByName(ds);
+            if (DS === null) return;
+            var data = DS.getReposGlobalData()[p];
+            if (data === undefined) {return;}
+            var key = $(this).data('field');
+            $(this).text(Report.formatValue(data[key], key));
+        });
+    }
+};
+
 Convert.convertRadarActivity = function() {
     var div_param = "RadarActivity";
     var divs = $("#" + div_param);
@@ -1372,7 +1390,7 @@ Convert.convertTopMultiColumn = function() {
         $.each(divs, function(id, div) {
             $(this).empty();
             ds = $(this).data('data-source');
-            if (ds !== 'meetup') return; //so far only supported by Meetup
+            if (ds !== 'eventizer') return; //so far only supported by Meetup
             DS = Report.getDataSourceByName(ds);
             if (DS === null) return;
             if (DS.getData().length === 0) return;
@@ -1388,14 +1406,70 @@ Convert.convertTopMultiColumn = function() {
                 period_all = true;
             }
             if (limit === undefined){
-                limit = 500;
+                limit = 100;
             }
             /*DS.displayTop(div, show_all, top_metric, period, period_all,
                           graph, limit, people_links, threads_links, repository);*/
-            DS.displayTopMultiColumn(div, headers.split(','), columns.split(','));
+            DS.displayTopMultiColumn(div, headers.split(','), columns.split(','), limit);
         });
     }
 };
+
+Convert.convertTopFilter = function() {
+    var div_id_top = "TopFilter";
+    var divs = $("." + div_id_top);
+    var DS;
+    if (divs.length > 0) {
+        var unique = 0;
+        $.each(divs, function(id, div) {
+            $(this).empty();
+            var opt = readHTMLOpts($(this));
+            DS = Report.getDataSourceByName(opt.ds);
+
+            if (DS === null) return;
+            if (DS.getData().length === 0) return;
+            div.id = opt.ds + "-" + div_id_top + (unique++);
+
+            if (opt.limit === undefined){
+                opt.limit = 10;
+            }
+
+            if (DS.getName() === "eventizer"){
+                var desc_metrics = DS.getMetrics();
+                var data = DS.getReposDataFull();
+                $.each(data.name, function(id,value){
+                    data.name[id] = '<a href="./meetup-group.html?repository=' +
+                                data.name[id] + '">' + data.name[id] + '</a>';
+                });
+                if (opt.ratio=== undefined){
+                    Table.meetupGroupsTable(div, data, opt.headers.split(','),
+                                            opt.cols.split(','));
+                }else{
+                    Table.meetupGroupsTable(div, data, opt.headers.split(','),
+                    opt.cols.split(','), opt.ratio.split(','),
+                    opt.ratio_header);
+                }
+            }
+
+        });
+    }
+};
+
+function readHTMLOpts(widget){
+    //FIXME dup with loadHTMLEvolParameters
+    var myobj = {};
+    myobj.ds = widget.data('data-source');
+    myobj.top_metric = widget.data('metric');
+    myobj.limit = widget.data('limit');
+    myobj.period = widget.data('period');
+    myobj.period_all = widget.data('period_all');
+    myobj.cols = widget.data('columns');
+    myobj.headers = widget.data('headers');
+    myobj.ratio = widget.data('ratio');
+    myobj.ratio_header = widget.data('ratio-header');
+
+    return myobj;
+}
 
 Convert.convertPersonMetrics = function (upeople_id, upeople_identifier) {
     var config_metric = {};
@@ -2013,11 +2087,13 @@ Convert.convertFilterItemMicrodashText = function (filter, item) {
             if (ds === undefined) return;
             if (filter === "projects") {
                 global_data = ds.getProjectsGlobalData()[item];
-                if (global_data === undefined) {return;}
-            }
-            else {
+            }else if(filter === "repos"){
+                global_data = ds.getReposGlobalData()[item];
+            }else {
                 return; //so far only project filter is supported
             }
+            if (global_data === undefined) {return;}
+
             var html = '<div class="row">';
 
             if(show_name){ //if name is shown we'll have four columns
@@ -2098,7 +2174,7 @@ Convert.convertFilterItemMetricsEvol = function(filter, item) {
                 }
                 else $(this).hide();*/
                 DS.displayMetricsRepo(real_item, metrics.split(","),
-                    div.id, config_metric);
+                    div.id, config_metric, $(this).data('convert'));
             }
             else if (filter === "countries") {
                 DS.displayMetricsCountry(real_item, metrics.split(","),
@@ -2143,8 +2219,11 @@ Convert.convertFilterItemTop = function(filter, item) {
             $(this).empty();
             div.className = "";
             // Only for Company yet
-            if (filter === "companies")
+            if (filter === "companies"){
                 DS.displayTopCompany(real_item,div,metric,period,titles, height, people_links);
+            }else if(filter === "repos") {
+                DS.displayTopRepo(real_item,div,metric,period,titles, height, people_links);
+            }
         });
     }
 };
@@ -2211,6 +2290,7 @@ Convert.convertFilterStudyItem = function (filter, item) {
     Convert.convertFilterItemTop(filter, item);
     Convert.convertFilterItemMicrodashText(filter, item);
     Convert.convertProjectData();
+    Convert.convertRepositoryData();
     Convert.activateHelp();
 
     Convert.convertMetricsEvolSelector();
@@ -2330,7 +2410,7 @@ Convert.convertFilterTop = function(filter){
     Convert.convertTop();
     Convert.convertTopMultiColumn();
     Convert.convertRepositorySelector();
-
+    Convert.convertTopFilter();
 };
 
 })();
