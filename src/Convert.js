@@ -374,6 +374,7 @@ function getSectionName(){
                     "slack":"Slack Overview",
                     "its":"ITS overview",
                     "storyboard":"Storyboard overview",
+                    "maniphest":"Maniphest overview",
                     "qaforums":"QA Forums overview",
                     "scr":"Code Review overview",
                     "scm":"SCM overview",
@@ -510,6 +511,11 @@ function composeSideBar(project_id){
         if (mele.hasOwnProperty('storyboard')){
             aux = mele.storyboard;
             aux_html = HTMLComposer.sideBarLinks('fa-ticket','Storyboard','storyboard', aux);
+            html += aux_html;
+        }
+        if (mele.hasOwnProperty('maniphest')){
+            aux = mele.maniphest;
+            aux_html = HTMLComposer.sideBarLinks('fa-ticket','Maniphest','maniphest', aux);
             html += aux_html;
         }
         if (mele.hasOwnProperty('mls')){

@@ -81,6 +81,13 @@ function ITS_1() {
                 gtype : 'whiskers'
             }
         },
+        'its_1_closers_7' : {
+            'divid' : 'its_1_closers_7',
+            'column' : "closers_7",
+            'name' : "Closers",
+            'desc' : "Number of identities closing tickets during last week",
+            'action' : "closed"
+        },
         'its_1_stories_closed' : {
             'divid' : 'its_1_stories_closed',
             'column' : "stories_closed",
