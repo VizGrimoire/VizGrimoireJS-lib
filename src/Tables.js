@@ -272,8 +272,8 @@ var Table = {};
                 tables += '<div class="tab-pane fade'+ html  +'" id="' + opts.class_name + opts.metric + data_period_nows + '">';
                 tables += '<table class="table table-striped">';
 
-                unit = opts.desc_metrics[opts.ds_name + "_" + opts.metric].action;
-                title = opts.desc_metrics[opts.ds_name + "_" + opts.metric].name;
+                opts.action = opts.desc_metrics[opts.ds_name + "_" + opts.metric].action;
+                opts.unit = opts.desc_metrics[opts.ds_name + "_" + opts.metric].column;
 
                 if (opts.metric === "threads" && opts.ds_name === "mls"){
                     tables += '<thead><th>#</th>';
@@ -283,25 +283,8 @@ var Table = {};
                     tables += '</thead><tbody>';
                     tables += composeTopRowsThreads(data[key], opts.limit, opts.links_enabled);
                     tables += '</tbody>';
-                }else if ( opts.ds_name === "downloads" &&
-                            (opts.metric === "packages" || opts.metric === "ips" )){
-                    tables += '<thead><th>#</th>';
-
-                    if (opts.metric === "packages"){
-                        tables += '<th> IP Addresses </th>';
-                    }else{
-                        tables += '<th> Packages Downloaded </th>';
-                    }
-
-                    tables += '<th> Downloads </th>';
-                    tables += '</thead><tbody>';
-
-                    if (opts.metric === "packages"){
-                        tables += composeTopRowsPackages(data[key], opts.limit);
-                    }else{
-                        tables += composeTopRowsIPs(data[key], opts.limit);
-                    }
-                    tables += '</tbody>';
+                }else if(opts.ds_name === "downloads"){
+                    tables += composeTopRowsDownloads(opts, data[key]);
                 }else if ( opts.ds_name === "eventizer" && opts.metric === "rsvps"){
                     tables += '<thead><th>#</th><th>' +title.capitalize()+'&nbsp;by number of meetings</th>';
                     tables += '<th> Meetings </th>';
@@ -406,27 +389,41 @@ var Table = {};
          return(rows_html);
      }
 
-     function composeTopRowsPackages(downloads_data, limit){
-         var rows_html = "";
-         for (var i = 0; i < downloads_data.downloads.length; i++) {
-             if (limit && limit <= i) break;
-             rows_html += "<tr><td>" + (i+1) + "</td>";
-             //rows_html += "<td>";
-             rows_html += "<td>" + downloads_data.packages[i] + "</td>";
-             rows_html += "<td>" + downloads_data.downloads[i] + "</td>";
-             rows_html += "</tr>";
-         }
-         return(rows_html);
+     function composeTopRowsDownloads(opts, data){
+         //(opts.metric === "packages" || opts.metric === "ips" )){
+         var tables = '',            
+            headers = [];
+         if (opts.metric === "packages"){
+             headers = ['Packages Downloaded','Downloads'];
+            tables += composeTopRows2Cols(data, opts, headers);
+        }else if(opts.metric === "ips"){
+            headers = ['IP Addresses','Downloads'];
+            tables += composeTopRows2Cols(data, opts, headers);
+            //tables += composeTopRowsIPs(data, opts.limit);
+        }else if(opts.metric === "pages"){
+            headers = ['Page name','Visits'];
+            tables += composeTopRows2Cols(data, opts, headers);
+            //tables += composeTopRowsPages(data, opts.limit);
+        }else if(opts.metric === "countries"){
+            headers = ['Country','Visits'];
+            tables += composeTopRows2Cols(data, opts, headers);
+            //tables += composeTopRowsCountries(data, opts.limit);
+        }
+        return tables;
      }
 
-     function composeTopRowsIPs(downloads_data, limit){
+     function composeTopRows2Cols(data, opts, headers){
          var rows_html = "";
-         for (var i = 0; i < downloads_data.downloads.length; i++) {
-             if (limit && limit <= i) break;
-             rows_html += "<tr><td>" + (i+1) + "</td>";
+         rows_html = '<thead><tr><th>#</th>';
+         rows_html += '<th>&nbsp;' + headers[0] + '&nbsp;</th>';
+         rows_html += '<th>&nbsp;' + headers[1] + '&nbsp;</th>';
+         rows_html += '</tr></thead><tbody>';
+         for (var i = 0; i < data[opts.unit].length; i++) {
+             if (opts.limit && opts.limit <= i) break;
+             rows_html += '<tr><td class="col-md-1">' + (i+1) + '</td>';
              //rows_html += "<td>";
-             rows_html += "<td>" + downloads_data.ips[i] + "</td>";
-             rows_html += "<td>" + downloads_data.downloads[i] + "</td>";
+             rows_html += '<td class="col-md-8">' + data[opts.unit][i] + '</td>';
+             rows_html += '<td class="col-md-3">' + data[opts.action][i] + '</td>';
              rows_html += "</tr>";
          }
          return(rows_html);
@@ -584,6 +581,10 @@ var Table = {};
              if (metric === "packages"){
                  var_names.name = "packages";
                  var_names.action = "downloads";
+             }
+             if (metric === "pages"){
+                 var_names.name = "page";
+                 var_names.action = "visits";
              }
          }
          if (ds_name === "mediawiki"){

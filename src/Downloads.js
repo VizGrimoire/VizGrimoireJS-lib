@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2014 Bitergia
  *
  * This program is free software; you can redistribute it and/or modify
@@ -27,9 +27,9 @@ function Downloads() {
 
     /* These basic metrics are overwritten by the metrics.json file but they are needed
        for instance by the function viz.displayTop and viz.displaytopmetric.
-       It the metric is present in basic_metrics, the key of the dict will be used from 
+       It the metric is present in basic_metrics, the key of the dict will be used from
        the div when using it.
-       
+
     */
     this.basic_metrics = {
         'downloads_downloads':{
@@ -49,12 +49,44 @@ function Downloads() {
             'name' : "IP addresses",
             'desc' : "",
             'action' : "downloads"
+        },
+        'downloads_bounces' : {
+            'divid' : "",
+            'column' : "bounces",
+            'name' : "Bounces",
+            'desc' : ""
+        },
+        'downloads_uvisitors' : {
+            'divid' : "",
+            'column' : "uvisitors",
+            'name' : "Unique visitors",
+            'desc' : ""
+        },
+        'downloads_visits' : {
+            'divid' : "",
+            'column' : "visits",
+            'name' : "Visits",
+            'desc' : ""
+        },
+        'downloads_pages' : {
+            'divid' : "",
+            'column' : "page",
+            'name' : "Pages",
+            'desc' : "",
+            'action': "visits"
+        },
+        'downloads_countries' : {
+            'divid' : "",
+            'column' : "country",
+            'name' : "Countries",
+            'desc' : "",
+            'action': "visits"
         }
     };
 
     this.getMainMetric = function() {
         /*only for testing purposes*/
-        return "downloads_downloads"; 
+        return "downloads_downloads";
     };
 
 
@@ -82,7 +114,7 @@ function Downloads() {
             $(div_id + ' #irc_name').text("IRC " + this.global_data.type);
         } else {
             $(div_id + ' #irc_url').attr("href", Report.getProjectData().irc_url);
-            $(div_id + ' #irc_name').text(Report.getProjectData().irc_name);            
+            $(div_id + ' #irc_name').text(Report.getProjectData().irc_name);
             $(div_id + ' #irc_type').text(Report.getProjectData().irc_type);
         }
 
@@ -98,11 +130,11 @@ function Downloads() {
 
     this.displayBubbles = function(divid, radius) {
         /* only for testing purposes */
-        if (false)    
+        if (false)
             Viz.displayBubbles(divid, "mediawiki_reviews", "mediawiki_authors", radius);
     };
 
 
-    this.getTitle = function() {return "Downloads";};    
+    this.getTitle = function() {return "Downloads";};
 }
 Downloads.prototype = new DataSource("downloads");
