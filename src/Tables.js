@@ -274,6 +274,8 @@ var Table = {};
 
                 opts.action = opts.desc_metrics[opts.ds_name + "_" + opts.metric].action;
                 opts.unit = opts.desc_metrics[opts.ds_name + "_" + opts.metric].column;
+                unit = opts.desc_metrics[opts.ds_name + "_" + opts.metric].action;
+                title = opts.desc_metrics[opts.ds_name + "_" + opts.metric].name;
 
                 if (opts.metric === "threads" && opts.ds_name === "mls"){
                     tables += '<thead><th>#</th>';
@@ -391,7 +393,7 @@ var Table = {};
 
      function composeTopRowsDownloads(opts, data){
          //(opts.metric === "packages" || opts.metric === "ips" )){
-         var tables = '',            
+         var tables = '',
             headers = [];
          if (opts.metric === "packages"){
              headers = ['Packages Downloaded','Downloads'];
