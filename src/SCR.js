@@ -217,6 +217,24 @@ function SCR() {
             "name" : "Active core reviewers",
             "desc" : "Number of active core reviewers",
             "action": "reviews"
+        },
+        "scr_voted_patchsets":{
+            "divid" : "scr_voted_patchsets",
+            "column" : "voted_patchsets",
+            "name" : "Voted Patchsets",
+            "desc" : "Number of Voted Patchsets"
+        },
+        "scr_sent_patchsets":{
+            "divid" : "scr_sent_patchsets",
+            "column" : "sent_patchsets",
+            "name" : "Sent Patchsets",
+            "desc" : "Number of Patchsets sent"
+        },
+        "scr_patchset_submitters":{
+            "divid" : "scr_patchset_submitters",
+            "column" : "patchset_submitters",
+            "name" : "Patchset Submitters",
+            "desc" : "Number of contributors sending Patchsets"
         }
     };
 
