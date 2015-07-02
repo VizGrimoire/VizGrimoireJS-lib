@@ -90,6 +90,6 @@ var Demographics = {};
 
 })();
 
-Loader.data_ready(function() {
+/*Loader.data_ready(function() {
     Demographics.widget();
-});
+});*/

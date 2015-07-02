@@ -29,6 +29,7 @@ var HTMLComposer = {};
 (function() {
     HTMLComposer.personDSBlock = personDSBlock;
     HTMLComposer.filterDSBlock = filterDSBlock;
+    HTMLComposer.CompanyDSBlock = CompanyDSBlock;
     HTMLComposer.DSBlock = DSBlock;
     HTMLComposer.DSBlockProject = DSBlockProject;
     HTMLComposer.repositorySummaryTable = repositorySummaryTable;
@@ -100,7 +101,8 @@ var HTMLComposer = {};
         var html = '<div class="col-md-12">';
         html += '<div class="row">';
         html += '<div class="col-md-3">';
-        html += '<div class="well">';
+
+        if (filter_name !== 'companies'){ html += '<div class="well">';}
         if (ds_realname){
             html += '<div class="FilterItemSummary" data-data-source="'+ ds_name +
             '" data-filter="'+ filter_name +'" data-data-realname="' +
@@ -109,9 +111,15 @@ var HTMLComposer = {};
             html += '<div class="FilterItemSummary" data-data-source="'+ ds_name +
             '" data-filter="'+ filter_name +'"></div>';
         }
-        html += '</div></div>';
-        html += '<div class="col-md-9">';
-        html += '<div class="well">';
+
+        if (filter_name !== 'companies'){
+            html += '</div></div>';
+            html += '<div class="col-md-9">';
+            html += '<div class="well">';
+        }else{
+            html += '</div>';
+            html += '<div class="col-md-9">';
+        }
 
         $.each(metric_names, function(id, metric){
             html += '<div class="row"><div class="col-md-12"></br></br></div></div>';
@@ -123,8 +131,50 @@ var HTMLComposer = {};
             html += '</div></div>';
         });
 
-        html += '</div></div></div></div>';
+        html += '</div></div></div>';
+        if (filter_name !== 'companies'){ html += '</div>';}
 
+        return html;
+    }
+
+    function CompanyHasTop(company_name, metric){
+        return DS.getCompaniesTopData()[company_name][metric + '.'] !== undefined;
+    }
+
+    function CompanyDSBlock(company_name, ds_name, filter_name, metric_names,
+                            top_metric, ds_realname){
+        /*
+        Display block with FilterItemSummary, FilterItemMetricsEvol,
+        FilterItemTop and DemographicsCompany
+        for a company, data source and the metrics included in metric_names
+
+        Used for div class CompanyDSDSBlock
+         */
+
+        var html = '<div class="row">';
+        html += '<div class="col-md-12">';
+        html += '<div class="wellmin">';
+        html += '<div class="row">';
+
+        if (CompanyHasTop(company_name, top_metric)){
+            html += '<div class="col-md-7">';
+            html += filterDSBlock(ds_name, filter_name, metric_names, ds_realname);
+            html += '</div>';
+            html += '<div class="col-md-3">';
+            html += '<div class="FilterItemTop" data-filter="companies" data-metric="'+ top_metric+'"';
+            html += 'data-period="all" data-data-source="'+ ds_name +'"';
+            html += 'data-people_links="true" data-height="340"></div>';
+            html += '</div>';
+        }else{
+            html += '<div class="col-md-10">';
+            html += filterDSBlock(ds_name, filter_name, metric_names, ds_realname);
+            html += '</div>';
+        }
+        html += '<div class="col-md-2">';
+        html += '<div class="DemographicsCompany" data-data-source="'+ ds_name +'" data-period="0.5"></div></div>';
+        html += '</div>';
+        html += '</div>';
+        html += '</div>';
         return html;
     }
 

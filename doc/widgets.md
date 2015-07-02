@@ -1,6 +1,14 @@
 
 # Widgets
 
+# CompanyDSBlock
+```
+<div class="CompanyDSBlock" data-data-source="scm"
+    data-metrics="scm_commits,scm_authors:scm_newauthors"
+    data-top-metric="authors"></div>
+```
+Output: Row/Block with four cols for each data source & company. Summary + evolutionary data + top + demography chart
+
 # DSSummaryBlock
 ```
 <div class="DSSummaryBlock" data-data-source="scm"
@@ -28,6 +36,15 @@ Output: two cols with summary data on the left and evolutionary charts on the ri
 
 Output: Top people for a company
 
+## MostActiveChangesets
+```
+<div class="MostActiveChangesets" data-data-source="scr"
+data-headers="Review number,Summary,Submitted on,Last update,Uploads"
+data-columns="gerrit_issue_id,summary,first_upload,last_upload,number_of_patchsets"></div>
+```
+
+Output: Table with information about Gerrit backlog with links to changesets if gerrit_site variable is in config file
+
 ## OldestChangesets
 
 ```
@@ -37,12 +54,3 @@ Output: Top people for a company
 ```
 
 Output: Table with information about Gerrit backlog with links to changesets if gerrit_site variable is in config file.
-
-## MostActiveChangesets
-```
-<div class="MostActiveChangesets" data-data-source="scr"
-data-headers="Review number,Summary,Submitted on,Last update,Uploads"
-data-columns="gerrit_issue_id,summary,first_upload,last_upload,number_of_patchsets"></div>
-```
-
-Output: Table with information about Gerrit backlog with links to changesets if gerrit_site variable is in config file

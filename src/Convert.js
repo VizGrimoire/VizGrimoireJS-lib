@@ -1677,6 +1677,48 @@ Convert.convertDSSummaryBlock = function(upeople_id){
     }
 };
 
+Convert.companyDSBlock = function(repo_id){
+    /*
+     Two steps conversion:
+     Converts this id into a block with FilterItemSummary + FilterItemMetricsEvol
+     + FilterItemTop + DemographicsCompany.
+     */
+    var divs = $(".CompanyDSBlock");
+    if (divs.length > 0){
+        $.each(divs, function(id, div) {
+            /*workaround to avoid being called again when redrawing*/
+            if (div.id.indexOf('Parsed') >= 0 ) return;
+
+            var ds_name = $(this).data('data-source'),
+                ds_realname = $(this).data('data-realname'),
+                company_name = Utils.getParameter('company').replace('%20',' '),
+                filter_name = 'companies',
+                top_metric = $(this).data('top-metric');
+
+            var aux = $(this).data('metrics');
+            var metric_names = aux.split(',');
+            $.each(metric_names, function(id, value){
+                metric_names[id] = metric_names[id].replace(/:/g,',');
+            });
+
+            DS = Report.getDataSourceByName(ds_name);
+            if (DS === null) return;
+            if (DS.getData().length === 0) return; /* no data for data source*/
+
+            if (dataFilterAvailable(filter_name, repo_id)){
+                /*var html = HTMLComposer.filterDSBlock(ds_name, filter_name,
+                                                    metric_names, ds_realname);*/
+                var html = HTMLComposer.CompanyDSBlock(company_name, ds_name,
+                                                    filter_name, metric_names,
+                                                    top_metric, ds_realname);
+                if (!div.id) div.id = "Parsed" + getRandomId();
+                $("#"+div.id).append(html);
+            }
+            Demographics.widget();
+        });
+    }
+};
+
 Convert.convertDSSummaryBlockProjectFiltered = function(upeople_id){
     /*
      Two steps conversion:
@@ -2283,6 +2325,9 @@ Convert.convertFilterStudyItem = function (filter, item) {
     if (Loader.FilterItemCheck(item, filter) === false) return;
 
     Convert.repositoryDSBlock(item);
+    if (filter === "companies"){
+        Convert.companyDSBlock(item);
+    }
     Convert.convertDSSummaryBlockProjectFiltered();
     Convert.convertFilterItemData(filter, item);
     Convert.convertFilterItemSummary(filter, item);
