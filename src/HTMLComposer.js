@@ -138,7 +138,11 @@ var HTMLComposer = {};
     }
 
     function CompanyHasTop(company_name, metric){
-        return DS.getCompaniesTopData()[company_name][metric + '.'] !== undefined;
+        if (DS.getCompaniesTopData()[company_name] !== undefined){
+            return DS.getCompaniesTopData()[company_name][metric + '.'] !== undefined;
+        }else{
+            return false;
+        }
     }
 
     function CompanyDSBlock(company_name, ds_name, filter_name, metric_names,
