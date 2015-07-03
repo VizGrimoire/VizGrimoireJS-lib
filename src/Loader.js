@@ -899,7 +899,7 @@ if (Loader === undefined) var Loader = {};
     }
 
     function data_load_metrics_definition() {
-        data_load_file("VizGrimoireJS/data/metrics.json", Report.setMetricsDefinition);
+        data_load_file(Report.getDataDir()+ "/../metrics.json", Report.setMetricsDefinition);
     }
 
     function data_load_people() {
