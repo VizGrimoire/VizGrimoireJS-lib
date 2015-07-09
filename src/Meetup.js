@@ -90,6 +90,7 @@ function Meetup() {
         loadMeetupEventsData(function(data){
             data = filterOutFuture(data);
             data = applyLimit(data, limit);
+            data = makeUpPastDate(data);
             data = replaceNull(data);
             Table.simpleTable(div, data, headers, columns);
             });
@@ -100,7 +101,7 @@ function Meetup() {
             data = extractFuture(data);
             data = reverseOrder(data);
             data = applyLimit(data, limit);
-            data = makeUpDate(data);
+            data = makeUpFutureDate(data);
             data = replaceNull(data);
             Table.simpleTable(div, data, headers, columns);
             });
@@ -126,7 +127,19 @@ function Meetup() {
     /*
     *
     */
-    function makeUpDate(data){
+    function makeUpPastDate(data){
+        $.each(data.date, function(id,value){
+            data.date[id] = moment(value, "YYYY-MM-DD hh:mm:ss")
+                            .format('MMMM Do YYYY, h:mm a');
+        });
+        return data;
+    }
+
+
+    /*
+    *
+    */
+    function makeUpFutureDate(data){
         $.each(data.date, function(id,value){
             data.date[id] = moment(value, "YYYY-MM-DD hh:mm:ss").fromNow();
         });
