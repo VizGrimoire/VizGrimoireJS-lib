@@ -86,12 +86,111 @@ function Meetup() {
 
     this.getTitle = function() {return "Meeetup events";};
 
-    this.displayTopMultiColumn = function(div, headers, columns, limit) {
+    this.displayTablePastEvents = function(div, headers, columns, limit) {
         loadMeetupEventsData(function(data){
+            data = filterOutFuture(data);
             data = applyLimit(data, limit);
+            data = replaceNull(data);
             Table.simpleTable(div, data, headers, columns);
             });
     };
+
+    this.displayTableFutureEvents = function(div, headers, columns, limit) {
+        loadMeetupEventsData(function(data){
+            data = extractFuture(data);
+            data = reverseOrder(data);
+            data = applyLimit(data, limit);
+            data = makeUpDate(data);
+            data = replaceNull(data);
+            Table.simpleTable(div, data, headers, columns);
+            });
+    };
+
+    /*
+    *
+    */
+    function replaceNull(data){
+        $.each(data.city, function(id,value){
+            if (value === null){
+                data.city[id] = '-';
+            }
+        });
+        $.each(data.country, function(id,value){
+            if (value === null){
+                data.country[id] = '-';
+            }
+        });
+        return data;
+    }
+
+    /*
+    *
+    */
+    function makeUpDate(data){
+        $.each(data.date, function(id,value){
+            data.date[id] = moment(value, "YYYY-MM-DD hh:mm:ss").fromNow();
+        });
+        return data;
+    }
+
+    /*
+    *
+    */
+    function reverseOrder(data){
+        var keys = Object.keys(data),
+            newobj = {};
+        $.each(keys, function(id,value){
+            newobj[value] = data[value].reverse();
+        });
+        return newobj;
+    }
+
+    /*
+    * Return the number of future events and the beginning of the array
+    */
+    function numberFutureEvents(data){
+        var d = new Date(),
+            now = d.getTime(),
+            offset = 0;
+        $.each(data.date, function(id,value){
+            var aux_date = new Date(value);
+            when = aux_date.getTime();
+            if (when <= now){
+                offset = id;
+                return false; //break
+            }
+        });
+        return offset;
+    }
+
+    /*
+    * Return the future events filtering out past events
+    */
+    function extractFuture(data){
+        var offset = numberFutureEvents(data);
+        var keys = Object.keys(data),
+            newobj = {};
+        $.each(keys, function(id,value){
+            //for (i = 0; i < data[value].length; i++) {
+            newobj[value] = data[value].slice(0, offset);
+        });
+        return newobj;
+    }
+
+    /*
+    * Returns the past events filtering out future events
+    */
+    function filterOutFuture(data){
+        var offset = numberFutureEvents(data);
+        var keys = Object.keys(data),
+            newobj = {};
+        $.each(keys, function(id,value){
+            //for (i = 0; i < data[value].length; i++) {
+            var array_len = data[value].length;
+            newobj[value] = data[value].slice(offset, array_len);
+        });
+        return newobj;
+    }
 
     /*
     * Returns copy of data object with its arrays cut to limit size

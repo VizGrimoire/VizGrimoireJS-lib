@@ -397,12 +397,13 @@ function getSectionName(){
                    "countries":"Activity by countries",
                    "domains":"Activity by domains",
                    "group":"Meetup group",//this is breaking the idea of this dict
+                   "next":"Next meetings",
                    "projects":"Activity by project",
                    "repos":"Activity by repositories",
                    "groups":"Activity by groups",
                    "states":"Activity by states",
                    "tags":"Activity by tags",
-                   "past_meetings":"Past meetings",
+                   "past":"Past meetings",
                    "backlog":"Backlog"
                   };
     var filters2 = {"repository":"Repository",
@@ -1381,8 +1382,8 @@ Convert.convertTop = function() {
 };
 
 
-Convert.convertTopMultiColumn = function() {
-    var div_id_top = "TopMultiColumn";
+Convert.convertTablePastEvents = function() {
+    var div_id_top = "TablePastEvents";
     var divs = $("." + div_id_top);
     var DS, ds;
     if (divs.length > 0) {
@@ -1410,7 +1411,41 @@ Convert.convertTopMultiColumn = function() {
             }
             /*DS.displayTop(div, show_all, top_metric, period, period_all,
                           graph, limit, people_links, threads_links, repository);*/
-            DS.displayTopMultiColumn(div, headers.split(','), columns.split(','), limit);
+            DS.displayTablePastEvents(div, headers.split(','), columns.split(','), limit);
+        });
+    }
+};
+
+Convert.convertTableFutureEvents = function() {
+    var div_id_top = "TableFutureEvents";
+    var divs = $("." + div_id_top);
+    var DS, ds;
+    if (divs.length > 0) {
+        var unique = 0;
+        $.each(divs, function(id, div) {
+            $(this).empty();
+            ds = $(this).data('data-source');
+            if (ds !== 'eventizer') return; //so far only supported by Meetup
+            DS = Report.getDataSourceByName(ds);
+            if (DS === null) return;
+            if (DS.getData().length === 0) return;
+            var show_all = false;
+            var top_metric = $(this).data('metric');
+            var period = $(this).data('period');
+            var period_all = $(this).data('period_all');
+            var headers = $(this).data('headers');
+            var columns = $(this).data('columns');
+            var limit = $(this).data('limit');
+            div.id = ds + "-" + div_id_top + (unique++);
+            if (period === undefined && period_all === undefined){
+                period_all = true;
+            }
+            if (limit === undefined){
+                limit = 100;
+            }
+            /*DS.displayTop(div, show_all, top_metric, period, period_all,
+                          graph, limit, people_links, threads_links, repository);*/
+            DS.displayTableFutureEvents(div, headers.split(','), columns.split(','), limit);
         });
     }
 };
@@ -2453,7 +2488,8 @@ Convert.convertFilterTop = function(filter){
         if (Loader.filterTopCheck(item, filter) === false) return;
     }
     Convert.convertTop();
-    Convert.convertTopMultiColumn();
+    Convert.convertTableFutureEvents();
+    Convert.convertTablePastEvents();
     Convert.convertRepositorySelector();
     Convert.convertTopFilter();
 };
