@@ -399,37 +399,51 @@ if (Viz === undefined) var Viz = {};
     }
 
     function displayDataSourcesTable(div){
-        dsources = Report.getDataSources();
-        html = '<table class="table table-striped">';
-        html += '<thead><th>Data Source</th><th>From</th>';
-        html += '<th>To <small>(Updated on)</small></th></thead><tbody>';
-        $.each(dsources, function(key,ds) {
-            if (ds.getName() === 'people') return;
-            var gdata = ds.getGlobalData();
-            var ds_name = ds.getTitle();
-            if (ds_name === undefined){
-                ds_name = '-';}
-            var last_date = gdata.last_date;
-            if (last_date === undefined){
-                return;
-            }
-            var first_date = gdata.first_date;
-            if (first_date === undefined){
-                first_date = '-'; // shouldn't reach this point
-            }
-            var type = gdata.type;
-            html += '<tr><td>' + ds_name;
-            if (type !== undefined){
-                type = type.toLowerCase();
-                type = type.charAt(0).toUpperCase() + type.slice(1);
-                html += ' (' + type + ')';
-            }
-            html += '</td>';
-            html += '<td>' + first_date+ '</td>';
-            html += '<td>' + last_date + '</td></tr>';
+        Loader.data_ready(function() {
+            dsources = Report.getDataSources();
+            html = '<table class="table table-striped">';
+            html += '<thead><th>Data Source</th><th>From</th>';
+            html += '<th>To <small>(Updated on)</small></th></thead><tbody>';
+            $.each(dsources, function(key,ds) {
+
+                if (ds.getName() === 'people') return;
+                var gdata = ds.getGlobalData();
+                var ds_name = ds.getTitle();
+                if (ds_name === undefined){
+                    ds_name = '-';}
+                var last_date = gdata.last_date;
+                if (last_date === undefined){
+                    return;
+                }
+                var first_date = gdata.first_date;
+                if (first_date === undefined){
+                    first_date = '-'; // shouldn't reach this point
+                }
+                var type = gdata.type;
+                html += '<tr><td>';
+                html += '<div class="panel-heading" role="tab" id="headingTable'+key+'">';
+                html +=     '<a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTable'+key+'" aria-expanded="false" aria-controls="collapseTable'+key+'">';
+                html +=         ds_name;
+                html +=     '</a>';
+                html += '</div>';
+                html += '<div id="collapseTable'+key+'" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTable'+key+'">';
+                html +=     '<div class="panel-body">';
+                html +=         '<a href="repository.html?repository='+ds.getReposData()+'&ds='+ds.name+'">'+ds.getReposData()+'</a>';
+                html +=     '</div>';
+                html += '</div>';
+                
+                if (type !== undefined){
+                    type = type.toLowerCase();
+                    type = type.charAt(0).toUpperCase() + type.slice(1);
+                    html += ' (' + type + ')';
+                }
+                html += '</td>';
+                html += '<td>' + first_date+ '</td>';
+                html += '<td>' + last_date + '</td></tr>';
             });
-        html += '</tbody></table>';
-        $(div).append(html);
+            html += '</tbody></table>';
+            $(div).append(html);
+        });
     }
 
     function showHelp(div_id, metrics, custom_help) {
