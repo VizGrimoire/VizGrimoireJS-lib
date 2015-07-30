@@ -8,7 +8,7 @@ all: \
 	version \
 	vizgrimoire.js \
 	jshint \
-	vizgrimoire.min.js \
+	uglify \
 	vizgrimoire.css
 
 .INTERMEDIATE vizgrimoire.js: \
@@ -67,6 +67,9 @@ vizgrimoire.core.css: \
 	#$(JS_UGLIFY) -o $@ -c --max-line-len $<
 	#$(JS_UGLIFY) -o $@ $<
 	$(JS_UGLIFY) -o $@ vizgrimoire.js
+
+uglify: vizgrimoire.js
+	$(JS_UGLIFY) -o vizgrimoire.min.js vizgrimoire.js
 
 vizgrimoire%js: Makefile
 	echo $@
