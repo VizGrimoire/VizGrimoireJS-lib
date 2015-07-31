@@ -420,23 +420,25 @@ if (Viz === undefined) var Viz = {};
                     first_date = '-'; // shouldn't reach this point
                 }
                 var type = gdata.type;
+                var repos = ds.getReposData();
                 html += '<tr><td>';
                 html += '<div class="panel-heading" role="tab" id="headingTable'+key+'">';
-                html +=     '<a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTable'+key+'" aria-expanded="false" aria-controls="collapseTable'+key+'">';
-                html +=         ds_name;
-                html +=     '</a>';
-                html += '</div>';
-                html += '<div id="collapseTable'+key+'" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTable'+key+'">';
-                html +=     '<div class="panel-body">';
-                html +=         '<a href="repository.html?repository='+ds.getReposData()+'&ds='+ds.name+'">'+ds.getReposData()+'</a>';
-                html +=     '</div>';
-                html += '</div>';
-                
+                html +=     '<a style="color: black" class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTable'+key+'" aria-expanded="false" aria-controls="collapseTable'+key+'">';
+                html +=         '<span class="glyphicon glyphicon-sort" aria-hidden="true"></span>'+ds_name;
                 if (type !== undefined){
                     type = type.toLowerCase();
                     type = type.charAt(0).toUpperCase() + type.slice(1);
                     html += ' (' + type + ')';
                 }
+                html +=     '</a>';
+                html += '</div>';
+                html += '<div id="collapseTable'+key+'" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTable'+key+'">';
+                html +=     '<div class="panel-body">';
+                repos.forEach(function(value, index) {
+                    html +=     '<a href="repository.html?repository='+value+'&ds='+ds.name+'">'+value+'</a><br>';
+                });
+                html +=     '</div>';
+                html += '</div>';
                 html += '</td>';
                 html += '<td>' + first_date+ '</td>';
                 html += '<td>' + last_date + '</td></tr>';
