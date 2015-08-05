@@ -437,7 +437,7 @@ if (Viz === undefined) var Viz = {};
         var help ='<a href="#" class="help"';
         var content = "";
 
-        if (custom_help === "") {
+        if (!custom_help || custom_help === "") {
             var addContent = function (id, value) {
                 if (metrics[i] === id) {
                     content += "<strong>"+value.name +"</strong>: "+ value.desc + "<br>";
@@ -579,11 +579,14 @@ if (Viz === undefined) var Viz = {};
             }
             label += "<strong>"+Report.formatValue(value) +"</strong>";
             if (company_name) {
+                // number of changesets used to compute the age
+                var pending_metric = 'review_time_pending_upload_ReviewsWaitingForReviewer_reviews';
                 var pending;
-                if (companies[company_name].pending !== undefined) {
-                    pending = companies[company_name].pending[o.index];
+                // review_time_pending_upload_ReviewsWaitingForReviewer_reviews
+                if (companies[company_name][pending_metric] !== undefined) {
+                    pending = companies[company_name][pending_metric][o.index];
                 } else {
-                    pending = companies[company_name].scr_pending[o.index];
+                    pending = companies[company_name]["scr_"+pending_metric][o.index];
                 }
                 label += "("+pending+")";
             }
@@ -2077,8 +2080,8 @@ if (Viz === undefined) var Viz = {};
         return config;
     }
 
-    function getMetricFriendlyName(ds, metrics ){
-        var desc_metrics = ds.getMetrics();
+    function getMetricFriendlyName(metrics) {
+        desc_metrics = Report.getAllMetrics();
         var title = '';
         for (var i=0; i<metrics.length; i++) {
             if (i !== 0){
@@ -2097,7 +2100,7 @@ if (Viz === undefined) var Viz = {};
         var title = '';
         if (config.show_title){
             if (config.title === undefined){
-                title = getMetricFriendlyName(ds, metrics);
+                title = getMetricFriendlyName(metrics);
             }else{
                 title = config.title;
             }
@@ -2112,33 +2115,33 @@ if (Viz === undefined) var Viz = {};
 
     function displayMetricsCompany (ds, company, metrics, data, div_id, config) {
         config = checkBasicConfig(config);
-        var title = getMetricFriendlyName(ds, metrics);
+        var title = getMetricFriendlyName(metrics);
         displayMetricsLines(div_id, metrics, data, title, config);
     }
 
     function displayMetricsRepo (ds, repo, metrics, data, div_id, config) {
         config = checkBasicConfig(config);
-        var title = getMetricFriendlyName(ds, metrics);
+        var title = getMetricFriendlyName(metrics);
         displayMetricsLines(div_id, metrics, data, title, config);
     }
 
     function displayMetricsDomain (ds, domain, metrics, data, div_id, config) {
         config = checkBasicConfig(config);
-        var title = getMetricFriendlyName(ds, metrics);
+        var title = getMetricFriendlyName(metrics);
         displayMetricsLines(div_id, metrics, data, title, config);
     }
 
     function displayMetricsProject (ds, project, metrics, data, div_id, config) {
         config = checkBasicConfig(config);
         //var title = project;
-        var title = getMetricFriendlyName(ds, metrics);
+        var title = getMetricFriendlyName(metrics);
         displayMetricsLines(div_id, metrics, data, title, config);
     }
 
     function displayMetricsPeople (ds, upeople_identifier, metrics, data, div_id, config) {
         config = checkBasicConfig(config);
         //var title = upeople_identifier;
-        var title = getMetricFriendlyName(ds, metrics);
+        var title = getMetricFriendlyName(metrics);
         displayMetricsLines(div_id, metrics, data, title, config);
     }
 
@@ -2155,16 +2158,17 @@ if (Viz === undefined) var Viz = {};
     function displayMetricsCountry (ds, country, metrics, data, div_id,
             config) {
         config = checkBasicConfig(config);
-        var title = getMetricFriendlyName(ds, metrics);
+        var title = getMetricFriendlyName(metrics);
         displayMetricsLines(div_id, metrics, data, title, config);
     }
 
     function displayMetricCompanies(metric, data, div_target,
             config, start, end, order) {
+        if (!(config && config.help === false)) showHelp(div_target, [metric]);
         config = checkBasicConfig(config);
         if (config.show_legend !== false)
             config.show_legend = true;
-        var title = metric;
+        var title = getMetricFriendlyName([metric]);
         displayMetricSubReportLines(div_target, metric, data, title,
                 config, start, end, null, order);
     }
@@ -2174,7 +2178,7 @@ if (Viz === undefined) var Viz = {};
         config = checkBasicConfig(config);
         if (config.show_legend !== false)
             config.show_legend = true;
-        var title = metric;
+        var title = getMetricFriendlyName([metric]);
         displayMetricSubReportLines(div_target, metric, data, title,
                 config, start, end);
     }
@@ -2184,7 +2188,7 @@ if (Viz === undefined) var Viz = {};
         config = checkBasicConfig(config);
         if (config.show_legend !== false)
             config.show_legend = true;
-        var title = metric;
+        var title = getMetricFriendlyName([metric]);
         displayMetricSubReportLines(div_target, metric, data, title,
                 config, start, end);
     }
@@ -2194,7 +2198,7 @@ if (Viz === undefined) var Viz = {};
         config = checkBasicConfig(config);
         var title = '';
         if (config.title === undefined)
-            title = metric;
+            title = getMetricFriendlyName([metric]);
         else
             title = config.title;
         var metric_data = [];
