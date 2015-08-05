@@ -541,9 +541,14 @@ var Table = {};
              var_names.name = "authors";
              var_names.action = "commits";
          }
-         if (metric === "closers" && ds_name === "its"){
-             var_names.name = "closers";
-             var_names.action = "closed";
+         if (ds_name === "its"){
+             if (metric === "closers"){
+                 var_names.name = "closers";
+                 var_names.action = "closed";
+             }else if(metric === "resolvers"){
+                 var_names.name = "resolvers";
+                 var_names.action = "resolved";
+             }
          }
          if (metric === "closers" && ds_name === "its_1"){
              var_names.name = "closers";
