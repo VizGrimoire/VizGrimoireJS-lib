@@ -435,7 +435,7 @@ if (Viz === undefined) var Viz = {};
                 html += '<div id="collapseTable'+key+'" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTable'+key+'">';
                 html +=     '<div class="panel-body" style="max-height: 400px; overflow: auto;">';
                 repos.forEach(function(value, index) {
-                    html +=     '<a href="repository.html?repository='+value+'&ds='+ds.name+'">'+value+'</a><br>';
+                    html +=     '<a href="repository.html?repository='+value+'&ds='+ds.name+'">'+(index+1)+'. '+value+'</a><br>';
                 });
                 html +=     '</div>';
                 html += '</div>';
