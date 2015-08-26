@@ -424,7 +424,7 @@ if (Viz === undefined) var Viz = {};
                 html += '<tr><td>';
                 html += '<div class="panel-heading" role="tab" id="headingTable'+key+'">';
                 html +=     '<a style="color: black" class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTable'+key+'" aria-expanded="false" aria-controls="collapseTable'+key+'">';
-                html +=         '<i class="fa fa-arrows-v"></i> '+ds_name;
+                html +=         ds_name;
                 if (type !== undefined){
                     type = type.toLowerCase();
                     type = type.charAt(0).toUpperCase() + type.slice(1);
