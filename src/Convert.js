@@ -38,7 +38,7 @@ Convert.convertMicrodashText = function () {
             var ds = Report.getMetricDS(metric)[0];
             if (ds === undefined) return;
             var total = ds.getGlobalData()[metric];
-            var html = '<table class="table table-hover table-striped"><tr>';
+            var html = '<table class="table table-hover" style="margin-bottom:1px"><tr>';
 
             if(show_name){ //if name is shown we'll have four columns
 		html += '<td class="col-md-4">';
