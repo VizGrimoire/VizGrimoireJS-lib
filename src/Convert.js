@@ -38,10 +38,10 @@ Convert.convertMicrodashText = function () {
             var ds = Report.getMetricDS(metric)[0];
             if (ds === undefined) return;
             var total = ds.getGlobalData()[metric];
-            var html = '<table class="table table-hover"><tr>';
+            var html = '<table class="table table-hover table-striped"><tr>';
 
             if(show_name){ //if name is shown we'll have four columns
-		html += '<td>';
+		html += '<td class="col-md-4">';
                 html += '<span>';
                 html +=  ds.basic_metrics[metric].name ;
                 html += '</span>';
@@ -50,7 +50,7 @@ Convert.convertMicrodashText = function () {
 
             // $.each({7:'week',30:'month',365:'year'}, function(period, name) {
             $.each([365,30,7], function(index, period) {
-		html += '<td>';
+		html += '<td class="col-md-3>';
                 var column = ds.getMetrics()[metric].column;
                 // value -> items for this period
                 // netvalue -> change with previous period
