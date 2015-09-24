@@ -338,6 +338,7 @@ function getSectionName4Release(){
      */
     var result = [];
     var sections = {"data_sources":"Data sources",
+                    "organization":"Organization",
                     "project_map":"Project map",
                     "people":"Contributor",
                     "company":"Company",
@@ -384,6 +385,7 @@ function getSectionName(){
                     "meetup":"Meetup overview",
                     "demographics":"Demographics",
                     "data_sources":"Data sources",
+                    "organization":"Organization",
                     "project_map":"Project map",
                     "people":"Contributor",
                     "company":"Company",
@@ -393,6 +395,7 @@ function getSectionName(){
                     "project_comparison":"Project comparison"
                    };
     var filters = {"companies":"Activity by companies",
+                   "organizations":"Activity by organizations",
                    "contributors":"Activity by contributors",
                    "countries":"Activity by countries",
                    "domains":"Activity by domains",
