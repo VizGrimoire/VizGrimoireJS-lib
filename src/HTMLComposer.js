@@ -642,6 +642,8 @@ var HTMLComposer = {};
         text = {'backlog': 'Backlog',
                 'companies': 'Companies',
                 'companies-summary': 'Companies summary',
+                'organizations': 'Organizations',
+                'organizations-summary': 'Organizations summary',
                 'contributors': 'Contributors',
                 'countries': 'Countries',
                 'domains': 'Domains',
