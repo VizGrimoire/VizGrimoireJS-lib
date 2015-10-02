@@ -400,13 +400,13 @@ function getSectionName(){
                    "countries":"Activity by countries",
                    "domains":"Activity by domains",
                    "group":"Meetup group",//this is breaking the idea of this dict
-                   "next":"Next meetings",
+                   "next_meetings":"Next meetings",
                    "projects":"Activity by project",
                    "repos":"Activity by repositories",
                    "groups":"Activity by groups",
                    "states":"Activity by states",
                    "tags":"Activity by tags",
-                   "past":"Past meetings",
+                   "past_meetings":"Past meetings",
                    "backlog":"Backlog"
                   };
     var filters2 = {"repository":"Repository",
