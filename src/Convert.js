@@ -561,7 +561,7 @@ function composeSideBar(project_id){
             html += aux_html;
         }
         if (mele.hasOwnProperty('confluence')){
-            aux = mele.wiki;
+            aux = mele.confluence;
             aux_html = HTMLComposer.sideBarLinks('fa-pencil-square-o','Confluence','confluence', aux);
             html += aux_html;
         }
