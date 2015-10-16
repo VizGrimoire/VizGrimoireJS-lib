@@ -84,7 +84,7 @@ function Meetup() {
         return '';
     };
 
-    this.getTitle = function() {return "Meeetup events";};
+    this.getTitle = function() {return "Meetup events";};
 
     this.displayTablePastEvents = function(div, headers, columns, limit) {
         loadMeetupEventsData(function(data){

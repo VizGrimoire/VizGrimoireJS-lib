@@ -410,10 +410,14 @@ if (Viz === undefined) var Viz = {};
                 var gdata = ds.getGlobalData();
                 var ds_name = ds.getTitle();
                 if (ds_name === undefined){
-                    ds_name = '-';}
+                    ds_name = '-';
+                }
                 var last_date = gdata.last_date;
-                if (last_date === undefined){
+                if ((last_date === undefined) && (ds_name != 'Meetup events')){
                     return;
+                }
+                if (ds_name === 'Meetup events') {
+                    last_date = '-';
                 }
                 var first_date = gdata.first_date;
                 if (first_date === undefined){
@@ -434,8 +438,26 @@ if (Viz === undefined) var Viz = {};
                 html += '</div>';
                 html += '<div id="collapseTable'+key+'" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTable'+key+'">';
                 html +=     '<div class="panel-body" style="max-height: 400px;  word-break: break-all; word-wrap: break-word; overflow: auto;">';
-                repos.forEach(function(value, index) {
-                    html +=     '<a href="repository.html?repository='+value+'&ds='+ds.name+'">'+(index+1)+'. '+value+'</a><br>';
+                var mapped = repos.map(function(el, i) {
+                    return { index: i, value: el.toLowerCase() };
+                })
+                mapped.sort(function(a, b) {
+                    return +(a.value > b.value) || +(a.value === b.value) - 1;
+                });
+                var result = mapped.map(function(el){
+                    return repos[el.index];
+                });
+                var empty_val = 0;
+                result.forEach(function(value, index) {
+                    if (value != ""){
+                        if (ds_name = 'Meetup events') {
+                            html +=     '<a href="meetup-group.html?repository='+value+'&ds='+ds.name+'">'+(index+1-empty_val)+'. '+value+'</a><br>';
+                        } else {
+                            html +=     '<a href="repository.html?repository='+value+'&ds='+ds.name+'">'+(index+1-empty_val)+'. '+value+'</a><br>';
+                        }
+                    } else {
+                        empty_val += 1;    
+                    }
                 });
                 html +=     '</div>';
                 html += '</div>';
