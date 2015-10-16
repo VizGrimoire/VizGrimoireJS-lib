@@ -413,10 +413,10 @@ if (Viz === undefined) var Viz = {};
                     ds_name = '-';
                 }
                 var last_date = gdata.last_date;
-                if ((last_date === undefined) && (ds_name != 'Meetup events')){
+                if ((last_date === undefined) && (ds_name != 'Meetup events')) {
                     return;
                 }
-                if (ds_name === 'Meetup events') {
+                if ((ds_name === 'Meetup events') && (last_date === undefined)) {
                     last_date = '-';
                 }
                 var first_date = gdata.first_date;
