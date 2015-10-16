@@ -380,6 +380,7 @@ function getSectionName(){
                     "scr":"Code Review overview",
                     "scm":"SCM overview",
                     "wiki":"Wiki overview",
+                    "confluence": "Confluence overview",
                     "downloads":"Downloads",
                     "forge":"Forge releases",
                     "meetup":"Meetup overview",
@@ -400,13 +401,13 @@ function getSectionName(){
                    "countries":"Activity by countries",
                    "domains":"Activity by domains",
                    "group":"Meetup group",//this is breaking the idea of this dict
-                   "next":"Next meetings",
+                   "next_meetings":"Next meetings",
                    "projects":"Activity by project",
                    "repos":"Activity by repositories",
                    "groups":"Activity by groups",
                    "states":"Activity by states",
                    "tags":"Activity by tags",
-                   "past":"Past meetings",
+                   "past_meetings":"Past meetings",
                    "backlog":"Backlog"
                   };
     var filters2 = {"repository":"Repository",
@@ -557,6 +558,11 @@ function composeSideBar(project_id){
         if (mele.hasOwnProperty('wiki')){
             aux = mele.wiki;
             aux_html = HTMLComposer.sideBarLinks('fa-pencil-square-o','Wiki','wiki', aux);
+            html += aux_html;
+        }
+        if (mele.hasOwnProperty('confluence')){
+            aux = mele.confluence;
+            aux_html = HTMLComposer.sideBarLinks('fa-pencil-square-o','Confluence','confluence', aux);
             html += aux_html;
         }
         if (mele.hasOwnProperty('meetup')){
