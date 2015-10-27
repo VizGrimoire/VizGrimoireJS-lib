@@ -113,7 +113,7 @@ function DataSource(name, basic_metrics) {
         this.demographics_birth_file = dataDir + '/'+this.name+'-demographics-birth.json';
         this.global_data_file = dataDir + '/'+this.name+'-static.json';
         this.top_data_file = dataDir + '/'+this.name+'-top.json';
-        this.companies_data_file = dataDir+'/'+ this.name +'-companies.json';
+        this.companies_data_file = dataDir+'/'+ this.name +'-organizations.json';
         this.repos_data_file = dataDir+'/'+ this.name +'-repos.json';
         this.countries_data_file = dataDir+'/'+ this.name +'-countries.json';
         this.domains_data_file = dataDir+'/'+ this.name +'-domains.json';
@@ -229,7 +229,7 @@ function DataSource(name, basic_metrics) {
     };
 
     // Companies data
-    this.companies_data_file = this.data_dir+'/'+ this.name +'-companies.json';
+    this.companies_data_file = this.data_dir+'/'+ this.name +'-organizations.json';
     this.getCompaniesDataFile = function() {
         return this.companies_data_file;
     };
