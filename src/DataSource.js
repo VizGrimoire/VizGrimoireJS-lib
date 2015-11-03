@@ -67,7 +67,7 @@ function DataSource(name, basic_metrics) {
                 basic_name = aux.slice(0,aux.length-1).join("_");
             var ns_basic_name = ds.getName()+"_"+basic_name;
             var ns_name = ds.getName()+"_"+name;
-            if (ds.getMetrics()[ns_basic_name] === undefined)
+            if ((ds.getMetrics()[ns_basic_name] === undefined) && (name !== 'submissions'))
                 metrics[name] = value;
             else metrics[ns_name] = value;
         });
@@ -781,7 +781,6 @@ function DataSource(name, basic_metrics) {
 
     this.displayMetricsPeople = function (upeople_id, upeople_identifier, metrics, div_id, config) {
         var history = this.getPeopleMetricsData()[upeople_id];
-
         if (history === undefined || history instanceof Array) {
             $("#"+div_id).hide();
             return;
