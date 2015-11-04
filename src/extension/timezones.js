@@ -34,7 +34,7 @@ var Timezones = {};
         if (divs.length > 0){
             $.each(divs, function(id, div) {
                 ds_name = $(this).data('data-source');
-                metric_name = $(this).data('metric');
+                var metric_name = $(this).data('metric');
                 /* this is a typical check, should be moved to a generic funct*/
                 DS = Report.getDataSourceByName(ds_name);
                 if (DS === null) return;
