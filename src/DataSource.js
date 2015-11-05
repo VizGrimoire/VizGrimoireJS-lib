@@ -67,7 +67,7 @@ function DataSource(name, basic_metrics) {
                 basic_name = aux.slice(0,aux.length-1).join("_");
             var ns_basic_name = ds.getName()+"_"+basic_name;
             var ns_name = ds.getName()+"_"+name;
-            if (ds.getMetrics()[ns_basic_name] === undefined)
+            if ((ds.getMetrics()[ns_basic_name] === undefined) && (name !== 'submissions'))
                 metrics[name] = value;
             else metrics[ns_name] = value;
         });
@@ -113,7 +113,7 @@ function DataSource(name, basic_metrics) {
         this.demographics_birth_file = dataDir + '/'+this.name+'-demographics-birth.json';
         this.global_data_file = dataDir + '/'+this.name+'-static.json';
         this.top_data_file = dataDir + '/'+this.name+'-top.json';
-        this.companies_data_file = dataDir+'/'+ this.name +'-companies.json';
+        this.companies_data_file = dataDir+'/'+ this.name +'-organizations.json';
         this.repos_data_file = dataDir+'/'+ this.name +'-repos.json';
         this.countries_data_file = dataDir+'/'+ this.name +'-countries.json';
         this.domains_data_file = dataDir+'/'+ this.name +'-domains.json';
@@ -229,7 +229,7 @@ function DataSource(name, basic_metrics) {
     };
 
     // Companies data
-    this.companies_data_file = this.data_dir+'/'+ this.name +'-companies.json';
+    this.companies_data_file = this.data_dir+'/'+ this.name +'-organizations.json';
     this.getCompaniesDataFile = function() {
         return this.companies_data_file;
     };
@@ -781,7 +781,6 @@ function DataSource(name, basic_metrics) {
 
     this.displayMetricsPeople = function (upeople_id, upeople_identifier, metrics, div_id, config) {
         var history = this.getPeopleMetricsData()[upeople_id];
-
         if (history === undefined || history instanceof Array) {
             $("#"+div_id).hide();
             return;

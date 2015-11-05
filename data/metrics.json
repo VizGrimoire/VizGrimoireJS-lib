@@ -320,6 +320,12 @@
         "name" : "submitted",
         "desc" : ""
     },
+    "scr_submissions" : {
+        "divid" : "scr_submissions",
+        "column" : "submissions",
+        "name" : "Reviews submitted",
+        "desc" : "Reviews submitted"
+    },
     "scr_sent" : {
         "divid" : "scr_sent",
         "column" : "sent",
