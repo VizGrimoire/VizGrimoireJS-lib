@@ -33,15 +33,17 @@ function DockerHub() {
     */
 
     this.basic_metrics = {
-        "dockerhub_pulls" : {
-            "name" : "Pulls",
-            "desc" : "Number of pulls",
-            "column": "pulls"
+        "dockerhub_pulls": {
+            "divid": "dockerhub_pulls",
+            "column": "pulls",
+            "name": "Docker Hub repo pulls",
+            "desc": "Pulls for a Docker Hub repo"
         },
-        "dockerhub_starred":{
-            "name" : "Starred",
-            "desc" : "starred",
-            "column": "starred"
+        "dockerhub_starred": {
+            "divid": "dockerhub_starred",
+            "column": "starred",
+            "name": "Docker Hub repo stars",
+            "desc": "Stars for a Docker Hub repo"
         }
     };
 
