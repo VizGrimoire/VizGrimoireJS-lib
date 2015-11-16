@@ -633,6 +633,13 @@ var Table = {};
              }
          }
 
+        if (ds_name === "dockerhub"){
+            if (metric === "pulls"){
+                var_names.name = "name";
+                var_names.action = "pulls";
+            }
+        }
+
          return var_names;
      }
 })();

@@ -393,7 +393,8 @@ function getSectionName(){
                     "country":"Country",
                     "domain":"Domain",
                     "release":"Companies analysis by release",
-                    "project_comparison":"Project comparison"
+                    "project_comparison":"Project comparison",
+                    "dockerhub": "DockerHub overview"
                    };
     var filters = {"companies":"Activity by companies",
                    "organizations":"Activity by organizations",
@@ -568,6 +569,11 @@ function composeSideBar(project_id){
         if (mele.hasOwnProperty('meetup')){
             aux = mele.meetup;
             aux_html = HTMLComposer.sideBarLinks('fa-users','Meetup','meetup', aux);
+            html += aux_html;
+        }
+        if (mele.hasOwnProperty('dockerhub')){
+            aux = mele.dockerhub;
+            aux_html = HTMLComposer.sideBarLinks('fa-dockerhub','DockerHub','dockerhub',aux);
             html += aux_html;
         }
         if (mele.hasOwnProperty('studies')){

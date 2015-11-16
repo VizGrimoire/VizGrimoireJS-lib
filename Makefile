@@ -46,6 +46,7 @@ vizgrimoire.core.js: \
     src/People.js \
     src/Downloads.js \
     src/QAForums.js \
+    src/DockerHub.js \
     src/Releases.js \
     src/Meetup.js \
     src/Identity.js \
