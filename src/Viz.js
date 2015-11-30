@@ -113,6 +113,7 @@ if (Viz === undefined) var Viz = {};
     }
 
     function getTopVarsFromMetric(metric, ds_name){
+console.log('Viz.js getTopVarsFromMetric ', ds_name)
         //maps the JSON vars with the metric name
         //FIXME this function should be private
         var var_names = {};
@@ -181,6 +182,12 @@ if (Viz === undefined) var Viz = {};
             if (metric === "authors"){
                 var_names.name = "username";
                 var_names.action = "releases";
+            }
+        }
+        if (ds_name === "dockerhub"){
+            if (metric === "pulls"){
+                var_names.name = "name";
+                var_names.action = "pulls";
             }
         }
 
@@ -271,6 +278,7 @@ if (Viz === undefined) var Viz = {};
     }
 
     function composeTopTabs(periods, metric, data, ds_name){
+console.log('composeTopTabs')
         var tabs_html = "";
         var first = true;
         tabs_html += '<ul id="myTab" class="nav nav-tabs">';
@@ -399,6 +407,7 @@ if (Viz === undefined) var Viz = {};
     }
 
     function displayDataSourcesTable(div){
+console.log('displayDataSourcesTable');
         Loader.data_ready(function() {
             dsources = Report.getDataSources();
             html = '<table class="table table-striped">';
@@ -456,7 +465,7 @@ if (Viz === undefined) var Viz = {};
                             html +=     '<a href="repository.html?repository='+value+'&ds='+ds.name+'">'+(index+1-empty_val)+'. '+value+'</a><br>';
                         }
                     } else {
-                        empty_val += 1;    
+                        empty_val += 1;
                     }
                 });
                 html +=     '</div>';

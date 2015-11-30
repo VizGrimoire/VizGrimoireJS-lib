@@ -432,7 +432,7 @@ if (Report === undefined) var Report = {};
         checkDynamicConfig();
 
         var projects_dirs = Report.getProjectsDirs();
-        var scm, its, its_1, mls, scr, irc, mediawiki, people, downloads, qaforums, releases, meetup;
+        var scm, its, its_1, mls, scr, irc, mediawiki, people, downloads, qaforums, releases, meetup, dockerhub;
 
         $.each(projects_dirs, function (i, project) {
             if (Report.getConfig() === null ||
@@ -461,6 +461,8 @@ if (Report === undefined) var Report = {};
                 Report.registerDataSource(releases);
                 meetup = new Meetup();
                 Report.registerDataSource(meetup);
+                dockerhub = new DockerHub();
+                Report.registerDataSource(dockerhub);
             }
             else {
                 var active_ds = Report.getConfig()['data-sources'];
@@ -513,6 +515,10 @@ if (Report === undefined) var Report = {};
                         meetup = new Meetup();
                         Report.registerDataSource(meetup);
                     }
+                    else if (name == 'dockerhub') {
+                        dockerhub = new DockerHub();
+                        Report.registerDataSource(dockerhub);
+                    }
 
                     else Report.log ("Not support data source " + name);
                 });
@@ -530,6 +536,7 @@ if (Report === undefined) var Report = {};
             if (releases) releases.setDataDir(project);
             if (scm && its) scm.setITS(its);
             if (meetup) meetup.setDataDir(project);
+            if (dockerhub) dockerhub.setDataDir(project);
         });
 
         return true;

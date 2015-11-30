@@ -18,6 +18,7 @@ src_files:
   - "src/People.js"
   - "src/Downloads.js"
   - "src/QAForums.js"
+  - "scr/DockerHub.js"
   - "src/Releases.js"
   - "src/Loader.js"
   - "src/Convert.js"
