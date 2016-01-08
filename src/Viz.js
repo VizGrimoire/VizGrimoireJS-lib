@@ -113,7 +113,6 @@ if (Viz === undefined) var Viz = {};
     }
 
     function getTopVarsFromMetric(metric, ds_name){
-console.log('Viz.js getTopVarsFromMetric ', ds_name)
         //maps the JSON vars with the metric name
         //FIXME this function should be private
         var var_names = {};
@@ -278,7 +277,6 @@ console.log('Viz.js getTopVarsFromMetric ', ds_name)
     }
 
     function composeTopTabs(periods, metric, data, ds_name){
-console.log('composeTopTabs')
         var tabs_html = "";
         var first = true;
         tabs_html += '<ul id="myTab" class="nav nav-tabs">';
@@ -407,7 +405,6 @@ console.log('composeTopTabs')
     }
 
     function displayDataSourcesTable(div){
-console.log('displayDataSourcesTable');
         Loader.data_ready(function() {
             dsources = Report.getDataSources();
             html = '<table class="table table-striped">';
@@ -459,10 +456,10 @@ console.log('displayDataSourcesTable');
                 var empty_val = 0;
                 result.forEach(function(value, index) {
                     if (value != ""){
-                        if (ds_name = 'Meetup events') {
-                            html +=     '<a href="meetup-group.html?repository='+value+'&ds='+ds.name+'">'+(index+1-empty_val)+'. '+value+'</a><br>';
+                        if (ds_name == 'Meetup events') {
+                            html += '<a href="meetup-group.html?repository='+value+'&ds='+ds.name+'">'+(index+1-empty_val)+'. '+value+'</a><br>';
                         } else {
-                            html +=     '<a href="repository.html?repository='+value+'&ds='+ds.name+'">'+(index+1-empty_val)+'. '+value+'</a><br>';
+                            html += '<a href="repository.html?repository='+value+'&ds='+ds.name+'">'+(index+1-empty_val)+'. '+value+'</a><br>';
                         }
                     } else {
                         empty_val += 1;
