@@ -419,8 +419,8 @@ if (Viz === undefined) var Viz = {};
                     ds_name = '-';
                 }
                 var last_date = gdata.last_date;
-                if ((last_date === undefined) && (ds_name != 'Meetup events')) {
-                    return;
+                if (gdata.length === 0) {
+                  return;
                 }
                 if ((ds_name === 'Meetup events') && (last_date === undefined)) {
                     last_date = '-';
