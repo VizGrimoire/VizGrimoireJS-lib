@@ -316,7 +316,6 @@ if (Report === undefined) var Report = {};
 
     Report.escapeHtml = function(unsafe) {
         return unsafe
-            .replace(/&/g, "&amp;")
             .replace(/</g, "&lt;")
             .replace(/>/g, "&gt;")
             .replace(/"/g, "&quot;")
@@ -329,7 +328,7 @@ if (Report === undefined) var Report = {};
         // name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
         name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
         var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-            results = regex.exec(location.search);
+            results = regex.exec(location.search.replace("&","%26"));
         return results === null ? undefined :
             Report.escapeHtml(decodeURIComponent(results[1].replace(/\+/g, " ")));
     };
