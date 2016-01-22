@@ -578,7 +578,9 @@ if (Viz === undefined) var Viz = {};
 
             var cdata = [[], []];
             for (var i=0; i<data.id.length; i++ ) {
-                cdata[i] = [data.id[i], data[metric][i]];
+                var metric_value = data[metric][i];
+                if (isNaN(metric_value)) {metric_value = 0;}
+                cdata[i] = [data.id[i], metric_value];
             }
 
             item = Report.cleanLabel(item);
