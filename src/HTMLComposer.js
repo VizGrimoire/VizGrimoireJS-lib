@@ -204,7 +204,11 @@ var HTMLComposer = {};
         var html_erow = '</td></tr>';
         $.each(global_data,function(id,value) {
             if (ds.getMetrics()[id]) {
-                html += html_irow + ds.getMetrics()[id].name;
+                var desc = ds.getMetricDesc(id);
+                html += html_irow;
+                html += '<span data-toggle="tooltip" title="' + desc +'">';
+                html += ds.getMetrics()[id].name;
+                html += '</span>';
                 if (id === 'first_date' || id === 'last_date'){
                     html += '</td><td class="numberInTD">' + value + html_erow;
                 }
