@@ -446,7 +446,7 @@ if (Viz === undefined) var Viz = {};
                 html +=     '<div class="panel-body" style="max-height: 400px;  word-break: break-all; word-wrap: break-word; overflow: auto;">';
                 var mapped = repos.map(function(el, i) {
                     return { index: i, value: el.toLowerCase() };
-                })
+                });
                 mapped.sort(function(a, b) {
                     return +(a.value > b.value) || +(a.value === b.value) - 1;
                 });
@@ -455,7 +455,7 @@ if (Viz === undefined) var Viz = {};
                 });
                 var empty_val = 0;
                 result.forEach(function(value, index) {
-                    if (value != ""){
+                    if (value !== ""){
                         if (ds_name == 'Meetup events') {
                             html += '<a href="meetup-group.html?repository='+value+'&ds='+ds.name+'">'+(index+1-empty_val)+'. '+value+'</a><br>';
                         } else {
