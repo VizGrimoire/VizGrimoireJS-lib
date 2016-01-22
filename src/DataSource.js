@@ -33,7 +33,13 @@ function DataSource(name, basic_metrics) {
     this.getMetrics = function() {return this.basic_metrics;};
     this.setMetrics = function(metrics) {this.basic_metrics = metrics;};
     this.getMetricDesc = function(metric_id) {
-        return this.basic_metrics[metric_id].desc;
+        var metric_data = this.basic_metrics[metric_id];
+        if (metric_data !== undefined && metric_data.desc !== undefined){
+            return metric_data.desc;
+        }
+        else{
+            return '';
+        }
     };
 
     this.setMetricsDefinition = function(metrics) {

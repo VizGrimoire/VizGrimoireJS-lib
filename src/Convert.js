@@ -2335,6 +2335,24 @@ Convert.convertSmartLinks = function (){
     }
 };
 
+Convert.convertMetricDesc = function (){
+    var divs = $(".MetricDesc");
+    if (divs.length > 0){
+        $.each(divs, function(id, div) {
+            /*workaround to avoid being called again when redrawing*/
+            if (div.id.indexOf('Parsed') >= 0 ) return;
+            var metric = $(this).data('metric');
+            var ds_name = $(this).data('data-source');
+            var ds = Report.getDataSourceByName(ds_name);
+            var content = div.innerHTML;
+
+            var html = HTMLComposer.metricDesc(ds, metric, content);
+            if (!div.id) div.id = "Parsed" + getRandomId();
+            $("#"+div.id).replaceWith(html);
+        });
+    }
+};
+
 /*
 * Display company filters available depending on config file
 */
@@ -2458,6 +2476,7 @@ Convert.convertDSTable = function() {
 Convert.convertBasicDivs = function() {
     Convert.convertNavbar();
     Convert.convertSmartLinks();
+    Convert.convertMetricDesc();
     //Convert.convertProjectNavBar();
     Convert.convertSectionBreadcrumb();
     Convert.convertProjectMap();

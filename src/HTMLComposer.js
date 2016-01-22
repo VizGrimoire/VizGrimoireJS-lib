@@ -40,6 +40,7 @@ var HTMLComposer = {};
     HTMLComposer.sideBarLinks = sideBarLinks;
     HTMLComposer.overallSummaryBlock = overallSummaryBlock;
     HTMLComposer.smartLinks = smartLinks;
+    HTMLComposer.metricDesc = metricDesc;
     HTMLComposer.TopByPeriod = TopByPeriod;
     HTMLComposer.companyFilters = companyFilters;
 
@@ -760,6 +761,21 @@ var HTMLComposer = {};
         }catch(err){
             html = label;
         }
+        return html;
+    }
+
+    /**
+    * Print a metric name with its description from basic_metrics object
+    * @constructor
+    * @param {object} ds - Data source object
+    * @param {string} metric - Metric name available in JSON file
+    * @param {string} content - HTML content of the original div
+    **/
+    function metricDesc(ds, metric, content){
+        var desc = ds.getMetricDesc(metric);
+        var html = '<span data-toggle="tooltip" title="' + desc +'">';
+        html += content;
+        html += '</span>';
         return html;
     }
 
