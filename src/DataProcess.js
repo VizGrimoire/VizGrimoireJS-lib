@@ -186,38 +186,25 @@ var DataProcess = {};
         return email;
     };
 
-    // Clean 0s at the start and end of metrics in history
+    /*
+    * Remove 0s from the left side of the arrays of the object
+    * history[metrics]. Returns a new object without those zeros
+    *
+    */
     DataProcess.frameTime = function(history, metrics) {
         var new_history = {};
-        var offset_start = -1;
-        var offset_end = -1;
-        var new_offset = 0;
-        if (metrics.length === 0) return history;
-        if (history[metrics[0]] === undefined) return history;
-        var total = history[metrics[0]].length;
-        var i = 0;
-        // Detect 0s start
+        var i = 0,
+            max_offset = 0,
+            offset = 0,
+            MIN_LENGTH = 5;
+
         $.each(metrics, function(id, metric) {
-            if (history[metric] === undefined) {return;}
-            new_offset = 0;
-            for (i =  0; i < history[metric].length; i++) {
-                if (history[metric][i] === 0) new_offset++;
-                else {
-                    if (offset_start === -1) offset_start = new_offset;
-                    if (new_offset<offset_start) offset_start = new_offset;
-                    break;
-                }
-            }
-        });
-        // Detect 0s end
-        $.each(metrics, function(id, metric) {
-            if (history[metric] === undefined) {return;}
-            new_offset = 0;
-            for (i = history[metric].length-1  ; i >=0; i--) {
-                if (history[metric][i] === 0) new_offset++;
-                else {
-                    if (offset_end === -1) offset_end = new_offset;
-                    if (new_offset<offset_end) offset_end = new_offset;
+            array_len = history[metric].length;
+            max_offset = array_len - MIN_LENGTH;
+            for (i =  0; i < max_offset; i++) {
+                if (history[metric][i] === 0){
+                    offset++;
+                }else{
                     break;
                 }
             }
@@ -225,11 +212,7 @@ var DataProcess = {};
 
         for (var key in history) {
             new_history[key] = [];
-            for (i =  0; i < history[key].length; i++) {
-                if (i<offset_start) continue;
-                if (i>=total-offset_end) continue;
-                new_history[key].push(history[key][i]);
-            }
+            new_history[key] = history[key].slice(offset);
         }
         return new_history;
     };
