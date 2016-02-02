@@ -404,6 +404,7 @@ if (Loader === undefined) var Loader = {};
          **/
         var check = true;
         //FIXME we are using "top" as optional filter: "repos" as first + "top"
+        item = item.split("&ds=")[0];
 
         if (filter === "repos") {
             if (Loader.check_item (item, filter, "top") === false) {
@@ -428,7 +429,8 @@ if (Loader === undefined) var Loader = {};
     Loader.FilterItemCheck = function(item, filter) {
         var check = true, ds;
         var map = Report.getReposMap();
-
+        item = item.split("&ds=")[0];
+        
         if (filter === "repos") {
             if (Loader.check_item (item, filter) === false) {
                 ds = getItemDS(item, filter);
