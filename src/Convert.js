@@ -833,6 +833,13 @@ Convert.convertSummary = function() {
     }
 };
 
+function sharedStart(array){
+    var A= array.concat().sort(),
+        a1= A[0], a2= A[A.length-1], L= a1.length, i= 0;
+    if (A.length <= 1) return '';
+    while(i<L && a1.charAt(i)=== a2.charAt(i)) i++;
+    return a1.substring(0, i);
+}
 function composeDropDownRepo(DS){
     var repository = Report.getParameterByName("repository");
     if (repository && $.inArray(repository, DS.getReposData()) < 0) return '';
@@ -855,9 +862,13 @@ function composeDropDownRepo(DS){
     }else if (dsname === 'mls'){
         label_repo = 'mailing list';
     }*/
+    var repo_names = DS.getReposData();
+    repo_names.sort();
+    var common_str = sharedStart(repo_names);
+
     html = '<ol class="filterbar"><li>Filtered by '+ label_repo +':&nbsp;&nbsp;</li>';
     html += '<li><div class="dropdown"><button class="btn btn-default dropdown-toggle" ';
-    html += 'type="button" id="dropdownMenu1" data-toggle="dropdown"> '+ section + ' ';
+    html += 'type="button" id="dropdownMenu1" data-toggle="dropdown"> '+ section.replace(common_str,'')+ ' ';
     html += '<span class="caret"></span></button>';
     html += '<ul class="dropdown-menu scroll-menu" role="menu" aria-labelledby="dropdownMenu1">';
     //html += '<ul class="dropdown-menu scroll-menu">';
@@ -866,14 +877,13 @@ function composeDropDownRepo(DS){
         html += 'All ' + label_repo_plural;
         html +='</a></li>';
     }
-    var repo_names = DS.getReposData();
-    repo_names.sort();
+
     $.each(repo_names, function(id, value){
         if (value === repository) return;
         html += '<li role="presentation"><a role="menuitem" tabindex="-1" href="?repository=';
         html += value;
         html +='">';
-        html += value;
+        html += value.replace(common_str,'');
         html +='</a></li>';
     });
     html += '</ul></div></li></ol>';
