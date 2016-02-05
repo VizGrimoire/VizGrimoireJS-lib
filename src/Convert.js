@@ -835,11 +835,20 @@ Convert.convertSummary = function() {
 
 function sharedStart(array){
     var A= array.concat().sort(),
-        a1= A[0], a2= A[A.length-1], L= a1.length, i= 0;
+        a1= A[0], a2= A[A.length-1], L= a1.length, i= 0,
+        delimiter ='_';
+
     if (A.length <= 1) return '';
+
     while(i<L && a1.charAt(i)=== a2.charAt(i)) i++;
-    return a1.substring(0, i);
+    common_str = a1.substring(0, i);
+
+    index = common_str.lastIndexOf(delimiter);
+    if ( index > 0 ){
+        return common_str.slice(0,index + 1);
+    }
 }
+
 function composeDropDownRepo(DS){
     var repository = Report.getParameterByName("repository");
     if (repository && $.inArray(repository, DS.getReposData()) < 0) return '';
