@@ -1580,7 +1580,8 @@ Convert.convertPersonAffiliation = function (upeople_id, upeople_identifier) {
             if (!div.id) div.id = "PersonData" + "-" + upeople_id + "-" + getRandomId();
 
             var data = Report.getPeopleIdentities()[upeople_id];
-            if (data && data.affiliation !== undefined) {
+            if (data && data.affiliation !== undefined
+                        && data.affiliation !== null) {
                 html = HTMLComposer.personAffiliation(data.affiliation);
                 $("#"+div.id).append(html);
             }
@@ -1597,7 +1598,8 @@ Convert.convertPersonCountry = function (upeople_id, upeople_identifier) {
             if (!div.id) div.id = "PersonData" + "-" + upeople_id + "-" + getRandomId();
 
             var data = Report.getPeopleIdentities()[upeople_id];
-            if (data && data.country !== undefined) {
+            if (data && data.country !== undefined
+                        && data.country !== null) {
                 html = HTMLComposer.personCountry(data.country);
                 $("#"+div.id).append(html);
             }
