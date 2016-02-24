@@ -125,7 +125,7 @@ Output: Top people for a company
 
 ## GlobalData
 ```
-<span class="GlobalData" data-data-source="scm"                              
+<span class="GlobalData" data-data-source="scm"
       data-field="scm_commits">
 ```
 
@@ -189,6 +189,20 @@ Output: Table with information about Gerrit backlog with links to changesets if 
 ```
 
 Output: Chart with information about personal data
+
+## PersonCountry
+```
+<div class="PersonCountry"></div>
+```
+
+Output: Country name of Contributor
+
+## PersonAffiliation
+```
+<div class="PersonAffiliation"></div>
+```
+
+Output: Company name of contributor
 
 ## PersonSummaryBlock
 ```

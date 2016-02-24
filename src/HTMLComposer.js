@@ -35,6 +35,8 @@ var HTMLComposer = {};
     HTMLComposer.repositorySummaryTable = repositorySummaryTable;
     HTMLComposer.personSummaryTable = personSummaryTable;
     HTMLComposer.personName = personName;
+    HTMLComposer.personAffiliation = personAffiliation;
+    HTMLComposer.personCountry = personCountry;
     HTMLComposer.itemName = itemName;
     HTMLComposer.releaseSelector = releaseSelector;
     HTMLComposer.sideBarLinks = sideBarLinks;
@@ -268,6 +270,20 @@ var HTMLComposer = {};
         }
         html += '</p>';
 
+        return html;
+    }
+
+    function personAffiliation(com_name){
+        var html = '<p class="section-title" style="margin-bottom:0px;"><i class="fa fa-building fa-lg"></i> &nbsp;&nbsp;';
+        html += com_name;
+        html += '</p>';
+        return html;
+    }
+
+    function personCountry(cou_name){
+        var html = '<p class="section-title" style="margin-bottom:0px;"><i class="fa fa-globe fa-lg"></i> &nbsp;&nbsp;';
+        html += cou_name;
+        html += '</p>';
         return html;
     }
 

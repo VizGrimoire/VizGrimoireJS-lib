@@ -1571,6 +1571,40 @@ function getRandomId() {
     return Math.floor(Math.random()*1000+1);
 }
 
+Convert.convertPersonAffiliation = function (upeople_id, upeople_identifier) {
+    var divs = $(".PersonAffiliation"), name, email;
+    if (divs.length > 0) {
+        $.each(divs, function(id, div) {
+            $(this).empty();
+            if ($(this).data('person_id')) upeople_id = $(this).data('person_id');
+            if (!div.id) div.id = "PersonData" + "-" + upeople_id + "-" + getRandomId();
+
+            var data = Report.getPeopleIdentities()[upeople_id];
+            if (data && data.affiliation !== undefined) {
+                html = HTMLComposer.personAffiliation(data.affiliation);
+                $("#"+div.id).append(html);
+            }
+        });
+    }
+};
+
+Convert.convertPersonCountry = function (upeople_id, upeople_identifier) {
+    var divs = $(".PersonCountry");
+    if (divs.length > 0) {
+        $.each(divs, function(id, div) {
+            $(this).empty();
+            if ($(this).data('person_id')) upeople_id = $(this).data('person_id');
+            if (!div.id) div.id = "PersonData" + "-" + upeople_id + "-" + getRandomId();
+
+            var data = Report.getPeopleIdentities()[upeople_id];
+            if (data && data.country !== undefined) {
+                html = HTMLComposer.personCountry(data.country);
+                $("#"+div.id).append(html);
+            }
+        });
+    }
+};
+
 Convert.convertPersonData = function (upeople_id, upeople_identifier) {
     var divs = $(".PersonData"), name, email;
     if (divs.length > 0) {
@@ -1578,9 +1612,12 @@ Convert.convertPersonData = function (upeople_id, upeople_identifier) {
             $(this).empty();
             if ($(this).data('person_id')) upeople_id = $(this).data('person_id');
             if (!div.id) div.id = "PersonData" + "-" + upeople_id + "-" + getRandomId();
+
             var data = Report.getPeopleIdentities()[upeople_id];
             if (data) {
                 name = DataProcess.selectPersonName(data);
+                country = data.country;
+                aff = data.affiliation;
                 email = DataProcess.selectPersonEmail(data);
                 email = "("+DataProcess.hideEmail(email)+")";
             } else {
@@ -1589,6 +1626,7 @@ Convert.convertPersonData = function (upeople_id, upeople_identifier) {
                 else name = upeople_id;
                 email = "";
             }
+            // by default
             html = HTMLComposer.personName(name, email);
             $("#"+div.id).append(html);
         });
@@ -1655,6 +1693,8 @@ Convert.convertPeople = function(upeople_id, upeople_identifier) {
 
     Convert.personSummaryBlock(upeople_id);
     Convert.convertPersonData(upeople_id, upeople_identifier);
+    Convert.convertPersonCountry(upeople_id, upeople_identifier);
+    Convert.convertPersonAffiliation(upeople_id, upeople_identifier);
     Convert.convertPersonSummary(upeople_id, upeople_identifier);
     Convert.convertPersonMetrics(upeople_id, upeople_identifier);
 
