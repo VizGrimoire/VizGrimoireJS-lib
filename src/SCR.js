@@ -329,6 +329,12 @@ function SCR() {
             });
     };
 
+    this.displayOldestChangesetsByAff = function(div, headers, columns) {
+        loadOldestChangesetsByAffiliation(function(data){
+            Table.gerritTable(div, data, headers, columns);
+            });
+    };
+
     this.displayMostActiveChangesets = function(div, headers, columns) {
         loadMostActiveChangesets(function(data){
             Table.gerritTable(div, data, headers, columns);
@@ -344,6 +350,18 @@ function SCR() {
                 cb(this.oldest_changesets);
         }).fail(function() {
             console.log("SCR oldest changesets disabled. Missing " + json_file);
+        });
+    }
+
+    // this function is only for Gerrit so far
+    function loadOldestChangesetsByAffiliation (cb) {
+        var json_file = "data/json/scr-oldest_changesets_by_affiliation.json";
+        $.when($.getJSON(json_file)
+                ).done(function(json_data) {
+                this.oldest_changesets_by_aff = json_data;
+                cb(this.oldest_changesets_by_aff);
+        }).fail(function() {
+            console.log("SCR oldest changesets by affiliation disabled. Missing " + json_file);
         });
     }
 

@@ -1955,6 +1955,22 @@ Convert.convertOldestChangesets = function (){
     }
 };
 
+Convert.convertOldestChangesetsByAff = function (){
+    var divs = $(".OldestChangesetsByAffiliation");
+    if (divs.length > 0) {
+        $.each(divs, function(id, div) {
+            $(this).empty();
+            ds = $(this).data('data-source');
+            DS = Report.getDataSourceByName(ds);
+            if (DS === null) return;
+            div.id = "OldestChangesetsByAffiliation" + "-" + ds+"-" + "-"+ getRandomId();
+            var headers = $(this).data('headers');
+            var columns = $(this).data('columns');
+            DS.displayOldestChangesetsByAff(div, headers.split(','), columns.split(','));
+        });
+    }
+};
+
 Convert.convertMostActiveChangesets = function (){
     var divs = $(".MostActiveChangesets");
     if (divs.length > 0) {
@@ -2603,6 +2619,7 @@ Convert.convertBasicDivs = function() {
     Convert.convertTopByPeriod();
     Convert.companyFilters();
     Convert.convertOldestChangesets();
+    Convert.convertOldestChangesetsByAff();
     Convert.convertMostActiveChangesets();
 };
 
