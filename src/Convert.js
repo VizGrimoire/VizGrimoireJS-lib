@@ -477,6 +477,33 @@ function isURLRelease(){
 }
 
 function composeSideBar(project_id){
+
+    function getPanelTitle(ds_name, aliases){
+        var panel_title = {
+            'scm':'Source code management',
+            'scr':'Code review',
+            'its':'Tickets',
+            'its_1':'Tickets 1',
+            'storyboard':'Storyboard',
+            'maniphest':'Maniphest',
+            'mls':'Mailing lists',
+            'qaforums':'Q&A Forums',
+            'irc':'IRC',
+            'slack':'Slack',
+            'downloads':'Downloads',
+            'forge':'Forge releases',
+            'wiki':'Wiki',
+            'confluence':'Confluence',
+            'meetup':'Meetup',
+            'dockerhub':'DockerHub'
+        };
+        if (aliases.hasOwnProperty(ds_name)){
+            return aliases[ds_name];
+        }else {
+            return panel_title[ds_name];
+        }
+    }
+
     if (project_id === undefined){
         project_id = 'root';
     }
@@ -495,85 +522,108 @@ function composeSideBar(project_id){
     /*html += '<li><a href="' + Utils.createLink('index.html') + '">';
     html += '<i class="fa fa-home"></i> Home</a></li>';*/
 
+    /* list of aliases to be displayed replacing data source*/
+    var aliases = {};
+    if (mele.hasOwnProperty('aliases')){
+        aliases = mele.aliases;
+    }
+
     if (project_id === 'root'){
         if (mele.hasOwnProperty('scm')){
             aux = mele.scm;
-            aux_html = HTMLComposer.sideBarLinks('fa-code','Source code management','scm', aux);
+            ptitle = getPanelTitle('scm',aliases);
+            aux_html = HTMLComposer.sideBarLinks('fa-code',ptitle,'scm', aux);
             html += aux_html;
         }
         if (mele.hasOwnProperty('scr')){
             aux = mele.scr;
-            aux_html = HTMLComposer.sideBarLinks('fa-check','Code review','scr', aux);
+            ptitle = getPanelTitle('scr',aliases);
+            aux_html = HTMLComposer.sideBarLinks('fa-check',ptitle,'scr', aux);
             html += aux_html;
         }
         if (mele.hasOwnProperty('its')){
             aux = mele.its;
-            aux_html = HTMLComposer.sideBarLinks('fa-ticket','Tickets','its', aux);
+            ptitle = getPanelTitle('its',aliases);
+            //aux_html = HTMLComposer.sideBarLinks('fa-ticket','Tickets','its', aux, aliases);
+            aux_html = HTMLComposer.sideBarLinks('fa-ticket',ptitle,'its', aux);
             html += aux_html;
         }
         if (mele.hasOwnProperty('its_1')){
             aux = mele.its_1;
-            aux_html = HTMLComposer.sideBarLinks('fa-ticket','Tickets 1','its_1', aux);
+            ptitle = getPanelTitle('its_1',aliases);
+            aux_html = HTMLComposer.sideBarLinks('fa-ticket',ptitle,'its_1', aux);
             html += aux_html;
         }
         if (mele.hasOwnProperty('storyboard')){
             aux = mele.storyboard;
-            aux_html = HTMLComposer.sideBarLinks('fa-ticket','Storyboard','storyboard', aux);
+            ptitle = getPanelTitle('storyboard',aliases);
+            aux_html = HTMLComposer.sideBarLinks('fa-ticket',ptitle,'storyboard', aux);
             html += aux_html;
         }
         if (mele.hasOwnProperty('maniphest')){
             aux = mele.maniphest;
-            aux_html = HTMLComposer.sideBarLinks('fa-ticket','Maniphest','maniphest', aux);
+            ptitle = getPanelTitle('maniphest',aliases);
+            aux_html = HTMLComposer.sideBarLinks('fa-ticket',ptitle,'maniphest', aux);
             html += aux_html;
         }
         if (mele.hasOwnProperty('mls')){
             aux = mele.mls;
-            aux_html = HTMLComposer.sideBarLinks('fa-envelope-o','Mailing lists','mls', aux);
+            ptitle = getPanelTitle('mls',aliases);
+            aux_html = HTMLComposer.sideBarLinks('fa-envelope-o',ptitle,'mls', aux);
             html += aux_html;
         }
         if (mele.hasOwnProperty('qaforums')){
             aux = mele.qaforums;
-            aux_html = HTMLComposer.sideBarLinks('fa-question','Q&A Forums','qaforums', aux);
+            ptitle = getPanelTitle('qaforums',aliases);
+            aux_html = HTMLComposer.sideBarLinks('fa-question',ptitle,'qaforums', aux);
             html += aux_html;
         }
         if (mele.hasOwnProperty('irc')){
             aux = mele.irc;
-            aux_html = HTMLComposer.sideBarLinks('fa-comment-o','IRC','irc', aux);
+            ptitle = getPanelTitle('irc',aliases);
+            aux_html = HTMLComposer.sideBarLinks('fa-comment-o',ptitle,'irc', aux);
             html += aux_html;
         }
         if (mele.hasOwnProperty('slack')){
             aux = mele.slack;
-            aux_html = HTMLComposer.sideBarLinks('fa-comment-o','Slack','slack', aux);
+            ptitle = getPanelTitle('slack',aliases);
+            aux_html = HTMLComposer.sideBarLinks('fa-comment-o',ptitle,'slack', aux);
             html += aux_html;
         }
         if (mele.hasOwnProperty('downloads')){
             aux = mele.downloads;
-            aux_html = HTMLComposer.sideBarLinks('fa-download','Downloads','downloads', aux);
+            ptitle = getPanelTitle('downloads',aliases);
+            aux_html = HTMLComposer.sideBarLinks('fa-download',ptitle,'downloads', aux);
             html += aux_html;
         }
         if (mele.hasOwnProperty('forge')){
             aux = mele.forge;
-            aux_html = HTMLComposer.sideBarLinks('fa-umbrella','Forge releases','forge', aux);
+            ptitle = getPanelTitle('forge',aliases);
+            aux_html = HTMLComposer.sideBarLinks('fa-umbrella',ptitle,'forge', aux);
             html += aux_html;
         }
         if (mele.hasOwnProperty('wiki')){
             aux = mele.wiki;
-            aux_html = HTMLComposer.sideBarLinks('fa-pencil-square-o','Wiki','wiki', aux);
+            ptitle = getPanelTitle('wiki',aliases);
+            aux_html = HTMLComposer.sideBarLinks('fa-pencil-square-o',ptitle,'wiki', aux);
             html += aux_html;
         }
         if (mele.hasOwnProperty('confluence')){
             aux = mele.confluence;
-            aux_html = HTMLComposer.sideBarLinks('fa-pencil-square-o','Confluence','confluence', aux);
+            ptitle = getPanelTitle('confluence',aliases);
+            aux_html = HTMLComposer.sideBarLinks('fa-pencil-square-o',ptitle,'confluence', aux);
             html += aux_html;
         }
         if (mele.hasOwnProperty('meetup')){
             aux = mele.meetup;
-            aux_html = HTMLComposer.sideBarLinks('fa-users','Meetup','meetup', aux);
+            ptitle = getPanelTitle('meetup',aliases);
+            aux_html = HTMLComposer.sideBarLinks('fa-users',ptitle,'meetup', aux);
             html += aux_html;
         }
         if (mele.hasOwnProperty('dockerhub')){
             aux = mele.dockerhub;
-            aux_html = HTMLComposer.sideBarLinks('fa-dockerhub','DockerHub','dockerhub',aux);
+            ptitle = getPanelTitle('dockerhub',aliases);
+            aux_html = HTMLComposer.sideBarLinks('fa-dockerhub',ptitle,'dockerhub',aux);
             html += aux_html;
         }
         if (mele.hasOwnProperty('studies')){
