@@ -386,6 +386,7 @@ function getSectionName(){
                     "meetup":"Meetup overview",
                     "demographics":"Demographics",
                     "data_sources":"Data sources",
+                    "definitions":"Metrics definitions",
                     "organization":"Organization",
                     "project_map":"Project map",
                     "people":"Contributor",
@@ -662,10 +663,11 @@ function composeSideBar(project_id){
                     +'"><i class="fa fa-icon fa-sitemap"></i> Project map</a></li>';
             }
         }else{
-            html += '<li><a href="data_sources.html"><i class="fa fa-database"></i> Data sources</a></li>';
+            html += '<li><a href="data_sources.html"><i class="fa fa-info-circle"></i>&nbsp;Data sources</a></li>';
             if (mele.hasOwnProperty('project_map')){
                 html += '<li><a href="project_map.html"><i class="fa fa-icon fa-sitemap"></i> Project map</a></li>';
             }
+            html += '<li><a href="definitions.html"><i class="fa fa-book"></i>&nbsp;Metrics definitions&nbsp;&nbsp;<span class="label label-danger">New!</span></a></li>';
         }
 
         if (mele.hasOwnProperty('extra')){
