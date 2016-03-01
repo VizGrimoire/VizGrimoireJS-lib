@@ -69,7 +69,6 @@ var Glossary = {};
 
     function displayGlossary(div_id){
         var sections = getAvailableSections();
-        console.log('Both files loaded');
         var html = '';
         $.each(sections, function(id, value){
             html += displayGlossaryFor(value);
