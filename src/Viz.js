@@ -716,7 +716,7 @@ if (Viz === undefined) var Viz = {};
         if (lines_data.length>1) {
             for (var j=0; j<lines_data.length; j++) {
                 var last = lines_data[j].data.length - 1;
-                lines_data[j].data[last][1] = undefined;
+                if (last >= 0) lines_data[j].data[last][1] = undefined;
             }
         }
     }

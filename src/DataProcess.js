@@ -195,24 +195,30 @@ var DataProcess = {};
         var new_history = {};
         var i = 0,
             max_offset = 0,
-            offset = 0,
+            offset_list = [],
             MIN_LENGTH = 5;
 
         $.each(metrics, function(id, metric) {
+            var offset = 0;
             array_len = history[metric].length;
             max_offset = array_len - MIN_LENGTH;
             for (i =  0; i < max_offset; i++) {
                 if (history[metric][i] === 0){
                     offset++;
                 }else{
+                    offset_list.push(offset);
                     break;
                 }
             }
         });
 
+        /* we get the offset for all the metrics and select the smaller one
+        in order to display the maximum interval in the chart and to avoid
+        losing data */
+        var min_offset = offset_list.sort()[0];
         for (var key in history) {
             new_history[key] = [];
-            new_history[key] = history[key].slice(offset);
+            new_history[key] = history[key].slice(min_offset);
         }
         return new_history;
     };
