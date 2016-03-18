@@ -667,8 +667,10 @@ function composeSideBar(project_id){
             if (mele.hasOwnProperty('project_map')){
                 html += '<li><a href="project_map.html"><i class="fa fa-icon fa-sitemap"></i> Project map</a></li>';
             }
-            html += '<li><a href="definitions.html"><i class="fa fa-book"></i>&nbsp;Metrics definitions&nbsp;&nbsp;<span class="label label-danger">New!</span></a></li>';
         }
+
+        html += '<li><a href="definitions.html"><i class="fa fa-book"></i>&nbsp;Metrics definitions&nbsp;&nbsp;<span class="label label-danger">New!</span></a></li>';
+
 
         if (mele.hasOwnProperty('extra')){
             aux = mele.extra;
