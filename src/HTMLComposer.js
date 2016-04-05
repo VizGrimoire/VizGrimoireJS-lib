@@ -34,6 +34,7 @@ var HTMLComposer = {};
     HTMLComposer.DSBlockProject = DSBlockProject;
     HTMLComposer.repositorySummaryTable = repositorySummaryTable;
     HTMLComposer.personSummaryTable = personSummaryTable;
+    HTMLComposer.personInfo = personInfo;
     HTMLComposer.personName = personName;
     HTMLComposer.personAffiliation = personAffiliation;
     HTMLComposer.personCountry = personCountry;
@@ -255,6 +256,32 @@ var HTMLComposer = {};
         html += "</td></tr>";
         html += "</table>";
 
+        return html;
+    }
+
+    function personInfo(data, columns, upeople_id, upeople_identifier){
+        if (data){
+            html = '<ul class="list-inline">';
+            if (columns.name){
+                name = DataProcess.selectPersonName(data);
+                email = DataProcess.selectPersonEmail(data);
+                email = "("+DataProcess.hideEmail(email)+")";
+                html += '<li>' + personName(name, email) + '</li>';
+            }
+            if (columns.country &&
+                data.country !== undefined && data.country !== null) {
+                html += '<li>' + personCountry(data.country) + '</li>';
+            }
+            if (columns.affiliation &&
+                data.affiliation !== undefined && data.affiliation !== null) {
+                html += '<li>' + personAffiliation(data.affiliation) + '</li>';
+            }
+            html += '</ul>';
+        } else {
+            html = '<div class="alert alert-warning" role="alert">' +
+            'Sorry, currently we don\'t have data available about this ' +
+            'contributor <i class="fa fa-frown-o"></i></div></li>';
+        }
         return html;
     }
 

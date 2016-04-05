@@ -1625,70 +1625,39 @@ function getRandomId() {
     return Math.floor(Math.random()*1000+1);
 }
 
-Convert.convertPersonAffiliation = function (upeople_id, upeople_identifier) {
-    var divs = $(".PersonAffiliation"), name, email;
-    if (divs.length > 0) {
+Convert.personInfo = function (upeople_id, upeople_identifier){
+    var divs = $(".PersonInfo");
+    if (divs.length > 0){
         $.each(divs, function(id, div) {
-            $(this).empty();
-            if ($(this).data('person_id')) upeople_id = $(this).data('person_id');
-            if (!div.id) div.id = "PersonData" + "-" + upeople_id + "-" + getRandomId();
+
+            /*workaround to avoid being called again when redrawing*/
+            if (div.id.indexOf('Parsed') >= 0 ) return;
+
+            var cols = $(this).data('columns');
+            cols = cols.split(',');
+            var obj = {name:false, country:false, affiliation:false};
+            $.each(cols, function(id, value){
+                if (obj.hasOwnProperty(value)){
+                    obj[value] = true;
+                }
+            });
 
             var data = Report.getPeopleIdentities()[upeople_id];
-            if (data && data.affiliation !== undefined
-                        && data.affiliation !== null) {
-                html = HTMLComposer.personAffiliation(data.affiliation);
-                $("#"+div.id).append(html);
-            }
-        });
-    }
-};
+            html = HTMLComposer.personInfo(data, obj, upeople_id, upeople_identifier);
+            if (!div.id) div.id = "Parsed" + getRandomId();
 
-Convert.convertPersonCountry = function (upeople_id, upeople_identifier) {
-    var divs = $(".PersonCountry");
-    if (divs.length > 0) {
-        $.each(divs, function(id, div) {
-            $(this).empty();
-            if ($(this).data('person_id')) upeople_id = $(this).data('person_id');
-            if (!div.id) div.id = "PersonData" + "-" + upeople_id + "-" + getRandomId();
-
-            var data = Report.getPeopleIdentities()[upeople_id];
-            if (data && data.country !== undefined
-                        && data.country !== null) {
-                html = HTMLComposer.personCountry(data.country);
-                $("#"+div.id).append(html);
-            }
-        });
-    }
-};
-
-Convert.convertPersonData = function (upeople_id, upeople_identifier) {
-    var divs = $(".PersonData"), name, email;
-    if (divs.length > 0) {
-        $.each(divs, function(id, div) {
-            $(this).empty();
-            if ($(this).data('person_id')) upeople_id = $(this).data('person_id');
-            if (!div.id) div.id = "PersonData" + "-" + upeople_id + "-" + getRandomId();
-
-            var data = Report.getPeopleIdentities()[upeople_id];
-            if (data) {
-                name = DataProcess.selectPersonName(data);
-                country = data.country;
-                aff = data.affiliation;
-                email = DataProcess.selectPersonEmail(data);
-                email = "("+DataProcess.hideEmail(email)+")";
-            } else {
-                if (upeople_identifier !== undefined)
-                    name = upeople_identifier;
-                else name = upeople_id;
-                email = "";
-            }
-            // by default
-            html = HTMLComposer.personName(name, email);
             $("#"+div.id).append(html);
         });
     }
 };
 
+function isProfileAvailable(upeople_id){
+    var data = Report.getPeopleIdentities()[upeople_id];
+    if(data)
+        return true;
+    else
+        return false;
+}
 
 Convert.personSummaryBlock = function(upeople_id){
     /*
@@ -1747,12 +1716,12 @@ Convert.convertPeople = function(upeople_id, upeople_identifier) {
         return;
     }
 
-    Convert.personSummaryBlock(upeople_id);
-    Convert.convertPersonData(upeople_id, upeople_identifier);
-    Convert.convertPersonCountry(upeople_id, upeople_identifier);
-    Convert.convertPersonAffiliation(upeople_id, upeople_identifier);
-    Convert.convertPersonSummary(upeople_id, upeople_identifier);
-    Convert.convertPersonMetrics(upeople_id, upeople_identifier);
+    Convert.personInfo(upeople_id, upeople_identifier);
+    if (isProfileAvailable(upeople_id)){
+        Convert.personSummaryBlock(upeople_id);
+        Convert.convertPersonSummary(upeople_id, upeople_identifier);
+        Convert.convertPersonMetrics(upeople_id, upeople_identifier);
+    }
 
     Convert.activateHelp();
 };
