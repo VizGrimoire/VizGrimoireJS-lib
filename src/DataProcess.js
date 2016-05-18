@@ -199,6 +199,7 @@ var DataProcess = {};
             MIN_LENGTH = 5;
 
         $.each(metrics, function(id, metric) {
+            if (history[metric] === undefined) {return;}
             var offset = 0;
             array_len = history[metric].length;
             max_offset = array_len - MIN_LENGTH;
