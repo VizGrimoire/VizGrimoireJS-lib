@@ -367,6 +367,7 @@ var Table = {};
              if (limit && limit <= i) break;
              rows_html += "<tr><td>" + (i+1) + "</td>";
              //rows_html += "<td>";
+             var escaped_html = Utils.escapeHtml(threads_data.subject[i]);
              if (threads_links === true){
                  var url = "http://www.google.com/search?output=search&q=X&btnI=1";
                  if (Report.getThreadsSite() !== undefined){
@@ -376,13 +377,13 @@ var Table = {};
                      url = "http://www.google.com/search?output=search&q=X%20site%3AY&btnI=1";
                      url = url.replace(/Y/g, threads_data.url[i]);
                  }
-                 url = url.replace(/X/g, threads_data.subject[i]);
+                 url = url.replace(/X/g, escaped_html);
                  rows_html += "<td>";
                  rows_html += '<a target="_blank" href="'+url+ '">';
-                 rows_html += threads_data.subject[i] + "</a>";
+                 rows_html += escaped_html + "</a>";
                  rows_html += "&nbsp;<i class=\"fa fa-external-link\"></i></td>";
              }else{
-                 rows_html += "<td>" + threads_data.subject[i] + "</td>";
+                 rows_html += "<td>" + escaped_html + "</td>";
              }
              rows_html += "<td>" + threads_data.initiator_name[i] + "</td>";
              rows_html += "<td>" + threads_data.length[i] + "</td>";
