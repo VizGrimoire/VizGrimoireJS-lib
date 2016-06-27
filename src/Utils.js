@@ -32,7 +32,6 @@ var Utils = {};
     Utils.createLink = createLink;
     Utils.createReleaseLink = createReleaseLink;
     Utils.getParameter = getParameter;
-    Utils.escapeHtml = escapeHtml;
 
     $.urlParam = function(name){
         var results = new RegExp('[?&]' + name + '=([^&#]*)').exec(window.location.href);
@@ -102,13 +101,7 @@ var Utils = {};
         if ($.urlParam(param) === null) return false;
         return $.urlParam(param);
     }
-
-    function escapeHtml(htmlString){
-        $("div.someFakeClass").text(htmlString);
-        var escaped = $("<div>").text(htmlString).html();
-        return escaped;
-    }
-
+    
 })();
 
 String.prototype.supplant = function(o) {

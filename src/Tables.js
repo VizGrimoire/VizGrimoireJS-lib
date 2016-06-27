@@ -379,8 +379,7 @@ var Table = {};
                  url = url.replace(/X/g, threads_data.subject[i]);
                  rows_html += "<td>";
                  rows_html += '<a target="_blank" href="'+url+ '">';
-                 var escaped = Utils.escapeHtml(threads_data.subject[i]);
-                 rows_html += escaped + "</a>";
+                 rows_html += threads_data.subject[i] + "</a>";
                  rows_html += "&nbsp;<i class=\"fa fa-external-link\"></i></td>";
              }else{
                  rows_html += "<td>" + threads_data.subject[i] + "</td>";
